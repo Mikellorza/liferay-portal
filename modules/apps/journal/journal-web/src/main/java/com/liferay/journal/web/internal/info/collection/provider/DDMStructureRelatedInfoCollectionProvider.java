@@ -38,7 +38,9 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.constants.SearchContextAttributes;
 import com.liferay.portal.search.searcher.SearchResponse;
 
 import java.io.Serializable;
@@ -154,6 +156,11 @@ public class DDMStructureRelatedInfoCollectionProvider
 
 		attributes.put(Field.STATUS, WorkflowConstants.STATUS_APPROVED);
 		attributes.put("head", true);
+
+		if (Validator.isBlank(searchContext.getKeywords())) {
+			attributes.put(
+				SearchContextAttributes.ATTRIBUTE_KEY_EMPTY_SEARCH, true);
+		}
 
 		searchContext.setAttributes(attributes);
 
