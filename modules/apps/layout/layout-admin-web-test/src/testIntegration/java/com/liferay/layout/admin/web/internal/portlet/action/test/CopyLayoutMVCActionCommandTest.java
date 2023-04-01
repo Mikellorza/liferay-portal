@@ -125,6 +125,10 @@ public class CopyLayoutMVCActionCommandTest {
 			_segmentsExperienceLocalService.fetchDefaultSegmentsExperienceId(
 				expectedLayout.getPlid()));
 
+		// TODO Here we can set specific permissions on layout before processing
+		// action and verify that those permissions have not been copied after
+		// action has been processed
+
 		_mvcActionCommand.processAction(
 			mockLiferayPortletActionRequest,
 			new MockLiferayPortletActionResponse());
