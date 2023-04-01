@@ -114,7 +114,7 @@ public class CopyLayoutMVCActionCommandTest {
 		mockLiferayPortletActionRequest.addParameter(
 			"groupId", String.valueOf(_group.getGroupId()));
 		mockLiferayPortletActionRequest.addParameter(
-			"name", "Copy Test Layout");
+			"name", "Copy test layout");
 		mockLiferayPortletActionRequest.addParameter(
 			"privateLayout", String.valueOf(expectedLayout.isPrivateLayout()));
 		mockLiferayPortletActionRequest.addParameter(
@@ -154,7 +154,7 @@ public class CopyLayoutMVCActionCommandTest {
 		mockLiferayPortletActionRequest.addParameter(
 			"groupId", String.valueOf(_group.getGroupId()));
 		mockLiferayPortletActionRequest.addParameter(
-			"name", "Copy Test Layout with permissions");
+			"name", "Copy test layout with permissions");
 		mockLiferayPortletActionRequest.addParameter(
 			"privateLayout", String.valueOf(expectedLayout.isPrivateLayout()));
 		mockLiferayPortletActionRequest.addParameter(
