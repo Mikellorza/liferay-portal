@@ -40,7 +40,6 @@ import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.struts.StrutsAction;
@@ -75,11 +74,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletRequest;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-import javax.portlet.ResourceURL;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -147,7 +143,8 @@ public class GetDataStrutsAction implements StrutsAction {
 					_getLocale(
 						httpServletRequest, themeDisplay.getLanguageId()),
 					analyticsReportsInfoItemObject, httpServletRequest,
-					httpServletResponse, _getTimeRange(httpServletRequest)));
+					httpServletResponse, _getTimeRange(httpServletRequest),
+					themeDisplay));
 
 			ServletResponseUtil.write(
 				httpServletResponse, jsonObject.toString());
@@ -253,7 +250,7 @@ public class GetDataStrutsAction implements StrutsAction {
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
 		String canonicalURL, Locale locale,
 		HttpServletRequest httpServletRequest,
-		HttpServletResponse httpServletResponse) {
+		HttpServletResponse httpServletResponse, ThemeDisplay themeDisplay) {
 
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
@@ -269,9 +266,7 @@ public class GetDataStrutsAction implements StrutsAction {
 
 			jsonObject.put(
 				objectValuePair.getKey(),
-				_getResourceURL(
-					canonicalURL, locale, httpServletRequest,
-					httpServletResponse, objectValuePair.getValue()));
+				_getGetDataURL(canonicalURL, locale, themeDisplay));
 		}
 
 		return jsonObject;
@@ -299,7 +294,8 @@ public class GetDataStrutsAction implements StrutsAction {
 		InfoItemReference infoItemReference, Layout layout,
 		String layoutFriendlyURL, Locale locale, Locale urlLocale,
 		Object object, HttpServletRequest httpServletRequest,
-		HttpServletResponse httpServletResponse, TimeRange timeRange) {
+		HttpServletResponse httpServletResponse, TimeRange timeRange,
+		ThemeDisplay themeDisplay) {
 
 		String canonicalURL = analyticsReportsInfoItem.getCanonicalURL(
 			object, urlLocale);
@@ -317,7 +313,7 @@ public class GetDataStrutsAction implements StrutsAction {
 			"endpoints",
 			_getEndpointsJSONObject(
 				analyticsReportsInfoItem, canonicalURL, urlLocale,
-				httpServletRequest, httpServletResponse)
+				httpServletRequest, httpServletResponse, themeDisplay)
 		).put(
 			"hideAnalyticsReportsPanelURL",
 			PortletURLBuilder.createActionURL(
@@ -345,7 +341,7 @@ public class GetDataStrutsAction implements StrutsAction {
 		).put(
 			"page", JSONUtil.put("plid", layout.getPlid())
 		).put(
-			"pathToAssets", _portal.getPathContext(resourceRequest)
+			"pathToAssets", _portal.getPathContext(httpServletRequest)
 		).put(
 			"publishDate",
 			_toISODateFormat(
@@ -367,7 +363,7 @@ public class GetDataStrutsAction implements StrutsAction {
 			"viewURLs",
 			_getViewURLsJSONArray(
 				analyticsReportsInfoItem, infoItemReference, locale, object,
-				resourceRequest, resourceResponse, urlLocale)
+				resourceRequest, resourceResponse, themeDisplay, urlLocale)
 		);
 	}
 
@@ -378,27 +374,18 @@ public class GetDataStrutsAction implements StrutsAction {
 			ParamUtil.getString(httpServletRequest, "languageId", languageId));
 	}
 
-	private ResourceURL _getResourceURL(
+	private String _getResourceURL(
 		InfoItemReference infoItemReference, Locale locale,
-		HttpServletRequest httpServletRequest,
-		HttpServletResponse httpServletResponse, String resourceID) {
+		ThemeDisplay themeDisplay) {
 
-		LiferayPortletRequest liferayPortletRequest =
-			_portal.getLiferayPortletRequest(resourceRequest);
+		String getDataURL =
+			themeDisplay.getPathMain() + "/analytics_reports/get_data";
 
-		ResourceURL getDataURL =
-			_themeDisplay.getPathMain() + "/analytics_reports/get_data";
+		getDataURL = HttpComponentsUtil.addParameter(
+			getDataURL, "className", infoItemReference.getClassName());
 
-		(ResourceURL)PortletURLBuilder.createLiferayPortletURL(
-			_portal.getLiferayPortletResponse(resourceResponse),
-			liferayPortletRequest.getPlid(),
-			liferayPortletRequest.getPortletName(),
-			PortletRequest.RESOURCE_PHASE, MimeResponse.Copy.PUBLIC
-		).setParameter(
-			"className", infoItemReference.getClassName()
-		).setParameter(
-			"languageId", LocaleUtil.toLanguageId(locale)
-		).buildPortletURL();
+		getDataURL = HttpComponentsUtil.addParameter(
+			getDataURL, "languageId", LocaleUtil.toLanguageId(locale));
 
 		if (infoItemReference.getInfoItemIdentifier() instanceof
 				ClassNameClassPKInfoItemIdentifier) {
@@ -408,12 +395,13 @@ public class GetDataStrutsAction implements StrutsAction {
 					(ClassNameClassPKInfoItemIdentifier)
 						infoItemReference.getInfoItemIdentifier();
 
-			resourceURL.setParameter(
-				"classPK",
+			getDataURL = HttpComponentsUtil.addParameter(
+				getDataURL, "classPK",
 				String.valueOf(
 					classNameClassPKInfoItemIdentifier.getClassPK()));
-			resourceURL.setParameter(
-				"classTypeName",
+
+			getDataURL = HttpComponentsUtil.addParameter(
+				getDataURL, "classTypeName",
 				classNameClassPKInfoItemIdentifier.getClassName());
 		}
 		else if (infoItemReference.getInfoItemIdentifier() instanceof
@@ -423,38 +411,24 @@ public class GetDataStrutsAction implements StrutsAction {
 				(ClassPKInfoItemIdentifier)
 					infoItemReference.getInfoItemIdentifier();
 
-			resourceURL.setParameter(
-				"classPK",
+			getDataURL = HttpComponentsUtil.addParameter(
+				getDataURL, "classPK",
 				String.valueOf(classPKInfoItemIdentifier.getClassPK()));
 		}
 
-		resourceURL.setResourceID(resourceID);
-
-		return resourceURL;
+		return getDataURL;
 	}
 
-	private ResourceURL _getResourceURL(
-		String canonicalURL, Locale locale, ResourceRequest resourceRequest,
-		ResourceResponse resourceResponse, String resourceID) {
+	private String _getGetDataURL(
+		String canonicalURL, Locale locale, ThemeDisplay themeDisplay) {
 
-		LiferayPortletRequest liferayPortletRequest =
-			_portal.getLiferayPortletRequest(resourceRequest);
+		String getGetDataURL = themeDisplay.getPathMain() + "/portal/get_data";
 
-		ResourceURL resourceURL =
-			(ResourceURL)PortletURLBuilder.createLiferayPortletURL(
-				_portal.getLiferayPortletResponse(resourceResponse),
-				liferayPortletRequest.getPlid(),
-				liferayPortletRequest.getPortletName(),
-				PortletRequest.RESOURCE_PHASE, MimeResponse.Copy.PUBLIC
-			).setParameter(
-				"canonicalURL", canonicalURL
-			).setParameter(
-				"languageId", LocaleUtil.toLanguageId(locale)
-			).buildPortletURL();
+		getGetDataURL = HttpComponentsUtil.addParameter(
+			getGetDataURL, "canonicalURL", canonicalURL);
 
-		resourceURL.setResourceID(resourceID);
-
-		return resourceURL;
+		return HttpComponentsUtil.addParameter(
+			getGetDataURL, "languageId", LocaleUtil.toLanguageId(locale));
 	}
 
 	private TimeRange _getTimeRange(HttpServletRequest httpServletRequest) {
@@ -505,7 +479,7 @@ public class GetDataStrutsAction implements StrutsAction {
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
 		InfoItemReference infoItemReference, Locale locale, Object object,
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		Locale urlLocale) {
+		ThemeDisplay themeDisplay, Locale urlLocale) {
 
 		List<Locale> locales = ListUtil.copy(
 			analyticsReportsInfoItem.getAvailableLocales(object));
@@ -554,8 +528,7 @@ public class GetDataStrutsAction implements StrutsAction {
 				).put(
 					"viewURL",
 					_getResourceURL(
-						infoItemReference, currentLocale, resourceRequest,
-						resourceResponse, "/analytics_reports/get_data")
+						infoItemReference, currentLocale, themeDisplay)
 				),
 				JSONObject.class));
 	}
