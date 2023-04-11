@@ -74,9 +74,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -86,7 +83,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Cristina González
  */
-@Component(property = {"path=/portal/get_data"}, service = StrutsAction.class)
+@Component(property = "path=/portal/get_data", service = StrutsAction.class)
 public class GetDataStrutsAction implements StrutsAction {
 
 	@Override
@@ -143,8 +140,7 @@ public class GetDataStrutsAction implements StrutsAction {
 					_getLocale(
 						httpServletRequest, themeDisplay.getLanguageId()),
 					analyticsReportsInfoItemObject, httpServletRequest,
-					httpServletResponse, _getTimeRange(httpServletRequest),
-					themeDisplay));
+					_getTimeRange(httpServletRequest), themeDisplay));
 
 			ServletResponseUtil.write(
 				httpServletResponse, jsonObject.toString());
@@ -160,6 +156,8 @@ public class GetDataStrutsAction implements StrutsAction {
 						httpServletRequest, "an-unexpected-error-occurred")
 				).toString());
 		}
+
+		return null;
 	}
 
 	private JSONObject _getAnalyticsDataJSONObject(Layout layout) {
@@ -248,9 +246,7 @@ public class GetDataStrutsAction implements StrutsAction {
 
 	private JSONObject _getEndpointsJSONObject(
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
-		String canonicalURL, Locale locale,
-		HttpServletRequest httpServletRequest,
-		HttpServletResponse httpServletResponse, ThemeDisplay themeDisplay) {
+		String canonicalURL, Locale locale, String getDataUrl) {
 
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
@@ -266,10 +262,20 @@ public class GetDataStrutsAction implements StrutsAction {
 
 			jsonObject.put(
 				objectValuePair.getKey(),
-				_getGetDataURL(canonicalURL, locale, themeDisplay));
+				_getGetDataURL(canonicalURL, locale, getDataUrl));
 		}
 
 		return jsonObject;
+	}
+
+	private String _getGetDataURL(
+		String canonicalURL, Locale locale, String getGetDataURL) {
+
+		getGetDataURL = HttpComponentsUtil.addParameter(
+			getGetDataURL, "canonicalURL", canonicalURL);
+
+		return HttpComponentsUtil.addParameter(
+			getGetDataURL, "languageId", LocaleUtil.toLanguageId(locale));
 	}
 
 	private InfoItemReference _getInfoItemReference(
@@ -294,13 +300,16 @@ public class GetDataStrutsAction implements StrutsAction {
 		InfoItemReference infoItemReference, Layout layout,
 		String layoutFriendlyURL, Locale locale, Locale urlLocale,
 		Object object, HttpServletRequest httpServletRequest,
-		HttpServletResponse httpServletResponse, TimeRange timeRange,
-		ThemeDisplay themeDisplay) {
+		TimeRange timeRange, ThemeDisplay themeDisplay) {
 
 		String canonicalURL = analyticsReportsInfoItem.getCanonicalURL(
 			object, urlLocale);
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
 			locale, getClass());
+
+		String getDataURL =
+			themeDisplay.getPortalURL() + themeDisplay.getPathMain() +
+				"/portal/get_data";
 
 		return JSONUtil.put(
 			"analyticsData", _getAnalyticsDataJSONObject(layout)
@@ -312,8 +321,7 @@ public class GetDataStrutsAction implements StrutsAction {
 		).put(
 			"endpoints",
 			_getEndpointsJSONObject(
-				analyticsReportsInfoItem, canonicalURL, urlLocale,
-				httpServletRequest, httpServletResponse, themeDisplay)
+				analyticsReportsInfoItem, canonicalURL, urlLocale, getDataURL)
 		).put(
 			"hideAnalyticsReportsPanelURL",
 			PortletURLBuilder.createActionURL(
@@ -363,7 +371,7 @@ public class GetDataStrutsAction implements StrutsAction {
 			"viewURLs",
 			_getViewURLsJSONArray(
 				analyticsReportsInfoItem, infoItemReference, locale, object,
-				resourceRequest, resourceResponse, themeDisplay, urlLocale)
+				getDataURL, urlLocale)
 		);
 	}
 
@@ -375,11 +383,7 @@ public class GetDataStrutsAction implements StrutsAction {
 	}
 
 	private String _getResourceURL(
-		InfoItemReference infoItemReference, Locale locale,
-		ThemeDisplay themeDisplay) {
-
-		String getDataURL =
-			themeDisplay.getPathMain() + "/analytics_reports/get_data";
+		InfoItemReference infoItemReference, Locale locale, String getDataURL) {
 
 		getDataURL = HttpComponentsUtil.addParameter(
 			getDataURL, "className", infoItemReference.getClassName());
@@ -417,18 +421,6 @@ public class GetDataStrutsAction implements StrutsAction {
 		}
 
 		return getDataURL;
-	}
-
-	private String _getGetDataURL(
-		String canonicalURL, Locale locale, ThemeDisplay themeDisplay) {
-
-		String getGetDataURL = themeDisplay.getPathMain() + "/portal/get_data";
-
-		getGetDataURL = HttpComponentsUtil.addParameter(
-			getGetDataURL, "canonicalURL", canonicalURL);
-
-		return HttpComponentsUtil.addParameter(
-			getGetDataURL, "languageId", LocaleUtil.toLanguageId(locale));
 	}
 
 	private TimeRange _getTimeRange(HttpServletRequest httpServletRequest) {
@@ -478,8 +470,7 @@ public class GetDataStrutsAction implements StrutsAction {
 	private JSONArray _getViewURLsJSONArray(
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
 		InfoItemReference infoItemReference, Locale locale, Object object,
-		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		ThemeDisplay themeDisplay, Locale urlLocale) {
+		String getDataURL, Locale urlLocale) {
 
 		List<Locale> locales = ListUtil.copy(
 			analyticsReportsInfoItem.getAvailableLocales(object));
@@ -528,7 +519,7 @@ public class GetDataStrutsAction implements StrutsAction {
 				).put(
 					"viewURL",
 					_getResourceURL(
-						infoItemReference, currentLocale, themeDisplay)
+						infoItemReference, currentLocale, getDataURL)
 				),
 				JSONObject.class));
 	}
@@ -554,7 +545,7 @@ public class GetDataStrutsAction implements StrutsAction {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		GetDataMVCResourceCommand.class);
+		GetDataStrutsAction.class);
 
 	private static final Map
 		<AnalyticsReportsInfoItem.Action, ObjectValuePair<String, String>>
