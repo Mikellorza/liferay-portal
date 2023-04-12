@@ -40,11 +40,9 @@ import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
-import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
-import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
-import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.servlet.ServletResponseUtil;
+import com.liferay.portal.kernel.struts.StrutsAction;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -76,13 +74,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletRequest;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
-import javax.portlet.ResourceURL;
-
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -90,22 +83,16 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Cristina González
  */
-@Component(
-	property = {
-		"javax.portlet.name=" + AnalyticsReportsPortletKeys.ANALYTICS_REPORTS,
-		"mvc.command.name=/analytics_reports/get_data"
-	},
-	service = MVCResourceCommand.class
-)
-public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
+@Component(property = "path=/portal/get_data", service = StrutsAction.class)
+public class GetDataStrutsAction implements StrutsAction {
 
 	@Override
-	protected void doServeResource(
-			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+	public String execute(
+			HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse)
 		throws Exception {
 
-		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
-			resourceRequest);
+		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
 		try {
 			InfoItemReference infoItemReference = _getInfoItemReference(
@@ -140,34 +127,37 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 							infoItemReference.getClassName());
 
 			ThemeDisplay themeDisplay =
-				(ThemeDisplay)resourceRequest.getAttribute(
+				(ThemeDisplay)httpServletRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
 
-			JSONPortletResponseUtil.writeJSON(
-				resourceRequest, resourceResponse,
-				JSONUtil.put(
-					"context",
-					_getJSONObject(
-						analyticsReportsInfoItem, infoItemReference,
-						themeDisplay.getLayout(),
-						themeDisplay.getLayoutFriendlyURL(
-							themeDisplay.getLayout()),
-						themeDisplay.getLocale(),
-						_getLocale(
-							httpServletRequest, themeDisplay.getLanguageId()),
-						analyticsReportsInfoItemObject, resourceRequest,
-						resourceResponse, _getTimeRange(resourceRequest))));
+			jsonObject.put(
+				"context",
+				_getJSONObject(
+					analyticsReportsInfoItem, infoItemReference,
+					themeDisplay.getLayout(),
+					themeDisplay.getLayoutFriendlyURL(themeDisplay.getLayout()),
+					themeDisplay.getLocale(),
+					_getLocale(
+						httpServletRequest, themeDisplay.getLanguageId()),
+					analyticsReportsInfoItemObject, httpServletRequest,
+					_getTimeRange(httpServletRequest), themeDisplay));
+
+			ServletResponseUtil.write(
+				httpServletResponse, jsonObject.toString());
 		}
 		catch (Exception exception) {
 			_log.error(exception);
 
-			JSONPortletResponseUtil.writeJSON(
-				resourceRequest, resourceResponse,
-				JSONUtil.put(
+			ServletResponseUtil.write(
+				httpServletResponse,
+				jsonObject.put(
 					"error",
 					_language.get(
-						httpServletRequest, "an-unexpected-error-occurred")));
+						httpServletRequest, "an-unexpected-error-occurred")
+				).toString());
 		}
+
+		return null;
 	}
 
 	private JSONObject _getAnalyticsDataJSONObject(Layout layout) {
@@ -256,8 +246,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 
 	private JSONObject _getEndpointsJSONObject(
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
-		String canonicalURL, Locale locale, ResourceRequest resourceRequest,
-		ResourceResponse resourceResponse) {
+		String canonicalURL, Locale locale, String getDataUrl) {
 
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
@@ -273,12 +262,20 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 
 			jsonObject.put(
 				objectValuePair.getKey(),
-				_getResourceURL(
-					canonicalURL, locale, resourceRequest, resourceResponse,
-					objectValuePair.getValue()));
+				_getGetDataURL(canonicalURL, locale, getDataUrl));
 		}
 
 		return jsonObject;
+	}
+
+	private String _getGetDataURL(
+		String canonicalURL, Locale locale, String getGetDataURL) {
+
+		getGetDataURL = HttpComponentsUtil.addParameter(
+			getGetDataURL, "canonicalURL", canonicalURL);
+
+		return HttpComponentsUtil.addParameter(
+			getGetDataURL, "languageId", LocaleUtil.toLanguageId(locale));
 	}
 
 	private InfoItemReference _getInfoItemReference(
@@ -302,13 +299,17 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
 		InfoItemReference infoItemReference, Layout layout,
 		String layoutFriendlyURL, Locale locale, Locale urlLocale,
-		Object object, ResourceRequest resourceRequest,
-		ResourceResponse resourceResponse, TimeRange timeRange) {
+		Object object, HttpServletRequest httpServletRequest,
+		TimeRange timeRange, ThemeDisplay themeDisplay) {
 
 		String canonicalURL = analyticsReportsInfoItem.getCanonicalURL(
 			object, urlLocale);
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
 			locale, getClass());
+
+		String getDataURL =
+			themeDisplay.getPortalURL() + themeDisplay.getPathMain() +
+				"/portal/get_data";
 
 		return JSONUtil.put(
 			"analyticsData", _getAnalyticsDataJSONObject(layout)
@@ -320,8 +321,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 		).put(
 			"endpoints",
 			_getEndpointsJSONObject(
-				analyticsReportsInfoItem, canonicalURL, urlLocale,
-				resourceRequest, resourceResponse)
+				analyticsReportsInfoItem, canonicalURL, urlLocale, getDataURL)
 		).put(
 			"hideAnalyticsReportsPanelURL",
 			PortletURLBuilder.createActionURL(
@@ -349,7 +349,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 		).put(
 			"page", JSONUtil.put("plid", layout.getPlid())
 		).put(
-			"pathToAssets", _portal.getPathContext(resourceRequest)
+			"pathToAssets", _portal.getPathContext(httpServletRequest)
 		).put(
 			"publishDate",
 			_toISODateFormat(
@@ -371,7 +371,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 			"viewURLs",
 			_getViewURLsJSONArray(
 				analyticsReportsInfoItem, infoItemReference, locale, object,
-				resourceRequest, resourceResponse, urlLocale)
+				getDataURL, urlLocale)
 		);
 	}
 
@@ -382,25 +382,14 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 			ParamUtil.getString(httpServletRequest, "languageId", languageId));
 	}
 
-	private ResourceURL _getResourceURL(
-		InfoItemReference infoItemReference, Locale locale,
-		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		String resourceID) {
+	private String _getResourceURL(
+		InfoItemReference infoItemReference, Locale locale, String getDataURL) {
 
-		LiferayPortletRequest liferayPortletRequest =
-			_portal.getLiferayPortletRequest(resourceRequest);
+		getDataURL = HttpComponentsUtil.addParameter(
+			getDataURL, "className", infoItemReference.getClassName());
 
-		ResourceURL resourceURL =
-			(ResourceURL)PortletURLBuilder.createLiferayPortletURL(
-				_portal.getLiferayPortletResponse(resourceResponse),
-				liferayPortletRequest.getPlid(),
-				liferayPortletRequest.getPortletName(),
-				PortletRequest.RESOURCE_PHASE, MimeResponse.Copy.PUBLIC
-			).setParameter(
-				"className", infoItemReference.getClassName()
-			).setParameter(
-				"languageId", LocaleUtil.toLanguageId(locale)
-			).buildPortletURL();
+		getDataURL = HttpComponentsUtil.addParameter(
+			getDataURL, "languageId", LocaleUtil.toLanguageId(locale));
 
 		if (infoItemReference.getInfoItemIdentifier() instanceof
 				ClassNameClassPKInfoItemIdentifier) {
@@ -410,12 +399,13 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 					(ClassNameClassPKInfoItemIdentifier)
 						infoItemReference.getInfoItemIdentifier();
 
-			resourceURL.setParameter(
-				"classPK",
+			getDataURL = HttpComponentsUtil.addParameter(
+				getDataURL, "classPK",
 				String.valueOf(
 					classNameClassPKInfoItemIdentifier.getClassPK()));
-			resourceURL.setParameter(
-				"classTypeName",
+
+			getDataURL = HttpComponentsUtil.addParameter(
+				getDataURL, "classTypeName",
 				classNameClassPKInfoItemIdentifier.getClassName());
 		}
 		else if (infoItemReference.getInfoItemIdentifier() instanceof
@@ -425,43 +415,17 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 				(ClassPKInfoItemIdentifier)
 					infoItemReference.getInfoItemIdentifier();
 
-			resourceURL.setParameter(
-				"classPK",
+			getDataURL = HttpComponentsUtil.addParameter(
+				getDataURL, "classPK",
 				String.valueOf(classPKInfoItemIdentifier.getClassPK()));
 		}
 
-		resourceURL.setResourceID(resourceID);
-
-		return resourceURL;
+		return getDataURL;
 	}
 
-	private ResourceURL _getResourceURL(
-		String canonicalURL, Locale locale, ResourceRequest resourceRequest,
-		ResourceResponse resourceResponse, String resourceID) {
-
-		LiferayPortletRequest liferayPortletRequest =
-			_portal.getLiferayPortletRequest(resourceRequest);
-
-		ResourceURL resourceURL =
-			(ResourceURL)PortletURLBuilder.createLiferayPortletURL(
-				_portal.getLiferayPortletResponse(resourceResponse),
-				liferayPortletRequest.getPlid(),
-				liferayPortletRequest.getPortletName(),
-				PortletRequest.RESOURCE_PHASE, MimeResponse.Copy.PUBLIC
-			).setParameter(
-				"canonicalURL", canonicalURL
-			).setParameter(
-				"languageId", LocaleUtil.toLanguageId(locale)
-			).buildPortletURL();
-
-		resourceURL.setResourceID(resourceID);
-
-		return resourceURL;
-	}
-
-	private TimeRange _getTimeRange(ResourceRequest resourceRequest) {
+	private TimeRange _getTimeRange(HttpServletRequest httpServletRequest) {
 		String timeSpanKey = ParamUtil.getString(
-			resourceRequest, "timeSpanKey", TimeSpan.defaultTimeSpanKey());
+			httpServletRequest, "timeSpanKey", TimeSpan.defaultTimeSpanKey());
 
 		if (Validator.isNull(timeSpanKey)) {
 			TimeSpan defaultTimeSpan = TimeSpan.of(
@@ -473,7 +437,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 		TimeSpan timeSpan = TimeSpan.of(timeSpanKey);
 
 		int timeSpanOffset = ParamUtil.getInteger(
-			resourceRequest, "timeSpanOffset");
+			httpServletRequest, "timeSpanOffset");
 
 		return timeSpan.toTimeRange(timeSpanOffset);
 	}
@@ -506,8 +470,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 	private JSONArray _getViewURLsJSONArray(
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
 		InfoItemReference infoItemReference, Locale locale, Object object,
-		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		Locale urlLocale) {
+		String getDataURL, Locale urlLocale) {
 
 		List<Locale> locales = ListUtil.copy(
 			analyticsReportsInfoItem.getAvailableLocales(object));
@@ -556,8 +519,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 				).put(
 					"viewURL",
 					_getResourceURL(
-						infoItemReference, currentLocale, resourceRequest,
-						resourceResponse, "/analytics_reports/get_data")
+						infoItemReference, currentLocale, getDataURL)
 				),
 				JSONObject.class));
 	}
@@ -583,7 +545,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		GetDataMVCResourceCommand.class);
+		GetDataStrutsAction.class);
 
 	private static final Map
 		<AnalyticsReportsInfoItem.Action, ObjectValuePair<String, String>>
