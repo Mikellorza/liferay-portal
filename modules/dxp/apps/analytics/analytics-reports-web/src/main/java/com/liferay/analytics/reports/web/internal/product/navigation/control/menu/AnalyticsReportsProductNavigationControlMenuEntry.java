@@ -78,6 +78,11 @@ public class AnalyticsReportsProductNavigationControlMenuEntry
 	extends BaseJSPProductNavigationControlMenuEntry {
 
 	@Override
+	public String getBodyJspPath() {
+		return "/analytics_reports_body.jsp";
+	}
+
+	@Override
 	public String getIconJspPath() {
 		return "/analytics_reports_icon.jsp";
 	}
@@ -90,6 +95,30 @@ public class AnalyticsReportsProductNavigationControlMenuEntry
 	@Override
 	public String getURL(HttpServletRequest httpServletRequest) {
 		return null;
+	}
+
+	@Override
+	public boolean includeBody(
+			HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse)
+		throws IOException {
+
+		httpServletRequest.setAttribute(
+			"data",
+			HashMapBuilder.<String, Object>put(
+				"context",
+				Collections.singletonMap(
+					"analyticsReportsDataURL",
+					_getAnalyticsReportsURL(httpServletRequest))
+			).put(
+				"portletNamespace", _portletNamespace
+			).build());
+
+		httpServletRequest.setAttribute(
+			"isPanelStateOpen", isPanelStateOpen(httpServletRequest));
+
+		return include(
+			httpServletRequest, httpServletResponse, getBodyJspPath());
 	}
 
 	@Override
