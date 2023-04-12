@@ -12,30 +12,32 @@
  * details.
  */
 
-package com.liferay.layout.taglib.internal.info.search;
+package com.liferay.info.search;
 
-import com.liferay.info.search.InfoSearchClassMapperRegistry;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import com.liferay.osgi.util.service.Snapshot;
 
 /**
  * @author Jürgen Kappler
  */
-@Component(service = {})
 public class InfoSearchClassMapperRegistryUtil {
 
 	public static String getClassName(String searchClassName) {
-		return _infoSearchClassMapperRegistry.getClassName(searchClassName);
+		InfoSearchClassMapperRegistry infoSearchClassMapperRegistry =
+			_infoSearchClassMapperRegistrySnapshot.get();
+
+		return infoSearchClassMapperRegistry.getClassName(searchClassName);
 	}
 
-	@Reference(unbind = "-")
-	protected void setInfoSearchClassMapperRegistry(
-		InfoSearchClassMapperRegistry infoSearchClassMapperRegistry) {
+	public static String getSearchClassName(String className) {
+		InfoSearchClassMapperRegistry infoSearchClassMapperRegistry =
+			_infoSearchClassMapperRegistrySnapshot.get();
 
-		_infoSearchClassMapperRegistry = infoSearchClassMapperRegistry;
+		return infoSearchClassMapperRegistry.getSearchClassName(className);
 	}
 
-	private static InfoSearchClassMapperRegistry _infoSearchClassMapperRegistry;
+	private static final Snapshot<InfoSearchClassMapperRegistry>
+		_infoSearchClassMapperRegistrySnapshot = new Snapshot<>(
+			InfoSearchClassMapperRegistryUtil.class,
+			InfoSearchClassMapperRegistry.class);
 
 }

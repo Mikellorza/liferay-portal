@@ -8,7 +8,7 @@ definition {
 			siteTemplateName = "Raylife AP");
 	}
 
-	macro AssertApplicationNumber {
+	macro assertApplicationNumber {
 		var applicationvalue = selenium.getText("RaylifeAP#APPLICATIONS_NUMBER");
 
 		AssertElementNotPresent(locator1 = ${applicationvalue});
@@ -20,10 +20,26 @@ definition {
 			locator1 = "RaylifeAP#FIELD_REQUIRED_MESSAGE");
 	}
 
+	@summary = "This macro states that the filter options are hidden"
+	macro assertNotViewFilterOptions {
+		for (var optionList : list ${options}) {
+			AssertNotVisible(
+				key_option = ${optionList},
+				locator1 = "RaylifeAP#RESPONSIVE_FILTER_OPTIONS");
+		}
+	}
+
 	macro assertPageHeader {
 		AssertElementPresent(
 			key_header = ${key_header},
 			locator1 = "RaylifeAP#COMPONENT_HEADER");
+	}
+
+	@summary = "This macro asserts the number of entries shown in the table"
+	macro assertQuantity {
+		var key_quantity = ${text};
+
+		AssertVisible(locator1 = "RaylifeAP#ASSERT_QUANTITY");
 	}
 
 	macro assertTableValue {
@@ -31,6 +47,25 @@ definition {
 			key_product = ${product},
 			key_status = ${status},
 			locator1 = "RaylifeAP#APPLICATIONS_TABLE_KEBAB");
+	}
+
+	macro assertTextAtTable {
+		var key_linePosition = ${linePosition};
+		var key_colunmPosition = ${lineColunm};
+		var key_text = ${text};
+
+		AssertTextEquals(
+			locator1 = "RaylifeAP#TABLE_ELEMENT_BY_POSITION",
+			value1 = ${text});
+	}
+
+	@summary = "This macro states that the filter options are being displayed on the page"
+	macro assertViewFilterOptions {
+		for (var optionList : list ${options}) {
+			AssertVisible(
+				key_option = ${optionList},
+				locator1 = "RaylifeAP#RESPONSIVE_FILTER_OPTIONS");
+		}
 	}
 
 	macro assertVisibleSidebar {
@@ -54,16 +89,62 @@ definition {
 		Button.click(button = "All Applications");
 	}
 
+	@summary = "This macro enables and disables the filter"
+	macro clickOnFilter {
+		Click(locator1 = "RaylifeAP#ICON_FILTER");
+	}
+
 	macro clickOnSubsectionTasks {
 		Click(
 			key_subsection = ${key_subsection},
 			locator1 = "RaylifeAP#TASKS_SECTION");
 	}
 
+	@summary = "This macro edits the deletion type to cascade and deletes all entries created when adding an application"
+	macro deleteAllCreatedEntries {
+		var entry = ${searchTerm};
+
+		ObjectAdmin.editObjectDeletionType(
+			deletionType = "Cascade",
+			field = "Deletion",
+			label = "Raylife Application",
+			labelName = "RaylifeQuote");
+
+		ObjectAdmin.editObjectDeletionType(
+			deletionType = "Cascade",
+			field = "Deletion",
+			label = "Raylife Quote",
+			labelName = "RaylifePolicy");
+
+		ObjectAdmin.editObjectDeletionType(
+			deletionType = "Cascade",
+			field = "Deletion",
+			label = "Raylife Policy",
+			labelName = "RaylifeClaim");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Object",
+			panel = "Control Panel",
+			portlet = "Raylife Applications");
+
+		Search.searchCP(searchTerm = ${searchTerm});
+
+		if (IsElementPresent(key_entry = ${entry}, locator1 = "ObjectPortlet#ENTRY_KEBAB_MENU")) {
+			ObjectPortlet.deleteEntry(entry = ${searchTerm});
+		}
+	}
+
 	macro expandedSidebar {
 		MouseOver(
 			key_menuSidebar = ${key_menuSidebar},
 			locator1 = "RaylifeAP#MENU_SIDEBAR");
+	}
+
+	@summary = "This macro is for any ellipses button on the Raylife AP site"
+	macro gotoEllipsisMenuItem {
+		Click.waitForMenuToggleJSClick(locator1 = "RaylifeAP#ANY_VERTICAL_ELLIPSIS");
+
+		MenuItem.clickNoError(menuItem = ${menuItem});
 	}
 
 	macro goToRaylifeAPSiteWithRefresh {
@@ -76,6 +157,25 @@ definition {
 		var key_menu = ${menu};
 
 		MouseOver(locator1 = "RaylifeAP#MENU_SIDEBAR");
+	}
+
+	@summary = "This macro is for any search box on the Raylife AP site"
+	macro search {
+		WaitForElementPresent(locator1 = "RaylifeAP#SEARCH");
+
+		AssertElementPresent(locator1 = "RaylifeAP#SEARCH");
+
+		Type(
+			locator1 = "RaylifeAP#SEARCH",
+			value1 = ${searchTerm});
+
+		KeyPress(
+			locator1 = "RaylifeAP#SEARCH",
+			value1 = "\RETURN");
+
+		if (!(isSet(modal))) {
+			WaitForLiferayEvent.initializeLiferayEventLog();
+		}
 	}
 
 	macro signIn {
@@ -125,8 +225,5 @@ definition {
 
 		Alert.viewSuccessMessage();
 	}
-
-	// Workaround for LPS-172183
-
 
 }

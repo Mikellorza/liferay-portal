@@ -24,6 +24,8 @@ definition {
 	tearDown {
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
+		RaylifeAP.deleteAllCreatedEntries(searchTerm = "Testing");
+
 		Raylife.tearDownCP();
 
 		if (${testPortalInstance} == "true") {
@@ -53,6 +55,46 @@ definition {
 			RaylifeAPApplications.getValue(legendItem = "BOP,WC,Health,Life,Property,Home,Auto,PL,GL");
 
 			RaylifeAPPolicies.assertGraphValue(number = ${number});
+		}
+	}
+
+	@description = "Story ID: LPS-146257 | Test Summary: Verify if the kebab button has and edit and delete options and then test if the delete option works"
+	@priority = 4
+	test CanDeletePolicies {
+		task ("Given that I generate a new quotation") {
+			ApplicationsMenu.gotoSite(site = "Raylife AP");
+
+			RaylifeAPNavigator.gotoSidebarItem(itemName = "Dashboard");
+
+			RaylifeApplicationModal.openNewApplicationFlow(
+				insurance = "Personal",
+				product = "Auto");
+
+			RaylifeApplicationModal.typeAllNewApplicationContactInfoFields();
+
+			RaylifeApplicationModal.typeAllNewApplicationVehicleInfoFields();
+
+			RaylifeApplicationModal.typeAllNewApplicationDriverInfoFields();
+
+			RaylifeApplicationModal.typeAllNewApplicationCoverageInfoFields();
+
+			Button.click(button = "Generate Quote");
+		}
+
+		task ("And I go to the Policies page") {
+			RaylifeAPNavigator.gotoSidebarItem(itemName = "Policies");
+
+			RaylifeAP.search(searchTerm = "Testing Model");
+		}
+
+		task ("When I delete a Policies") {
+			RaylifeAP.gotoEllipsisMenuItem(menuItem = "Delete");
+		}
+
+		task ("Then I should be able to assert that Policies has been deleted") {
+			RaylifeAP.search(searchTerm = "Testing Model");
+
+			RaylifeAP.assertQuantity(text = "Policies (0)");
 		}
 	}
 
