@@ -26,9 +26,11 @@ import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -94,8 +96,20 @@ public class ThemeDisplayContextProvider
 				_language.getCompanyAvailableLocales(
 					themeDisplay.getCompanyId()));
 
-			if (ListUtil.isNotEmpty(locales)) {
-				themeDisplay.setLocale(locales.get(0));
+			List<Locale> fixedLocales = new ArrayList<>();
+
+			for (Locale locale : locales) {
+				Locale.Builder localeBuilder = new Locale.Builder();
+
+				localeBuilder.setLocale(locale);
+				localeBuilder.setVariant(
+					StringUtil.toUpperCase(locale.getVariant()));
+
+				fixedLocales.add(localeBuilder.build());
+			}
+
+			if (ListUtil.isNotEmpty(fixedLocales)) {
+				themeDisplay.setLocale(fixedLocales.get(0));
 			}
 		}
 

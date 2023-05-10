@@ -23,8 +23,10 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -73,13 +75,25 @@ public class AcceptLanguageImpl implements AcceptLanguage {
 				Locale.LanguageRange.parse(acceptLanguage),
 				_language.getCompanyAvailableLocales(company.getCompanyId()));
 
-			if (ListUtil.isEmpty(locales)) {
+			List<Locale> fixedLocales = new ArrayList<>();
+
+			for (Locale locale : locales) {
+				Locale.Builder localeBuilder = new Locale.Builder();
+
+				localeBuilder.setLocale(locale);
+				localeBuilder.setVariant(
+					StringUtil.toUpperCase(locale.getVariant()));
+
+				fixedLocales.add(localeBuilder.build());
+			}
+
+			if (ListUtil.isEmpty(fixedLocales)) {
 				throw new NotAcceptableException(
 					"No locales match the accepted languages: " +
 						acceptLanguage);
 			}
 
-			return locales;
+			return fixedLocales;
 		}
 		catch (PortalException portalException) {
 			throw new InternalServerErrorException(
