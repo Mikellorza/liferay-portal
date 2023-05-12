@@ -73,7 +73,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Alejandro Tardín
  */
 @Component(
-	property = "path=/layout_reports/get_layout_reports_data",
+	property = "path=/portal/layout_reports/get_layout_reports_data",
 	service = StrutsAction.class
 )
 public class GetLayoutReportsDataStrutsAction implements StrutsAction {
@@ -215,7 +215,7 @@ public class GetLayoutReportsDataStrutsAction implements StrutsAction {
 
 		return HttpComponentsUtil.addParameters(
 			themeDisplay.getPortalURL() + themeDisplay.getPathMain() +
-				"/layout_reports/get_layout_reports_issues",
+				"/portal/layout_reports/get_layout_reports_issues",
 			"groupId", String.valueOf(groupId), "url", url);
 	}
 

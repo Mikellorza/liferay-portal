@@ -14,6 +14,7 @@
 
 package com.liferay.layout.reports.web.internal.struts;
 
+import com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys;
 import com.liferay.layout.reports.web.internal.configuration.provider.LayoutReportsGooglePageSpeedConfigurationProvider;
 import com.liferay.layout.reports.web.internal.data.provider.LayoutReportsDataProvider;
 import com.liferay.portal.kernel.cache.PortalCache;
@@ -27,6 +28,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -47,6 +49,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -57,7 +60,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Cristina González
  */
 @Component(
-	property = "path=/layout_reports/get_layout_reports_issues",
+	property = "path=/portal/layout_reports/get_layout_reports_issues",
 	service = StrutsAction.class
 )
 public class GetLayoutReportsIssuesStrutsAction implements StrutsAction {
@@ -197,7 +200,7 @@ public class GetLayoutReportsIssuesStrutsAction implements StrutsAction {
 
 				return HttpComponentsUtil.addParameters(
 					themeDisplay.getPortalURL() + themeDisplay.getPathMain() +
-						"/layout_reports/get_layout_reports_issues",
+						"/portal/layout_reports/get_layout_reports_issues",
 					"redirect", completeURL, "backURL", completeURL, "groupId",
 					layout.getGroupId(), "privateLayout",
 					layout.isPrivateLayout(), "screenNavigationEntryKey", "seo",
