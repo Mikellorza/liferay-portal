@@ -32,6 +32,11 @@ public class DefaultLayoutListRetrieverContext
 	}
 
 	@Override
+	public Map<String, Object> getContextData() {
+		return _contextData;
+	}
+
+	@Override
 	public Object getContextObject() {
 		return _contextObject;
 	}
@@ -71,6 +76,10 @@ public class DefaultLayoutListRetrieverContext
 		_configuration = configuration;
 	}
 
+	public void setContextData(Map<String, Object> contextData) {
+		_contextData = contextData;
+	}
+
 	public void setContextObject(Object contextObject) {
 		_contextObject = contextObject;
 	}
@@ -88,6 +97,7 @@ public class DefaultLayoutListRetrieverContext
 	}
 
 	private Map<String, String[]> _configuration;
+	private Map<String, Object> _contextData;
 	private Object _contextObject;
 	private Map<String, InfoFilter> _infoFilters;
 	private Pagination _pagination;
