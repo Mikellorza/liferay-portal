@@ -371,6 +371,13 @@ public class RenderCollectionLayoutStructureItemDisplayContext {
 		return configuration;
 	}
 
+	private Map<String, Object> _getContextData() {
+		return HashMapBuilder.<String, Object>put(
+			"segmentsExperienceId",
+			ParamUtil.getLong(_httpServletRequest, "segmentsExperienceId", -1)
+		).build();
+	}
+
 	private Object _getContextObject() {
 		Object infoItem = _httpServletRequest.getAttribute(
 			InfoDisplayWebKeys.INFO_ITEM);
@@ -420,6 +427,7 @@ public class RenderCollectionLayoutStructureItemDisplayContext {
 			new DefaultLayoutListRetrieverContext();
 
 		defaultLayoutListRetrieverContext.setConfiguration(_getConfiguration());
+		defaultLayoutListRetrieverContext.setContextData(_getContextData());
 		defaultLayoutListRetrieverContext.setContextObject(_getContextObject());
 		defaultLayoutListRetrieverContext.setInfoFilters(
 			_getInfoFilters(layoutListRetriever, listObjectReference));
