@@ -18,7 +18,9 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.list.asset.entry.provider.AssetListAssetEntryProvider;
 import com.liferay.asset.list.model.AssetListEntry;
+import com.liferay.asset.list.model.AssetListEntrySegmentsEntryRel;
 import com.liferay.asset.list.service.AssetListEntryLocalService;
+import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalService;
 import com.liferay.info.filter.CategoriesInfoFilter;
 import com.liferay.info.filter.InfoFilter;
 import com.liferay.info.filter.KeywordsInfoFilter;
@@ -28,13 +30,19 @@ import com.liferay.item.selector.criteria.InfoListItemSelectorReturnType;
 import com.liferay.layout.list.retriever.ClassedModelListObjectReference;
 import com.liferay.layout.list.retriever.LayoutListRetriever;
 import com.liferay.layout.list.retriever.LayoutListRetrieverContext;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.segments.model.SegmentsExperience;
+import com.liferay.segments.service.SegmentsExperienceLocalService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
@@ -63,6 +71,12 @@ public class AssetEntryListLayoutListRetriever
 
 		long[] segmentsEntryIds =
 			layoutListRetrieverContext.getSegmentsEntryIds();
+
+		if (FeatureFlagManagerUtil.isEnabled("LPS-183723")) {
+			segmentsEntryIds = _filterSegmentsEntryIds(
+				assetListEntry, layoutListRetrieverContext.getContextData(),
+				segmentsEntryIds);
+		}
 
 		if (segmentsEntryIds == null) {
 			segmentsEntryIds = new long[] {0};
@@ -108,6 +122,12 @@ public class AssetEntryListLayoutListRetriever
 		long[] segmentsEntryIds =
 			layoutListRetrieverContext.getSegmentsEntryIds();
 
+		if (FeatureFlagManagerUtil.isEnabled("LPS-183723")) {
+			segmentsEntryIds = _filterSegmentsEntryIds(
+				assetListEntry, layoutListRetrieverContext.getContextData(),
+				segmentsEntryIds);
+		}
+
 		if (segmentsEntryIds == null) {
 			segmentsEntryIds = new long[] {0};
 		}
@@ -124,6 +144,33 @@ public class AssetEntryListLayoutListRetriever
 		ClassedModelListObjectReference classedModelListObjectReference) {
 
 		return _supportedInfoFilters;
+	}
+
+	private long[] _filterSegmentsEntryIds(
+		AssetListEntry assetListEntry, Map<String, Object> contextData,
+		long[] segmentsEntryIds) {
+
+		if ((contextData == null) ||
+			!contextData.containsKey("segmentsExperienceId")) {
+
+			return segmentsEntryIds;
+		}
+
+		SegmentsExperience segmentsExperience =
+			_segmentsExperienceLocalService.fetchSegmentsExperience(
+				GetterUtil.getLong(contextData.get("segmentsExperienceId")));
+
+		if (segmentsExperience != null) {
+			segmentsEntryIds = TransformUtil.transformToLongArray(
+				_assetListEntrySegmentsEntryRelLocalService.
+					getAssetListEntrySegmentsEntryRels(
+						assetListEntry.getAssetListEntryId(),
+						new long[] {segmentsExperience.getSegmentsEntryId()},
+						QueryUtil.ALL_POS, QueryUtil.ALL_POS, null),
+				AssetListEntrySegmentsEntryRel::getSegmentsEntryId);
+		}
+
+		return segmentsEntryIds;
 	}
 
 	private long[][] _getAssetCategoryIds(
@@ -187,5 +234,12 @@ public class AssetEntryListLayoutListRetriever
 
 	@Reference
 	private AssetListEntryLocalService _assetListEntryLocalService;
+
+	@Reference
+	private AssetListEntrySegmentsEntryRelLocalService
+		_assetListEntrySegmentsEntryRelLocalService;
+
+	@Reference
+	private SegmentsExperienceLocalService _segmentsExperienceLocalService;
 
 }
