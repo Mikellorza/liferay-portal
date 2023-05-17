@@ -29,6 +29,8 @@ public interface LayoutListRetrieverContext {
 
 	public Map<String, String[]> getConfiguration();
 
+	public Map<String, Object> getContextData();
+
 	public Object getContextObject();
 
 	public <T> T getInfoFilter(Class<? extends InfoFilter> clazz);
