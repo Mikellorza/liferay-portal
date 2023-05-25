@@ -33,8 +33,10 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemListBuilder;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.criteria.FileEntryItemSelectorReturnType;
+import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
 import com.liferay.item.selector.criteria.file.criterion.FileItemSelectorCriterion;
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
+import com.liferay.layout.admin.item.selector.criterion.LayoutAdminItemSelectorCriterion;
 import com.liferay.layout.admin.web.internal.util.FaviconUtil;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
@@ -523,6 +525,18 @@ public class LayoutsAdminDisplayContext {
 		}
 
 		return StringPool.BLANK;
+	}
+
+	public String getEventName() {
+		if (_eventName != null) {
+			return _eventName;
+		}
+
+		_eventName = ParamUtil.getString(
+			_liferayPortletRequest, "eventName",
+			_liferayPortletResponse.getNamespace() + "selectTheme");
+
+		return _eventName;
 	}
 
 	public Map<String, Object> getFaviconButtonProps() {
@@ -1194,6 +1208,31 @@ public class LayoutsAdminDisplayContext {
 		return selectLayoutPageTemplateEntryURL.toString();
 	}
 
+	public String getSelectThemeRedirect() {
+		if (_redirect != null) {
+			return _redirect;
+		}
+
+		_redirect = ParamUtil.getString(httpServletRequest, "redirect");
+
+		return _redirect;
+	}
+
+	public String getSelectThemeURL() throws PortalException {
+		LayoutAdminItemSelectorCriterion layoutAdminItemSelectorCriterion =
+			new LayoutAdminItemSelectorCriterion();
+
+		layoutAdminItemSelectorCriterion.setDesiredItemSelectorReturnTypes(
+			Collections.singletonList(new UUIDItemSelectorReturnType()));
+
+		return String.valueOf(
+			_itemSelector.getItemSelectorURL(
+				RequestBackedPortletURLFactoryUtil.create(
+					_liferayPortletRequest),
+				_liferayPortletResponse.getNamespace() + "selectEntity",
+				layoutAdminItemSelectorCriterion));
+	}
+
 	public Group getSelGroup() {
 		return _groupDisplayContextHelper.getSelGroup();
 	}
@@ -1416,6 +1455,28 @@ public class LayoutsAdminDisplayContext {
 		}
 
 		return StringPool.BLANK;
+	}
+
+	public String getThemeId() {
+		if (_themeId != null) {
+			return _themeId;
+		}
+
+		_themeId = ParamUtil.getString(_liferayPortletRequest, "themeId");
+
+		return _themeId;
+	}
+
+	public String getThemeSelectorDisplayStyle() {
+		if (Validator.isNotNull(_displayStyle)) {
+			return _displayStyle;
+		}
+
+		_displayStyle = SearchDisplayStyleUtil.getDisplayStyle(
+			httpServletRequest, LayoutAdminPortletKeys.GROUP_PAGES,
+			"select-display-style", "icon");
+
+		return _displayStyle;
 	}
 
 	public String getTitle(boolean privatePages) {
@@ -2484,6 +2545,7 @@ public class LayoutsAdminDisplayContext {
 	private String _backURL;
 	private final CETManager _cetManager;
 	private String _displayStyle;
+	private String _eventName;
 	private Boolean _firstColumn;
 	private final GroupDisplayContextHelper _groupDisplayContextHelper;
 	private Boolean _hasEditableMasterLayout;
