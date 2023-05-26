@@ -19,6 +19,7 @@ import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.list.asset.entry.provider.AssetListAssetEntryProvider;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntryLocalService;
+import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalService;
 import com.liferay.info.filter.CategoriesInfoFilter;
 import com.liferay.info.filter.InfoFilter;
 import com.liferay.info.filter.KeywordsInfoFilter;
@@ -30,6 +31,7 @@ import com.liferay.layout.list.retriever.LayoutListRetriever;
 import com.liferay.layout.list.retriever.LayoutListRetrieverContext;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,6 +128,28 @@ public class AssetEntryListLayoutListRetriever
 		return _supportedInfoFilters;
 	}
 
+	@Override
+	public boolean hasSegmentsEntryVariation(
+		ClassedModelListObjectReference classedModelListObjectReference,
+		long segmentsEntryId) {
+
+		AssetListEntry assetListEntry =
+			_assetListEntryLocalService.fetchAssetListEntry(
+				classedModelListObjectReference.getClassPK());
+
+		if ((assetListEntry != null) &&
+			Validator.isNotNull(
+				_assetListEntrySegmentsEntryRelLocalService.
+					fetchAssetListEntrySegmentsEntryRel(
+						assetListEntry.getAssetListEntryId(),
+						segmentsEntryId))) {
+
+			return true;
+		}
+
+		return false;
+	}
+
 	private long[][] _getAssetCategoryIds(
 		LayoutListRetrieverContext layoutListRetrieverContext) {
 
@@ -187,5 +211,9 @@ public class AssetEntryListLayoutListRetriever
 
 	@Reference
 	private AssetListEntryLocalService _assetListEntryLocalService;
+
+	@Reference
+	private AssetListEntrySegmentsEntryRelLocalService
+		_assetListEntrySegmentsEntryRelLocalService;
 
 }
