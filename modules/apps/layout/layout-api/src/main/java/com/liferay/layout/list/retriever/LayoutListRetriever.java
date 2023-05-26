@@ -29,6 +29,10 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface LayoutListRetriever
 	<T extends ItemSelectorReturnType, S extends ListObjectReference> {
 
+	public default long getDefaultVariationSegmentsEntryId(S s) {
+		return 0;
+	}
+
 	public List<Object> getList(
 		S s, LayoutListRetrieverContext layoutListRetrieverContext);
 
@@ -37,6 +41,12 @@ public interface LayoutListRetriever
 
 	public default List<InfoFilter> getSupportedInfoFilters(S s) {
 		return Collections.emptyList();
+	}
+
+	public default boolean hasSegmentsEntryVariation(
+		S s, long segmentsEntryId) {
+
+		return false;
 	}
 
 }
