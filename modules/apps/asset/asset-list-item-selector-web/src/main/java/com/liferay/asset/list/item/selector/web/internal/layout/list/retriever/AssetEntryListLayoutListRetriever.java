@@ -102,7 +102,7 @@ public class AssetEntryListLayoutListRetriever
 		AssetListEntry assetListEntry =
 			_assetListEntryLocalService.fetchAssetListEntry(
 				classedModelListObjectReference.getClassPK());
-
+		System.out.println("hey");
 		if (assetListEntry == null) {
 			return 0;
 		}
