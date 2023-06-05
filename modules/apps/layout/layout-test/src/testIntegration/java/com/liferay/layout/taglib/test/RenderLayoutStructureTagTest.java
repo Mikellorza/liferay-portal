@@ -53,7 +53,6 @@ import com.liferay.layout.util.structure.LayoutStructureItem;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -318,16 +317,9 @@ public class RenderLayoutStructureTagTest {
 
 		JournalArticle actualJournalArticle1 = actualJournalArticles.get(0);
 
-		if (FeatureFlagManagerUtil.isEnabled("LPS-183723")) {
-			Assert.assertEquals(
-				expectedJournalArticle1.getArticleId(),
-				actualJournalArticle1.getArticleId());
-		}
-		else {
-			Assert.assertEquals(
-				expectedJournalArticle2.getArticleId(),
-				actualJournalArticle1.getArticleId());
-		}
+		Assert.assertEquals(
+			expectedJournalArticle1.getArticleId(),
+			actualJournalArticle1.getArticleId());
 	}
 
 	@Test
@@ -437,16 +429,9 @@ public class RenderLayoutStructureTagTest {
 
 		JournalArticle actualJournalArticle = actualJournalArticles.get(0);
 
-		if (FeatureFlagManagerUtil.isEnabled("LPS-183723")) {
-			Assert.assertEquals(
-				expectedJournalArticle2.getArticleId(),
-				actualJournalArticle.getArticleId());
-		}
-		else {
-			Assert.assertEquals(
-				expectedJournalArticle1.getArticleId(),
-				actualJournalArticle.getArticleId());
-		}
+		Assert.assertEquals(
+			expectedJournalArticle2.getArticleId(),
+			actualJournalArticle.getArticleId());
 	}
 
 	@Test
