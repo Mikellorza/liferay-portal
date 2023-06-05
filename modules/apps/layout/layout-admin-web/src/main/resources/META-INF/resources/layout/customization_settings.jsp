@@ -23,10 +23,10 @@ boolean prototypeGroup = false;
 String templateContent = null;
 String templateId = null;
 
-Layout selLayout = layoutsAdminDisplayContext.getSelLayout();
+Layout layout = layoutsAdminDisplayContext.getLayout();
 
-if (selLayout != null) {
-	LayoutTypePortlet selLayoutTypePortlet = (LayoutTypePortlet)selLayout.getLayoutType();
+if (layout != null) {
+	LayoutTypePortlet selLayoutTypePortlet = (LayoutTypePortlet)layout.getLayoutType();
 
 	String layoutTemplateId = selLayoutTypePortlet.getLayoutTemplateId();
 
@@ -34,13 +34,13 @@ if (selLayout != null) {
 		layoutTemplateId = PropsValues.DEFAULT_LAYOUT_TEMPLATE_ID;
 	}
 
-	group = selLayout.getGroup();
+	group = layout.getGroup();
 
 	if (group.isLayoutPrototype() || group.isLayoutSetPrototype()) {
 		prototypeGroup = true;
 	}
 
-	Theme selLayoutTheme = selLayout.getTheme();
+	Theme selLayoutTheme = layout.getTheme();
 
 	if (!prototypeGroup) {
 		LayoutTemplate layoutTemplate = LayoutTemplateLocalServiceUtil.getLayoutTemplate(layoutTemplateId, false, selLayoutTheme.getThemeId());
@@ -61,7 +61,7 @@ if (selLayout != null) {
 	value="customization-settings"
 />
 
-<aui:model-context bean="<%= selLayout %>" model="<%= Layout.class %>" />
+<aui:model-context bean="<%= layout %>" model="<%= Layout.class %>" />
 
 <c:choose>
 	<c:when test="<%= prototypeGroup %>">
@@ -70,7 +70,7 @@ if (selLayout != null) {
 		</div>
 	</c:when>
 	<c:otherwise>
-		<aui:input aria-describedby='<%= liferayPortletResponse.getNamespace() + "customizableDescription" %>' label="customizable" labelCssClass="font-weight-normal" name='<%= "TypeSettingsProperties--" + LayoutConstants.CUSTOMIZABLE_LAYOUT + "--" %>' type="checkbox" value="<%= selLayout.isCustomizable() %>" wrapperCssClass="c-mb-2" />
+		<aui:input aria-describedby='<%= liferayPortletResponse.getNamespace() + "customizableDescription" %>' label="customizable" labelCssClass="font-weight-normal" name='<%= "TypeSettingsProperties--" + LayoutConstants.CUSTOMIZABLE_LAYOUT + "--" %>' type="checkbox" value="<%= layout.isCustomizable() %>" wrapperCssClass="c-mb-2" />
 
 		<p class="text-3 text-secondary" id="<portlet:namespace />customizableDescription">
 			<liferay-ui:message key="customizable-help" />
