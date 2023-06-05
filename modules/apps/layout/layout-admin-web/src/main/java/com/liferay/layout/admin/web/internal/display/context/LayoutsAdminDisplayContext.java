@@ -904,6 +904,30 @@ public class LayoutsAdminDisplayContext {
 			themeDisplay.getRequest());
 	}
 
+	public Long getPlid() {
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-153951")) {
+			return getSelPlid();
+		}
+
+		Layout selLayout = getSelLayout();
+
+		if (selLayout == null) {
+			return getSelPlid();
+		}
+
+		if (selLayout.isDraftLayout()) {
+			return selLayout.getPlid();
+		}
+
+		Layout draftLayout = selLayout.fetchDraftLayout();
+
+		if (draftLayout == null) {
+			return selLayout.getPlid();
+		}
+
+		return draftLayout.getPlid();
+	}
+
 	public List<BreadcrumbEntry> getPortletBreadcrumbEntries()
 		throws PortalException {
 
