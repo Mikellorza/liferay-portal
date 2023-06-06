@@ -1400,7 +1400,8 @@ public class LayoutsAdminDisplayContext {
 			"themeCSSCETExternalReferenceCode",
 			() -> {
 				if (clientExtensionEntryRel != null) {
-					return clientExtensionEntryRel.getExternalReferenceCode();
+					return clientExtensionEntryRel.
+						getCETExternalReferenceCode();
 				}
 
 				return StringPool.BLANK;
