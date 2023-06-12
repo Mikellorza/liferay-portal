@@ -21,16 +21,25 @@ import com.liferay.fragment.renderer.FragmentPortletRenderer;
 import com.liferay.petra.io.unsync.UnsyncStringWriter;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.portlet.PortletIdCodec;
+import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.constants.PortletPreferencesFactoryConstants;
+import com.liferay.portal.kernel.service.PortletLocalService;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.portletext.RuntimeTag;
+
+import javax.portlet.PortletPreferences;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Pavel Savinov
@@ -50,8 +59,6 @@ public class FragmentPortletRendererImpl implements FragmentPortletRenderer {
 		PipingServletResponse pipingServletResponse = new PipingServletResponse(
 			httpServletResponse, unsyncStringWriter);
 
-		boolean inheritedFromMaster = false;
-
 		FragmentEntryLink fragmentEntryLink =
 			(FragmentEntryLink)httpServletRequest.getAttribute(
 				FragmentWebKeys.FRAGMENT_ENTRY_LINK);
@@ -63,7 +70,10 @@ public class FragmentPortletRendererImpl implements FragmentPortletRenderer {
 		if ((fragmentEntryLink != null) && (themeDisplay != null) &&
 			(fragmentEntryLink.getPlid() != themeDisplay.getPlid())) {
 
-			inheritedFromMaster = true;
+			_copyPortletPreferences(
+				themeDisplay.getCompanyId(),
+				PortletIdCodec.encode(portletName, instanceId),
+				fragmentEntryLink.getPlid(), themeDisplay.getPlid());
 		}
 
 		try {
@@ -71,8 +81,8 @@ public class FragmentPortletRendererImpl implements FragmentPortletRenderer {
 				portletName, instanceId, StringPool.BLANK,
 				PortletPreferencesFactoryConstants.
 					SETTINGS_SCOPE_PORTLET_INSTANCE,
-				defaultPreferences, inheritedFromMaster, null,
-				httpServletRequest, pipingServletResponse);
+				defaultPreferences, false, null, httpServletRequest,
+				pipingServletResponse);
 		}
 		catch (Exception exception) {
 			throw new FragmentEntryContentException(exception);
@@ -80,5 +90,43 @@ public class FragmentPortletRendererImpl implements FragmentPortletRenderer {
 
 		return unsyncStringWriter.toString();
 	}
+
+	private void _copyPortletPreferences(
+		long companyId, String portletId, long sourcePlid, long targetPlid) {
+
+		PortletPreferences sourcePortletPreferences =
+			_portletPreferencesLocalService.fetchPreferences(
+				companyId, PortletKeys.PREFS_OWNER_ID_DEFAULT,
+				PortletKeys.PREFS_OWNER_TYPE_LAYOUT, sourcePlid, portletId);
+
+		if (sourcePortletPreferences != null) {
+			Portlet portlet = _portletLocalService.getPortletById(portletId);
+			PortletPreferences targetPortletPreferences =
+				_portletPreferencesLocalService.fetchPreferences(
+					companyId, PortletKeys.PREFS_OWNER_ID_DEFAULT,
+					PortletKeys.PREFS_OWNER_TYPE_LAYOUT, targetPlid, portletId);
+
+			if (targetPortletPreferences == null) {
+				_portletPreferencesLocalService.addPortletPreferences(
+					companyId, PortletKeys.PREFS_OWNER_ID_DEFAULT,
+					PortletKeys.PREFS_OWNER_TYPE_LAYOUT, targetPlid, portletId,
+					portlet,
+					PortletPreferencesFactoryUtil.toXML(
+						sourcePortletPreferences));
+			}
+			else {
+				_portletPreferencesLocalService.updatePreferences(
+					PortletKeys.PREFS_OWNER_ID_DEFAULT,
+					PortletKeys.PREFS_OWNER_TYPE_LAYOUT, targetPlid, portletId,
+					sourcePortletPreferences);
+			}
+		}
+	}
+
+	@Reference
+	private PortletLocalService _portletLocalService;
+
+	@Reference
+	private PortletPreferencesLocalService _portletPreferencesLocalService;
 
 }
