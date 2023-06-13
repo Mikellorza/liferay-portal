@@ -74,6 +74,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -1529,7 +1530,16 @@ public class ContentPageEditorDisplayContext {
 		).setParameter(
 			"screenNavigationEntryKey", "design"
 		).setParameter(
-			"selPlid", layout.getPlid()
+			"selPlid",
+			() -> {
+				if (FeatureFlagManagerUtil.isEnabled("LPS-153951") &&
+					layout.isDraftLayout()) {
+
+					return layout.getClassPK();
+				}
+
+				return layout.getPlid();
+			}
 		).buildString();
 	}
 
