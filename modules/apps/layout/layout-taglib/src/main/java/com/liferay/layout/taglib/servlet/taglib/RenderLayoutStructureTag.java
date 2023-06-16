@@ -997,6 +997,16 @@ public class RenderLayoutStructureTag extends IncludeTag {
 			renderLayoutStructureDisplayContext.
 				getFormStyledLayoutStructureItemRedirect(
 					formStyledLayoutStructureItem));
+
+		if (FeatureFlagManagerUtil.isEnabled("LPS-183727")) {
+			jspWriter.write(
+				"\"><input name=\"displayPage\" type=\"hidden\" value=\"");
+			jspWriter.write(
+				renderLayoutStructureDisplayContext.
+					getFormStyledLayoutStructureItemSuccessMessageDisplayPage(
+						formStyledLayoutStructureItem));
+		}
+
 		jspWriter.write("\"><input name=\"backURL\" type=\"hidden\" value=\"");
 
 		HttpServletRequest httpServletRequest = getRequest();
