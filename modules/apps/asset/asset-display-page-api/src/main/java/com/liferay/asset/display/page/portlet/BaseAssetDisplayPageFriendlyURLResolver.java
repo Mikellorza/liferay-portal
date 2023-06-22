@@ -25,6 +25,10 @@ import com.liferay.asset.kernel.service.AssetEntryService;
 import com.liferay.asset.util.LinkedAssetEntryIdsUtil;
 import com.liferay.info.constants.InfoDisplayWebKeys;
 import com.liferay.info.exception.NoSuchInfoItemException;
+import com.liferay.info.field.InfoField;
+import com.liferay.info.field.InfoFieldValue;
+import com.liferay.info.field.type.InfoFieldType;
+import com.liferay.info.field.type.NumberInfoFieldType;
 import com.liferay.info.item.ClassPKInfoItemIdentifier;
 import com.liferay.info.item.InfoItemFieldValues;
 import com.liferay.info.item.InfoItemIdentifier;
@@ -58,6 +62,7 @@ import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,9 +94,6 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 
 		friendlyURL = layoutQueryStringComposite.getFriendlyURL();
 
-		HttpServletRequest httpServletRequest =
-			(HttpServletRequest)requestContext.get("request");
-
 		LayoutDisplayPageProvider<?> layoutDisplayPageProvider =
 			getLayoutDisplayPageProvider(friendlyURL, params);
 
@@ -100,6 +102,15 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 				layoutDisplayPageProvider, groupId, friendlyURL, params);
 
 		Object infoItem = _getInfoItem(layoutDisplayPageObjectProvider, params);
+
+		if (_getInfoItemStatus(infoItem, layoutDisplayPageObjectProvider) !=
+				WorkflowConstants.STATUS_APPROVED) {
+
+			return null;
+		}
+
+		HttpServletRequest httpServletRequest =
+			(HttpServletRequest)requestContext.get("request");
 
 		httpServletRequest.setAttribute(InfoDisplayWebKeys.INFO_ITEM, infoItem);
 
@@ -364,6 +375,36 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 		infoItemIdentifier.setVersion(version);
 
 		return infoItemObjectProvider.getInfoItem(infoItemIdentifier);
+	}
+
+	private int _getInfoItemStatus(
+		Object infoItem,
+		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider) {
+
+		InfoItemFieldValuesProvider<Object> infoItemFieldValuesProvider =
+			infoItemServiceRegistry.getFirstInfoItemService(
+				InfoItemFieldValuesProvider.class,
+				layoutDisplayPageObjectProvider.getClassName());
+
+		if (infoItemFieldValuesProvider != null) {
+			InfoFieldValue<Object> infoFieldValue =
+				infoItemFieldValuesProvider.getInfoFieldValue(
+					infoItem, "status");
+
+			if (infoFieldValue == null) {
+				return WorkflowConstants.STATUS_APPROVED;
+			}
+
+			InfoField infoField = infoFieldValue.getInfoField();
+
+			InfoFieldType infoFieldType = infoField.getInfoFieldType();
+
+			if (Objects.equals(infoFieldType, NumberInfoFieldType.INSTANCE)) {
+				return (int)infoFieldValue.getValue();
+			}
+		}
+
+		return WorkflowConstants.STATUS_APPROVED;
 	}
 
 	private LayoutDisplayPageObjectProvider<?>
