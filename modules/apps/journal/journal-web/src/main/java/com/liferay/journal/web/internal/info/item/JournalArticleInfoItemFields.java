@@ -18,6 +18,7 @@ import com.liferay.info.field.InfoField;
 import com.liferay.info.field.type.DateInfoFieldType;
 import com.liferay.info.field.type.HTMLInfoFieldType;
 import com.liferay.info.field.type.ImageInfoFieldType;
+import com.liferay.info.field.type.NumberInfoFieldType;
 import com.liferay.info.field.type.TextInfoFieldType;
 import com.liferay.info.field.type.URLInfoFieldType;
 import com.liferay.info.localized.InfoLocalizedValue;
@@ -146,6 +147,17 @@ public class JournalArticleInfoItemFields {
 		).labelInfoLocalizedValue(
 			InfoLocalizedValue.localize(
 				JournalArticleInfoItemFields.class, "small-image")
+		).build();
+	public static final InfoField<NumberInfoFieldType> statusInfoField =
+		BuilderHolder._builder.infoFieldType(
+			NumberInfoFieldType.INSTANCE
+		).name(
+			"status"
+		).labelInfoLocalizedValue(
+			InfoLocalizedValue.localize(
+				JournalArticleInfoItemFields.class, "status")
+		).localizable(
+			true
 		).build();
 	public static final InfoField<TextInfoFieldType> titleInfoField =
 		BuilderHolder._builder.infoFieldType(

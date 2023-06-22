@@ -312,6 +312,13 @@ public class JournalArticleInfoItemFieldValuesProvider
 						_getDisplayPageURL(journalArticle, themeDisplay)));
 			}
 
+			if (FeatureFlagManagerUtil.isEnabled("LPS-188040")) {
+				journalArticleFieldValues.add(
+					new InfoFieldValue<>(
+						JournalArticleInfoItemFields.statusInfoField,
+						journalArticle.getStatus()));
+			}
+
 			return journalArticleFieldValues;
 		}
 		catch (PortalException portalException) {
