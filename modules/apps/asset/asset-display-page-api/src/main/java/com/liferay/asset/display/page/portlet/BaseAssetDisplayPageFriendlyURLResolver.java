@@ -27,7 +27,6 @@ import com.liferay.info.constants.InfoDisplayWebKeys;
 import com.liferay.info.exception.NoSuchInfoItemException;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.InfoFieldValue;
-import com.liferay.info.field.type.InfoFieldType;
 import com.liferay.info.field.type.NumberInfoFieldType;
 import com.liferay.info.item.ClassPKInfoItemIdentifier;
 import com.liferay.info.item.InfoItemFieldValues;
@@ -57,6 +56,9 @@ import com.liferay.portal.kernel.model.LayoutQueryStringComposite;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.portlet.FriendlyURLResolver;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -103,14 +105,19 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 
 		Object infoItem = _getInfoItem(layoutDisplayPageObjectProvider, params);
 
-		if (_getInfoItemStatus(infoItem, layoutDisplayPageObjectProvider) !=
-				WorkflowConstants.STATUS_APPROVED) {
+		HttpServletRequest httpServletRequest =
+        			(HttpServletRequest)requestContext.get("request");
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
+                                    			WebKeys.THEME_DISPLAY);
+
+		/*if ((_getInfoItemStatus(infoItem, layoutDisplayPageObjectProvider) ==
+				WorkflowConstants.STATUS_PENDING) &&
+			themeDisplay.getUser(
+			).isGuestUser()) {
 
 			return null;
-		}
-
-		HttpServletRequest httpServletRequest =
-			(HttpServletRequest)requestContext.get("request");
+		}*/
 
 		httpServletRequest.setAttribute(InfoDisplayWebKeys.INFO_ITEM, infoItem);
 
@@ -392,25 +399,27 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 					infoItem, "status");
 
 			if (infoFieldValue == null) {
-				return WorkflowConstants.STATUS_APPROVED;
+				return WorkflowConstants.STATUS_ANY;
 			}
 
 			InfoField infoField = infoFieldValue.getInfoField();
 
-			InfoFieldType infoFieldType = infoField.getInfoFieldType();
+			if (Objects.equals(
+					infoField.getInfoFieldType(),
+					NumberInfoFieldType.INSTANCE)) {
 
-			if (Objects.equals(infoFieldType, NumberInfoFieldType.INSTANCE)) {
 				return (int)infoFieldValue.getValue();
 			}
 		}
 
-		return WorkflowConstants.STATUS_APPROVED;
+		return WorkflowConstants.STATUS_ANY;
 	}
 
 	private LayoutDisplayPageObjectProvider<?>
 		_getLayoutDisplayPageObjectProvider(
 			LayoutDisplayPageProvider<?> layoutDisplayPageProvider,
 			long groupId, String friendlyURL, String version) {
+
 
 		return layoutDisplayPageProvider.getLayoutDisplayPageObjectProvider(
 			groupId, _getUrlTitle(friendlyURL), version);
@@ -512,6 +521,17 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 		}
 
 		return friendlyURL.substring(0, pos);
+	}
+
+	private ThemeDisplay _getThemeDisplay() {
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		if (serviceContext == null) {
+			return null;
+		}
+
+		return serviceContext.getThemeDisplay();
 	}
 
 	private String _getURLSeparator(String friendlyURL) {
