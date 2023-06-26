@@ -103,6 +103,10 @@ public class WorkflowedModelPermissionLogic<T extends GroupedModel>
 			return false;
 		}
 		else if (workflowedModel.isPending()) {
+			if (!permissionChecker.isSignedIn()) {
+				return false;
+			}
+
 			return _workflowPermission.hasPermission(
 				permissionChecker, model.getGroupId(), name,
 				_primKeyToLongFunction.applyAsLong(model), actionId);
