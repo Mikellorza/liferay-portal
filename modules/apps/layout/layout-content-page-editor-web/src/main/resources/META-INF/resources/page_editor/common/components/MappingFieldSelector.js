@@ -17,6 +17,7 @@ import classNames from 'classnames';
 import {sub} from 'frontend-js-web';
 import React from 'react';
 
+import {EDITABLE_TYPE_LABELS} from '../../app/config/constants/editableTypeLabels';
 import {EDITABLE_TYPES} from '../../app/config/constants/editableTypes';
 import getSelectedField from '../../app/utils/getSelectedField';
 import {useId} from '../hooks/useId';
@@ -27,9 +28,11 @@ const UNMAPPED_OPTION = {
 };
 
 export default function MappingFieldSelector({
+	className,
 	fieldType,
 	fields,
 	label = Liferay.Language.get('field'),
+	defaultLabel,
 	onValueSelect,
 	value,
 }) {
@@ -41,7 +44,9 @@ export default function MappingFieldSelector({
 
 	return (
 		<ClayForm.Group
-			className={classNames('mb-2 mt-3', {'has-warning': hasWarnings})}
+			className={classNames('mb-2 mt-3', className, {
+				'has-warning': hasWarnings,
+			})}
 			small
 		>
 			<label htmlFor={mappingSelectorFieldSelectId}>{label}</label>
@@ -55,7 +60,7 @@ export default function MappingFieldSelector({
 				{fields && !!fields.length && (
 					<>
 						<ClaySelect.Option
-							label={UNMAPPED_OPTION.label}
+							label={defaultLabel || UNMAPPED_OPTION.label}
 							value={UNMAPPED_OPTION.value}
 						/>
 
@@ -92,20 +97,28 @@ export default function MappingFieldSelector({
 			{hasWarnings && (
 				<ClayForm.FeedbackGroup>
 					<ClayForm.FeedbackItem>
-						{sub(
-							Liferay.Language.get(
-								'no-fields-are-available-for-x-editable'
-							),
-							[
-								EDITABLE_TYPES.backgroundImage,
-								EDITABLE_TYPES.image,
-							].includes(fieldType)
-								? Liferay.Language.get('image')
-								: Liferay.Language.get('text')
-						)}
+						{getWarningText(fieldType)}
 					</ClayForm.FeedbackItem>
 				</ClayForm.FeedbackGroup>
 			)}
 		</ClayForm.Group>
 	);
+}
+
+function getWarningText(fieldType) {
+	const fieldLabel = [
+		EDITABLE_TYPES.backgroundImage,
+		EDITABLE_TYPES.image,
+	].includes(fieldType)
+		? EDITABLE_TYPE_LABELS[EDITABLE_TYPES.image]
+		: EDITABLE_TYPES[fieldType];
+
+	if (fieldLabel) {
+		return sub(
+			Liferay.Language.get('no-fields-are-available-for-x-editable'),
+			fieldLabel
+		);
+	}
+
+	return Liferay.Language.get('no-fields-are-available-for-this-type');
 }
