@@ -87,7 +87,9 @@ public interface FreeMarkerEngineConfiguration {
 	)
 	public String[] restrictedVariables();
 
-	@Meta.AD(deflt = "true", name = "log-template-exceptions", required = false)
+	@Meta.AD(
+		deflt = "false", name = "log-template-exceptions", required = false
+	)
 	public boolean logTemplateExceptions();
 
 	@Meta.AD(
