@@ -17,6 +17,7 @@ import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -188,6 +189,19 @@ public class LayoutReportsProductNavigationControlMenuEntry
 			"p_l_id", themeDisplay.getPlid());
 	}
 
+	private String _getLayoutReportsTabsURL(
+		HttpServletRequest httpServletRequest) {
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		return HttpComponentsUtil.addParameters(
+			themeDisplay.getPortalURL() + themeDisplay.getPathMain() +
+				"/layout_reports/get_layout_reports_tabs",
+			"p_l_id", themeDisplay.getPlid());
+	}
+
 	private boolean _hasEditPermission(
 			Layout layout, PermissionChecker permissionChecker)
 		throws PortalException {
@@ -335,8 +349,20 @@ public class LayoutReportsProductNavigationControlMenuEntry
 						ProductNavigationControlMenuEntryConstants.
 							SESSION_CLICKS_KEY)
 				).put(
-					"layoutReportsDataURL",
-					_getLayoutReportsDataURL(httpServletRequest)
+					() -> {
+						if (!FeatureFlagManagerUtil.isEnabled("LPS-187284")) {
+							return "layoutReportsDataURL";
+						}
+
+						return "layoutReportsTabsURL";
+					},
+					() -> {
+						if (!FeatureFlagManagerUtil.isEnabled("LPS-187284")) {
+							return _getLayoutReportsDataURL(httpServletRequest);
+						}
+
+						return _getLayoutReportsTabsURL(httpServletRequest);
+					}
 				).build(),
 				httpServletRequest, jspWriter);
 
