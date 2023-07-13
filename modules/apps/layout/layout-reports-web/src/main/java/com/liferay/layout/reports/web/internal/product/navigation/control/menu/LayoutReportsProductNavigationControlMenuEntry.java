@@ -158,9 +158,10 @@ public class LayoutReportsProductNavigationControlMenuEntry
 
 		long scopeGroupId = _portal.getScopeGroupId(httpServletRequest);
 
-		if ((scopeGroupId == 0) ||
-			!_layoutReportsGooglePageSpeedConfigurationProvider.isEnabled(
-				_groupLocalService.getGroup(scopeGroupId))) {
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-187284") &&
+			((scopeGroupId == 0) ||
+			 !_layoutReportsGooglePageSpeedConfigurationProvider.isEnabled(
+				 _groupLocalService.getGroup(scopeGroupId)))) {
 
 			return false;
 		}
@@ -168,6 +169,17 @@ public class LayoutReportsProductNavigationControlMenuEntry
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
+
+		Layout layout = themeDisplay.getLayout();
+
+		if (FeatureFlagManagerUtil.isEnabled("LPS-187284") &&
+			((scopeGroupId == 0) ||
+			 (!_layoutReportsGooglePageSpeedConfigurationProvider.isEnabled(
+				 _groupLocalService.getGroup(scopeGroupId)) &&
+			  !layout.isTypeContent()))) {
+
+			return false;
+		}
 
 		if (!_isShow(themeDisplay) || !_isShowPanel(httpServletRequest)) {
 			return false;
