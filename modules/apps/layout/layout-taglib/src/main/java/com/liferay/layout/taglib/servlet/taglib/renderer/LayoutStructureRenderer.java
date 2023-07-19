@@ -61,6 +61,8 @@ import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.layoutconfiguration.util.RuntimePageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutTemplate;
@@ -97,37 +99,56 @@ import javax.servlet.jsp.PageContext;
  */
 public class LayoutStructureRenderer {
 
-	public LayoutStructureRenderer(LayoutStructure layoutStructure) {
-		_layoutStructure = layoutStructure;
-	}
-
-	public void render(
-			HttpServletRequest httpServletRequest, String mainItemId,
-			String mode, PageContext pageContext, boolean renderActionHandler,
-			boolean showPreview)
-		throws Exception {
+	public LayoutStructureRenderer(
+		HttpServletRequest httpServletRequest, LayoutStructure layoutStructure,
+		String mainItemId, String mode, PageContext pageContext,
+		boolean renderActionHandler, boolean showPreview) {
 
 		_httpServletRequest = httpServletRequest;
+		_layoutStructure = layoutStructure;
 		_pageContext = pageContext;
+		_renderActionHandler = renderActionHandler;
 
-		RenderLayoutStructureDisplayContext
-			renderLayoutStructureDisplayContext =
-				new RenderLayoutStructureDisplayContext(
-					_httpServletRequest, _layoutStructure, mainItemId, mode,
-					showPreview);
+		_renderLayoutStructureDisplayContext =
+			new RenderLayoutStructureDisplayContext(
+				_httpServletRequest, _layoutStructure, mainItemId, mode,
+				showPreview);
+	}
+
+	public Map<LayoutStructureItem, Long> getLayoutStructureItemRenderTimes(
+		HttpServletRequest httpServletRequest, PageContext pageContext) {
+
+		try {
+			_render(
+				httpServletRequest, _layoutStructure.getMainItemId(),
+				FragmentEntryLinkConstants.VIEW, pageContext, false, false);
+		}
+		catch (Exception exception) {
+			_log.error(
+				"Unable to get layout structure item render times", exception);
+
+			return Collections.emptyMap();
+		}
+
+		return _layoutStructureItemRenderTimes;
+	}
+
+	public void render() throws Exception {
+		_layoutStructureItemRenderTimes = new ArrayList<>();
 
 		_renderLayoutStructure(
-			renderLayoutStructureDisplayContext.getMainChildrenItemIds(),
-			renderLayoutStructureDisplayContext);
+			_renderLayoutStructureDisplayContext.getMainChildrenItemIds(),
+			_renderLayoutStructureDisplayContext);
 
-		if (renderActionHandler) {
+		if (_renderActionHandler) {
 			_renderComponent(
 				"infoItemActionComponent",
-				renderLayoutStructureDisplayContext.
+				_renderLayoutStructureDisplayContext.
 					getInfoItemActionComponentContext(),
 				"render_layout_structure/js/InfoItemActionHandler");
 		}
 	}
+
 
 	private LayoutTypePortlet _getLayoutTypePortlet(
 		Layout layout, LayoutTypePortlet layoutTypePortlet, String themeId) {
@@ -1080,6 +1101,8 @@ public class LayoutStructureRenderer {
 			LayoutStructureItem layoutStructureItem =
 				_layoutStructure.getLayoutStructureItem(childrenItemId);
 
+			long start = System.currentTimeMillis();
+
 			if (layoutStructureItem instanceof
 					CollectionStyledLayoutStructureItem) {
 
@@ -1191,6 +1214,10 @@ public class LayoutStructureRenderer {
 					layoutStructureItem.getChildrenItemIds(), infoForm,
 					renderLayoutStructureDisplayContext);
 			}
+
+			_layoutStructureItemRenderTimes.add(
+				new LayoutStructureItemRenderTime(
+					layoutStructureItem, System.currentTimeMillis() - start));
 		}
 	}
 
@@ -1316,8 +1343,15 @@ public class LayoutStructureRenderer {
 		jspWriter.write("\">");
 	}
 
-	private HttpServletRequest _httpServletRequest;
+	private static final Log _log = LogFactoryUtil.getLog(
+		LayoutStructureRenderer.class);
+
+	private final HttpServletRequest _httpServletRequest;
 	private final LayoutStructure _layoutStructure;
-	private PageContext _pageContext;
+	private List<LayoutStructureItemRenderTime> _layoutStructureItemRenderTimes;
+	private final PageContext _pageContext;
+	private final boolean _renderActionHandler;
+	private final RenderLayoutStructureDisplayContext
+		_renderLayoutStructureDisplayContext;
 
 }
