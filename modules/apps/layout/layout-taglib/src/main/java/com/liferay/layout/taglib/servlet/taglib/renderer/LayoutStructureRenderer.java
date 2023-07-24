@@ -84,6 +84,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PropsValues;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -115,19 +116,17 @@ public class LayoutStructureRenderer {
 				showPreview);
 	}
 
-	public Map<LayoutStructureItem, Long> getLayoutStructureItemRenderTimes(
-		HttpServletRequest httpServletRequest, PageContext pageContext) {
+	public List<LayoutStructureItemRenderTime>
+		getLayoutStructureItemRenderTimes() {
 
 		try {
-			_render(
-				httpServletRequest, _layoutStructure.getMainItemId(),
-				FragmentEntryLinkConstants.VIEW, pageContext, false, false);
+			render();
 		}
 		catch (Exception exception) {
 			_log.error(
 				"Unable to get layout structure item render times", exception);
 
-			return Collections.emptyMap();
+			return Collections.emptyList();
 		}
 
 		return _layoutStructureItemRenderTimes;
@@ -149,6 +148,27 @@ public class LayoutStructureRenderer {
 		}
 	}
 
+	public class LayoutStructureItemRenderTime {
+
+		public LayoutStructureItemRenderTime(
+			LayoutStructureItem layoutStructureItem, long renderTime) {
+
+			_layoutStructureItem = layoutStructureItem;
+			_renderTime = renderTime;
+		}
+
+		public LayoutStructureItem getLayoutStructureItem() {
+			return _layoutStructureItem;
+		}
+
+		public long getRenderTime() {
+			return _renderTime;
+		}
+
+		private final LayoutStructureItem _layoutStructureItem;
+		private final long _renderTime;
+
+	}
 
 	private LayoutTypePortlet _getLayoutTypePortlet(
 		Layout layout, LayoutTypePortlet layoutTypePortlet, String themeId) {
