@@ -15,6 +15,9 @@ public class FragmentWebKeys {
 
 	public static final String FRAGMENT_COLLECTIONS = "FRAGMENT_COLLECTIONS";
 
+	public static final String FRAGMENT_ENTRY_EDIT_MODE =
+		"FRAGMENT_ENTRY_EDIT_MODE";
+
 	public static final String FRAGMENT_ENTRY_PROCESSOR_REGISTRY =
 		"FRAGMENT_ENTRY_PROCESSOR_REGISTRY";
 

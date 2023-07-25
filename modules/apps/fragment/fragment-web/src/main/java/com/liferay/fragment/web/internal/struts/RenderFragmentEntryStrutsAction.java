@@ -7,6 +7,7 @@ package com.liferay.fragment.web.internal.struts;
 
 import com.liferay.fragment.constants.FragmentActionKeys;
 import com.liferay.fragment.constants.FragmentConstants;
+import com.liferay.fragment.constants.FragmentPortletKeys;
 import com.liferay.fragment.contributor.FragmentCollectionContributorRegistry;
 import com.liferay.fragment.renderer.FragmentRendererController;
 import com.liferay.fragment.web.internal.constants.FragmentWebKeys;
@@ -66,6 +67,8 @@ public class RenderFragmentEntryStrutsAction implements StrutsAction {
 		httpServletRequest.setAttribute(
 			FragmentWebKeys.FRAGMENT_COLLECTION_CONTRIBUTOR_TRACKER,
 			_fragmentCollectionContributorRegistry);
+		httpServletRequest.setAttribute(
+			FragmentWebKeys.FRAGMENT_ENTRY_EDIT_MODE, Boolean.TRUE);
 
 		LayoutSet layoutSet = _layoutSetLocalService.getLayoutSet(
 			groupId, false);

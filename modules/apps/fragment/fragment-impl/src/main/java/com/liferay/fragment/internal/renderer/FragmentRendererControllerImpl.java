@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.resource.bundle.ResourceBundleLoaderUtil;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -101,20 +102,20 @@ public class FragmentRendererControllerImpl
 		catch (Exception exception) {
 			Throwable throwable = exception.getCause();
 
-			if (_log.isDebugEnabled()) {
-				_log.debug(
-					StringBundler.concat(
-						"Unable to render content of fragment entry ",
-						fragmentEntryLink.getFragmentEntryId(), ":",
-						exception.getMessage(), ", ", throwable.getMessage()),
-					exception);
+			String logMessage = StringBundler.concat(
+				"Unable to render content of fragment entry ",
+				fragmentEntryLink.getFragmentEntryId(), ":",
+				exception.getMessage(), ", ", throwable.getMessage());
+
+			if (_log.isDebugEnabled() ||
+				GetterUtil.getBoolean(
+					httpServletRequest.getAttribute(
+						"FRAGMENT_ENTRY_EDIT_MODE"))) {
+
+				_log.debug(logMessage, exception);
 			}
 			else {
-				_log.error(
-					StringBundler.concat(
-						"Unable to render content of fragment entry ",
-						fragmentEntryLink.getFragmentEntryId(), ":",
-						exception.getMessage(), ", ", throwable.getMessage()));
+				_log.error(logMessage);
 			}
 
 			SessionErrors.add(
