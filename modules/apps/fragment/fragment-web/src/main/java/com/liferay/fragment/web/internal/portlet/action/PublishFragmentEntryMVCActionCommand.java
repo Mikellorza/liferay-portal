@@ -15,6 +15,7 @@ import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseTransactionalMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -82,6 +83,8 @@ public class PublishFragmentEntryMVCActionCommand
 			_fragmentEntryExceptionRequestHandler.handlePortalException(
 				actionRequest, actionResponse, portalException);
 		}
+
+		SessionMessages.clear(_portal.getHttpServletRequest(actionRequest));
 	}
 
 	protected String getRedirectURL(
