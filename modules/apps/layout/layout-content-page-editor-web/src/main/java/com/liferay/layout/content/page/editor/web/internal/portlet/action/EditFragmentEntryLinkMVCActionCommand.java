@@ -14,6 +14,8 @@ import com.liferay.layout.content.page.editor.web.internal.util.ContentManager;
 import com.liferay.layout.content.page.editor.web.internal.util.FragmentEntryLinkManager;
 import com.liferay.layout.content.page.editor.web.internal.util.layout.structure.LayoutStructureUtil;
 import com.liferay.layout.util.structure.LayoutStructure;
+import com.liferay.portal.kernel.json.JSONFactory;import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
@@ -53,12 +55,14 @@ public class EditFragmentEntryLinkMVCActionCommand
 		long fragmentEntryLinkId = ParamUtil.getLong(
 			actionRequest, "fragmentEntryLinkId");
 
-		String editableValues = ParamUtil.getString(
-			actionRequest, "editableValues");
+		JSONObject editableValuesJSONObject = _jsonFactory.createJSONObject(
+			ParamUtil.getString(actionRequest, "editableValues"));
+
+		editableValuesJSONObject.remove("fromFragmentEntry");
 
 		FragmentEntryLink fragmentEntryLink =
 			_fragmentEntryLinkService.updateFragmentEntryLink(
-				fragmentEntryLinkId, editableValues);
+				fragmentEntryLinkId, editableValuesJSONObject.toString());
 
 		for (FragmentEntryLinkListener fragmentEntryLinkListener :
 				_fragmentEntryLinkListenerRegistry.
@@ -109,5 +113,8 @@ public class EditFragmentEntryLinkMVCActionCommand
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 }
