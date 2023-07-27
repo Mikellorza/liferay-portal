@@ -135,9 +135,14 @@ public class EditableDocumentFragmentEntryProcessor
 				}
 			}
 			else {
-				value = _fragmentEntryProcessorHelper.getEditableValue(
-					editableValueJSONObject,
-					fragmentEntryProcessorContext.getLocale());
+				if (!editableValueJSONObject.has("fromFragmentEntry")) {
+					value = _fragmentEntryProcessorHelper.getEditableValue(
+						editableValueJSONObject,
+						fragmentEntryProcessorContext.getLocale());
+				}
+				else {
+					value = element.attr("src");
+				}
 			}
 
 			JSONObject configJSONObject = JSONUtil.merge(
@@ -242,6 +247,8 @@ public class EditableDocumentFragmentEntryProcessor
 				"config", editableElementParser.getAttributes(element)
 			).put(
 				"defaultValue", editableElementParser.getValue(element)
+			).put(
+				"fromFragmentEntry", true
 			);
 
 			defaultEditableValuesJSONObject.put(
