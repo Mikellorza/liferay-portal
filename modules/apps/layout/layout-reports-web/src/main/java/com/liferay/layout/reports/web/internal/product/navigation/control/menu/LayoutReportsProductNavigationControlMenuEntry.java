@@ -201,7 +201,7 @@ public class LayoutReportsProductNavigationControlMenuEntry
 			"p_l_id", themeDisplay.getPlid());
 	}
 
-	private String _getLayoutReportsTabsURL(
+	private String _getLayoutReportsGooglePageSpeedDataURL(
 		HttpServletRequest httpServletRequest) {
 
 		ThemeDisplay themeDisplay =
@@ -210,7 +210,7 @@ public class LayoutReportsProductNavigationControlMenuEntry
 
 		return HttpComponentsUtil.addParameters(
 			themeDisplay.getPortalURL() + themeDisplay.getPathMain() +
-				"/layout_reports/get_layout_reports_tabs",
+				"/layout_reports/get_google_page_speed_data",
 			"p_l_id", themeDisplay.getPlid());
 	}
 
@@ -369,11 +369,12 @@ public class LayoutReportsProductNavigationControlMenuEntry
 						return "layoutReportsTabsURL";
 					},
 					() -> {
-						if (!FeatureFlagManagerUtil.isEnabled("LPS-187284")) {
+						if (FeatureFlagManagerUtil.isEnabled("LPS-187284")) {
 							return _getLayoutReportsDataURL(httpServletRequest);
 						}
 
-						return _getLayoutReportsTabsURL(httpServletRequest);
+						return _getLayoutReportsGooglePageSpeedDataURL(
+							httpServletRequest);
 					}
 				).build(),
 				httpServletRequest, jspWriter);
