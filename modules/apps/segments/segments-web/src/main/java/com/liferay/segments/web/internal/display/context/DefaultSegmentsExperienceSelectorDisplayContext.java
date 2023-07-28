@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2023 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.segments.constants.SegmentsEntryConstants;
+import com.liferay.segments.display.context.SegmentsExperienceSelectorDisplayContext;
 import com.liferay.segments.manager.SegmentsExperienceManager;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
@@ -39,9 +40,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Eudaldo Alonso
  */
-public class SegmentsExperienceSelectorDisplayContext {
+public class DefaultSegmentsExperienceSelectorDisplayContext
+	implements SegmentsExperienceSelectorDisplayContext {
 
-	public SegmentsExperienceSelectorDisplayContext(
+	public DefaultSegmentsExperienceSelectorDisplayContext(
 		HttpServletRequest httpServletRequest, JSONFactory jsonFactory,
 		Language language, Portal portal,
 		SegmentsEntryLocalService segmentsEntryLocalService,
@@ -297,7 +299,7 @@ public class SegmentsExperienceSelectorDisplayContext {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		SegmentsExperienceSelectorDisplayContext.class);
+		DefaultSegmentsExperienceSelectorDisplayContext.class);
 
 	private final HttpServletRequest _httpServletRequest;
 	private final JSONFactory _jsonFactory;
