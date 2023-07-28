@@ -30,12 +30,12 @@ import com.liferay.portal.template.react.renderer.ReactRenderer;
 import com.liferay.product.navigation.control.menu.BaseProductNavigationControlMenuEntry;
 import com.liferay.product.navigation.control.menu.ProductNavigationControlMenuEntry;
 import com.liferay.product.navigation.control.menu.constants.ProductNavigationControlMenuCategoryKeys;
-import com.liferay.segments.manager.SegmentsExperienceManager;
+import com.liferay.segments.display.context.SegmentsExperienceSelectorDisplayContext;
+import com.liferay.segments.display.context.SegmentsExperienceSelectorDisplayContextProvider;
 import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.segments.service.SegmentsExperimentLocalService;
 import com.liferay.segments.service.SegmentsExperimentRelLocalService;
-import com.liferay.segments.web.internal.display.context.SegmentsExperienceSelectorDisplayContext;
 import com.liferay.sites.kernel.util.Sites;
 
 import java.io.IOException;
@@ -82,14 +82,9 @@ public class SegmentsExperienceSelectorProductNavigationControlMenuEntry
 		try {
 			SegmentsExperienceSelectorDisplayContext
 				segmentsExperienceSelectorDisplayContext =
-					new SegmentsExperienceSelectorDisplayContext(
-						httpServletRequest, _jsonFactory, _language, _portal,
-						_segmentsEntryLocalService,
-						new SegmentsExperienceManager(
-							_segmentsExperienceLocalService),
-						_segmentsExperienceLocalService,
-						_segmentsExperimentLocalService,
-						_segmentsExperimentRelLocalService);
+					_segmentsExperienceSelectorDisplayContextProvider.
+						getSegmentsExperienceSelectorDisplayContext(
+							httpServletRequest);
 
 			PrintWriter writer = httpServletResponse.getWriter();
 
@@ -217,6 +212,10 @@ public class SegmentsExperienceSelectorProductNavigationControlMenuEntry
 
 	@Reference
 	private SegmentsExperienceLocalService _segmentsExperienceLocalService;
+
+	@Reference
+	private SegmentsExperienceSelectorDisplayContextProvider
+		_segmentsExperienceSelectorDisplayContextProvider;
 
 	@Reference
 	private SegmentsExperimentLocalService _segmentsExperimentLocalService;
