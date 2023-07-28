@@ -8,6 +8,7 @@ package com.liferay.layout.reports.web.internal.struts;
 import com.liferay.layout.reports.web.internal.configuration.provider.LayoutReportsGooglePageSpeedConfigurationProvider;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Layout;
@@ -19,6 +20,10 @@ import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.segments.display.context.SegmentsExperienceSelectorDisplayContext;
+import com.liferay.segments.display.context.SegmentsExperienceSelectorDisplayContextProvider;
+
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,10 +35,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author Mikel Lorza
  */
 @Component(
-	property = "path=/layout_reports/get_layout_reports_tabs",
+	property = "path=/layout_reports/get_layout_reports_data",
 	service = StrutsAction.class
 )
-public class GetLayoutReportTabsStrutsAction implements StrutsAction {
+public class GetLayoutReportDataStrutsAction implements StrutsAction {
 
 	@Override
 	public String execute(
@@ -98,12 +103,38 @@ public class GetLayoutReportTabsStrutsAction implements StrutsAction {
 					HttpComponentsUtil.addParameters(
 						themeDisplay.getPortalURL() +
 							themeDisplay.getPathMain() +
-								"/layout_reports/get_layout_reports_data",
+								"/layout_reports/get_google_page_speed_data",
 						"p_l_id", themeDisplay.getPlid())
 				));
 		}
 
-		ServletResponseUtil.write(httpServletResponse, jsonArray.toString());
+		ServletResponseUtil.write(
+			httpServletResponse,
+			JSONUtil.put(
+				"segmentExperienceSelectorData",
+				() -> {
+					SegmentsExperienceSelectorDisplayContext
+						segmentsExperienceSelectorDisplayContext =
+							_segmentsExperienceSelectorDisplayContextProvider.
+								getSegmentsExperienceSelectorDisplayContext(
+									httpServletRequest);
+
+					Map<String, Object> data =
+						segmentsExperienceSelectorDisplayContext.getData();
+
+					JSONObject segmentExperienceSelectorDataJSONObject =
+						_jsonFactory.createJSONObject();
+
+					for (Map.Entry<String, Object> entry : data.entrySet()) {
+						segmentExperienceSelectorDataJSONObject.put(
+							entry.getKey(), entry.getValue());
+					}
+
+					return segmentExperienceSelectorDataJSONObject;
+				}
+			).put(
+				"tabsData", jsonArray
+			).toString());
 
 		return null;
 	}
@@ -123,5 +154,9 @@ public class GetLayoutReportTabsStrutsAction implements StrutsAction {
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private SegmentsExperienceSelectorDisplayContextProvider
+		_segmentsExperienceSelectorDisplayContextProvider;
 
 }
