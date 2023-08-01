@@ -896,7 +896,7 @@ public class LayoutStructureRenderer {
 		jspWriter.write(
 			"\"><input name=\"checkboxNames\" type=\"hidden\" value=\"");
 		jspWriter.write(
-			renderLayoutStructureDisplayContext.getInfoFormCheckboxNames(
+			_renderLayoutStructureDisplayContext.getInfoFormCheckboxNames(
 				infoForm));
 		jspWriter.write(
 			"\"><input name=\"classNameId\" type=\"hidden\" value=\"");
