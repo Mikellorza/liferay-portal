@@ -195,10 +195,21 @@ public class LayoutReportsProductNavigationControlMenuEntry
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		return HttpComponentsUtil.addParameters(
+		String layoutReportsDataURL = HttpComponentsUtil.addParameter(
 			themeDisplay.getPortalURL() + themeDisplay.getPathMain() +
 				"/layout_reports/get_layout_reports_data",
 			"p_l_id", themeDisplay.getPlid());
+
+		long segmentsExperienceId = ParamUtil.getLong(
+			_portal.getOriginalServletRequest(httpServletRequest),
+			"segmentsExperienceId", -1);
+
+		if (segmentsExperienceId == -1) {
+			return layoutReportsDataURL;
+		}
+
+		return HttpComponentsUtil.addParameter(
+			layoutReportsDataURL, "segmentsExperienceId", segmentsExperienceId);
 	}
 
 	private String _getLayoutReportsGooglePageSpeedDataURL(
