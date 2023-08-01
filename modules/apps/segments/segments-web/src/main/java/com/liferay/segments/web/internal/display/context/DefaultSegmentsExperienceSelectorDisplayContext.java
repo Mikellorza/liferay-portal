@@ -141,8 +141,9 @@ public class DefaultSegmentsExperienceSelectorDisplayContext
 	}
 
 	private JSONObject _getSegmentsExperienceJSONObject(
-		SegmentsExperience segmentsExperience,
-		List<SegmentsExperience> segmentsExperiences) {
+			SegmentsExperience segmentsExperience,
+			List<SegmentsExperience> segmentsExperiences)
+		throws PortalException {
 
 		boolean segmentsExperienceIsActive = _isActive(
 			segmentsExperience, segmentsExperiences);
@@ -184,8 +185,7 @@ public class DefaultSegmentsExperienceSelectorDisplayContext
 		).put(
 			"url",
 			HttpComponentsUtil.setParameter(
-				_portal.getCurrentURL(_httpServletRequest),
-				"segmentsExperienceId",
+				_portal.getLayoutURL(_themeDisplay), "segmentsExperienceId",
 				segmentsExperience.getSegmentsExperienceId())
 		);
 	}
