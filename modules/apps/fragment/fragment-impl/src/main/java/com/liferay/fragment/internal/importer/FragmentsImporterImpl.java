@@ -150,37 +150,85 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 						fragmentCollectionId);
 
 				if (fragmentCollection == null) {
-					fragmentCollection =
-						_fragmentCollectionLocalService.fetchFragmentCollection(
-							groupId, _FRAGMENT_COLLECTION_KEY_DEFAULT);
-
-					if (fragmentCollection == null) {
-						Locale locale = _portal.getSiteDefaultLocale(groupId);
-
-						fragmentCollection =
-							_fragmentCollectionService.addFragmentCollection(
-								groupId, _FRAGMENT_COLLECTION_KEY_DEFAULT,
-								_language.get(
-									locale, _FRAGMENT_COLLECTION_KEY_DEFAULT),
-								StringPool.BLANK,
-								ServiceContextThreadLocal.getServiceContext());
-					}
-
-					fragmentCollectionId =
-						fragmentCollection.getFragmentCollectionId();
+					fragmentCollection = _getDefaultFragmentCollection(groupId);
 				}
 
 				_importFragmentCompositions(
-					userId, groupId, zipFile, fragmentCollectionId,
+					userId, groupId, zipFile,
+					fragmentCollection.getFragmentCollectionId(),
 					orphanFragmentCompositions, overwrite);
 
 				_importFragmentEntries(
-					userId, groupId, zipFile, fragmentCollectionId,
+					userId, groupId, zipFile,
+					fragmentCollection.getFragmentCollectionId(),
 					orphanFragmentEntries, resourceReferences, overwrite);
 			}
 		}
 
 		return _fragmentsImporterResultEntries;
+	}
+
+	@Override
+	public boolean validateFragmentEntries(
+			long userId, long groupId, long fragmentCollectionId, File file)
+		throws Exception {
+
+		try (ZipFile zipFile = new ZipFile(file)) {
+			Map<String, String> orphanFragmentCompositions = new HashMap<>();
+			Map<String, String> orphanFragmentEntries = new HashMap<>();
+
+			Map<String, FragmentCollectionFolder> fragmentCollectionFolderMap =
+				_getFragmentCollectionFolderMap(
+					zipFile, groupId, orphanFragmentCompositions,
+					orphanFragmentEntries);
+
+			for (Map.Entry<String, FragmentCollectionFolder>
+					fragmentCollectionFolder :
+						fragmentCollectionFolderMap.entrySet()) {
+
+				FragmentCollection fragmentCollection =
+					_fragmentCollectionLocalService.fetchFragmentCollection(
+						groupId, fragmentCollectionFolder.getKey());
+
+				if (fragmentCollection != null) {
+					return false;
+				}
+
+				boolean valid = _validateFragmentCompositions(
+					groupId, orphanFragmentCompositions);
+
+				if (!valid) {
+					return false;
+				}
+
+				valid = _validateFragmentEntries(
+					groupId, orphanFragmentEntries);
+
+				if (!valid) {
+					return false;
+				}
+			}
+
+			if (MapUtil.isNotEmpty(orphanFragmentCompositions) ||
+				MapUtil.isNotEmpty(orphanFragmentEntries)) {
+
+				boolean valid = _validateFragmentCompositions(
+					groupId, orphanFragmentCompositions);
+
+				if (!valid) {
+					return false;
+				}
+
+				valid = _validateFragmentEntries(
+					groupId, orphanFragmentEntries);
+
+				if (!valid) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	private FragmentCollection _addFragmentCollection(
@@ -462,6 +510,25 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 		}
 
 		return StringUtil.read(zipFile.getInputStream(zipEntry));
+	}
+
+	private FragmentCollection _getDefaultFragmentCollection(long groupId)
+		throws PortalException {
+
+		FragmentCollection fragmentCollection =
+			_fragmentCollectionLocalService.fetchFragmentCollection(
+				groupId, _FRAGMENT_COLLECTION_KEY_DEFAULT);
+
+		if (fragmentCollection != null) {
+			return fragmentCollection;
+		}
+
+		Locale locale = _portal.getSiteDefaultLocale(groupId);
+
+		return _fragmentCollectionService.addFragmentCollection(
+			groupId, _FRAGMENT_COLLECTION_KEY_DEFAULT,
+			_language.get(locale, _FRAGMENT_COLLECTION_KEY_DEFAULT),
+			StringPool.BLANK, ServiceContextThreadLocal.getServiceContext());
 	}
 
 	private String _getFileName(String path) {
@@ -1103,6 +1170,42 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 		}
 
 		return input;
+	}
+
+	private boolean _validateFragmentCompositions(
+		long groupId, Map<String, String> orphanFragmentCompositions) {
+
+		for (Map.Entry<String, String> orphanFragmentComposition :
+				orphanFragmentCompositions.entrySet()) {
+
+			FragmentComposition fragmentComposition =
+				_fragmentCompositionService.fetchFragmentComposition(
+					groupId, orphanFragmentComposition.getKey());
+
+			if (fragmentComposition != null) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private boolean _validateFragmentEntries(
+		long groupId, Map<String, String> orphanFragmentEntries) {
+
+		for (Map.Entry<String, String> orphanFragmentEntry :
+				orphanFragmentEntries.entrySet()) {
+
+			FragmentEntry fragmentEntry =
+				_fragmentEntryLocalService.fetchFragmentEntry(
+					groupId, orphanFragmentEntry.getKey());
+
+			if (fragmentEntry != null) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private static final String _FRAGMENT_COLLECTION_KEY_DEFAULT = "imported";
