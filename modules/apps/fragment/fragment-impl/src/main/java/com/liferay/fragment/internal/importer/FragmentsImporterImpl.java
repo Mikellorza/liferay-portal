@@ -265,16 +265,12 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 	}
 
 	private FragmentEntry _addFragmentEntry(
-			FragmentEntry fragmentEntry, long fragmentCollectionId,
-			String fragmentEntryKey, String name, String css, String html,
-			String js, boolean cacheable, String configuration, String icon,
-			boolean readOnly, String typeLabel, String typeOptions,
-			ImportStrategy importStrategy)
+			long groupId, FragmentEntry fragmentEntry,
+			long fragmentCollectionId, String fragmentEntryKey, String name,
+			String css, String html, String js, boolean cacheable,
+			String configuration, String icon, boolean readOnly,
+			String typeLabel, String typeOptions, ImportStrategy importStrategy)
 		throws Exception {
-
-		FragmentCollection fragmentCollection =
-			_fragmentCollectionLocalService.getFragmentCollection(
-				fragmentCollectionId);
 
 		if (fragmentEntry != null) {
 			if (ImportStrategy.DO_NOT_IMPORT.equals(importStrategy)) {
@@ -320,9 +316,9 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 		try {
 			if (fragmentEntry == null) {
 				fragmentEntry = _fragmentEntryService.addFragmentEntry(
-					fragmentCollection.getGroupId(), fragmentCollectionId,
-					fragmentEntryKey, name, css, html, js, cacheable,
-					configuration, icon, 0, type, typeOptions, status,
+					groupId, fragmentCollectionId, fragmentEntryKey, name, css,
+					html, js, cacheable, configuration, icon, 0, type,
+					typeOptions, status,
 					ServiceContextThreadLocal.getServiceContext());
 			}
 			else {
@@ -1012,9 +1008,9 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 			}
 
 			fragmentEntry = _addFragmentEntry(
-				fragmentEntry, fragmentCollectionId, entry.getKey(), name, css,
-				html, js, cacheable, configuration, icon, readOnly, typeLabel,
-				typeOptions, importStrategy);
+				groupId, fragmentEntry, fragmentCollectionId, entry.getKey(),
+				name, css, html, js, cacheable, configuration, icon, readOnly,
+				typeLabel, typeOptions, importStrategy);
 
 			if (fragmentEntry == null) {
 				continue;
