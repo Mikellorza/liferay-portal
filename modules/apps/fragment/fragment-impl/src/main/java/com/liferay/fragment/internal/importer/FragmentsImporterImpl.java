@@ -247,6 +247,9 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 					groupId, fragmentCollectionKey, name, description,
 					ServiceContextThreadLocal.getServiceContext());
 		}
+		else if (ImportStrategy.DO_NOT_IMPORT.equals(importStrategy)) {
+			return fragmentCollection;
+		}
 		else if (ImportStrategy.OVERRIDE.equals(importStrategy)) {
 			fragmentCollection =
 				_fragmentCollectionService.updateFragmentCollection(
@@ -262,24 +265,25 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 	}
 
 	private FragmentEntry _addFragmentEntry(
-			long fragmentCollectionId, String fragmentEntryKey, String name,
-			String css, String html, String js, boolean cacheable,
-			String configuration, String icon, boolean readOnly,
-			String typeLabel, String typeOptions, ImportStrategy importStrategy)
+			FragmentEntry fragmentEntry, long fragmentCollectionId,
+			String fragmentEntryKey, String name, String css, String html,
+			String js, boolean cacheable, String configuration, String icon,
+			boolean readOnly, String typeLabel, String typeOptions,
+			ImportStrategy importStrategy)
 		throws Exception {
 
 		FragmentCollection fragmentCollection =
 			_fragmentCollectionLocalService.getFragmentCollection(
 				fragmentCollectionId);
 
-		FragmentEntry fragmentEntry =
-			_fragmentEntryLocalService.fetchFragmentEntry(
-				fragmentCollection.getGroupId(), fragmentEntryKey);
+		if (fragmentEntry != null) {
+			if (ImportStrategy.DO_NOT_IMPORT.equals(importStrategy)) {
+				return fragmentEntry;
+			}
 
-		if ((fragmentEntry != null) &&
-			ImportStrategy.DO_NOT_OVERRIDE.equals(importStrategy)) {
-
-			throw new DuplicateFragmentEntryKeyException(fragmentEntryKey);
+			if (ImportStrategy.DO_NOT_OVERRIDE.equals(importStrategy)) {
+				throw new DuplicateFragmentEntryKeyException(fragmentEntryKey);
+			}
 		}
 
 		int type = FragmentConstants.getTypeFromLabel(
@@ -868,6 +872,16 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 		for (Map.Entry<String, String> entry :
 				fragmentCompositions.entrySet()) {
 
+			FragmentComposition fragmentComposition =
+				_fragmentCompositionService.fetchFragmentComposition(
+					groupId, entry.getKey());
+
+			if ((fragmentComposition != null) &&
+				ImportStrategy.DO_NOT_IMPORT.equals(importStrategy)) {
+
+				continue;
+			}
+
 			String compositionJSON = _getContent(zipFile, entry.getValue());
 
 			if (Validator.isNull(compositionJSON)) {
@@ -882,10 +896,6 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 			String definitionData = _getFragmentEntryContent(
 				zipFile, entry.getValue(),
 				jsonObject.getString("fragmentCompositionDefinitionPath"));
-
-			FragmentComposition fragmentComposition =
-				_fragmentCompositionService.fetchFragmentComposition(
-					groupId, entry.getKey());
 
 			try {
 				if (fragmentComposition == null) {
@@ -952,6 +962,16 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 
 		for (Map.Entry<String, String> entry : fragmentEntries.entrySet()) {
 			String name = entry.getKey();
+
+			FragmentEntry fragmentEntry =
+				_fragmentEntryLocalService.fetchFragmentEntry(groupId, name);
+
+			if ((fragmentEntry != null) &&
+				ImportStrategy.DO_NOT_IMPORT.equals(importStrategy)) {
+
+				continue;
+			}
+
 			String css = StringPool.BLANK;
 			String html = StringPool.BLANK;
 			String js = StringPool.BLANK;
@@ -991,9 +1011,9 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 				typeOptions = jsonObject.getString("typeOptions");
 			}
 
-			FragmentEntry fragmentEntry = _addFragmentEntry(
-				fragmentCollectionId, entry.getKey(), name, css, html, js,
-				cacheable, configuration, icon, readOnly, typeLabel,
+			fragmentEntry = _addFragmentEntry(
+				fragmentEntry, fragmentCollectionId, entry.getKey(), name, css,
+				html, js, cacheable, configuration, icon, readOnly, typeLabel,
 				typeOptions, importStrategy);
 
 			if (fragmentEntry == null) {
