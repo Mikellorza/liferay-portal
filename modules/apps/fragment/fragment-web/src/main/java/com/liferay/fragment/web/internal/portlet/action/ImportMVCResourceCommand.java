@@ -8,6 +8,7 @@ package com.liferay.fragment.web.internal.portlet.action;
 import com.liferay.fragment.constants.FragmentPortletKeys;
 import com.liferay.fragment.importer.FragmentsImporter;
 import com.liferay.fragment.importer.FragmentsImporterResultEntry;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManager;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -65,11 +66,24 @@ public class ImportMVCResourceCommand extends BaseMVCResourceCommand {
 
 		File file = uploadPortletRequest.getFile("file");
 
-		boolean overwrite = ParamUtil.getBoolean(resourceRequest, "overwrite");
+		boolean validFragmentEntries = true;
 
-		_importFragmentEntries(
-			file, fragmentCollectionId, themeDisplay.getScopeGroupId(),
-			themeDisplay.getLocale(), overwrite, themeDisplay.getUserId());
+		if (_featureFlagManager.isEnabled("LPS-174939")) {
+			validFragmentEntries = _fragmentsImporter.validateFragmentEntries(
+				themeDisplay.getUserId(), themeDisplay.getScopeGroupId(),
+				fragmentCollectionId, file);
+		}
+
+		if (validFragmentEntries) {
+			jsonObject = _importFragmentEntries(
+				file, fragmentCollectionId, themeDisplay.getScopeGroupId(),
+				themeDisplay.getLocale(),
+				ParamUtil.getBoolean(resourceRequest, "overwrite"),
+				themeDisplay.getUserId());
+		}
+		else {
+			jsonObject.put("valid", false);
+		}
 
 		JSONPortletResponseUtil.writeJSON(
 			resourceRequest, resourceResponse, jsonObject);
@@ -135,6 +149,9 @@ public class ImportMVCResourceCommand extends BaseMVCResourceCommand {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ImportMVCResourceCommand.class);
+
+	@Reference
+	private FeatureFlagManager _featureFlagManager;
 
 	@Reference
 	private FragmentsImporter _fragmentsImporter;
