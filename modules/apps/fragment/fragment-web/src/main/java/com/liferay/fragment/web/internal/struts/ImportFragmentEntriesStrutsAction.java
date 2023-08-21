@@ -7,6 +7,7 @@ package com.liferay.fragment.web.internal.struts;
 
 import com.liferay.fragment.importer.FragmentsImporter;
 import com.liferay.fragment.importer.FragmentsImporterResultEntry;
+import com.liferay.fragment.importer.ImportStrategy;
 import com.liferay.layout.importer.LayoutsImporter;
 import com.liferay.layout.importer.LayoutsImporterResultEntry;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -73,7 +74,8 @@ public class ImportFragmentEntriesStrutsAction implements StrutsAction {
 
 			List<FragmentsImporterResultEntry> fragmentsImporterResultEntries =
 				_fragmentsImporter.importFragmentEntries(
-					themeDisplay.getUserId(), groupId, 0L, file, true);
+					themeDisplay.getUserId(), groupId, 0L, file,
+					ImportStrategy.OVERRIDE);
 
 			for (FragmentsImporterResultEntry fragmentsImporterResultEntry :
 					fragmentsImporterResultEntries) {

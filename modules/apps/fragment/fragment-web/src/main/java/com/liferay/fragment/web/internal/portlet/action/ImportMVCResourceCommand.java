@@ -8,6 +8,7 @@ package com.liferay.fragment.web.internal.portlet.action;
 import com.liferay.fragment.constants.FragmentPortletKeys;
 import com.liferay.fragment.importer.FragmentsImporter;
 import com.liferay.fragment.importer.FragmentsImporterResultEntry;
+import com.liferay.fragment.importer.ImportStrategy;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManager;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -75,10 +76,18 @@ public class ImportMVCResourceCommand extends BaseMVCResourceCommand {
 		}
 
 		if (validFragmentEntries) {
+			boolean overwrite = ParamUtil.getBoolean(
+				resourceRequest, "overwrite");
+
+			ImportStrategy importStrategy = ImportStrategy.DO_NOT_OVERRIDE;
+
+			if (overwrite) {
+				importStrategy = ImportStrategy.OVERRIDE;
+			}
+
 			jsonObject = _importFragmentEntries(
 				file, fragmentCollectionId, themeDisplay.getScopeGroupId(),
-				themeDisplay.getLocale(),
-				ParamUtil.getBoolean(resourceRequest, "overwrite"),
+				importStrategy, themeDisplay.getLocale(),
 				themeDisplay.getUserId());
 		}
 		else {
@@ -90,15 +99,16 @@ public class ImportMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private JSONObject _importFragmentEntries(
-		File file, long fragmentCollectionId, long groupId, Locale locale,
-		boolean overwrite, long userId) {
+		File file, long fragmentCollectionId, long groupId,
+		ImportStrategy importStrategy, Locale locale, long userId) {
 
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
 		try {
 			List<FragmentsImporterResultEntry> fragmentsImporterResultEntries =
 				_fragmentsImporter.importFragmentEntries(
-					userId, groupId, fragmentCollectionId, file, overwrite);
+					userId, groupId, fragmentCollectionId, file,
+					importStrategy);
 
 			JSONObject importResultsJSONObject =
 				_jsonFactory.createJSONObject();
