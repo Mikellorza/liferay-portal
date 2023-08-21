@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.File;
@@ -67,22 +68,42 @@ public class ImportMVCResourceCommand extends BaseMVCResourceCommand {
 
 		File file = uploadPortletRequest.getFile("file");
 
+		String importType = ParamUtil.getString(resourceRequest, "importType");
+
 		boolean validFragmentEntries = true;
 
-		if (_featureFlagManager.isEnabled("LPS-174939")) {
+		if (_featureFlagManager.isEnabled("LPS-174939") &&
+			Validator.isNull(importType)) {
+
 			validFragmentEntries = _fragmentsImporter.validateFragmentEntries(
 				themeDisplay.getUserId(), themeDisplay.getScopeGroupId(),
 				fragmentCollectionId, file);
 		}
 
 		if (validFragmentEntries) {
-			boolean overwrite = ParamUtil.getBoolean(
-				resourceRequest, "overwrite");
-
 			ImportStrategy importStrategy = ImportStrategy.DO_NOT_OVERRIDE;
 
-			if (overwrite) {
-				importStrategy = ImportStrategy.OVERRIDE;
+			if (_featureFlagManager.isEnabled("LPS-174939")) {
+				if (ImportStrategy.DO_NOT_IMPORT.equals(importType)) {
+					importStrategy = ImportStrategy.DO_NOT_IMPORT;
+				}
+				else if (ImportStrategy.KEEP_BOTH.equals(importType)) {
+					importStrategy = ImportStrategy.KEEP_BOTH;
+				}
+				else if (ImportStrategy.OVERRIDE.equals(importType)) {
+					importStrategy = ImportStrategy.OVERRIDE;
+				}
+			}
+			else {
+				boolean overwrite = ParamUtil.getBoolean(
+					resourceRequest, "overwrite");
+
+				if (overwrite) {
+					importStrategy = ImportStrategy.OVERRIDE;
+				}
+				else {
+					importStrategy = ImportStrategy.DO_NOT_OVERRIDE;
+				}
 			}
 
 			jsonObject = _importFragmentEntries(
