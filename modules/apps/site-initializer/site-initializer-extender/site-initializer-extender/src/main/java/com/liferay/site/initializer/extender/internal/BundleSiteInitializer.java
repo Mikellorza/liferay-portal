@@ -72,6 +72,7 @@ import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.layout.helper.LayoutCopyHelper;
+import com.liferay.layout.importer.LayoutsImportStrategy;
 import com.liferay.layout.importer.LayoutsImporter;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
@@ -1179,7 +1180,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 
 		_layoutsImporter.importFile(
 			serviceContext.getUserId(), serviceContext.getScopeGroupId(),
-			zipWriter.getFile(), true);
+			zipWriter.getFile(), LayoutsImportStrategy.OVERWRITE);
 	}
 
 	private void _addLayoutsContent(
@@ -1292,7 +1293,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 
 		_layoutsImporter.importFile(
 			serviceContext.getUserId(), serviceContext.getScopeGroupId(),
-			zipWriter.getFile(), true);
+			zipWriter.getFile(), LayoutsImportStrategy.OVERWRITE);
 
 		_setDefaultLayoutUtilityPageEntries(serviceContext);
 	}
