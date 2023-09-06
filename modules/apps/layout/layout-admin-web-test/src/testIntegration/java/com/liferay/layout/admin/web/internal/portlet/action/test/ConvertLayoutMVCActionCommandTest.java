@@ -303,7 +303,7 @@ public class ConvertLayoutMVCActionCommandTest {
 			persistedPublishedLayout.getRobotsMap());
 		Assert.assertEquals(
 			LayoutConstants.TYPE_CONTENT, persistedPublishedLayout.getType());
-		Assert.assertEquals(
+		Assert.assertNotEquals(
 			originalLayout.getTypeSettings(),
 			persistedPublishedLayout.getTypeSettings());
 		Assert.assertEquals(
