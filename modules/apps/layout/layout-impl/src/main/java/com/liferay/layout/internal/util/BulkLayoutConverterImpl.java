@@ -265,6 +265,7 @@ public class BulkLayoutConverterImpl implements BulkLayoutConverter {
 
 			typeSettingsUnicodeProperties.put(
 				"published", Boolean.TRUE.toString());
+			typeSettingsUnicodeProperties.remove("layout-template-id");
 
 			draftLayout.setStatus(WorkflowConstants.STATUS_APPROVED);
 
@@ -276,6 +277,11 @@ public class BulkLayoutConverterImpl implements BulkLayoutConverter {
 			layout.setLayoutPrototypeUuid(StringPool.BLANK);
 			layout.setLayoutPrototypeLinkEnabled(false);
 			layout.setStatus(WorkflowConstants.STATUS_APPROVED);
+
+			typeSettingsUnicodeProperties = layout.getTypeSettingsProperties();
+
+			typeSettingsUnicodeProperties.remove("layout-template-id");
+			typeSettingsUnicodeProperties.remove("published");
 
 			return _layoutLocalService.updateLayout(layout);
 		}
