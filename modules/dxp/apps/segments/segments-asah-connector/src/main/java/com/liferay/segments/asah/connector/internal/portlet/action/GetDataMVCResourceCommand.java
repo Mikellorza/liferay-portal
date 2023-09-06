@@ -99,6 +99,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 
 		try {
 			String backURL = ParamUtil.getString(resourceRequest, "backURL");
+			String backURLTitle = ParamUtil.getString(resourceRequest, "backUrlTitle");
 			String redirect = ParamUtil.getString(resourceRequest, "redirect");
 
 			long plid = ParamUtil.getLong(resourceRequest, "plid");
@@ -116,7 +117,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 				JSONUtil.put(
 					"context",
 					_getContextJSONObject(
-						backURL, layout, httpServletRequest, redirect,
+						backURL, backURLTitle, layout, httpServletRequest, redirect,
 						segmentsExperienceId)
 				).put(
 					"props",
@@ -188,7 +189,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private JSONObject _getContextJSONObject(
-			String backURL, Layout layout,
+			String backURL, String backURLTitle, Layout layout,
 			HttpServletRequest httpServletRequest, String redirect,
 			long segmentsExperienceId)
 		throws Exception {
@@ -253,7 +254,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 			).put(
 				"editSegmentsVariantLayoutURL",
 				_getEditSegmentsVariantLayoutURL(
-					backURL, layout, redirect, segmentsExperienceId)
+					backURL, backURLTitle, layout, redirect, segmentsExperienceId)
 			).put(
 				"editSegmentsVariantURL",
 				_getSegmentsExperimentActionURL(
@@ -281,7 +282,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private String _getEditSegmentsVariantLayoutURL(
-		String backURL, Layout layout, String redirect,
+		String backURL, String backURLTitle, Layout layout, String redirect,
 		long segmentsExperienceId) {
 
 		Layout draftLayout = _layoutLocalService.fetchDraftLayout(
@@ -298,6 +299,9 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 
 		redirect = HttpComponentsUtil.setParameter(
 			redirect, "p_l_back_url", backURL);
+
+		redirect = HttpComponentsUtil.setParameter(
+			redirect, "p_l_back_url_title", backURLTitle);
 
 		redirect = HttpComponentsUtil.setParameter(
 			redirect, "p_l_mode", Constants.EDIT);
