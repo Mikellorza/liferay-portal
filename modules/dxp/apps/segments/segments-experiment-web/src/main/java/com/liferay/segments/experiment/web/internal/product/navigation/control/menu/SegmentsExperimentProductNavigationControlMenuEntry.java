@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLFactory;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.LayoutService;
 import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
@@ -315,6 +316,12 @@ public class SegmentsExperimentProductNavigationControlMenuEntry
 				layoutURL, "segmentsExperienceId", segmentsExperienceId);
 		}
 
+		String layoutName = _layoutService.getLayoutName(
+			themeDisplay.getScopeGroupId(), false,
+			themeDisplay.getLayout(
+			).getLayoutId(),
+			_language.getLanguageId(themeDisplay.getLocale()));
+
 		ResourceURL resourceURL = (ResourceURL)PortletURLBuilder.create(
 			_portletURLFactory.create(
 				httpServletRequest, SegmentsPortletKeys.SEGMENTS_EXPERIMENT,
@@ -323,6 +330,8 @@ public class SegmentsExperimentProductNavigationControlMenuEntry
 			_getRedirect(httpServletRequest, themeDisplay)
 		).setBackURL(
 			layoutURL
+		).setParameter(
+			"backUrlTitle", layoutName
 		).setParameter(
 			"plid", themeDisplay.getPlid()
 		).setParameter(
@@ -473,6 +482,9 @@ public class SegmentsExperimentProductNavigationControlMenuEntry
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
+
+	@Reference
+	private LayoutService _layoutService;
 
 	@Reference
 	private NPMResolver _npmResolver;
