@@ -14,6 +14,7 @@ import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeCon
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntryTable;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
+import com.liferay.layout.util.comparator.LayoutNameComparator;
 import com.liferay.layout.utility.page.kernel.LayoutUtilityPageEntryViewRenderer;
 import com.liferay.layout.utility.page.kernel.LayoutUtilityPageEntryViewRendererRegistryUtil;
 import com.liferay.layout.utility.page.model.LayoutUtilityPageEntry;
@@ -185,7 +186,28 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 				).where(
 					_getWherePredicate(groupId, lockedLayoutType)
 				).orderBy(
-					_getOrderByExpression(lockedLayoutOrder)
+					orderByStep -> {
+						if (lockedLayoutOrder != null) {
+							if (Objects.equals(
+									lockedLayoutOrder.
+										getLockedLayoutOrderType(),
+									LockedLayoutOrder.LockedLayoutOrderType.
+										NAME)) {
+
+								return orderByStep.orderBy(
+									LayoutTable.INSTANCE,
+									new LayoutNameComparator(
+										lockedLayoutOrder.isAscending(),
+										lockedLayoutOrder.getLocale()));
+							}
+
+							return orderByStep.orderBy(
+								_getOrderByExpression(lockedLayoutOrder));
+						}
+
+						return orderByStep.orderBy(
+							LockTable.INSTANCE.createDate.descending());
+					}
 				).as(
 					"LockedLayoutsTable", LockedLayoutsTable.INSTANCE
 				)
@@ -501,10 +523,6 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 
 	private OrderByExpression _getOrderByExpression(
 		LockedLayoutOrder lockedLayoutOrder) {
-
-		if (lockedLayoutOrder == null) {
-			return LockTable.INSTANCE.createDate.descending();
-		}
 
 		if (Objects.equals(
 				lockedLayoutOrder.getLockedLayoutOrderType(),
