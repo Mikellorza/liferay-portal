@@ -102,6 +102,16 @@ public class EditSegmentsEntryDisplayContext {
 		return _backURL;
 	}
 
+	public String getBackUrlTitle() {
+		Map<String, String> backUrl = _getQueryMap(_backURL);
+
+		if (backUrl.containsKey("P_L_BACK_URL_TITLE")) {
+			return backUrl.get("P_L_BACK_URL_TITLE");
+		}
+
+		return LanguageUtil.get(_httpServletRequest, "segments");
+	}
+
 	public Map<String, Object> getData() throws Exception {
 		if (_data != null) {
 			return _data;
@@ -200,16 +210,6 @@ public class EditSegmentsEntryDisplayContext {
 
 		return ParamUtil.getString(
 			_httpServletRequest, "type", User.class.getName());
-	}
-
-	public String getBackUrlTitle() {
-		Map<String, String> backUrl = _getQueryMap(_backURL);
-
-		if (backUrl.containsKey("P_L_BACK_URL_TITLE")) {
-			return backUrl.get("P_L_BACK_URL_TITLE");
-		}
-
-		return LanguageUtil.get(_httpServletRequest, "segments");
 	}
 
 	private Map<String, String> _getAvailableLocales() throws Exception {
