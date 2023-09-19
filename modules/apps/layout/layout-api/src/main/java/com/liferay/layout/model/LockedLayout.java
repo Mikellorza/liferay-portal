@@ -5,9 +5,13 @@
 
 package com.liferay.layout.model;
 
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LocalizationUtil;
+
 import java.io.Serializable;
 
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Lourdes Fernández Besada
@@ -36,6 +40,11 @@ public class LockedLayout implements Serializable {
 
 	public String getName() {
 		return _name;
+	}
+
+	public String getName(Locale locale) {
+		return LocalizationUtil.getLocalization(
+			getName(), LocaleUtil.toLanguageId(locale));
 	}
 
 	public long getPlid() {

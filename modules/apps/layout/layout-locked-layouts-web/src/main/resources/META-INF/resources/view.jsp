@@ -50,7 +50,7 @@ LockedLayoutsDisplayContext lockedLayoutsDisplayContext = (LockedLayoutsDisplayC
 							"actions", "unlockLockedLayouts"
 						).build());
 
-					String name = HtmlUtil.escape(lockedLayoutsDisplayContext.getName(lockedLayout));
+					String name = HtmlUtil.escape(lockedLayout.getName(themeDisplay.getLocale()));
 					%>
 
 					<liferay-ui:search-container-column-text

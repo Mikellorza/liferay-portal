@@ -11,7 +11,6 @@ import com.liferay.layout.constants.LockedLayoutType;
 import com.liferay.layout.manager.LayoutLockManager;
 import com.liferay.layout.model.LockedLayout;
 import com.liferay.layout.model.LockedLayoutOrder;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -23,11 +22,9 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.Date;
@@ -129,11 +126,6 @@ public class LockedLayoutsDisplayContext {
 		return _lockedLayoutType;
 	}
 
-	public String getName(LockedLayout lockedLayout) {
-		return LocalizationUtil.getLocalization(
-			lockedLayout.getName(), _themeDisplay.getLanguageId());
-	}
-
 	public String getOrderByCol() {
 		if (_orderByCol != null) {
 			return _orderByCol;
@@ -166,7 +158,7 @@ public class LockedLayoutsDisplayContext {
 			_liferayPortletRequest, _liferayPortletResponse.createRenderURL(),
 			null, "no-locked-pages-were-found");
 
-		searchContainer.setResultsAndTotal(_getFilteredLockedLayouts());
+		searchContainer.setResultsAndTotal(_getLockedLayouts());
 
 		searchContainer.setRowChecker(
 			new EmptyOnClickRowChecker(_liferayPortletResponse));
@@ -182,24 +174,6 @@ public class LockedLayoutsDisplayContext {
 		}
 
 		return true;
-	}
-
-	private List<LockedLayout> _getFilteredLockedLayouts() {
-		if (_filteredLockedLayouts != null) {
-			return _filteredLockedLayouts;
-		}
-
-		if (Validator.isNull(_getKeywords())) {
-			_filteredLockedLayouts = _getLockedLayouts();
-
-			return _filteredLockedLayouts;
-		}
-
-		_filteredLockedLayouts = ListUtil.filter(
-			_getLockedLayouts(),
-			lockedLayout -> _hasKeywords(_getKeywords(), lockedLayout));
-
-		return _filteredLockedLayouts;
 	}
 
 	private String _getKeywords() {
@@ -220,26 +194,12 @@ public class LockedLayoutsDisplayContext {
 
 		_lockedLayouts = _layoutLockManager.getLockedLayouts(
 			_themeDisplay.getCompanyId(), _themeDisplay.getScopeGroupId(),
-			getLockedLayoutOrder(), getLockedLayoutType());
+			_getKeywords(), _themeDisplay.getLocale(), getLockedLayoutOrder(),
+			getLockedLayoutType());
 
 		return _lockedLayouts;
 	}
 
-	private boolean _hasKeywords(String keywords, LockedLayout lockedLayout) {
-		if (StringUtil.contains(
-				StringUtil.toLowerCase(lockedLayout.getUserName()), keywords,
-				StringPool.BLANK) ||
-			StringUtil.contains(
-				StringUtil.toLowerCase(getName(lockedLayout)), keywords,
-				StringPool.BLANK)) {
-
-			return true;
-		}
-
-		return false;
-	}
-
-	private List<LockedLayout> _filteredLockedLayouts;
 	private String _keywords;
 	private final Language _language;
 	private final LayoutLocalService _layoutLocalService;

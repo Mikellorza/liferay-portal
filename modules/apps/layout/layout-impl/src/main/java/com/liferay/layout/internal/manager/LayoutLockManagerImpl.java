@@ -41,8 +41,10 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -152,7 +154,8 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 
 	@Override
 	public List<LockedLayout> getLockedLayouts(
-		long companyId, long groupId, LockedLayoutOrder lockedLayoutOrder,
+		long companyId, long groupId, String keywords, Locale locale,
+		LockedLayoutOrder lockedLayoutOrder,
 		LockedLayoutType lockedLayoutType) {
 
 		List<Object[]> results = _layoutLocalService.dslQuery(
@@ -225,7 +228,13 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 					GetterUtil.getString(columns[5])));
 		}
 
-		return lockedLayouts;
+		if (Validator.isNull(keywords)) {
+			return lockedLayouts;
+		}
+
+		return ListUtil.filter(
+			lockedLayouts,
+			lockedLayout -> _hasKeywords(keywords, locale, lockedLayout));
 	}
 
 	@Override
@@ -618,6 +627,22 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 		}
 
 		return wherePredicate;
+	}
+
+	private boolean _hasKeywords(
+		String keywords, Locale locale, LockedLayout lockedLayout) {
+
+		if (StringUtil.contains(
+				StringUtil.toLowerCase(lockedLayout.getUserName()), keywords,
+				StringPool.BLANK) ||
+			StringUtil.contains(
+				StringUtil.toLowerCase(lockedLayout.getName(locale)), keywords,
+				StringPool.BLANK)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	@Reference
