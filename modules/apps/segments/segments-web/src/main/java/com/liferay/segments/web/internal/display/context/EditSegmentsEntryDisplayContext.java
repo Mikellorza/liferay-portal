@@ -6,6 +6,7 @@
 package com.liferay.segments.web.internal.display.context;
 
 import com.liferay.item.selector.ItemSelector;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -27,11 +28,13 @@ import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.CamelCaseUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.segments.configuration.provider.SegmentsConfigurationProvider;
@@ -197,6 +200,16 @@ public class EditSegmentsEntryDisplayContext {
 
 		return ParamUtil.getString(
 			_httpServletRequest, "type", User.class.getName());
+	}
+
+	public String getBackUrlTitle() {
+		Map<String, String> backUrl = _getQueryMap(_backURL);
+
+		if (backUrl.containsKey("P_L_BACK_URL_TITLE")) {
+			return backUrl.get("P_L_BACK_URL_TITLE");
+		}
+
+		return LanguageUtil.get(_httpServletRequest, "segments");
 	}
 
 	private Map<String, String> _getAvailableLocales() throws Exception {
@@ -401,6 +414,24 @@ public class EditSegmentsEntryDisplayContext {
 		).build();
 	}
 
+	private Map<String, String> _getQueryMap(String query) {
+		String[] params = query.split(StringPool.AMPERSAND);
+
+		Map<String, String> map = new HashMap<>();
+
+		for (String param : params) {
+			String name = param.split(StringPool.EQUAL)[0];
+			String value = param.split(StringPool.EQUAL)[1];
+
+			map.put(
+				StringUtil.toUpperCase(
+					CamelCaseUtil.fromCamelCase(name, CharPool.UNDERLINE)),
+				value);
+		}
+
+		return map;
+	}
+
 	private String _getSegmentsCompanyConfigurationURL() {
 		try {
 			return _segmentsConfigurationProvider.getCompanyConfigurationURL(
@@ -522,6 +553,7 @@ public class EditSegmentsEntryDisplayContext {
 	private Map<String, Object> _data;
 	private Long _groupId;
 	private final GroupLocalService _groupLocalService;
+	private boolean _hasBackUrlTitle;
 	private final HttpServletRequest _httpServletRequest;
 	private final ItemSelector _itemSelector;
 	private final Locale _locale;

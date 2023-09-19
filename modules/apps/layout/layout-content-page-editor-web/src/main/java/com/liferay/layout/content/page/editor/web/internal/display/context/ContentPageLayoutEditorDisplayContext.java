@@ -418,6 +418,8 @@ public class ContentPageLayoutEditorDisplayContext
 					portletURL.setParameter(
 						"redirect", themeDisplay.getURLCurrent());
 
+					portletURL.setParameter("p_l_back_url_title", "hello");
+
 					return portletURL.toString();
 				});
 		}
