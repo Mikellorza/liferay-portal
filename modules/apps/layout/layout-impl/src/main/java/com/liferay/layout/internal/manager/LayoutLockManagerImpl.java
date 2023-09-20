@@ -43,7 +43,9 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Time;
@@ -297,48 +299,54 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 			lockedLayoutsGroupConfigurations,
 		long timeWithoutAutosave) {
 
-		List<Long> plids = _layoutLocalService.dslQuery(
-			DSLQueryFactoryUtil.selectDistinct(
-				LayoutTable.INSTANCE.plid
-			).from(
-				LayoutTable.INSTANCE
-			).innerJoinON(
-				LockTable.INSTANCE,
-				LockTable.INSTANCE.companyId.eq(
-					companyId
-				).and(
-					LockTable.INSTANCE.className.eq(Layout.class.getName())
-				).and(
-					LockTable.INSTANCE.key.eq(
-						DSLFunctionFactoryUtil.castText(
-							LayoutTable.INSTANCE.plid))
-				).and(
-					_getCreateDatePredicate(
-						lockedLayoutsGroupConfigurations, timeWithoutAutosave)
-				)
-			).where(
-				LayoutTable.INSTANCE.classPK.gt(
-					0L
-				).and(
-					LayoutTable.INSTANCE.hidden.eq(true)
-				).and(
-					LayoutTable.INSTANCE.system.eq(true)
-				).and(
-					LayoutTable.INSTANCE.status.eq(
-						WorkflowConstants.STATUS_DRAFT)
-				).and(
-					LayoutTable.INSTANCE.type.in(
-						new String[] {
-							LayoutConstants.TYPE_ASSET_DISPLAY,
-							LayoutConstants.TYPE_COLLECTION,
-							LayoutConstants.TYPE_CONTENT
-						})
-				)
-			));
-
-		for (Long plid : plids) {
-			_lockManager.unlock(Layout.class.getName(), String.valueOf(plid));
-		}
+		_unlockLockedLayouts(
+			lockedLayoutsGroupConfigurations,
+			_layoutLocalService.dslQuery(
+				DSLQueryFactoryUtil.select(
+				).from(
+					DSLQueryFactoryUtil.selectDistinct(
+						LayoutTable.INSTANCE.plid, LockTable.INSTANCE.createDate
+					).from(
+						LayoutTable.INSTANCE
+					).innerJoinON(
+						LockTable.INSTANCE,
+						LockTable.INSTANCE.companyId.eq(
+							companyId
+						).and(
+							LockTable.INSTANCE.className.eq(
+								Layout.class.getName())
+						).and(
+							LockTable.INSTANCE.key.eq(
+								DSLFunctionFactoryUtil.castText(
+									LayoutTable.INSTANCE.plid))
+						).and(
+							_getCreateDatePredicate(
+								lockedLayoutsGroupConfigurations,
+								timeWithoutAutosave)
+						)
+					).where(
+						LayoutTable.INSTANCE.classPK.gt(
+							0L
+						).and(
+							LayoutTable.INSTANCE.hidden.eq(true)
+						).and(
+							LayoutTable.INSTANCE.system.eq(true)
+						).and(
+							LayoutTable.INSTANCE.status.eq(
+								WorkflowConstants.STATUS_DRAFT)
+						).and(
+							LayoutTable.INSTANCE.type.in(
+								new String[] {
+									LayoutConstants.TYPE_ASSET_DISPLAY,
+									LayoutConstants.TYPE_COLLECTION,
+									LayoutConstants.TYPE_CONTENT
+								})
+						)
+					).as(
+						"LockedLayoutsTable", LockedLayoutsTable.INSTANCE
+					)
+				)),
+			timeWithoutAutosave);
 	}
 
 	@Override
@@ -403,6 +411,22 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 			new Date(
 				System.currentTimeMillis() -
 					(timeWithoutAutosave * Time.MINUTE)));
+	}
+
+	private Date _getLastAutosaveDate(
+		LockedLayoutsGroupConfiguration lockedLayoutsGroupConfiguration,
+		long timeWithoutAutosave) {
+
+		if (lockedLayoutsGroupConfiguration == null) {
+			return new Date(
+				System.currentTimeMillis() -
+					(timeWithoutAutosave * Time.MINUTE));
+		}
+
+		long timeWithoutAutosaveMillis =
+			lockedLayoutsGroupConfiguration.timeWithoutAutosave() * Time.MINUTE;
+
+		return new Date(System.currentTimeMillis() - timeWithoutAutosaveMillis);
 	}
 
 	private Predicate _getLayoutPageTemplateEntryTableLeftJoinOnPredicate(
@@ -641,6 +665,52 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 		}
 
 		return wherePredicate;
+	}
+
+	private void _unlockLockedLayouts(
+		Map<Long, LockedLayoutsGroupConfiguration>
+			lockedLayoutsGroupConfigurations,
+		List<Object[]> results, long timeWithoutAutosave) {
+
+		if (ListUtil.isEmpty(results)) {
+			return;
+		}
+
+		if (lockedLayoutsGroupConfigurations.isEmpty()) {
+			for (Object[] columns : results) {
+				_lockManager.unlock(
+					Layout.class.getName(), String.valueOf(columns[0]));
+			}
+
+			return;
+		}
+
+		for (Object[] columns : results) {
+			Layout layout = _layoutLocalService.fetchLayout(
+				GetterUtil.getLong(columns[0]));
+
+			if (layout == null) {
+				continue;
+			}
+
+			LockedLayoutsGroupConfiguration lockedLayoutsGroupConfiguration =
+				lockedLayoutsGroupConfigurations.get(layout.getGroupId());
+
+			if ((lockedLayoutsGroupConfiguration != null) &&
+				!lockedLayoutsGroupConfiguration.
+					allowAutomaticUnlockingProcess()) {
+
+				continue;
+			}
+
+			Date lastAutoSave = _getLastAutosaveDate(
+				lockedLayoutsGroupConfiguration, timeWithoutAutosave);
+
+			if (DateUtil.compareTo((Date)columns[1], lastAutoSave) <= 0) {
+				_lockManager.unlock(
+					Layout.class.getName(), String.valueOf(layout.getPlid()));
+			}
+		}
 	}
 
 	@Reference
