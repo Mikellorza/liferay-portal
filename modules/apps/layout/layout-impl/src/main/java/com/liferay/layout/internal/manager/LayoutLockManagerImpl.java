@@ -6,6 +6,7 @@
 package com.liferay.layout.internal.manager;
 
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
+import com.liferay.layout.configuration.LockedLayoutsGroupConfiguration;
 import com.liferay.layout.constants.LockedLayoutType;
 import com.liferay.layout.manager.LayoutLockManager;
 import com.liferay.layout.model.LockedLayout;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.portlet.ActionRequest;
@@ -289,9 +291,11 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 	}
 
 	@Override
-	public void unlockLayouts(long companyId, long timeWithoutAutosave) {
-		Date lastAutosaveDate = new Date(
-			System.currentTimeMillis() - (timeWithoutAutosave * Time.MINUTE));
+	public void unlockLayouts(
+		long companyId,
+		Map<Long, LockedLayoutsGroupConfiguration>
+			lockedLayoutsGroupConfigurations,
+		long timeWithoutAutosave) {
 
 		List<Long> plids = _layoutLocalService.dslQuery(
 			DSLQueryFactoryUtil.selectDistinct(
@@ -309,7 +313,8 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 						DSLFunctionFactoryUtil.castText(
 							LayoutTable.INSTANCE.plid))
 				).and(
-					LockTable.INSTANCE.createDate.lt(lastAutosaveDate)
+					_getCreateDatePredicate(
+						lockedLayoutsGroupConfigurations, timeWithoutAutosave)
 				)
 			).where(
 				LayoutTable.INSTANCE.classPK.gt(
@@ -383,6 +388,21 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 		for (Long plid : plids) {
 			_lockManager.unlock(Layout.class.getName(), String.valueOf(plid));
 		}
+	}
+
+	private Predicate _getCreateDatePredicate(
+		Map<Long, LockedLayoutsGroupConfiguration>
+			lockedLayoutsGroupConfigurations,
+		long timeWithoutAutosave) {
+
+		if (!lockedLayoutsGroupConfigurations.isEmpty()) {
+			return null;
+		}
+
+		return LockTable.INSTANCE.createDate.lt(
+			new Date(
+				System.currentTimeMillis() -
+					(timeWithoutAutosave * Time.MINUTE)));
 	}
 
 	private Predicate _getLayoutPageTemplateEntryTableLeftJoinOnPredicate(
