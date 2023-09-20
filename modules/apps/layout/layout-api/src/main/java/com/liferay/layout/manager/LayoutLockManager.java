@@ -5,6 +5,7 @@
 
 package com.liferay.layout.manager;
 
+import com.liferay.layout.configuration.LockedLayoutsGroupConfiguration;
 import com.liferay.layout.constants.LockedLayoutType;
 import com.liferay.layout.model.LockedLayout;
 import com.liferay.layout.model.LockedLayoutOrder;
@@ -15,6 +16,7 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 
@@ -45,7 +47,11 @@ public interface LayoutLockManager {
 
 	public void unlock(Layout layout, long userId);
 
-	public void unlockLayouts(long companyId, long timeWithoutAutosave);
+	public void unlockLayouts(
+		long companyId,
+		Map<Long, LockedLayoutsGroupConfiguration>
+			lockedLayoutsGroupConfigurations,
+		long timeWithoutAutosave);
 
 	public void unlockLayoutsByUserId(long companyId, long userId);
 
