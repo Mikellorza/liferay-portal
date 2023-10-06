@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutPrototypeLocalService;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
+import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.upgrade.BaseSQLServerDatetimeUpgradeProcess;
@@ -196,6 +197,12 @@ public class LayoutPageTemplateServiceUpgradeStepRegistrator
 			"5.2.0", "5.3.0", new LayoutPageTemplateCollectionUpgradeProcess());
 
 		registry.register("5.3.0", "5.3.1", new DummyUpgradeProcess());
+
+		registry.register(
+			"5.3.1", "5.4.0",
+			new com.liferay.layout.page.template.internal.upgrade.v5_4_0.
+				ResourcePermissionUpgradeProcess(
+					_companyLocalService, _resourceLocalService));
 	}
 
 	@Reference
@@ -218,6 +225,9 @@ public class LayoutPageTemplateServiceUpgradeStepRegistrator
 
 	@Reference
 	private PortletPreferencesLocalService _portletPreferencesLocalService;
+
+	@Reference
+	private ResourceLocalService _resourceLocalService;
 
 	@Reference
 	private ResourcePermissionLocalService _resourcePermissionLocalService;
