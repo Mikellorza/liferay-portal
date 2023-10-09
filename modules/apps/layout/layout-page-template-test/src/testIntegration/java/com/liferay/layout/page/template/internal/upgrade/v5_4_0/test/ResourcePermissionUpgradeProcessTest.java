@@ -54,6 +54,15 @@ public class ResourcePermissionUpgradeProcessTest {
 		_company = _companyLocalService.getCompany(
 			TestPropsValues.getCompanyId());
 
+		_guestRole = _roleLocalService.getRole(
+			_company.getCompanyId(), RoleConstants.GUEST);
+
+		_userRole = _roleLocalService.getRole(
+			_company.getCompanyId(), RoleConstants.USER);
+
+		_ownerRole = _roleLocalService.getRole(
+			_company.getCompanyId(), RoleConstants.OWNER);
+
 		_upgradeProcess = UpgradeTestUtil.getUpgradeStep(
 			_upgradeStepRegistrator, _CLASS_NAME);
 	}
@@ -77,8 +86,35 @@ public class ResourcePermissionUpgradeProcessTest {
 
 		_upgradeProcess.upgrade();
 
-		Role role = _roleLocalService.getRole(
-			_company.getCompanyId(), RoleConstants.GUEST);
+		_assertResourcePermissions(layoutPageTemplateEntry);
+	}
+
+	@Test
+	public void testUpgradeProcessOfLayoutPageTemplateEntryWithSingleResourcePermission()
+		throws Exception {
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_layoutPageTemplateEntryLocalService.addLayoutPageTemplateEntry(
+				TestPropsValues.getUserId(), _company.getGroupId(), 0, 0, 0,
+				RandomTestUtil.randomString(),
+				LayoutPageTemplateEntryTypeConstants.TYPE_WIDGET_PAGE, 0, true,
+				0, 0, 0, WorkflowConstants.STATUS_APPROVED,
+				new ServiceContext());
+
+		_resourcePermissionLocalService.deleteResourcePermissions(
+			_company.getCompanyId(), LayoutPageTemplateEntry.class.getName(),
+			ResourceConstants.SCOPE_INDIVIDUAL, _guestRole.getRoleId());
+		_resourcePermissionLocalService.deleteResourcePermissions(
+			_company.getCompanyId(), LayoutPageTemplateEntry.class.getName(),
+			ResourceConstants.SCOPE_INDIVIDUAL, _userRole.getRoleId());
+
+		_upgradeProcess.upgrade();
+
+		_assertResourcePermissions(layoutPageTemplateEntry);
+	}
+
+	private void _assertResourcePermissions(
+		LayoutPageTemplateEntry layoutPageTemplateEntry) {
 
 		ResourcePermission resourcePermission =
 			_resourcePermissionLocalService.fetchResourcePermission(
@@ -87,14 +123,11 @@ public class ResourcePermissionUpgradeProcessTest {
 				ResourceConstants.SCOPE_INDIVIDUAL,
 				String.valueOf(
 					layoutPageTemplateEntry.getLayoutPageTemplateEntryId()),
-				role.getRoleId());
+				_guestRole.getRoleId());
 
 		Assert.assertNotNull(resourcePermission);
 		Assert.assertEquals(1, resourcePermission.getActionIds());
 
-		role = _roleLocalService.getRole(
-			_company.getCompanyId(), RoleConstants.OWNER);
-
 		resourcePermission =
 			_resourcePermissionLocalService.fetchResourcePermission(
 				_company.getCompanyId(),
@@ -102,14 +135,11 @@ public class ResourcePermissionUpgradeProcessTest {
 				ResourceConstants.SCOPE_INDIVIDUAL,
 				String.valueOf(
 					layoutPageTemplateEntry.getLayoutPageTemplateEntryId()),
-				role.getRoleId());
+				_ownerRole.getRoleId());
 
 		Assert.assertNotNull(resourcePermission);
 		Assert.assertEquals(15, resourcePermission.getActionIds());
 
-		role = _roleLocalService.getRole(
-			_company.getCompanyId(), RoleConstants.USER);
-
 		resourcePermission =
 			_resourcePermissionLocalService.fetchResourcePermission(
 				_company.getCompanyId(),
@@ -117,7 +147,7 @@ public class ResourcePermissionUpgradeProcessTest {
 				ResourceConstants.SCOPE_INDIVIDUAL,
 				String.valueOf(
 					layoutPageTemplateEntry.getLayoutPageTemplateEntryId()),
-				role.getRoleId());
+				_userRole.getRoleId());
 
 		Assert.assertNotNull(resourcePermission);
 		Assert.assertEquals(1, resourcePermission.getActionIds());
@@ -136,10 +166,13 @@ public class ResourcePermissionUpgradeProcessTest {
 	private static UpgradeStepRegistrator _upgradeStepRegistrator;
 
 	private Company _company;
+	private Role _guestRole;
 
 	@Inject
 	private LayoutPageTemplateEntryLocalService
 		_layoutPageTemplateEntryLocalService;
+
+	private Role _ownerRole;
 
 	@Inject
 	private ResourcePermissionLocalService _resourcePermissionLocalService;
@@ -148,5 +181,6 @@ public class ResourcePermissionUpgradeProcessTest {
 	private RoleLocalService _roleLocalService;
 
 	private UpgradeProcess _upgradeProcess;
+	private Role _userRole;
 
 }
