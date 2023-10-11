@@ -31,8 +31,8 @@ public interface LayoutLockManager {
 	public void getLock(ActionRequest actionRequest) throws PortalException;
 
 	public List<LockedLayout> getLockedLayouts(
-		long companyId, long groupId, LockedLayoutOrder lockedLayoutOrder,
-		LockedLayoutType lockedLayoutType);
+		long companyId, long groupId, Locale locale,
+		LockedLayoutOrder lockedLayoutOrder, LockedLayoutType lockedLayoutType);
 
 	public String getLockedLayoutURL(ActionRequest actionRequest);
 
