@@ -50,6 +50,8 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Time;
@@ -62,6 +64,8 @@ import com.liferay.portal.model.impl.LayoutModelImpl;
 import java.sql.Types;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -165,7 +169,8 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 
 	@Override
 	public List<LockedLayout> getLockedLayouts(
-		long companyId, long groupId, LockedLayoutOrder lockedLayoutOrder,
+		long companyId, long groupId, Locale locale,
+		LockedLayoutOrder lockedLayoutOrder,
 		LockedLayoutType lockedLayoutType) {
 
 		List<Object[]> results = _layoutLocalService.dslQuery(
@@ -215,6 +220,39 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 					GetterUtil.getLong(columns[3]),
 					GetterUtil.getString(columns[4]),
 					GetterUtil.getString(columns[5])));
+		}
+
+		if ((lockedLayoutOrder != null) &&
+			Objects.equals(
+				lockedLayoutOrder.getLockedLayoutOrderType(),
+				LockedLayoutOrder.LockedLayoutOrderType.NAME)) {
+
+			Collections.sort(
+				lockedLayouts,
+				new Comparator<LockedLayout>() {
+
+					@Override
+					public int compare(
+						LockedLayout lockedLayout1,
+						LockedLayout lockedLayout2) {
+
+						String languageId = LocaleUtil.toLanguageId(locale);
+
+						String name1 = _localization.getLocalization(
+							lockedLayout1.getName(), languageId);
+						String name2 = _localization.getLocalization(
+							lockedLayout2.getName(), languageId);
+
+						int value = name1.compareToIgnoreCase(name2);
+
+						if (lockedLayoutOrder.isAscending()) {
+							return value;
+						}
+
+						return -value;
+					}
+
+				});
 		}
 
 		return lockedLayouts;
@@ -805,6 +843,9 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 	@Reference
 	private LayoutUtilityPageEntryLocalService
 		_layoutUtilityPageEntryLocalService;
+
+	@Reference
+	private Localization _localization;
 
 	@Reference
 	private LockManager _lockManager;
