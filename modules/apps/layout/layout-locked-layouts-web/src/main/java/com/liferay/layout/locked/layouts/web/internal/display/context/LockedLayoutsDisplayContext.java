@@ -220,7 +220,8 @@ public class LockedLayoutsDisplayContext {
 
 		_lockedLayouts = _layoutLockManager.getLockedLayouts(
 			_themeDisplay.getCompanyId(), _themeDisplay.getScopeGroupId(),
-			getLockedLayoutOrder(), getLockedLayoutType());
+			_themeDisplay.getLocale(), getLockedLayoutOrder(),
+			getLockedLayoutType());
 
 		return _lockedLayouts;
 	}

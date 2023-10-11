@@ -123,8 +123,8 @@ public class LayoutLockManagerTest {
 		_assertLockedLayouts(
 			2, layoutPlids,
 			_layoutLockManager.getLockedLayouts(
-				TestPropsValues.getCompanyId(), _group.getGroupId(), null,
-				null));
+				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(), null, null));
 	}
 
 	@Test
@@ -138,7 +138,8 @@ public class LayoutLockManagerTest {
 		_assertLockedLayouts(
 			1, new long[] {draftLayout.getPlid()},
 			_layoutLockManager.getLockedLayouts(
-				TestPropsValues.getCompanyId(), _group.getGroupId(), null,
+				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(), null,
 				LockedLayoutType.COLLECTION_PAGE));
 	}
 
@@ -153,8 +154,8 @@ public class LayoutLockManagerTest {
 		_assertLockedLayouts(
 			1, new long[] {draftLayout.getPlid()},
 			_layoutLockManager.getLockedLayouts(
-				TestPropsValues.getCompanyId(), _group.getGroupId(), null,
-				LockedLayoutType.CONTENT_PAGE));
+				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(), null, LockedLayoutType.CONTENT_PAGE));
 	}
 
 	@Test
@@ -174,7 +175,8 @@ public class LayoutLockManagerTest {
 		_assertLockedLayouts(
 			1, new long[] {draftLayout.getPlid()},
 			_layoutLockManager.getLockedLayouts(
-				TestPropsValues.getCompanyId(), _group.getGroupId(), null,
+				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(), null,
 				LockedLayoutType.CONTENT_PAGE_TEMPLATE));
 	}
 
@@ -196,7 +198,8 @@ public class LayoutLockManagerTest {
 		_assertLockedLayouts(
 			1, new long[] {draftLayout.getPlid()},
 			_layoutLockManager.getLockedLayouts(
-				TestPropsValues.getCompanyId(), _group.getGroupId(), null,
+				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(), null,
 				LockedLayoutType.DISPLAY_PAGE_TEMPLATE));
 	}
 
@@ -215,8 +218,8 @@ public class LayoutLockManagerTest {
 		_assertLockedLayouts(
 			1, new long[] {draftLayout.getPlid()},
 			_layoutLockManager.getLockedLayouts(
-				TestPropsValues.getCompanyId(), _group.getGroupId(), null,
-				LockedLayoutType.MASTER_PAGE));
+				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(), null, LockedLayoutType.MASTER_PAGE));
 	}
 
 	@Test
@@ -237,8 +240,8 @@ public class LayoutLockManagerTest {
 		_assertLockedLayouts(
 			1, new long[] {draftLayout.getPlid()},
 			_layoutLockManager.getLockedLayouts(
-				TestPropsValues.getCompanyId(), _group.getGroupId(), null,
-				LockedLayoutType.UTILITY_PAGE));
+				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(), null, LockedLayoutType.UTILITY_PAGE));
 	}
 
 	@Test
@@ -249,6 +252,7 @@ public class LayoutLockManagerTest {
 			_getLockedLayoutsCreateDates(Collections::sort),
 			_layoutLockManager.getLockedLayouts(
 				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(),
 				new LockedLayoutOrder(
 					true, LocaleUtil.getDefault(),
 					LockedLayoutOrder.LockedLayoutOrderType.LAST_AUTOSAVE),
@@ -263,6 +267,7 @@ public class LayoutLockManagerTest {
 			_getLockedLayoutsCreateDates(null),
 			_layoutLockManager.getLockedLayouts(
 				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(),
 				new LockedLayoutOrder(
 					false, LocaleUtil.getDefault(),
 					LockedLayoutOrder.LockedLayoutOrderType.LAST_AUTOSAVE),
@@ -276,6 +281,7 @@ public class LayoutLockManagerTest {
 				list -> Collections.sort(list, String.CASE_INSENSITIVE_ORDER)),
 			_layoutLockManager.getLockedLayouts(
 				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(),
 				new LockedLayoutOrder(
 					true, LocaleUtil.getDefault(),
 					LockedLayoutOrder.LockedLayoutOrderType.NAME),
@@ -290,6 +296,7 @@ public class LayoutLockManagerTest {
 					list, String.CASE_INSENSITIVE_ORDER.reversed())),
 			_layoutLockManager.getLockedLayouts(
 				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(),
 				new LockedLayoutOrder(
 					false, LocaleUtil.getDefault(),
 					LockedLayoutOrder.LockedLayoutOrderType.NAME),
@@ -303,6 +310,7 @@ public class LayoutLockManagerTest {
 				list -> Collections.sort(list, String.CASE_INSENSITIVE_ORDER)),
 			_layoutLockManager.getLockedLayouts(
 				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(),
 				new LockedLayoutOrder(
 					true, LocaleUtil.getDefault(),
 					LockedLayoutOrder.LockedLayoutOrderType.USER),
@@ -317,6 +325,7 @@ public class LayoutLockManagerTest {
 					list, String.CASE_INSENSITIVE_ORDER.reversed())),
 			_layoutLockManager.getLockedLayouts(
 				TestPropsValues.getCompanyId(), _group.getGroupId(),
+				LocaleUtil.getDefault(),
 				new LockedLayoutOrder(
 					false, LocaleUtil.getDefault(),
 					LockedLayoutOrder.LockedLayoutOrderType.USER),
