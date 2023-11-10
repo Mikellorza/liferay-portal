@@ -6,6 +6,7 @@
 package com.liferay.portlet.asset.util.comparator;
 
 import com.liferay.asset.kernel.model.AssetTag;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 
 /**
@@ -20,11 +21,11 @@ public class AssetTagNameComparator extends OrderByComparator<AssetTag> {
 	public static final String[] ORDER_BY_FIELDS = {"name"};
 
 	public AssetTagNameComparator() {
-		this(true, false);
+		this(true, _isCaseSensitive());
 	}
 
 	public AssetTagNameComparator(boolean ascending) {
-		this(ascending, false);
+		this(ascending, _isCaseSensitive());
 	}
 
 	public AssetTagNameComparator(boolean ascending, boolean caseSensitive) {
@@ -70,6 +71,14 @@ public class AssetTagNameComparator extends OrderByComparator<AssetTag> {
 	@Override
 	public boolean isAscending() {
 		return _ascending;
+	}
+
+	private static boolean _isCaseSensitive() {
+		if (FeatureFlagManagerUtil.isEnabled("LPS-194362")) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private final boolean _ascending;
