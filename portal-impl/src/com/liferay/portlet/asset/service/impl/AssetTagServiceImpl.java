@@ -10,6 +10,7 @@ import com.liferay.asset.kernel.model.AssetTagDisplay;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -19,6 +20,7 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Autocomplete;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -174,9 +176,25 @@ public class AssetTagServiceImpl extends AssetTagServiceBaseImpl {
 		OrderByComparator<AssetTag> orderByComparator) {
 
 		if (Validator.isNull(name)) {
+			if (FeatureFlagManagerUtil.isEnabled("LPS-194362")) {
+				return sanitize(
+					ListUtil.sort(
+						assetTagPersistence.findByGroupId(groupIds, start, end),
+						orderByComparator));
+			}
+
 			return sanitize(
 				assetTagPersistence.findByGroupId(
 					groupIds, start, end, orderByComparator));
+		}
+
+		if (FeatureFlagManagerUtil.isEnabled("LPS-194362")) {
+			return sanitize(
+				ListUtil.sort(
+					assetTagPersistence.findByG_LikeN(
+						groupIds, StringUtil.quote(name, StringPool.PERCENT),
+						start, end),
+					orderByComparator));
 		}
 
 		return sanitize(

@@ -354,6 +354,12 @@ public class AssetTagLocalServiceImpl extends AssetTagLocalServiceBaseImpl {
 		long groupId, int start, int end,
 		OrderByComparator<AssetTag> orderByComparator) {
 
+		if (FeatureFlagManagerUtil.isEnabled("LPS-194362")) {
+			return ListUtil.sort(
+				assetTagPersistence.findByGroupId(groupId, start, end),
+				orderByComparator);
+		}
+
 		return assetTagPersistence.findByGroupId(
 			groupId, start, end, orderByComparator);
 	}

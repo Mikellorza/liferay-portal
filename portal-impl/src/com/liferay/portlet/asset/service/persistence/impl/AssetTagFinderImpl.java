@@ -21,9 +21,11 @@ import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portlet.asset.model.impl.AssetTagImpl;
+import com.liferay.portlet.asset.util.comparator.AssetTagNameComparator;
 import com.liferay.social.kernel.model.SocialActivityCounterTable;
 
 import java.util.ArrayList;
@@ -206,13 +208,13 @@ public class AssetTagFinderImpl
 				}
 			).orderBy(
 				orderByStep -> {
-					if (orderByComparator == null) {
-						return orderByStep.orderBy(
-							AssetTagTable.INSTANCE.name.ascending());
+					if (FeatureFlagManagerUtil.isEnabled("LPS-194362")) {
+						return null;
 					}
 
 					return orderByStep.orderBy(
-						AssetTagTable.INSTANCE, orderByComparator);
+						AssetTagTable.INSTANCE,
+						_getOrderByComparator(orderByComparator));
 				}
 			);
 
@@ -220,8 +222,15 @@ public class AssetTagFinderImpl
 
 			sqlQuery.addEntity("AssetTag", AssetTagImpl.class);
 
-			return (List<AssetTag>)QueryUtil.list(
-				sqlQuery, getDialect(), start, end);
+			if (!FeatureFlagManagerUtil.isEnabled("LPS-194362")) {
+				return (List<AssetTag>)QueryUtil.list(
+					sqlQuery, getDialect(), start, end);
+			}
+
+			return ListUtil.sort(
+				(List<AssetTag>)QueryUtil.list(
+					sqlQuery, getDialect(), start, end),
+				_getOrderByComparator(orderByComparator));
 		}
 		catch (Exception exception) {
 			throw new SystemException(exception);
@@ -315,6 +324,16 @@ public class AssetTagFinderImpl
 		}
 
 		return name;
+	}
+
+	private OrderByComparator<AssetTag> _getOrderByComparator(
+		OrderByComparator<AssetTag> orderByComparator) {
+
+		if (orderByComparator == null) {
+			orderByComparator = new AssetTagNameComparator(true);
+		}
+
+		return orderByComparator;
 	}
 
 }
