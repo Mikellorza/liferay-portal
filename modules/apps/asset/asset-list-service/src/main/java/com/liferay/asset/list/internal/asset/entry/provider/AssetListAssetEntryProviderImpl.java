@@ -31,7 +31,10 @@ import com.liferay.asset.util.AssetRendererFactoryClassProvider;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.util.DLFileEntryTypeUtil;
+import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.petra.function.transform.TransformUtil;
@@ -51,6 +54,9 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.TermsFilter;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -67,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -248,7 +255,10 @@ public class AssetListAssetEntryProviderImpl
 			}
 
 			assetEntryQuery.setAttribute(
-				"ddmStructureFieldValue", ddmStructureFieldValue);
+				"ddmStructureFieldValue",
+				_getDDMStructureFieldLocalizedValue(
+					classTypeIds[0], ddmStructureFieldName,
+					ddmStructureFieldValue));
 		}
 
 		String orderByColumn1 = GetterUtil.getString(
@@ -685,6 +695,48 @@ public class AssetListAssetEntryProviderImpl
 		return combinedSegmentsEntryIds;
 	}
 
+	private String _getDDMStructureFieldLocalizedValue(
+		long ddmStructureId, String ddmStructureFieldName,
+		String ddmStructureFieldValue) {
+
+		if (ddmStructureId <= 0) {
+			return ddmStructureFieldValue;
+		}
+
+		DDMStructure ddmStructure = _ddmStructureLocalService.fetchStructure(
+			ddmStructureId);
+
+		if (ddmStructure == null) {
+			return ddmStructureFieldValue;
+		}
+
+		try {
+			DDMFormField ddmFormField = ddmStructure.getDDMFormField(
+				ddmStructureFieldName);
+
+			DDMFormFieldOptions ddmFormFieldOptions =
+				(DDMFormFieldOptions)ddmFormField.getProperty("options");
+
+			Map<String, LocalizedValue> options =
+				ddmFormFieldOptions.getOptions();
+
+			for (Map.Entry<String, LocalizedValue> entry : options.entrySet()) {
+				LocalizedValue localizedValue = entry.getValue();
+
+				ddmStructureFieldValue = StringUtil.replace(
+					ddmStructureFieldValue, entry.getKey(),
+					localizedValue.getString(_getLocale()));
+			}
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+		}
+
+		return ddmStructureFieldValue;
+	}
+
 	private List<AssetEntry> _getDynamicAssetEntries(
 		AssetListEntry assetListEntry, long[] segmentsEntryIds,
 		long[][] assetCategoryIds, String[][] assetTagNames, String keywords,
@@ -841,6 +893,23 @@ public class AssetListAssetEntryProviderImpl
 		}
 
 		return allKeywords;
+	}
+
+	private Locale _getLocale() {
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		if (serviceContext == null) {
+			return LocaleUtil.getSiteDefault();
+		}
+
+		ThemeDisplay themeDisplay = serviceContext.getThemeDisplay();
+
+		if (themeDisplay == null) {
+			return LocaleUtil.getSiteDefault();
+		}
+
+		return themeDisplay.getLocale();
 	}
 
 	private List<AssetEntry> _getManualAssetEntries(

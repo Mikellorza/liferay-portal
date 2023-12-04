@@ -43,6 +43,11 @@ import com.liferay.asset.util.LinkedAssetEntryIdsUtil;
 import com.liferay.asset.util.comparator.AssetRendererFactoryTypeNameComparator;
 import com.liferay.document.library.kernel.document.conversion.DocumentConversionUtil;
 import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.info.collection.provider.CollectionQuery;
@@ -2184,7 +2189,10 @@ public class AssetPublisherDisplayContext {
 				classTypeField.getFieldReference(), locale));
 
 		assetEntryQuery.setAttribute(
-			"ddmStructureFieldValue", getDDMStructureFieldValue());
+			"ddmStructureFieldValue",
+			_getDDMStructureFieldLocalizedValue(
+				classTypeIds[0], getDDMStructureFieldName(),
+				getDDMStructureFieldValue()));
 	}
 
 	private List<AssetCategory> _filterAssetCategories(long[] categoryIds) {
@@ -2278,6 +2286,48 @@ public class AssetPublisherDisplayContext {
 				scopeGroup, _themeDisplay.getScopeGroupId(),
 				_portletResponse.getNamespace() + "selectAsset",
 				assetEntryItemSelectorCriterion));
+	}
+
+	private String _getDDMStructureFieldLocalizedValue(
+		long ddmStructureId, String ddmStructureFieldName,
+		String ddmStructureFieldValue) {
+
+		if (ddmStructureId <= 0) {
+			return ddmStructureFieldValue;
+		}
+
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchStructure(
+			ddmStructureId);
+
+		if (ddmStructure == null) {
+			return ddmStructureFieldValue;
+		}
+
+		try {
+			DDMFormField ddmFormField = ddmStructure.getDDMFormField(
+				ddmStructureFieldName);
+
+			DDMFormFieldOptions ddmFormFieldOptions =
+				(DDMFormFieldOptions)ddmFormField.getProperty("options");
+
+			Map<String, LocalizedValue> options =
+				ddmFormFieldOptions.getOptions();
+
+			for (Map.Entry<String, LocalizedValue> entry : options.entrySet()) {
+				LocalizedValue localizedValue = entry.getValue();
+
+				ddmStructureFieldValue = StringUtil.replace(
+					ddmStructureFieldValue, entry.getKey(),
+					localizedValue.getString(_themeDisplay.getLocale()));
+			}
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+		}
+
+		return ddmStructureFieldValue;
 	}
 
 	private String _getSegmentsAnonymousUserId() {
