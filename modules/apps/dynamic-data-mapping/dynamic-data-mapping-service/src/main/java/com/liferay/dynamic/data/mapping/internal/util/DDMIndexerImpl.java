@@ -132,7 +132,8 @@ public class DDMIndexerImpl implements DDMIndexer {
 							ddmStructure.getStructureId(),
 							ddmFormField.getFieldReference(), locale,
 							indexType);
-						value = field.getValue(locale);
+						value = _getValue(
+							ddmFormField, locale, field.getValue(locale));
 
 						if (legacyDDMIndexFieldsEnabled) {
 							_addToDocument(
@@ -150,7 +151,9 @@ public class DDMIndexerImpl implements DDMIndexer {
 					name = encodeName(
 						ddmStructure.getStructureId(),
 						ddmFormField.getFieldReference(), null, indexType);
-					value = field.getValue(ddmFormValues.getDefaultLocale());
+					value = _getValue(
+						ddmFormField, ddmFormValues.getDefaultLocale(),
+						field.getValue(ddmFormValues.getDefaultLocale()));
 
 					if (legacyDDMIndexFieldsEnabled) {
 						_addToDocument(document, field, indexType, name, value);
@@ -424,7 +427,7 @@ public class DDMIndexerImpl implements DDMIndexer {
 
 		_addToDocument(
 			document, ddmStructureField, indexType, valueFieldName,
-			_getSortableValue(ddmFormField, locale, value), value);
+			_getValue(ddmFormField, locale, value), value);
 
 		Map<String, com.liferay.portal.kernel.search.Field> documentFields =
 			document.getFields();
@@ -792,7 +795,7 @@ public class DDMIndexerImpl implements DDMIndexer {
 		else {
 			_addFieldValue(
 				sb, ddmFormField.getType(),
-				_getSortableValue(ddmFormField, locale, serializable));
+				_getValue(ddmFormField, locale, serializable));
 		}
 
 		sb.append(StringPool.SPACE);
@@ -873,7 +876,7 @@ public class DDMIndexerImpl implements DDMIndexer {
 			name + "_String");
 	}
 
-	private String _getSortableValue(
+	private String _getValue(
 		DDMFormField ddmFormField, Locale locale, Serializable value) {
 
 		if (value == null) {
