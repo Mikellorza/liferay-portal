@@ -47,7 +47,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.info.collection.provider.CollectionQuery;
@@ -175,6 +175,7 @@ public class AssetPublisherDisplayContext {
 			AssetPublisherHelper assetPublisherHelper,
 			AssetPublisherWebConfiguration assetPublisherWebConfiguration,
 			AssetPublisherWebHelper assetPublisherWebHelper,
+			DDMStructureLocalService ddmStructureLocalService,
 			InfoItemServiceRegistry infoItemServiceRegistry,
 			ItemSelector itemSelector, Portal portal,
 			PortletRequest portletRequest, PortletResponse portletResponse,
@@ -191,6 +192,7 @@ public class AssetPublisherDisplayContext {
 		_assetPublisherHelper = assetPublisherHelper;
 		_assetPublisherWebConfiguration = assetPublisherWebConfiguration;
 		_assetPublisherWebHelper = assetPublisherWebHelper;
+		_ddmStructureLocalService = ddmStructureLocalService;
 		_infoItemServiceRegistry = infoItemServiceRegistry;
 		_itemSelector = itemSelector;
 		_portal = portal;
@@ -2296,7 +2298,7 @@ public class AssetPublisherDisplayContext {
 			return ddmStructureFieldValue;
 		}
 
-		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchStructure(
+		DDMStructure ddmStructure = _ddmStructureLocalService.fetchStructure(
 			ddmStructureId);
 
 		if (ddmStructure == null) {
@@ -2481,6 +2483,7 @@ public class AssetPublisherDisplayContext {
 	private String _ddmStructureFieldLabel;
 	private String _ddmStructureFieldName;
 	private String _ddmStructureFieldValue;
+	private final DDMStructureLocalService _ddmStructureLocalService;
 	private Boolean _defaultAssetPublisher;
 	private String _displayStyle;
 	private Long _displayStyleGroupId;
