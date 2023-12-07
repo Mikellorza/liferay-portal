@@ -26,6 +26,8 @@ if (Validator.isNotNull(portletConfigurationPermissionsDisplayContext.getModelRe
 }
 %>
 
+<liferay-ui:success key="modelResourceSuccessMessage" message='<%= GetterUtil.getString(SessionMessages.get(renderRequest, "modelResourceSuccessMessage")) %>' />
+
 <div class="cadmin edit-permissions portlet-configuration-edit-permissions">
 	<div class="portlet-configuration-body-content">
 		<clay:management-toolbar
