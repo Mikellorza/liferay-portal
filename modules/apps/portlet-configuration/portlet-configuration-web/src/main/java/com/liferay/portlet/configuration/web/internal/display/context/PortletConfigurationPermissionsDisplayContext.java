@@ -11,6 +11,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.ResourcePrimKeyException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
@@ -653,6 +654,16 @@ public class PortletConfigurationPermissionsDisplayContext {
 			"returnToFullPageURL", _getReturnToFullPageURL()
 		).setParameter(
 			"roleTypes", _getRoleTypesParam()
+		).setParameter(
+			"showModelResourceSuccessMessage",
+			() -> {
+				if (!FeatureFlagManagerUtil.isEnabled("LPS-196847")) {
+					return null;
+				}
+
+				return ParamUtil.getBoolean(
+					_httpServletRequest, "showModelResourceSuccessMessage");
+			}
 		).setWindowState(
 			LiferayWindowState.POP_UP
 		).buildPortletURL();
