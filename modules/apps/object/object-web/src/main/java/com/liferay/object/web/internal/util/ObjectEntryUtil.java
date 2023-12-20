@@ -26,6 +26,7 @@ import com.liferay.object.scope.ObjectScopeProvider;
 import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectEntryLocalServiceUtil;
 import com.liferay.object.service.ObjectRelationshipLocalServiceUtil;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.util.DateUtil;
@@ -153,8 +154,13 @@ public class ObjectEntryUtil {
 					fetchObjectRelationshipByObjectFieldId2(
 						objectField.getObjectFieldId());
 
-			return ObjectEntryLocalServiceUtil.getTitleValue(
-				objectRelationship.getObjectDefinitionId1(), primaryKey);
+			return JSONUtil.put(
+				"label",
+				ObjectEntryLocalServiceUtil.getTitleValue(
+					objectRelationship.getObjectDefinitionId1(), primaryKey)
+			).put(
+				"value", primaryKey
+			);
 		}
 
 		return value;

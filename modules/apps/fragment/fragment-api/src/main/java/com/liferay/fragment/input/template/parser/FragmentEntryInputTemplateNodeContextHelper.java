@@ -41,6 +41,8 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.InfoFormException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -95,9 +97,10 @@ public class FragmentEntryInputTemplateNodeContextHelper {
 	}
 
 	public InputTemplateNode toInputTemplateNode(
-		FragmentEntryLink fragmentEntryLink,
-		HttpServletRequest httpServletRequest, InfoForm infoForm,
-		Locale locale) {
+			FragmentEntryLink fragmentEntryLink,
+			HttpServletRequest httpServletRequest, InfoForm infoForm,
+			Locale locale)
+		throws JSONException {
 
 		String errorMessage = StringPool.BLANK;
 
@@ -271,9 +274,19 @@ public class FragmentEntryInputTemplateNodeContextHelper {
 			value = infoFormParameterMap.get(infoField.getName());
 		}
 		else {
-			value = _getValue(
+			String infoFieldValue = _getValue(
 				value, httpServletRequest, infoField, infoForm.getName(),
 				locale);
+
+			value = infoFieldValue;
+
+			if (infoFieldType instanceof RelationshipInfoFieldType) {
+				JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+					infoFieldValue);
+
+				label = jsonObject.getString("label");
+				value = jsonObject.getString("value");
+			}
 		}
 
 		InputTemplateNode inputTemplateNode = new InputTemplateNode(
@@ -768,6 +781,12 @@ public class FragmentEntryInputTemplateNodeContextHelper {
 			if (Objects.equals(bigDecimal.signum(), 0)) {
 				return "0";
 			}
+		}
+
+		if (infoField.getInfoFieldType() ==
+				RelationshipInfoFieldType.INSTANCE) {
+
+			return String.valueOf(infoFieldValue.getValue());
 		}
 
 		if (infoField.getInfoFieldType() == SelectInfoFieldType.INSTANCE) {
