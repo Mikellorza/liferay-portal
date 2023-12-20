@@ -123,7 +123,7 @@ public class LayoutsAdminManagementToolbarDisplayContext
 						StringPool.BLANK, Layout.class.getName(),
 						_themeDisplay.getScopeGroupId(),
 						LiferayWindowState.POP_UP.toString(),
-						_themeDisplay.getRequest(), false));
+						_themeDisplay.getRequest(), true));
 				dropdownItem.putData(
 					"maxItemsToShowInfoMessage", String.valueOf(200));
 				dropdownItem.setIcon("password-policies");
