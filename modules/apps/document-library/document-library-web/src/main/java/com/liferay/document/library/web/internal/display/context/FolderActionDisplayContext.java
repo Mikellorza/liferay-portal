@@ -232,7 +232,7 @@ public class FolderActionDisplayContext {
 								HtmlUtil.escape(_getModelResourceDescription()),
 								null, String.valueOf(_getResourcePrimKey()),
 								LiferayWindowState.POP_UP.toString(), null,
-								_httpServletRequest);
+								_httpServletRequest, false);
 
 							dropdownItem.putData(
 								"permissionsURL", permissionsURL);
