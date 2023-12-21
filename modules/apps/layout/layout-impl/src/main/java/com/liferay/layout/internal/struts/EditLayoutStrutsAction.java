@@ -44,7 +44,7 @@ public class EditLayoutStrutsAction implements StrutsAction {
 		}
 		catch (LayoutTypeException layoutTypeException) {
 			jsonObject.put(
-				"message",
+				"errorMessage",
 				_getLayoutTypeExceptionMessage(
 					httpServletRequest, layoutTypeException));
 		}
