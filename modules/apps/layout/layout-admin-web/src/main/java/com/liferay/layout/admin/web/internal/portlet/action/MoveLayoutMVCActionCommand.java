@@ -114,6 +114,8 @@ public class MoveLayoutMVCActionCommand extends BaseAddLayoutMVCActionCommand {
 						getLayoutColumnsJSONArray();
 				});
 
+			hideDefaultSuccessMessage(actionRequest);
+
 			JSONPortletResponseUtil.writeJSON(
 				liferayPortletRequest, liferayPortletResponse, jsonObject);
 		}
