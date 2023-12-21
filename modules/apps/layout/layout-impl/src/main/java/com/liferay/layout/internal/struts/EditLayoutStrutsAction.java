@@ -10,7 +10,6 @@ import com.liferay.portal.kernel.exception.LayoutTypeException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutService;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
@@ -48,31 +47,6 @@ public class EditLayoutStrutsAction implements StrutsAction {
 				"message",
 				_getLayoutTypeExceptionMessage(
 					httpServletRequest, layoutTypeException));
-
-			long plid = ParamUtil.getLong(httpServletRequest, "plid");
-
-			if ((layoutTypeException.getType() ==
-					LayoutTypeException.FIRST_LAYOUT) &&
-				(plid > 0)) {
-
-				Layout layout = _layoutLocalService.getLayout(plid);
-
-				jsonObject.put(
-					"groupId", layout.getGroupId()
-				).put(
-					"layoutId", layout.getLayoutId()
-				).put(
-					"originalParentLayoutId", layout.getParentLayoutId()
-				).put(
-					"originalParentPlid", layout.getParentPlid()
-				).put(
-					"originalPriority", layout.getPriority()
-				).put(
-					"plid", plid
-				).put(
-					"status", HttpServletResponse.SC_BAD_REQUEST
-				);
-			}
 		}
 
 		ServletResponseUtil.write(httpServletResponse, jsonObject.toString());
