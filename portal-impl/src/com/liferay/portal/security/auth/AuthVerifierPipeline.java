@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.auth.registry.AuthVerifierRegistry;
 import com.liferay.portal.spring.context.PortalContextLoaderListener;
 
@@ -36,6 +37,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -102,6 +104,27 @@ public class AuthVerifierPipeline {
 		}
 
 		return _createGuestVerificationResult(accessControlContext);
+	}
+
+	private static boolean _isImpersonated(
+		HttpServletRequest httpServletRequest, User user) {
+
+		if (httpServletRequest == null) {
+			return false;
+		}
+
+		HttpServletRequest originalHttpServletRequest =
+			PortalUtil.getOriginalServletRequest(httpServletRequest);
+
+		HttpSession httpSession = originalHttpServletRequest.getSession();
+
+		Long realUserId = (Long)httpSession.getAttribute(WebKeys.USER_ID);
+
+		if ((realUserId == null) || realUserId.equals(user.getUserId())) {
+			return false;
+		}
+
+		return true;
 	}
 
 	private synchronized void _addAuthVerifierConfiguration(
@@ -329,8 +352,9 @@ public class AuthVerifierPipeline {
 
 			if ((user != null) &&
 				(!user.isActive() ||
-				 !user.isEmailAddressVerificationComplete() ||
-				 user.isPasswordReset())) {
+				 ((!user.isEmailAddressVerificationComplete() ||
+				   user.isPasswordReset()) &&
+				  !_isImpersonated(accessControlContext.getRequest(), user)))) {
 
 				long userId = authVerifierResult.getUserId();
 
