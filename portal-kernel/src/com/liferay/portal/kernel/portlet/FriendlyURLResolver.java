@@ -5,6 +5,7 @@
 
 package com.liferay.portal.kernel.portlet;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.LayoutFriendlyURLComposite;
 
@@ -24,6 +25,10 @@ public interface FriendlyURLResolver {
 			String mainPath, String friendlyURL, Map<String, String[]> params,
 			Map<String, Object> requestContext)
 		throws PortalException;
+
+	public default String getDefaultURLSeparator() {
+		return StringPool.BLANK;
+	}
 
 	public LayoutFriendlyURLComposite getLayoutFriendlyURLComposite(
 			long companyId, long groupId, boolean privateLayout,
@@ -51,6 +56,14 @@ public interface FriendlyURLResolver {
 			layoutFriendlyURLComposite, getURLSeparator());
 	}
 
+	public default String getType() {
+		return StringPool.BLANK;
+	}
+
 	public String getURLSeparator();
+
+	public default boolean isURLSeparatorConfigurable() {
+		return false;
+	}
 
 }
