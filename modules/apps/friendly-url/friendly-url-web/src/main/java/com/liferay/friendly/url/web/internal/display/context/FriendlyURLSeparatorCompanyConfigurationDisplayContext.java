@@ -18,12 +18,14 @@ import com.liferay.portal.kernel.portlet.FriendlyURLResolver;
 import com.liferay.portal.kernel.portlet.FriendlyURLResolverRegistryUtil;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -44,7 +46,12 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 	}
 
 	public JSONArray getConfigurableFriendlyURLSeparatorsJSONArray() {
-		JSONArray jsonArray = _jsonFactory.createJSONArray();
+		if (_configurableFriendlyURLSeparatorsJSONArray != null) {
+			return _configurableFriendlyURLSeparatorsJSONArray;
+		}
+
+		JSONArray configurableFriendlyURLSeparatorsJSONArray =
+			_jsonFactory.createJSONArray();
 
 		List<FriendlyURLSeparator> friendlyURLSeparators = new ArrayList<>();
 
@@ -82,7 +89,7 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 		for (FriendlyURLSeparator friendlyURLSeparator :
 				friendlyURLSeparators) {
 
-			jsonArray.put(
+			configurableFriendlyURLSeparatorsJSONArray.put(
 				JSONUtil.put(
 					"label", friendlyURLSeparator.getLabel()
 				).put(
@@ -94,7 +101,18 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 				));
 		}
 
-		return jsonArray;
+		_configurableFriendlyURLSeparatorsJSONArray =
+			configurableFriendlyURLSeparatorsJSONArray;
+
+		return _configurableFriendlyURLSeparatorsJSONArray;
+	}
+
+	public Map<String, Object> getSeparatorFieldsProps() {
+		return HashMapBuilder.<String, Object>put(
+			"fields", getConfigurableFriendlyURLSeparatorsJSONArray()
+		).put(
+			"url", _themeDisplay.getPortalURL()
+		).build();
 	}
 
 	private JSONArray _getConfiguredURLSeparatorsJSONArray() {
@@ -135,6 +153,7 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 	private static final Log _log = LogFactoryUtil.getLog(
 		FriendlyURLSeparatorCompanyConfigurationDisplayContext.class.getName());
 
+	private JSONArray _configurableFriendlyURLSeparatorsJSONArray;
 	private final FriendlyURLSeparatorConfigurationManager
 		_friendlyURLSeparatorConfigurationManager;
 	private final JSONFactory _jsonFactory;
