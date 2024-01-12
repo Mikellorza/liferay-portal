@@ -98,7 +98,8 @@ public class SelectInfoFieldTypeTemplateNodeTransformer
 		for (KeyLocalizedLabelPair keyLocalizedLabelPair :
 				keyLocalizedLabelPairs) {
 
-			selectedOptionValuesJSONArray.put(keyLocalizedLabelPair.getKey());
+			selectedOptionValuesJSONArray.put(
+				keyLocalizedLabelPair.getLabel(locale));
 		}
 
 		return selectedOptionValuesJSONArray;
