@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Mikel Lorza
  */
@@ -80,7 +82,9 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 						if (JSONUtil.isEmpty(
 								configuredURLSeparatorsJSONArray)) {
 
-							return friendlyURLResolver.getDefaultURLSeparator();
+							return StringUtils.substringBetween(
+								friendlyURLResolver.getDefaultURLSeparator(),
+								StringPool.SLASH);
 						}
 
 						for (int i = 0;
@@ -95,7 +99,9 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 									friendlyURLResolver.getKey(),
 									jsonObject.get("key"))) {
 
-								return jsonObject.getString("urlSeparator");
+								return StringUtils.substringBetween(
+									jsonObject.getString("urlSeparator"),
+									StringPool.SLASH);
 							}
 						}
 
