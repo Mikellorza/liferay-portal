@@ -1,0 +1,155 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2024 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.friendly.url.web.internal.display.context;
+
+import com.liferay.friendly.url.configuration.manager.FriendlyURLSeparatorConfigurationManager;
+import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.portlet.FriendlyURLResolverRegistryUtil;
+import com.liferay.portal.kernel.theme.PortletDisplay;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.Validator;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.lang.StringUtils;
+
+/**
+ * @author Mikel Lorza
+ */
+public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
+
+	public FriendlyURLSeparatorCompanyConfigurationDisplayContext(
+		FriendlyURLSeparatorConfigurationManager
+			friendlyURLSeparatorConfigurationManager,
+		JSONFactory jsonFactory, Language language, ThemeDisplay themeDisplay) {
+
+		_friendlyURLSeparatorConfigurationManager =
+			friendlyURLSeparatorConfigurationManager;
+		_jsonFactory = jsonFactory;
+		_language = language;
+		_themeDisplay = themeDisplay;
+	}
+
+	public JSONArray getConfigurableFriendlyURLSeparatorsJSONArray()
+		throws Exception {
+
+		if (_configurableFriendlyURLSeparatorsJSONArray != null) {
+			return _configurableFriendlyURLSeparatorsJSONArray;
+		}
+
+		JSONArray configuredURLSeparatorsJSONArray =
+			_getConfiguredURLSeparatorsJSONArray();
+
+		PortletDisplay portletDisplay = _themeDisplay.getPortletDisplay();
+
+		List<JSONObject> list = TransformUtil.transform(
+			FriendlyURLResolverRegistryUtil.
+				getFriendlyURLResolversAsCollection(),
+			friendlyURLResolver -> {
+				if (!friendlyURLResolver.isURLSeparatorConfigurable() ||
+					Validator.isNull(friendlyURLResolver.getKey())) {
+
+					return null;
+				}
+
+				return JSONUtil.put(
+					"label",
+					_language.get(
+						_themeDisplay.getLocale(),
+						friendlyURLResolver.getKey() + "-url-separator")
+				).put(
+					"name",
+					portletDisplay.getNamespace() + friendlyURLResolver.getKey()
+				).put(
+					"value",
+					() -> {
+						if (JSONUtil.isEmpty(
+								configuredURLSeparatorsJSONArray)) {
+
+							return StringUtils.substringBetween(
+								friendlyURLResolver.getDefaultURLSeparator(),
+								StringPool.SLASH);
+						}
+
+						for (int i = 0;
+							 i < configuredURLSeparatorsJSONArray.length();
+							 i++) {
+
+							JSONObject jsonObject =
+								configuredURLSeparatorsJSONArray.getJSONObject(
+									i);
+
+							if (Objects.equals(
+									friendlyURLResolver.getKey(),
+									jsonObject.get("key"))) {
+
+								return StringUtils.substringBetween(
+									jsonObject.getString("urlSeparator"),
+									StringPool.SLASH);
+							}
+						}
+
+						return StringPool.BLANK;
+					}
+				);
+			});
+
+		Collections.sort(
+			list, Comparator.comparing(json -> json.getString("label")));
+
+		_configurableFriendlyURLSeparatorsJSONArray = JSONUtil.toJSONArray(
+			list, jsonObject -> jsonObject);
+
+		return _configurableFriendlyURLSeparatorsJSONArray;
+	}
+
+	public Map<String, Object> getSeparatorFieldsProps() throws Exception {
+		return HashMapBuilder.<String, Object>put(
+			"fields", getConfigurableFriendlyURLSeparatorsJSONArray()
+		).put(
+			"url", _themeDisplay.getPortalURL()
+		).build();
+	}
+
+	private JSONArray _getConfiguredURLSeparatorsJSONArray() {
+		try {
+			return _jsonFactory.createJSONArray(
+				_friendlyURLSeparatorConfigurationManager.getURLSeparators(
+					_themeDisplay.getCompanyId()));
+		}
+		catch (Exception exception) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception);
+			}
+		}
+
+		return _jsonFactory.createJSONArray();
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		FriendlyURLSeparatorCompanyConfigurationDisplayContext.class.getName());
+
+	private JSONArray _configurableFriendlyURLSeparatorsJSONArray;
+	private final FriendlyURLSeparatorConfigurationManager
+		_friendlyURLSeparatorConfigurationManager;
+	private final JSONFactory _jsonFactory;
+	private final Language _language;
+	private final ThemeDisplay _themeDisplay;
+
+}
