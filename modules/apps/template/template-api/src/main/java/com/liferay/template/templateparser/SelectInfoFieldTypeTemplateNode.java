@@ -6,6 +6,7 @@
 package com.liferay.template.templateparser;
 
 import com.liferay.info.field.InfoFieldValue;
+import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.info.type.KeyLocalizedLabelPair;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
@@ -73,14 +74,22 @@ public class SelectInfoFieldTypeTemplateNode extends TemplateNode {
 	private KeyLocalizedLabelPair _getSelectedKeyLocalizedLabelPair() {
 		Object value = _infoFieldValue.getValue();
 
-		if (!(value instanceof List)) {
-			return null;
+		if (value instanceof List) {
+			List<KeyLocalizedLabelPair> keyLocalizedLabelPairs =
+				(List<KeyLocalizedLabelPair>)value;
+
+			return keyLocalizedLabelPairs.get(0);
 		}
 
-		List<KeyLocalizedLabelPair> keyLocalizedLabelPairs =
-			(List<KeyLocalizedLabelPair>)value;
+		if (value instanceof InfoLocalizedValue) {
+			List<KeyLocalizedLabelPair> keyLocalizedLabelPairs =
+				(List<KeyLocalizedLabelPair>)_infoFieldValue.getValue(
+					_themeDisplay.getLocale());
 
-		return keyLocalizedLabelPairs.get(0);
+			return keyLocalizedLabelPairs.get(0);
+		}
+
+		return null;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
