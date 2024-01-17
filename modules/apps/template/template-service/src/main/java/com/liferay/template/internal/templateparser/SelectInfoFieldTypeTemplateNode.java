@@ -8,6 +8,8 @@ package com.liferay.template.internal.templateparser;
 import com.liferay.info.field.InfoFieldValue;
 import com.liferay.info.type.KeyLocalizedLabelPair;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.templateparser.TemplateNode;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 
@@ -32,6 +34,10 @@ public class SelectInfoFieldTypeTemplateNode extends TemplateNode {
 
 	@Override
 	public String getData() {
+		_log.error(
+			"getData() method is deprecated in favor of getLabel(Locale) and " +
+				"getKey() for select fields. Please update your template.");
+
 		KeyLocalizedLabelPair keyLocalizedLabelPair =
 			_getSelectedKeyLocalizedLabelPair();
 
@@ -76,6 +82,9 @@ public class SelectInfoFieldTypeTemplateNode extends TemplateNode {
 
 		return keyLocalizedLabelPairs.get(0);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		SelectInfoFieldTypeTemplateNode.class);
 
 	private final InfoFieldValue<?> _infoFieldValue;
 	private final ThemeDisplay _themeDisplay;
