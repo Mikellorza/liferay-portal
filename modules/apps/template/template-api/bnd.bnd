@@ -10,4 +10,5 @@ Export-Package:\
 	com.liferay.template.model,\
 	com.liferay.template.service,\
 	com.liferay.template.service.persistence,\
+	com.liferay.template.templateparser,\
 	com.liferay.template.transformer

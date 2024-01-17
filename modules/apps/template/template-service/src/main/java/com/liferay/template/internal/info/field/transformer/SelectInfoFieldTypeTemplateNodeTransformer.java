@@ -15,7 +15,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.template.info.field.transformer.BaseTemplateNodeTransformer;
 import com.liferay.template.info.field.transformer.TemplateNodeTransformer;
-import com.liferay.template.internal.templateparser.SelectInfoFieldTypeTemplateNode;
+import com.liferay.template.templateparser.SelectInfoFieldTypeTemplateNode;
 
 import java.util.Collections;
 import java.util.List;
