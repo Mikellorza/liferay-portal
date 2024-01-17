@@ -10,23 +10,17 @@ import com.liferay.info.field.InfoFieldValue;
 import com.liferay.info.field.type.InfoFieldType;
 import com.liferay.info.field.type.OptionInfoFieldType;
 import com.liferay.info.field.type.SelectInfoFieldType;
-import com.liferay.info.type.KeyLocalizedLabelPair;
-import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.templateparser.TemplateNode;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.template.info.field.transformer.BaseTemplateNodeTransformer;
 import com.liferay.template.info.field.transformer.TemplateNodeTransformer;
+import com.liferay.template.internal.templateparser.SelectInfoFieldTypeTemplateNode;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Lourdes Fernández Besada
@@ -44,24 +38,14 @@ public class SelectInfoFieldTypeTemplateNodeTransformer
 
 		InfoField infoField = infoFieldValue.getInfoField();
 
-		String stringValue = StringPool.BLANK;
-
-		JSONArray selectedOptionValuesJSONArray =
-			_getSelectedOptionValuesJSONArray(
-				infoFieldValue, themeDisplay.getLocale());
-
-		if (!JSONUtil.isEmpty(selectedOptionValuesJSONArray)) {
-			stringValue = selectedOptionValuesJSONArray.getString(0);
-		}
-
 		InfoFieldType infoFieldType = infoField.getInfoFieldType();
 
-		TemplateNode templateNode = new TemplateNode(
-			themeDisplay, infoField.getName(), stringValue,
-			infoFieldType.getName(),
+		TemplateNode templateNode = new SelectInfoFieldTypeTemplateNode(
 			HashMapBuilder.put(
 				"multiple", Boolean.FALSE.toString()
-			).build());
+			).build(),
+			infoFieldValue, infoField.getName(), themeDisplay,
+			infoFieldType.getName());
 
 		List<OptionInfoFieldType> optionInfoFieldTypes =
 			(List<OptionInfoFieldType>)infoField.getAttribute(
@@ -79,32 +63,5 @@ public class SelectInfoFieldTypeTemplateNodeTransformer
 
 		return templateNode;
 	}
-
-	private JSONArray _getSelectedOptionValuesJSONArray(
-		InfoFieldValue<Object> infoFieldValue, Locale locale) {
-
-		Object value = infoFieldValue.getValue(locale);
-
-		if (!(value instanceof List)) {
-			return _jsonFactory.createJSONArray();
-		}
-
-		JSONArray selectedOptionValuesJSONArray =
-			_jsonFactory.createJSONArray();
-
-		List<KeyLocalizedLabelPair> keyLocalizedLabelPairs =
-			(List<KeyLocalizedLabelPair>)value;
-
-		for (KeyLocalizedLabelPair keyLocalizedLabelPair :
-				keyLocalizedLabelPairs) {
-
-			selectedOptionValuesJSONArray.put(keyLocalizedLabelPair.getKey());
-		}
-
-		return selectedOptionValuesJSONArray;
-	}
-
-	@Reference
-	private JSONFactory _jsonFactory;
 
 }
