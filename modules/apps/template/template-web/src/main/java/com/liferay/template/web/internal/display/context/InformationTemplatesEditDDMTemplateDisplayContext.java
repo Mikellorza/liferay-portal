@@ -258,7 +258,7 @@ public class InformationTemplatesEditDDMTemplateDisplayContext
 		new DDMTemplateVariableCodeHandler(
 			InformationTemplatesTemplateDisplayContext.class.getClassLoader(),
 			"com/liferay/template/web/internal/portlet/template/dependencies/",
-			SetUtil.fromArray("boolean", "image"));
+			SetUtil.fromArray("boolean", "image", "select"));
 	private final ThemeDisplay _themeDisplay;
 
 }
