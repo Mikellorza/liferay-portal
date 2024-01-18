@@ -140,13 +140,24 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 		return _jsonFactory.createJSONObject();
 	}
 
+	public String getSampleURL() {
+		if (Validator.isNotNull(_sampleURL)) {
+			return _sampleURL;
+		}
+
+		_sampleURL = _language.get(
+			_themeDisplay.getLocale(), "friendly-url-separtor-sample-url");
+
+		return _sampleURL;
+	}
+
 	public Map<String, Object> getSeparatorFieldsProps() throws Exception {
 		return HashMapBuilder.<String, Object>put(
 			"errors", getErrorsJSONObject()
 		).put(
 			"fields", getConfigurableFriendlyURLSeparatorsJSONArray()
 		).put(
-			"url", _themeDisplay.getPortalURL()
+			"url", getSampleURL()
 		).build();
 	}
 
@@ -175,6 +186,7 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 	private final JSONFactory _jsonFactory;
 	private final Language _language;
 	private final Portal _portal;
+	private String _sampleURL;
 	private final ThemeDisplay _themeDisplay;
 
 }
