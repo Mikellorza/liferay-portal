@@ -79,6 +79,8 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 				}
 
 				return JSONUtil.put(
+					"defaultValue", friendlyURLResolver.getDefaultURLSeparator()
+				).put(
 					"label",
 					_language.get(
 						_themeDisplay.getLocale(),
