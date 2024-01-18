@@ -33,14 +33,16 @@ public class PermissionsURLTag extends TagSupport {
 
 	public static String doTag(
 			String redirect, String modelResource, Object resourceGroupId,
-			String windowState, HttpServletRequest httpServletRequest)
+			String windowState, HttpServletRequest httpServletRequest,
+			boolean showModelResourceSuccessMessage)
 		throws Exception {
 
 		redirect = _getRedirect(httpServletRequest, redirect, windowState);
 
 		return PortletURLBuilder.create(
 			_getPorletURL(
-				httpServletRequest, modelResource, resourceGroupId, windowState)
+				httpServletRequest, modelResource, resourceGroupId,
+				showModelResourceSuccessMessage, windowState)
 		).setRedirect(
 			redirect
 		).setParameter(
@@ -65,6 +67,8 @@ public class PermissionsURLTag extends TagSupport {
 	 *         string. If the resource group ID is <code>null</code>, it is
 	 *         obtained via {@link ThemeDisplay#getScopeGroupId()}.
 	 * @param  resourcePrimKey the primary key of the resource
+	 * @param  showModelResourceSuccessMessage to show a specific message when
+	 *         updating a model resource
 	 * @param  windowState the window state to use when opening the permissions
 	 *         configuration dialog. For more information, see {@link
 	 *         LiferayWindowState}.
@@ -78,12 +82,14 @@ public class PermissionsURLTag extends TagSupport {
 			String redirect, String modelResource,
 			String modelResourceDescription, Object resourceGroupId,
 			String resourcePrimKey, String windowState, int[] roleTypes,
-			HttpServletRequest httpServletRequest)
+			HttpServletRequest httpServletRequest,
+			boolean showModelResourceSuccessMessage)
 		throws Exception {
 
 		return PortletURLBuilder.create(
 			_getPorletURL(
-				httpServletRequest, modelResource, resourceGroupId, windowState)
+				httpServletRequest, modelResource, resourceGroupId,
+				showModelResourceSuccessMessage, windowState)
 		).setRedirect(
 			_getRedirect(httpServletRequest, redirect, windowState)
 		).setParameter(
@@ -122,7 +128,7 @@ public class PermissionsURLTag extends TagSupport {
 			String portletURLToString = doTag(
 				_redirect, _modelResource, _modelResourceDescription,
 				_resourceGroupId, _resourcePrimKey, _windowState, _roleTypes,
-				(HttpServletRequest)pageContext.getRequest());
+				(HttpServletRequest)pageContext.getRequest(), false);
 
 			if (Validator.isNotNull(_var)) {
 				pageContext.setAttribute(_var, portletURLToString);
@@ -174,7 +180,8 @@ public class PermissionsURLTag extends TagSupport {
 
 	private static PortletURL _getPorletURL(
 			HttpServletRequest httpServletRequest, String modelResource,
-			Object resourceGroupId, String windowState)
+			Object resourceGroupId, boolean showModelResourceSuccessMessage,
+			String windowState)
 		throws Exception {
 
 		ThemeDisplay themeDisplay =
@@ -203,6 +210,8 @@ public class PermissionsURLTag extends TagSupport {
 		).setParameter(
 			"resourceGroupId",
 			_getResourceGroupId(resourceGroupId, themeDisplay)
+		).setParameter(
+			"showModelResourceSuccessMessage", showModelResourceSuccessMessage
 		).setWindowState(
 			_getWindowState(themeDisplay, windowState)
 		).buildPortletURL();
