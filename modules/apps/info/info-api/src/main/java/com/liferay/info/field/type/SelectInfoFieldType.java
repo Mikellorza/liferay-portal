@@ -22,6 +22,9 @@ public class SelectInfoFieldType implements InfoFieldType {
 		<SelectInfoFieldType, Collection<OptionInfoFieldType>> OPTIONS =
 			new Attribute<>();
 
+	public static final Attribute<SelectInfoFieldType, Boolean> PICKLIST =
+		new Attribute<>();
+
 	@Override
 	public String getName() {
 		return "select";

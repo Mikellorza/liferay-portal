@@ -19,6 +19,9 @@ public class MultiselectInfoFieldType implements InfoFieldType {
 		<MultiselectInfoFieldType, Collection<OptionInfoFieldType>> OPTIONS =
 			new Attribute<>();
 
+	public static final Attribute<MultiselectInfoFieldType, Boolean> PICKLIST =
+		new Attribute<>();
+
 	@Override
 	public String getName() {
 		return "multiselect";
