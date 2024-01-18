@@ -41,8 +41,8 @@ public class PermissionsURLTag extends TagSupport {
 		return PortletURLBuilder.create(
 			_getPorletURL(
 				httpServletRequest, modelResource, resourceGroupId, windowState)
-		).setParameter(
-			"redirect", redirect
+		).setRedirect(
+			redirect
 		).setParameter(
 			"returnToFullPageURL", redirect
 		).buildString();
@@ -84,10 +84,10 @@ public class PermissionsURLTag extends TagSupport {
 		return PortletURLBuilder.create(
 			_getPorletURL(
 				httpServletRequest, modelResource, resourceGroupId, windowState)
+		).setRedirect(
+			_getRedirect(httpServletRequest, redirect, windowState)
 		).setParameter(
 			"modelResourceDescription", modelResourceDescription
-		).setParameter(
-			"redirect", _getRedirect(httpServletRequest, redirect, windowState)
 		).setParameter(
 			"resourcePrimKey", resourcePrimKey
 		).setParameter(
