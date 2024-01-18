@@ -204,7 +204,7 @@ public class PermissionsURLTag extends TagSupport {
 			"resourceGroupId",
 			_getResourceGroupId(resourceGroupId, themeDisplay)
 		).setWindowState(
-			_getWindowState(windowState, themeDisplay)
+			_getWindowState(themeDisplay, windowState)
 		).buildPortletURL();
 	}
 
@@ -249,7 +249,7 @@ public class PermissionsURLTag extends TagSupport {
 	}
 
 	private static WindowState _getWindowState(
-		String windowState, ThemeDisplay themeDisplay) {
+		ThemeDisplay themeDisplay, String windowState) {
 
 		if (Validator.isNotNull(windowState)) {
 			return WindowStateFactory.getWindowState(windowState);
