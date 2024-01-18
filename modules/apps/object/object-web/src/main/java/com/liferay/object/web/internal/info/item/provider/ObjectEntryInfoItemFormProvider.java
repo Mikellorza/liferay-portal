@@ -262,11 +262,15 @@ public class ObjectEntryInfoItemFormProvider
 				finalStep.attribute(
 					MultiselectInfoFieldType.OPTIONS,
 					_getOptionInfoFieldTypes(objectField));
+
+				finalStep.attribute(MultiselectInfoFieldType.PICKLIST, true);
 			}
 			else {
 				finalStep.attribute(
 					SelectInfoFieldType.OPTIONS,
 					_getOptionInfoFieldTypes(objectField));
+
+				finalStep.attribute(SelectInfoFieldType.PICKLIST, true);
 			}
 		}
 		else if (Objects.equals(
