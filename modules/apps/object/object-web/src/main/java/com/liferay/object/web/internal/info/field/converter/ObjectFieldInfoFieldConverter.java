@@ -177,6 +177,8 @@ public class ObjectFieldInfoFieldConverter {
 						new FunctionInfoLocalizedValue<>(
 							listTypeEntry::getName),
 						listTypeEntry.getKey())));
+
+			finalStep.attribute(MultiselectInfoFieldType.PICKLIST, true);
 		}
 		else if (Objects.equals(
 					objectField.getBusinessType(),
