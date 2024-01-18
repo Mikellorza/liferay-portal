@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -79,6 +80,11 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 				}
 
 				return JSONUtil.put(
+					"defaultValue",
+					StringUtil.removeSubstring(
+						friendlyURLResolver.getDefaultURLSeparator(),
+						StringPool.SLASH)
+				).put(
 					"label",
 					_language.get(
 						_themeDisplay.getLocale(),
@@ -105,8 +111,8 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 								friendlyURLResolver.getDefaultURLSeparator();
 						}
 
-						return friendlyURLSeparator.replaceAll(
-							StringPool.SLASH, StringPool.BLANK);
+						return StringUtil.removeSubstring(
+							friendlyURLSeparator, StringPool.SLASH);
 					}
 				);
 			});
