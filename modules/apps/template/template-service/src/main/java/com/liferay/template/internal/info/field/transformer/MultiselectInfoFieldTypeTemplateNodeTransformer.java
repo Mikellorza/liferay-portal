@@ -6,13 +6,13 @@
 package com.liferay.template.internal.info.field.transformer;
 
 import com.liferay.info.field.InfoField;
-import com.liferay.info.field.InfoFieldValue;
 import com.liferay.info.field.type.MultiselectInfoFieldType;
 import com.liferay.info.field.type.OptionInfoFieldType;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.template.info.field.transformer.TemplateNodeTransformer;
@@ -37,11 +37,6 @@ public class MultiselectInfoFieldTypeTemplateNodeTransformer
 		return HashMapBuilder.put(
 			"multiple", Boolean.TRUE.toString()
 		).build();
-	}
-
-	@Override
-	protected String getData(JSONArray selectedOptionValuesJSONArray) {
-		return JSONUtil.toString(selectedOptionValuesJSONArray);
 	}
 
 	@Override
@@ -77,6 +72,17 @@ public class MultiselectInfoFieldTypeTemplateNodeTransformer
 
 		return (List<OptionInfoFieldType>)infoField.getAttribute(
 			MultiselectInfoFieldType.OPTIONS);
+	}
+
+	@Override
+	protected boolean isPicklist(InfoField infoField) {
+		if (GetterUtil.getBoolean(
+				infoField.getAttribute(MultiselectInfoFieldType.PICKLIST))) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 }

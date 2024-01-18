@@ -11,6 +11,7 @@ import com.liferay.info.field.type.SelectInfoFieldType;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.template.info.field.transformer.TemplateNodeTransformer;
 
@@ -34,15 +35,6 @@ public class SelectInfoFieldTypeTemplateNodeTransformer
 		return HashMapBuilder.put(
 			"multiple", Boolean.FALSE.toString()
 		).build();
-	}
-
-	@Override
-	protected String getData(JSONArray selectedOptionValuesJSONArray) {
-		if (!JSONUtil.isEmpty(selectedOptionValuesJSONArray)) {
-			return selectedOptionValuesJSONArray.getString(0);
-		}
-
-		return StringPool.BLANK;
 	}
 
 	@Override
@@ -78,6 +70,17 @@ public class SelectInfoFieldTypeTemplateNodeTransformer
 
 		return (List<OptionInfoFieldType>)infoField.getAttribute(
 			SelectInfoFieldType.OPTIONS);
+	}
+
+	@Override
+	protected boolean isPicklist(InfoField infoField) {
+		if (GetterUtil.getBoolean(
+				infoField.getAttribute(SelectInfoFieldType.PICKLIST))) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 }

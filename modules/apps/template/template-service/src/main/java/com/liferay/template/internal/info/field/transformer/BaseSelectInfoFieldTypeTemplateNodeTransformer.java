@@ -57,7 +57,14 @@ public abstract class BaseSelectInfoFieldTypeTemplateNodeTransformer
 			getSelectedOptionValuesJSONArray(
 				infoFieldValue, themeDisplay.getLocale());
 
-		String data = getData(selectedOptionValuesJSONArray);
+		String key = getKey(selectedOptionValuesJSONArray);
+		String label = getLabel(optionsMap, selectedOptionValuesJSONArray);
+
+		String data = key;
+
+		if (isPicklist(infoField)) {
+			data = label;
+		}
 
 		TemplateNode templateNode = new TemplateNode(
 			themeDisplay, infoField.getName(), data, infoFieldType.getName(),
@@ -65,16 +72,13 @@ public abstract class BaseSelectInfoFieldTypeTemplateNodeTransformer
 
 		templateNode.appendOptionsMap(optionsMap);
 
-		templateNode.put("key", getKey(selectedOptionValuesJSONArray));
-		templateNode.put(
-			"label", getLabel(optionsMap, selectedOptionValuesJSONArray));
+		templateNode.put("key", key);
+		templateNode.put("label", label);
 
 		return templateNode;
 	}
 
 	protected abstract Map<String, String> getAttributes();
-
-	protected abstract String getData(JSONArray selectedOptionValuesJSONArray);
 
 	protected abstract String getKey(JSONArray selectedOptionValuesJSONArray);
 
@@ -107,6 +111,8 @@ public abstract class BaseSelectInfoFieldTypeTemplateNodeTransformer
 
 		return selectedOptionValuesJSONArray;
 	}
+
+	protected abstract boolean isPicklist(InfoField infoField);
 
 	@Reference
 	protected JSONFactory jsonFactory;
