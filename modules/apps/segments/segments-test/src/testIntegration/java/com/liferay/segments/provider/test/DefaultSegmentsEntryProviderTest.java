@@ -6,6 +6,7 @@
 package com.liferay.segments.provider.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.model.Company;
@@ -62,6 +63,84 @@ public class DefaultSegmentsEntryProviderTest {
 	@Before
 	public void setUp() throws Exception {
 		_group = GroupTestUtil.addGroup();
+	}
+
+	@Test
+	public void test1() throws Exception {
+		long numOfUsers = 10000;
+
+		if (_userLocalService.getCompanyUsersCount(
+				TestPropsValues.getCompanyId()) < numOfUsers) {
+
+			for (int i = 0; i < numOfUsers; i++) {
+				UserTestUtil.addUser();
+			}
+		}
+
+		long start = System.currentTimeMillis();
+
+		Criteria criteria = new Criteria();
+
+		/*for (int i=0;i<100;i++) {
+			_userSegmentsCriteriaContributor.contribute(
+				criteria,
+				String.format("(userId eq '%s')", RandomTestUtil.randomLong()),
+				Criteria.Conjunction.OR);
+		}
+
+		Error : reason=The nested depth of the query exceeds the maximum nested depth for bool queries set in [indices.query.bool.max_nested_depth]]];
+		*/
+
+		StringBundler sb = new StringBundler();
+
+		/*for (int i = 0; i < numCriteria; i++) {
+			filterString.append(String.format(
+				"userId eq '%s'",
+				RandomTestUtil.randomLong()));
+
+			if (i < (numCriteria - 1)) {
+				filterString.append(" , ");
+			}
+		}*/
+
+		List<User> users = _userLocalService.getCompanyUsers(
+			TestPropsValues.getCompanyId(), 0, 1000);
+
+		sb.append("userId in (");
+
+		for (int i = 0; i < users.size(); i++) {
+			sb.append(
+				String.format(
+					"'%s'",
+					users.get(
+						i
+					).getUserId()));
+
+			if (i < (users.size() - 1)) {
+				sb.append(" , ");
+			}
+		}
+
+		sb.append(")");
+
+		_userSegmentsCriteriaContributor.contribute(
+			criteria, sb.toString(), Criteria.Conjunction.OR);
+
+		SegmentsEntry segmentsEntry = SegmentsTestUtil.addSegmentsEntry(
+			_group.getGroupId(), CriteriaSerializer.serialize(criteria));
+
+		/*System.out.println("pks count: " +
+						   _segmentsEntryProvider.getSegmentsEntryClassPKsCount(
+							   segmentsEntry.getSegmentsEntryId()));*/
+
+		System.out.println(
+			"pks count: " +
+				_segmentsEntryProvider.getSegmentsEntryClassPKs(
+					segmentsEntry.getSegmentsEntryId(), -1, -1).length);
+
+		long duration = (System.currentTimeMillis() - start) / 1000;
+
+		System.out.println("the time is:" + duration);
 	}
 
 	@Test
