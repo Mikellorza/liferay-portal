@@ -4,3 +4,5 @@ monitor.jvm.gc.enabled: false
 thread_pool:
     write:
         queue_size: 100
+indices.query.bool.max_nested_depth: 10000
+indices.query.bool.max_clause_count: 30000
