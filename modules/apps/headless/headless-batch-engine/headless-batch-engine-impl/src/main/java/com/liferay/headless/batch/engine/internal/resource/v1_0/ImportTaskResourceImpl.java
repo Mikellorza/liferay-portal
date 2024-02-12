@@ -570,7 +570,8 @@ public class ImportTaskResourceImpl extends BaseImportTaskResourceImpl {
 	}
 
 	private static final Set<String> _ignoredParameters = new HashSet<>(
-		Arrays.asList("callbackURL", "fieldNameMapping"));
+		Arrays.asList(
+			"callbackURL", "fieldNameMapping", "taskItemDelegateName"));
 
 	@Reference
 	private BatchEngineImportTaskExecutor _batchEngineImportTaskExecutor;
