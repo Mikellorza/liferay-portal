@@ -33,15 +33,15 @@ public class AddressUpgradeStepRegistrator implements UpgradeStepRegistrator {
 		registry.register(
 			"1.0.0", "1.0.1",
 			new CountryRegionUpgradeProcess(
-				_companyLocalService, _countryLocalService,
-				_regionLocalService));
+				_companyLocalService, _counterLocalService,
+				_countryLocalService, _regionLocalService));
 
 		registry.register(
 			"1.0.1", "1.0.2",
 			new com.liferay.address.internal.upgrade.v1_0_2.
 				CountryUpgradeProcess(
-					_companyLocalService, _countryLocalService, _jsonFactory,
-					_regionLocalService));
+					_companyLocalService, _counterLocalService,
+					_countryLocalService, _jsonFactory, _regionLocalService));
 	}
 
 	@Reference
