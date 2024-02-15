@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateUtil;
+import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -277,7 +278,7 @@ public class UpdateTranslationMVCActionCommand extends BaseMVCActionCommand {
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		return PortletURLBuilder.create(
+		String redirect = PortletURLBuilder.create(
 			_translationURLProvider.getTranslateURL(
 				themeDisplay.getScopeGroupId(),
 				_portal.getClassNameId(className), classPK,
@@ -294,6 +295,25 @@ public class UpdateTranslationMVCActionCommand extends BaseMVCActionCommand {
 		).setParameter(
 			"backURLTitle", ParamUtil.getString(actionRequest, "backURLTitle")
 		).buildString();
+
+		String namespace = _portal.getPortletNamespace(themeDisplay.getPpid());
+
+		for (Map.Entry<String, String[]> entry :
+				_getInfoFieldParameterValues(
+					actionRequest
+				).entrySet()) {
+
+			String[] values = entry.getValue();
+
+			if (ArrayUtil.isEmpty(values)) {
+				continue;
+			}
+
+			redirect = HttpComponentsUtil.addParameter(
+				redirect, namespace + entry.getKey(), entry.getValue()[0]);
+		}
+
+		return redirect;
 	}
 
 	private String _getSourceLanguageId(ActionRequest actionRequest) {
