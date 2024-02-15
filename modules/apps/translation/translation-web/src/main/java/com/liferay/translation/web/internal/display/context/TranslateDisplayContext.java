@@ -347,8 +347,9 @@ public class TranslateDisplayContext {
 		return TransformUtil.transform(
 			_targetInfoItemFieldValues.getInfoFieldValues(
 				infoField.getUniqueId()),
-			infoFieldValue -> GetterUtil.getString(
-				infoFieldValue.getValue(locale)));
+			infoFieldValue -> ParamUtil.getString(
+				_httpServletRequest, infoField.getUniqueId(),
+				GetterUtil.getString(infoFieldValue.getValue(locale))));
 	}
 
 	public String getTitle() {
