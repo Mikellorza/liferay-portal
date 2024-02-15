@@ -123,6 +123,8 @@ public class UpdateTranslationMVCActionCommand extends BaseMVCActionCommand {
 						(Date)infoItemFieldValue, new Date(modifiedDateTime));
 
 					if (value > 0) {
+						hideDefaultErrorMessage(actionRequest);
+
 						SessionErrors.add(
 							actionRequest,
 							"anotherUserHasMadeChangesSinceYouStartedEditing");

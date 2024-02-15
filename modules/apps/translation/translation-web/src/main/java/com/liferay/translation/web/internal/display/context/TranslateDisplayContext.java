@@ -29,10 +29,12 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalServiceUtil;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -57,6 +59,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -228,6 +231,17 @@ public class TranslateDisplayContext {
 			).build()
 		).put(
 			"autoTranslateEnabled", isAutoTranslateEnabled()
+		).put(
+			"concurrentUserError",
+			() -> {
+				PortletRequest portletRequest =
+					(PortletRequest)_httpServletRequest.getAttribute(
+						JavaConstants.JAVAX_PORTLET_REQUEST);
+
+				return SessionErrors.contains(
+					portletRequest,
+					"anotherUserHasMadeChangesSinceYouStartedEditing");
+			}
 		).put(
 			"currentUrl", PortalUtil.getCurrentCompleteURL(_httpServletRequest)
 		).put(
