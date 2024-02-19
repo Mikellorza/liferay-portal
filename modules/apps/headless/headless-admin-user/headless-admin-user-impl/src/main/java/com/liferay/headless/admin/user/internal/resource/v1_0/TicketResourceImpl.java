@@ -55,9 +55,9 @@ public class TicketResourceImpl extends BaseTicketResourceImpl {
 			PermissionThreadLocal.getPermissionChecker(), userAccountId,
 			ActionKeys.UPDATE);
 
-		PasswordPolicy passwordPolicy = user.getPasswordPolicy();
-
 		Date expirationDate = null;
+
+		PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 
 		if ((passwordPolicy != null) &&
 			(passwordPolicy.getResetTicketMaxAge() > 0)) {
