@@ -63,13 +63,10 @@ public class AccessControlUtil {
 
 		Set<String> computerAddresses = PortalUtil.getComputerAddresses();
 
-		if (computerAddresses.contains(remoteAddr) &&
-			hostsAllowed.contains(_SERVER_IP)) {
+		if ((computerAddresses.contains(remoteAddr) &&
+			 hostsAllowed.contains(_SERVER_IP)) ||
+			hostsAllowed.contains(remoteAddr)) {
 
-			return true;
-		}
-
-		if (hostsAllowed.contains(remoteAddr)) {
 			return true;
 		}
 
