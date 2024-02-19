@@ -162,9 +162,7 @@ public class DDMDataProviderInvokerImpl implements DDMDataProviderInvoker {
 				_log.debug(exception);
 			}
 			else if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unable to disable the Data Provider threads from running",
-					exception);
+				_log.warn("Unable to deactivate", exception);
 			}
 		}
 
