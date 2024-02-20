@@ -39,7 +39,6 @@ public class LDAPExportConfigurationProviderImplTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		_companyId = TestPropsValues.getCompanyId();
-
 		_defaultLDAPExportConfiguration = ConfigurableUtil.createConfigurable(
 			LDAPExportConfiguration.class, Collections.emptyMap());
 	}
@@ -72,11 +71,11 @@ public class LDAPExportConfigurationProviderImplTest {
 		LDAPExportConfiguration ldapExportConfiguration =
 			_ldapExportConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteFactoryConfiguration(
-			pid, LDAPExportConfiguration.class.getName());
-
 		Assert.assertFalse(ldapExportConfiguration.exportEnabled());
 		Assert.assertFalse(ldapExportConfiguration.exportGroupEnabled());
+
+		ConfigurationTestUtil.deleteFactoryConfiguration(
+			pid, LDAPExportConfiguration.class.getName());
 	}
 
 	@Test
@@ -104,11 +103,11 @@ public class LDAPExportConfigurationProviderImplTest {
 		LDAPExportConfiguration ldapExportConfiguration =
 			_ldapExportConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteFactoryConfiguration(
-			pid, LDAPExportConfiguration.class.getName());
-
 		Assert.assertFalse(ldapExportConfiguration.exportEnabled());
 		Assert.assertFalse(ldapExportConfiguration.exportGroupEnabled());
+
+		ConfigurationTestUtil.deleteFactoryConfiguration(
+			pid, LDAPExportConfiguration.class.getName());
 	}
 
 	@Test
@@ -126,11 +125,11 @@ public class LDAPExportConfigurationProviderImplTest {
 		LDAPExportConfiguration ldapExportConfiguration =
 			_ldapExportConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteConfiguration(
-			LDAPExportConfiguration.class.getName());
-
 		Assert.assertTrue(ldapExportConfiguration.exportEnabled());
 		Assert.assertTrue(ldapExportConfiguration.exportGroupEnabled());
+
+		ConfigurationTestUtil.deleteConfiguration(
+			LDAPExportConfiguration.class.getName());
 	}
 
 	private static long _companyId;

@@ -39,7 +39,6 @@ public class LDAPAuthConfigurationProviderImplTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		_companyId = TestPropsValues.getCompanyId();
-
 		_defaultLDAPAuthConfiguration = ConfigurableUtil.createConfigurable(
 			LDAPAuthConfiguration.class, Collections.emptyMap());
 	}
@@ -81,9 +80,6 @@ public class LDAPAuthConfigurationProviderImplTest {
 		LDAPAuthConfiguration ldapAuthConfiguration =
 			_ldapAuthConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteFactoryConfiguration(
-			pid, LDAPAuthConfiguration.class.getName());
-
 		Assert.assertTrue(ldapAuthConfiguration.enabled());
 		Assert.assertTrue(ldapAuthConfiguration.required());
 		Assert.assertEquals(
@@ -95,6 +91,9 @@ public class LDAPAuthConfigurationProviderImplTest {
 		Assert.assertEquals(
 			_defaultLDAPAuthConfiguration.passwordPolicyEnabled(),
 			ldapAuthConfiguration.passwordPolicyEnabled());
+
+		ConfigurationTestUtil.deleteFactoryConfiguration(
+			pid, LDAPAuthConfiguration.class.getName());
 	}
 
 	@Test
@@ -122,9 +121,6 @@ public class LDAPAuthConfigurationProviderImplTest {
 		LDAPAuthConfiguration ldapAuthConfiguration =
 			_ldapAuthConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteFactoryConfiguration(
-			pid, LDAPAuthConfiguration.class.getName());
-
 		Assert.assertTrue(ldapAuthConfiguration.enabled());
 		Assert.assertTrue(ldapAuthConfiguration.required());
 		Assert.assertEquals(
@@ -136,6 +132,9 @@ public class LDAPAuthConfigurationProviderImplTest {
 		Assert.assertEquals(
 			_defaultLDAPAuthConfiguration.passwordPolicyEnabled(),
 			ldapAuthConfiguration.passwordPolicyEnabled());
+
+		ConfigurationTestUtil.deleteFactoryConfiguration(
+			pid, LDAPAuthConfiguration.class.getName());
 	}
 
 	@Test
@@ -153,9 +152,6 @@ public class LDAPAuthConfigurationProviderImplTest {
 		LDAPAuthConfiguration ldapAuthConfiguration =
 			_ldapAuthConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteConfiguration(
-			LDAPAuthConfiguration.class.getName());
-
 		Assert.assertTrue(ldapAuthConfiguration.enabled());
 		Assert.assertFalse(ldapAuthConfiguration.required());
 		Assert.assertEquals(
@@ -167,6 +163,9 @@ public class LDAPAuthConfigurationProviderImplTest {
 		Assert.assertEquals(
 			_defaultLDAPAuthConfiguration.passwordPolicyEnabled(),
 			ldapAuthConfiguration.passwordPolicyEnabled());
+
+		ConfigurationTestUtil.deleteConfiguration(
+			LDAPAuthConfiguration.class.getName());
 	}
 
 	private static long _companyId;

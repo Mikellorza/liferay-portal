@@ -40,7 +40,6 @@ public class SystemLDAPConfigurationProviderImplTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		_companyId = TestPropsValues.getCompanyId();
-
 		_defaultSystemLDAPConfiguration = ConfigurableUtil.createConfigurable(
 			SystemLDAPConfiguration.class, Collections.emptyMap());
 	}
@@ -81,17 +80,17 @@ public class SystemLDAPConfigurationProviderImplTest {
 		SystemLDAPConfiguration systemLDAPConfiguration =
 			_systemLDAPConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteFactoryConfiguration(
-			pid, SystemLDAPConfiguration.class.getName());
-
-		Assert.assertEquals(randomValue, systemLDAPConfiguration.pageSize());
-		Assert.assertEquals(randomValue, systemLDAPConfiguration.rangeSize());
 		Assert.assertEquals(
 			_defaultSystemLDAPConfiguration.factoryInitial(),
 			systemLDAPConfiguration.factoryInitial());
+		Assert.assertEquals(randomValue, systemLDAPConfiguration.pageSize());
+		Assert.assertEquals(randomValue, systemLDAPConfiguration.rangeSize());
 		Assert.assertEquals(
 			_defaultSystemLDAPConfiguration.referral(),
 			systemLDAPConfiguration.referral());
+
+		ConfigurationTestUtil.deleteFactoryConfiguration(
+			pid, SystemLDAPConfiguration.class.getName());
 	}
 
 	@Test
@@ -123,19 +122,19 @@ public class SystemLDAPConfigurationProviderImplTest {
 		SystemLDAPConfiguration systemLDAPConfiguration =
 			_systemLDAPConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteFactoryConfiguration(
-			pid, SystemLDAPConfiguration.class.getName());
-
+		Assert.assertEquals(
+			_defaultSystemLDAPConfiguration.factoryInitial(),
+			systemLDAPConfiguration.factoryInitial());
 		Assert.assertEquals(
 			randomValueInstance, systemLDAPConfiguration.pageSize());
 		Assert.assertEquals(
 			randomValueInstance, systemLDAPConfiguration.rangeSize());
 		Assert.assertEquals(
-			_defaultSystemLDAPConfiguration.factoryInitial(),
-			systemLDAPConfiguration.factoryInitial());
-		Assert.assertEquals(
 			_defaultSystemLDAPConfiguration.referral(),
 			systemLDAPConfiguration.referral());
+
+		ConfigurationTestUtil.deleteFactoryConfiguration(
+			pid, SystemLDAPConfiguration.class.getName());
 	}
 
 	@Test
@@ -155,17 +154,17 @@ public class SystemLDAPConfigurationProviderImplTest {
 		SystemLDAPConfiguration systemLDAPConfiguration =
 			_systemLDAPConfigurationProvider.getConfiguration(_companyId);
 
-		ConfigurationTestUtil.deleteConfiguration(
-			SystemLDAPConfiguration.class.getName());
-
-		Assert.assertEquals(randomValue, systemLDAPConfiguration.pageSize());
-		Assert.assertEquals(randomValue, systemLDAPConfiguration.rangeSize());
 		Assert.assertEquals(
 			_defaultSystemLDAPConfiguration.factoryInitial(),
 			systemLDAPConfiguration.factoryInitial());
+		Assert.assertEquals(randomValue, systemLDAPConfiguration.pageSize());
+		Assert.assertEquals(randomValue, systemLDAPConfiguration.rangeSize());
 		Assert.assertEquals(
 			_defaultSystemLDAPConfiguration.referral(),
 			systemLDAPConfiguration.referral());
+
+		ConfigurationTestUtil.deleteConfiguration(
+			SystemLDAPConfiguration.class.getName());
 	}
 
 	private static long _companyId;
