@@ -50,6 +50,7 @@ public class UserTableItemView implements TableItemView {
 		}
 
 		nameTextSearchEntry.setCssClass(cssClass);
+
 		nameTextSearchEntry.setName(HtmlUtil.escape(_user.getFullName()));
 
 		searchEntries.add(nameTextSearchEntry);
@@ -63,6 +64,7 @@ public class UserTableItemView implements TableItemView {
 		}
 
 		screenNameTextSearchEntry.setCssClass(cssClass);
+
 		screenNameTextSearchEntry.setName(
 			HtmlUtil.escape(_user.getScreenName()));
 
