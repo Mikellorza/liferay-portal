@@ -568,6 +568,16 @@ public class FragmentEntryLocalServiceImpl
 	public FragmentEntry publishDraft(FragmentEntry draftFragmentEntry)
 		throws PortalException {
 
+		FragmentEntry publishedFragmentEntry = fetchFragmentEntry(
+			draftFragmentEntry.getHeadId());
+
+		if (publishedFragmentEntry != null) {
+			draftFragmentEntry.setCacheable(
+				publishedFragmentEntry.isCacheable());
+			draftFragmentEntry.setPreviewFileEntryId(
+				publishedFragmentEntry.getPreviewFileEntryId());
+		}
+
 		return _publishDraft(draftFragmentEntry);
 	}
 
@@ -975,13 +985,6 @@ public class FragmentEntryLocalServiceImpl
 				draftFragmentEntry.getName())) {
 
 			_validate(draftFragmentEntry.getName());
-		}
-
-		if (publishedFragmentEntry != null) {
-			draftFragmentEntry.setCacheable(
-				publishedFragmentEntry.isCacheable());
-			draftFragmentEntry.setPreviewFileEntryId(
-				publishedFragmentEntry.getPreviewFileEntryId());
 		}
 
 		_fragmentEntryValidator.validateConfiguration(
