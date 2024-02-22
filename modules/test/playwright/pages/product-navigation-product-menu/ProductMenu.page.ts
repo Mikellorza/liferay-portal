@@ -8,17 +8,26 @@ import {Locator, Page} from '@playwright/test';
 export class ProductMenuPage {
 	readonly closeProductMenuButton: Locator;
 	readonly contentAndDataMenuItem: Locator;
+	readonly designMenuItem: Locator;
+	readonly documentsAndMediaMenuItem: Locator;
 	readonly knowledgeBaseMenuItem: Locator;
 	readonly journalMenuItem: Locator;
 	readonly openProductMenuButton: Locator;
 	readonly page: Page;
-	readonly documentsAndMediaMenuItem: Locator;
+	readonly pageTemplatesMenuItem: Locator;
 
 	constructor(page: Page) {
 		this.closeProductMenuButton = page.getByLabel('Close Product Menu');
 		this.contentAndDataMenuItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Content & Data',
+		});
+		this.designMenuItem = page.getByRole('menuitem', {
+			exact: true,
+			name: 'Design',
+		});
+		this.documentsAndMediaMenuItem = page.getByRole('menuitem', {
+			name: 'Documents and Media',
 		});
 		this.journalMenuItem = page.getByRole('menuitem', {
 			name: 'Web Content',
@@ -27,8 +36,9 @@ export class ProductMenuPage {
 			exact: true,
 			name: 'Knowledge Base',
 		});
-		this.documentsAndMediaMenuItem = page.getByRole('menuitem', {
-			name: 'Documents and Media',
+		this.pageTemplatesMenuItem = page.getByRole('menuitem', {
+			exact: true,
+			name: 'Page Templates',
 		});
 
 		this.openProductMenuButton = page.getByLabel('Open Product Menu');
@@ -80,5 +90,21 @@ export class ProductMenuPage {
 		if (isClosed) {
 			await this.contentAndDataMenuItem.click();
 		}
+	}
+
+	async goToDesign() {
+		await this.openProductMenu();
+		const isClosed =
+			(await this.designMenuItem.getAttribute('aria-expanded')) ===
+			'false';
+
+		if (isClosed) {
+			await this.designMenuItem.click();
+		}
+	}
+
+	async goToPageTemplatesMenuItem() {
+		await this.goToDesign();
+		await this.pageTemplatesMenuItem.click();
 	}
 }
