@@ -28,6 +28,63 @@ const PERMISSIONS_LOCATORS = [
 	'#guest_ACTION_PERMISSIONS',
 ];
 
+test('LPD-6813: Make prefix URLs configurable', async ({
+	friendlyUrlInstanceSettingsPage,
+	journalEditArticlePage,
+	journalPage,
+	page,
+	pageTemplatePage,
+}) => {
+	await journalPage.goto();
+
+	const articleTitle = getRandomString();
+
+	await journalEditArticlePage.publishNewBasicArticle(articleTitle);
+
+	const article = page
+		.locator(
+			'#_com_liferay_journal_web_portlet_JournalPortlet_articlesSearchContainer .list-group-item'
+		)
+		.filter({hasText: articleTitle});
+
+	await article.waitFor();
+
+	await pageTemplatePage.goToDisplayPageTemplates();
+
+	const displayPageTemplateName = getRandomString();
+
+	await pageTemplatePage.publishNewDisplayPageTemplate(
+		displayPageTemplateName
+	);
+
+	await pageTemplatePage.markPageTemplateAsDefault(displayPageTemplateName);
+
+	await friendlyUrlInstanceSettingsPage.goto();
+
+	const urlSeparator = 'content';
+
+	await friendlyUrlInstanceSettingsPage.modifySeparator(
+		'_com_liferay_configuration_admin_web_portlet_InstanceSettingsPortlet_com.liferay.journal.model.JournalArticle',
+		urlSeparator
+	);
+
+	const journalArticleUrl = '/' + urlSeparator + '/' + articleTitle;
+
+	await page.goto(journalArticleUrl);
+
+	await friendlyUrlInstanceSettingsPage.goto();
+
+	await friendlyUrlInstanceSettingsPage.resetSeparator(
+		'Web Content URL Separator'
+	);
+
+	await pageTemplatePage.goToDisplayPageTemplates();
+
+	await pageTemplatePage.deleteDisplayPageTemplate(displayPageTemplateName);
+
+	await journalPage.deleteJournalArticle(articleTitle);
+});
+
 test('LPD-17245: Add error message in Translation for concurrent users', async ({
 	journalEditArticlePage,
 	journalEditArticleTranslationsPage,

@@ -22,10 +22,12 @@ export class InstanceSettingsPage {
 
 	async goToInstanceSetting(categoryKey: string, configurationName: string) {
 		await this.goto();
-		await this.page.getByRole('link', {
-			exact: true,
-			name: categoryKey,
-		});
+		await this.page
+			.getByRole('link', {
+				exact: true,
+				name: categoryKey,
+			})
+			.click();
 		await this.page
 			.getByRole('menuitem', {
 				exact: true,
