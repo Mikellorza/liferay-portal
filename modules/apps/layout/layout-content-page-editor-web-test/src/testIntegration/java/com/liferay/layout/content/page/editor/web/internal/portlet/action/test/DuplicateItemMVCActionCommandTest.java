@@ -300,17 +300,15 @@ public class DuplicateItemMVCActionCommandTest {
 		FragmentEntryLink fragmentEntryLink) {
 
 		Assert.assertEquals(
-			0, duplicatedFragmentEntryLink.getOriginalFragmentEntryLinkId());
-
-		Assert.assertEquals(
 			fragmentEntryLink.getFragmentEntryId(),
 			duplicatedFragmentEntryLink.getFragmentEntryId());
 		Assert.assertEquals(
 			fragmentEntryLink.getHtml(), duplicatedFragmentEntryLink.getHtml());
-
 		Assert.assertNotEquals(
 			fragmentEntryLink.getNamespace(),
 			duplicatedFragmentEntryLink.getNamespace());
+		Assert.assertEquals(
+			0, duplicatedFragmentEntryLink.getOriginalFragmentEntryLinkId());
 	}
 
 	private FragmentDropZoneLayoutStructureItem
