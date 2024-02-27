@@ -1214,12 +1214,12 @@ public class StructuredContentResourceTest
 			DDMFormField ddmFormField = _createDDMFormField(
 				false, "Date", DDMFormFieldTypeConstants.DATE);
 
-			String date = DateUtil.getDate(
+			String dateString = DateUtil.getDate(
 				new Date(), "yyyy-MM-dd", LocaleUtil.US);
 
 			JournalArticle journalArticle = JournalTestUtil.addJournalArticle(
 				_dataDefinitionResourceFactory, ddmFormField,
-				_ddmFormValuesToFieldsConverter, locale, date,
+				_ddmFormValuesToFieldsConverter, locale, dateString,
 				testGroup.getGroupId(), _journalConverter);
 
 			DDMStructure ddmStructure = journalArticle.getDDMStructure();
@@ -1228,8 +1228,8 @@ public class StructuredContentResourceTest
 				structuredContentResource.
 					getContentStructureStructuredContentsPage(
 						ddmStructure.getStructureId(), null, null,
-						"contentFields/Date eq " + date, Pagination.of(1, 10),
-						null);
+						"contentFields/Date eq " + dateString,
+						Pagination.of(1, 10), null);
 
 			Assert.assertNotNull(page);
 
