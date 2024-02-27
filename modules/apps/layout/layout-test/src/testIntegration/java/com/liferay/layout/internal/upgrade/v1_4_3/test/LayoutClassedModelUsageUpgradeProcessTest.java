@@ -50,16 +50,15 @@ public class LayoutClassedModelUsageUpgradeProcessTest {
 
 	@Before
 	public void setUp() throws Exception {
+		_dlFileEntryClassNameId = _classNameLocalService.getClassNameId(
+			DLFileEntry.class.getName());
+		_fileEntryClassNameId = _classNameLocalService.getClassNameId(
+			FileEntry.class);
+
 		_group = GroupTestUtil.addGroup();
 
 		_serviceContext = ServiceContextTestUtil.getServiceContext(
 			_group.getGroupId());
-
-		_dlFileEntryClassNameId = _classNameLocalService.getClassNameId(
-			DLFileEntry.class.getName());
-
-		_fileEntryClassNameId = _classNameLocalService.getClassNameId(
-			FileEntry.class);
 	}
 
 	@Test

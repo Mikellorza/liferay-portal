@@ -39,6 +39,7 @@ public class LayoutClassedModelUsageUpgradeProcess extends UpgradeProcess {
 
 			preparedStatement.setLong(1, _fileEntryClassNameId);
 			preparedStatement.setLong(2, _dlFileEntryClassNameId);
+
 			preparedStatement.executeUpdate();
 		}
 	}
