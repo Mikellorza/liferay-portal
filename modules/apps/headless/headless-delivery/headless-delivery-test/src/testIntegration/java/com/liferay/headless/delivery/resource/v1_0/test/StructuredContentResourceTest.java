@@ -1314,7 +1314,6 @@ public class StructuredContentResourceTest
 
 		ddmFormField.setDataType(type);
 		ddmFormField.setIndexType("text");
-		ddmFormField.setLocalizable(localizable);
 
 		LocalizedValue localizedValue = new LocalizedValue(LocaleUtil.US);
 
@@ -1322,6 +1321,8 @@ public class StructuredContentResourceTest
 			LocaleUtil.US, RandomTestUtil.randomString(10));
 
 		ddmFormField.setLabel(localizedValue);
+
+		ddmFormField.setLocalizable(localizable);
 
 		return ddmFormField;
 	}
