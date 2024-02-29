@@ -496,7 +496,6 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			new ServiceContext());
 
 		defaultServiceAccountUser.setPasswordReset(false);
-
 		defaultServiceAccountUser.setEmailAddressVerified(true);
 
 		return userLocalService.updateUser(defaultServiceAccountUser);
