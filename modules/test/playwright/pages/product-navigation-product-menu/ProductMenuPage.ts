@@ -13,12 +13,14 @@ export class ProductMenuPage {
 	readonly closeProductMenuButton: Locator;
 	readonly configurationMenuItem: Locator;
 	readonly contentAndDataMenuItem: Locator;
+	readonly designMenuItem: Locator;
 	readonly documentsAndMediaMenuItem: Locator;
 	readonly journalMenuItem: Locator;
 	readonly knowledgeBaseMenuItem: Locator;
 	readonly lockedItemsMenuItem: Locator;
 	readonly openProductMenuButton: Locator;
 	readonly pagesMenuItem: Locator;
+	readonly pageTemplatesMenuItem: Locator;
 	readonly siteBuilderMenuItem: Locator;
 
 	constructor(page: Page) {
@@ -32,6 +34,10 @@ export class ProductMenuPage {
 		this.contentAndDataMenuItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Content & Data',
+		});
+		this.designMenuItem = page.getByRole('menuitem', {
+			exact: true,
+			name: 'Design',
 		});
 		this.documentsAndMediaMenuItem = page.getByRole('menuitem', {
 			name: 'Documents and Media',
@@ -50,6 +56,10 @@ export class ProductMenuPage {
 		this.openProductMenuButton = page.getByLabel('Open Product Menu');
 		this.pagesMenuItem = page.getByRole('menuitem', {
 			name: 'Pages',
+		});
+		this.pageTemplatesMenuItem = page.getByRole('menuitem', {
+			exact: true,
+			name: 'Page Templates',
 		});
 		this.siteBuilderMenuItem = page.getByRole('menuitem', {
 			exact: true,
@@ -96,6 +106,17 @@ export class ProductMenuPage {
 		}
 	}
 
+	async goToDesign() {
+		await this.openProductMenu();
+		const isClosed =
+			(await this.designMenuItem.getAttribute('aria-expanded')) ===
+			'false';
+
+		if (isClosed) {
+			await this.designMenuItem.click();
+		}
+	}
+
 	async goToDocumentsAndMediaMenuItem() {
 		await this.goToContentAndData();
 		await this.documentsAndMediaMenuItem.click();
@@ -119,6 +140,11 @@ export class ProductMenuPage {
 	async goToPagesMenuItem() {
 		await this.goToSiteBuilder();
 		await this.pagesMenuItem.click();
+	}
+
+	async goToPageTemplatesMenuItem() {
+		await this.goToDesign();
+		await this.pageTemplatesMenuItem.click();
 	}
 
 	async goToSiteBuilder() {
