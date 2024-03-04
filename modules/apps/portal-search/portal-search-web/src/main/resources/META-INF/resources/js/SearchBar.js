@@ -70,6 +70,7 @@ export default function ({formId}) {
 	}
 
 	function onSubmit(event) {
+		event.preventDefault();
 		event.stopPropagation();
 
 		search();
