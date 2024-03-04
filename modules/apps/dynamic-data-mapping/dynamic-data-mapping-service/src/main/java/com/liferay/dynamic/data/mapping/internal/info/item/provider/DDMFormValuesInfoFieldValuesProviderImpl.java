@@ -24,6 +24,7 @@ import com.liferay.info.item.InfoItemReference;
 import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.info.type.KeyLocalizedLabelPair;
 import com.liferay.info.type.WebImage;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -96,20 +97,22 @@ public class DDMFormValuesInfoFieldValuesProviderImpl
 	}
 
 	private void _addNestedFields(
-		GroupedModel groupedModel, DDMFormFieldValue ddmFormFieldValue,
+		GroupedModel groupedModel, DDMFormFieldValue sourceDDMFormFieldValue,
 		List<InfoFieldValue<InfoLocalizedValue<Object>>> infoFieldValues) {
 
 		Map<String, List<DDMFormFieldValue>> nestedDDMFormFieldValuesMap =
-			ddmFormFieldValue.getNestedDDMFormFieldValuesMap();
+			sourceDDMFormFieldValue.getNestedDDMFormFieldValuesMap();
 
 		for (Map.Entry<String, List<DDMFormFieldValue>> entry :
 				nestedDDMFormFieldValuesMap.entrySet()) {
 
 			List<DDMFormFieldValue> ddmFormFieldValues = entry.getValue();
 
-			ddmFormFieldValues.forEach(
-				nestedDDMFormFieldValue -> _addDDMFormFieldValue(
-					groupedModel, nestedDDMFormFieldValue, infoFieldValues));
+			infoFieldValues.addAll(
+				TransformUtil.transform(
+					ddmFormFieldValues,
+					ddmFormFieldValue -> _getInfoFieldValue(
+						groupedModel, ddmFormFieldValue)));
 		}
 	}
 
