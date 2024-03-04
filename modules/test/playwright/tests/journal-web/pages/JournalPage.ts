@@ -15,6 +15,7 @@ export class JournalPage {
 	readonly newButton: Locator;
 	readonly permissionsFrameLocator: FrameLocator;
 	readonly productMenuPage: ProductMenuPage;
+	readonly structuresLink: Locator;
 	readonly templatesLink: Locator;
 
 	constructor(page: Page) {
@@ -28,6 +29,7 @@ export class JournalPage {
 			'iframe[title="Permissions"]'
 		);
 		this.productMenuPage = new ProductMenuPage(page);
+		this.structuresLink = page.getByRole('link', {name: 'Structures'});
 		this.templatesLink = page.getByRole('link', {name: 'Templates'});
 	}
 
@@ -48,6 +50,11 @@ export class JournalPage {
 		await this.newButton.click();
 	}
 
+	async goToCreateNewStructure() {
+		await this.goToStructures();
+		await this.newButton.click();
+	}
+
 	async goToJournalArticleAction(action: string, title: string) {
 		await this.goto();
 
@@ -63,6 +70,10 @@ export class JournalPage {
 				exact: true,
 			}),
 		});
+	}
+
+	async goToStructures() {
+		await this.structuresLink.click();
 	}
 
 	async goToTemplates() {
