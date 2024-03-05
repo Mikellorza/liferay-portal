@@ -408,7 +408,7 @@ public class JournalArticleLocalServiceTest {
 	}
 
 	@Test
-	public void testCopyArticleWithDuplicatedImages() throws Exception {
+	public void testCopyArticleWithMultipleImages() throws Exception {
 		FileEntry fileEntry = _dlAppLocalService.addFileEntry(
 			null, TestPropsValues.getUserId(), _group.getGroupId(),
 			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
