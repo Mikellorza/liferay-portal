@@ -13,6 +13,7 @@ export class JournalEditTemplatePage {
 	readonly elementsButton: Locator;
 	readonly journalPage: JournalPage;
 	readonly saveButton: Locator;
+	readonly titlePlaceholder: Locator;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -20,6 +21,7 @@ export class JournalEditTemplatePage {
 		this.elementsButton = page.getByTitle('Elements', {exact: true});
 		this.journalPage = new JournalPage(page);
 		this.saveButton = page.getByRole('button', {exact: true, name: 'Save'});
+		this.titlePlaceholder = page.getByPlaceholder('Untitled Template');
 	}
 
 	async goto() {
@@ -33,5 +35,13 @@ export class JournalEditTemplatePage {
 
 	async gotoElements() {
 		await this.elementsButton.click();
+	}
+
+	async saveNewTemplateWithSelectedStructure(title: string) {
+		await this.saveButton.waitFor();
+
+		await this.titlePlaceholder.fill(title);
+
+		await this.saveButton.click();
 	}
 }
