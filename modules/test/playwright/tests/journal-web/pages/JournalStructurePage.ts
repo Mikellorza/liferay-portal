@@ -1,0 +1,49 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+import {Locator, Page} from '@playwright/test';
+
+import {clickAndExpectToBeVisible} from '../../../utils/clickAndExpectToBeVisible';
+import {JournalPage} from './JournalPage';
+
+export class JournalStructurePage {
+	readonly page: Page;
+
+	readonly journalPage: JournalPage;
+	readonly fieldsTab: Locator;
+	readonly saveButton: Locator;
+	readonly titlePlaceholder: Locator;
+
+	constructor(page: Page) {
+		this.page = page;
+
+		this.journalPage = new JournalPage(page);
+		this.fieldsTab = page.getByRole('tab', {exact: true, name: 'Fields'});
+		this.saveButton = page.getByRole('button', {name: 'Save'});
+		this.titlePlaceholder = page.getByPlaceholder('Untitled Structure');
+	}
+
+	async goto() {
+		await this.journalPage.goToStructures();
+	}
+
+	async goToJournalStructureAction(action: string, title: string) {
+		await this.page
+			.getByRole('row', {name: title})
+			.getByLabel('Show Actions')
+			.waitFor();
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: this.page.getByRole('menuitem', {
+				exact: true,
+				name: action,
+			}),
+			trigger: this.page
+				.getByRole('row', {name: title})
+				.getByLabel('Show Actions'),
+		});
+	}
+}
