@@ -38,9 +38,13 @@ export class JournalEditTemplatePage {
 	}
 
 	async saveNewTemplateWithSelectedStructure(title: string) {
-		await this.saveButton.waitFor();
+		await this.titlePlaceholder.waitFor();
+
+		await this.titlePlaceholder.click();
 
 		await this.titlePlaceholder.fill(title);
+
+		await this.saveButton.waitFor();
 
 		await this.saveButton.click();
 	}
