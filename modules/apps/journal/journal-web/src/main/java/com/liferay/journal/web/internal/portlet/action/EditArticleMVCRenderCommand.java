@@ -5,26 +5,19 @@
 
 package com.liferay.journal.web.internal.portlet.action;
 
-import com.liferay.asset.display.page.portlet.AssetDisplayPageFriendlyURLProvider;
-import com.liferay.item.selector.ItemSelector;
 import com.liferay.journal.constants.JournalPortletKeys;
-import com.liferay.journal.util.JournalHelper;
-import com.liferay.journal.web.internal.configuration.JournalWebConfiguration;
-import com.liferay.journal.web.internal.display.context.JournalDisplayContext;
 import com.liferay.journal.web.internal.display.context.JournalEditArticleDisplayContext;
-import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
-import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
-import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.trash.TrashHelper;
 
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -47,23 +40,15 @@ public class EditArticleMVCRenderCommand implements MVCRenderCommand {
 		throws PortletException {
 
 		try {
-			JournalWebConfiguration journalWebConfiguration =
-				_configurationProvider.getSystemConfiguration(
-					JournalWebConfiguration.class);
-
-			JournalDisplayContext journalDisplayContext =
-				JournalDisplayContext.create(
-					_assetDisplayPageFriendlyURLProvider, _itemSelector,
-					_journalHelper, journalWebConfiguration, renderRequest,
-					renderResponse, _resourcePermissionLocalService,
-					_roleLocalService, _trashHelper);
+			HttpServletRequest httpServletRequest =
+				_portal.getHttpServletRequest(renderRequest);
 
 			renderRequest.setAttribute(
 				JournalEditArticleDisplayContext.class.getName(),
 				new JournalEditArticleDisplayContext(
-					_portal.getHttpServletRequest(renderRequest),
+					httpServletRequest,
 					_portal.getLiferayPortletResponse(renderResponse),
-					journalDisplayContext.getArticle()));
+					ActionUtil.getArticle(httpServletRequest)));
 
 			return "/edit_article.jsp";
 		}
@@ -85,28 +70,6 @@ public class EditArticleMVCRenderCommand implements MVCRenderCommand {
 		EditArticleMVCRenderCommand.class);
 
 	@Reference
-	private AssetDisplayPageFriendlyURLProvider
-		_assetDisplayPageFriendlyURLProvider;
-
-	@Reference
-	private ConfigurationProvider _configurationProvider;
-
-	@Reference
-	private ItemSelector _itemSelector;
-
-	@Reference
-	private JournalHelper _journalHelper;
-
-	@Reference
 	private Portal _portal;
-
-	@Reference
-	private ResourcePermissionLocalService _resourcePermissionLocalService;
-
-	@Reference
-	private RoleLocalService _roleLocalService;
-
-	@Reference
-	private TrashHelper _trashHelper;
 
 }
