@@ -18,6 +18,8 @@ export class ApplicationsMenuPage {
 	private readonly dataSetManagerMenuItem: Locator;
 	private readonly homePage: HomePage;
 	private readonly instanceSettingsLink: Locator;
+	private readonly instanceSettingsMenuItem: Locator;
+	private readonly oAuth2Administration: Locator;
 	private readonly objectsMenuItem: Locator;
 	readonly page: Page;
 	private readonly usersAndOrganizationsItem: Locator;
@@ -54,6 +56,14 @@ export class ApplicationsMenuPage {
 		this.dataSetManagerMenuItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Data Sets',
+		});
+		this.instanceSettingsMenuItem = page.getByRole('menuitem', {
+			exact: true,
+			name: 'Instance Settings',
+		});
+		this.oAuth2Administration = page.getByRole('menuitem', {
+			exact: true,
+			name: 'OAuth 2 Administration',
 		});
 		this.objectsMenuItem = page.getByRole('menuitem', {
 			exact: true,
@@ -121,6 +131,11 @@ export class ApplicationsMenuPage {
 	async goToControlPanel() {
 		await this.goto();
 		await this.controlPanelButton.click();
+	}
+
+	async goToOauth2Administration() {
+		await this.goToControlPanel();
+		await this.oAuth2Administration.click();
 	}
 
 	async goToUsersAndOrganizations() {
