@@ -25,7 +25,7 @@ public class SQLIntegrityConstraintViolationExceptionMapper
 
 		return new Problem(
 			Response.Status.BAD_REQUEST,
-			"Database integrity constraint violation, errorCode: " +
+			"Database integrity constraint violation with error code: " +
 				sqlIntegrityConstraintViolationException.getErrorCode());
 	}
 
