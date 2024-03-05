@@ -29,6 +29,18 @@ export class JournalTemplatePage {
 		await this.newButton.click();
 	}
 
+	async deleteAllTemplates() {
+		await this.page.getByLabel('Select All Items on the Page').check();
+
+		this.page.once('dialog', (dialog) => {
+			dialog.accept().catch(() => {});
+		});
+
+		await this.page.getByRole('button', {name: 'Delete'}).click();
+
+		await this.newButton.waitFor();
+	}
+
 	async paginate(numEntries: number) {
 		await this.page.getByText('20 Entries Per Page', {exact: true}).click();
 

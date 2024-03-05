@@ -13,7 +13,9 @@ export class JournalStructurePage {
 
 	readonly journalPage: JournalPage;
 	readonly fieldsTab: Locator;
+	readonly newButton: Locator;
 	readonly saveButton: Locator;
+	readonly selectAllItems: Locator;
 	readonly titlePlaceholder: Locator;
 
 	constructor(page: Page) {
@@ -21,7 +23,9 @@ export class JournalStructurePage {
 
 		this.journalPage = new JournalPage(page);
 		this.fieldsTab = page.getByRole('tab', {exact: true, name: 'Fields'});
+		this.newButton = page.getByText('New', {exact: true});
 		this.saveButton = page.getByRole('button', {name: 'Save'});
+		this.selectAllItems = page.getByLabel('Select All Items on the Page');
 		this.titlePlaceholder = page.getByPlaceholder('Untitled Structure');
 	}
 
@@ -45,5 +49,19 @@ export class JournalStructurePage {
 				.getByRole('row', {name: title})
 				.getByLabel('Show Actions'),
 		});
+	}
+
+	async deleteAllStructures() {
+		await this.selectAllItems.waitFor();
+
+		await this.selectAllItems.check();
+
+		this.page.once('dialog', (dialog) => {
+			dialog.accept().catch(() => {});
+		});
+
+		await this.page.getByRole('button', {name: 'Delete'}).click();
+
+		await this.newButton.waitFor();
 	}
 }

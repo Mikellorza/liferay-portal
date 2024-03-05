@@ -127,4 +127,10 @@ test('LPD-19462 This is a test to test templates pagination of a selected struct
 			'#_com_liferay_journal_web_portlet_JournalPortlet_ddmTemplatesPageIteratorBottom_ariaPaginationResults'
 		)
 	).toHaveText(/Showing 1 to 10 of 10 entries./);
+
+	await journalTemplatePage.deleteAllTemplates();
+
+	await journalStructurePage.goto();
+
+	await journalStructurePage.deleteAllStructures();
 });
