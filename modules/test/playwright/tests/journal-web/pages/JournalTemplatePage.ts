@@ -28,4 +28,12 @@ export class JournalTemplatePage {
 
 		await this.newButton.click();
 	}
+
+	async paginate(numEntries: number) {
+		await this.page.getByText('20 Entries Per Page', {exact: true}).click();
+
+		await this.page
+			.getByRole('link', {name: numEntries + ' Entries per Page'})
+			.click();
+	}
 }
