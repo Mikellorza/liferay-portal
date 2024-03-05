@@ -43,24 +43,20 @@ public class FutureDatesFunctionTest {
 
 		Assert.assertTrue(
 			_futureDatesFunction.apply(
+				_todayLocalDate.toString(), _todayLocalDate.toString()));
+		Assert.assertTrue(
+			_futureDatesFunction.apply(
 				tomorrowLocalDate.toString(), _todayLocalDate.toString()));
-
 		Assert.assertTrue(
 			_futureDatesFunction.apply(
 				tomorrowLocalDate.toString(), _todayLocalDateTime.toString()));
-
 		Assert.assertTrue(
 			_futureDatesFunction.apply(
 				tomorrowLocalDateTime.toString(), _todayLocalDate.toString()));
-
 		Assert.assertTrue(
 			_futureDatesFunction.apply(
 				tomorrowLocalDateTime.toString(),
 				_todayLocalDateTime.toString()));
-
-		Assert.assertTrue(
-			_futureDatesFunction.apply(
-				_todayLocalDate.toString(), _todayLocalDate.toString()));
 	}
 
 	@Test
