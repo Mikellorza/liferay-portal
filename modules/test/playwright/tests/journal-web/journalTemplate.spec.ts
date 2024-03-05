@@ -8,6 +8,7 @@ import {expect, mergeTests} from '@playwright/test';
 import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {applicationsMenuPageTest} from '../../fixtures/applicationsMenuPageTest';
 import {loginTest} from '../../fixtures/loginTest';
+import getRandomString from '../../utils/getRandomString';
 import {journalPagesTest} from './fixtures/journalPagesTest';
 
 export const test = mergeTests(
@@ -67,4 +68,63 @@ test('This is a test for LPS-153976 and LPD-16407. Check Featured image and rese
 			page.getByRole('button', {exact: true, name: reservedVariable})
 		).toBeVisible();
 	}
+});
+
+test('LPD-19462 This is a test to test templates pagination of a selected structure.', async ({
+	journalEditStructurePage,
+	journalEditTemplatePage,
+	journalPage,
+	journalStructurePage,
+	journalTemplatePage,
+	page,
+}) => {
+	await journalPage.goto();
+
+	await journalPage.goToStructures();
+
+	await journalEditStructurePage.goto();
+
+	const title1 = getRandomString();
+
+	await journalEditStructurePage.saveNewStructureWithATextField(title1);
+
+	await journalEditStructurePage.goto();
+
+	const title2 = getRandomString();
+
+	await journalEditStructurePage.saveNewStructureWithATextField(title2);
+
+	await journalStructurePage.goto();
+
+	await journalStructurePage.goToJournalStructureAction(
+		'Manage Templates',
+		title1
+	);
+
+	await journalTemplatePage.goToCreateNewTemplate();
+	await journalEditTemplatePage.saveNewTemplateWithSelectedStructure(
+		getRandomString()
+	);
+
+	await journalStructurePage.goto();
+
+	await journalStructurePage.goToJournalStructureAction(
+		'Manage Templates',
+		title2
+	);
+
+	for (let i = 0; i < 10; i++) {
+		await journalTemplatePage.goToCreateNewTemplate();
+		await journalEditTemplatePage.saveNewTemplateWithSelectedStructure(
+			getRandomString()
+		);
+	}
+
+	await journalTemplatePage.paginate(40);
+
+	await expect(
+		page.locator(
+			'#_com_liferay_journal_web_portlet_JournalPortlet_ddmTemplatesPageIteratorBottom_ariaPaginationResults'
+		)
+	).toHaveText(/Showing 1 to 10 of 10 entries./);
 });
