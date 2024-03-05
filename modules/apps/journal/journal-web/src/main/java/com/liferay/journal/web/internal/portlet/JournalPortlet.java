@@ -190,6 +190,12 @@ public class JournalPortlet extends MVCPortlet {
 				_configurationProvider.getSystemConfiguration(
 					DDMWebConfiguration.class));
 			renderRequest.setAttribute(
+				JournalDisplayContext.class.getName(),
+				JournalDisplayContext.create(
+					_assetDisplayPageFriendlyURLProvider, renderRequest,
+					renderResponse, _resourcePermissionLocalService,
+					_roleLocalService, _trashHelper));
+			renderRequest.setAttribute(
 				JournalFileUploadsConfiguration.class.getName(),
 				_configurationProvider.getSystemConfiguration(
 					JournalFileUploadsConfiguration.class));
@@ -197,12 +203,6 @@ public class JournalPortlet extends MVCPortlet {
 				JournalWebConfiguration.class.getName(),
 				_configurationProvider.getSystemConfiguration(
 					JournalWebConfiguration.class));
-			renderRequest.setAttribute(
-				JournalDisplayContext.class.getName(),
-				JournalDisplayContext.create(
-					_assetDisplayPageFriendlyURLProvider, renderRequest,
-					renderResponse, _resourcePermissionLocalService,
-					_roleLocalService, _trashHelper));
 		}
 		catch (ConfigurationException configurationException) {
 			throw new PortletException(configurationException);
@@ -224,18 +224,18 @@ public class JournalPortlet extends MVCPortlet {
 		resourceRequest.setAttribute(
 			ItemSelector.class.getName(), _itemSelector);
 		resourceRequest.setAttribute(
+			JournalDisplayContext.class.getName(),
+			JournalDisplayContext.create(
+				_assetDisplayPageFriendlyURLProvider, resourceRequest,
+				resourceResponse, _resourcePermissionLocalService,
+				_roleLocalService, _trashHelper));
+		resourceRequest.setAttribute(
 			JournalHelper.class.getName(), _journalHelper);
 		resourceRequest.setAttribute(
 			TranslationPermission.class.getName(), _translationPermission);
 		resourceRequest.setAttribute(
 			TranslationURLProvider.class.getName(), _translationURLProvider);
 		resourceRequest.setAttribute(TrashWebKeys.TRASH_HELPER, _trashHelper);
-		resourceRequest.setAttribute(
-			JournalDisplayContext.class.getName(),
-			JournalDisplayContext.create(
-				_assetDisplayPageFriendlyURLProvider, resourceRequest,
-				resourceResponse, _resourcePermissionLocalService,
-				_roleLocalService, _trashHelper));
 
 		try {
 			resourceRequest.setAttribute(
