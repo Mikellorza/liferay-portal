@@ -6,9 +6,13 @@
 package com.liferay.journal.web.internal.portlet.action;
 
 import com.liferay.asset.display.page.portlet.AssetDisplayPageFriendlyURLProvider;
+import com.liferay.item.selector.ItemSelector;
 import com.liferay.journal.constants.JournalPortletKeys;
+import com.liferay.journal.util.JournalHelper;
+import com.liferay.journal.web.internal.configuration.JournalWebConfiguration;
 import com.liferay.journal.web.internal.display.context.JournalDisplayContext;
 import com.liferay.journal.web.internal.display.context.JournalEditArticleDisplayContext;
+import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
@@ -42,13 +46,18 @@ public class EditArticleMVCRenderCommand implements MVCRenderCommand {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws PortletException {
 
-		JournalDisplayContext journalDisplayContext =
-			JournalDisplayContext.create(
-				_assetDisplayPageFriendlyURLProvider, renderRequest,
-				renderResponse, _resourcePermissionLocalService,
-				_roleLocalService, _trashHelper);
-
 		try {
+			JournalWebConfiguration journalWebConfiguration =
+				_configurationProvider.getSystemConfiguration(
+					JournalWebConfiguration.class);
+
+			JournalDisplayContext journalDisplayContext =
+				JournalDisplayContext.create(
+					_assetDisplayPageFriendlyURLProvider, _itemSelector,
+					_journalHelper, journalWebConfiguration, renderRequest,
+					renderResponse, _resourcePermissionLocalService,
+					_roleLocalService, _trashHelper);
+
 			renderRequest.setAttribute(
 				JournalEditArticleDisplayContext.class.getName(),
 				new JournalEditArticleDisplayContext(
@@ -78,6 +87,15 @@ public class EditArticleMVCRenderCommand implements MVCRenderCommand {
 	@Reference
 	private AssetDisplayPageFriendlyURLProvider
 		_assetDisplayPageFriendlyURLProvider;
+
+	@Reference
+	private ConfigurationProvider _configurationProvider;
+
+	@Reference
+	private ItemSelector _itemSelector;
+
+	@Reference
+	private JournalHelper _journalHelper;
 
 	@Reference
 	private Portal _portal;

@@ -157,6 +157,8 @@ public class JournalDisplayContext {
 
 	public static JournalDisplayContext create(
 		AssetDisplayPageFriendlyURLProvider assetDisplayPageFriendlyURLProvider,
+		ItemSelector itemSelector, JournalHelper journalHelper,
+		JournalWebConfiguration journalWebConfiguration,
 		PortletRequest portletRequest, PortletResponse portletResponse,
 		ResourcePermissionLocalService resourcePermissionLocalService,
 		RoleLocalService roleLocalService, TrashHelper trashHelper) {
@@ -167,7 +169,8 @@ public class JournalDisplayContext {
 
 		if (journalDisplayContext == null) {
 			journalDisplayContext = new JournalDisplayContext(
-				assetDisplayPageFriendlyURLProvider, portletRequest,
+				assetDisplayPageFriendlyURLProvider, itemSelector,
+				journalHelper, journalWebConfiguration, portletRequest,
 				portletResponse, resourcePermissionLocalService,
 				roleLocalService, trashHelper);
 
@@ -1535,12 +1538,17 @@ public class JournalDisplayContext {
 
 	private JournalDisplayContext(
 		AssetDisplayPageFriendlyURLProvider assetDisplayPageFriendlyURLProvider,
+		ItemSelector itemSelector, JournalHelper journalHelper,
+		JournalWebConfiguration journalWebConfiguration,
 		PortletRequest portletRequest, PortletResponse portletResponse,
 		ResourcePermissionLocalService resourcePermissionLocalService,
 		RoleLocalService roleLocalService, TrashHelper trashHelper) {
 
 		_assetDisplayPageFriendlyURLProvider =
 			assetDisplayPageFriendlyURLProvider;
+		_itemSelector = itemSelector;
+		_journalHelper = journalHelper;
+		_journalWebConfiguration = journalWebConfiguration;
 		_resourcePermissionLocalService = resourcePermissionLocalService;
 		_roleLocalService = roleLocalService;
 		_trashHelper = trashHelper;
@@ -1550,14 +1558,6 @@ public class JournalDisplayContext {
 			portletRequest);
 		_liferayPortletResponse = PortalUtil.getLiferayPortletResponse(
 			portletResponse);
-
-		_itemSelector = (ItemSelector)_httpServletRequest.getAttribute(
-			ItemSelector.class.getName());
-		_journalHelper = (JournalHelper)_httpServletRequest.getAttribute(
-			JournalHelper.class.getName());
-		_journalWebConfiguration =
-			(JournalWebConfiguration)_httpServletRequest.getAttribute(
-				JournalWebConfiguration.class.getName());
 		_portalPreferences = PortletPreferencesFactoryUtil.getPortalPreferences(
 			_httpServletRequest);
 

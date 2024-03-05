@@ -190,19 +190,25 @@ public class JournalPortlet extends MVCPortlet {
 				_configurationProvider.getSystemConfiguration(
 					DDMWebConfiguration.class));
 			renderRequest.setAttribute(
-				JournalDisplayContext.class.getName(),
-				JournalDisplayContext.create(
-					_assetDisplayPageFriendlyURLProvider, renderRequest,
-					renderResponse, _resourcePermissionLocalService,
-					_roleLocalService, _trashHelper));
-			renderRequest.setAttribute(
 				JournalFileUploadsConfiguration.class.getName(),
 				_configurationProvider.getSystemConfiguration(
 					JournalFileUploadsConfiguration.class));
+
+			JournalWebConfiguration journalWebConfiguration =
+				_configurationProvider.getSystemConfiguration(
+					JournalWebConfiguration.class);
+
 			renderRequest.setAttribute(
 				JournalWebConfiguration.class.getName(),
-				_configurationProvider.getSystemConfiguration(
-					JournalWebConfiguration.class));
+				journalWebConfiguration);
+
+			renderRequest.setAttribute(
+				JournalDisplayContext.class.getName(),
+				JournalDisplayContext.create(
+					_assetDisplayPageFriendlyURLProvider, _itemSelector,
+					_journalHelper, journalWebConfiguration, renderRequest,
+					renderResponse, _resourcePermissionLocalService,
+					_roleLocalService, _trashHelper));
 		}
 		catch (ConfigurationException configurationException) {
 			throw new PortletException(configurationException);
@@ -216,6 +222,17 @@ public class JournalPortlet extends MVCPortlet {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IOException, PortletException {
 
+		JournalWebConfiguration journalWebConfiguration = null;
+
+		try {
+			journalWebConfiguration =
+				_configurationProvider.getSystemConfiguration(
+					JournalWebConfiguration.class);
+		}
+		catch (ConfigurationException configurationException) {
+			throw new PortletException(configurationException);
+		}
+
 		resourceRequest.setAttribute(
 			AssetDisplayPageFriendlyURLProvider.class.getName(),
 			_assetDisplayPageFriendlyURLProvider);
@@ -226,26 +243,19 @@ public class JournalPortlet extends MVCPortlet {
 		resourceRequest.setAttribute(
 			JournalDisplayContext.class.getName(),
 			JournalDisplayContext.create(
-				_assetDisplayPageFriendlyURLProvider, resourceRequest,
+				_assetDisplayPageFriendlyURLProvider, _itemSelector,
+				_journalHelper, journalWebConfiguration, resourceRequest,
 				resourceResponse, _resourcePermissionLocalService,
 				_roleLocalService, _trashHelper));
 		resourceRequest.setAttribute(
 			JournalHelper.class.getName(), _journalHelper);
 		resourceRequest.setAttribute(
+			JournalWebConfiguration.class.getName(), journalWebConfiguration);
+		resourceRequest.setAttribute(
 			TranslationPermission.class.getName(), _translationPermission);
 		resourceRequest.setAttribute(
 			TranslationURLProvider.class.getName(), _translationURLProvider);
 		resourceRequest.setAttribute(TrashWebKeys.TRASH_HELPER, _trashHelper);
-
-		try {
-			resourceRequest.setAttribute(
-				JournalWebConfiguration.class.getName(),
-				_configurationProvider.getSystemConfiguration(
-					JournalWebConfiguration.class));
-		}
-		catch (ConfigurationException configurationException) {
-			throw new PortletException(configurationException);
-		}
 
 		super.serveResource(resourceRequest, resourceResponse);
 	}
