@@ -546,12 +546,6 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 
 		ServiceContext serviceContext = _createServiceContext(userAccount);
 
-		user = _userService.updateExternalReferenceCode(
-			userAccountId,
-			GetterUtil.getString(
-				userAccount.getExternalReferenceCode(),
-				user.getExternalReferenceCode()));
-
 		user = _userService.updateUser(
 			userAccountId, null, null, null, false, null, null,
 			GetterUtil.getString(
@@ -590,6 +584,15 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 			_announcementsDeliveryLocalService.getUserDeliveries(userAccountId),
 			serviceContext);
 
+		user = _userService.updateExternalReferenceCode(
+			userAccountId,
+			GetterUtil.getString(
+				userAccount.getExternalReferenceCode(),
+				user.getExternalReferenceCode()));
+		user = _updatePassword(
+			user, userAccount.getCurrentPassword(), userAccount.getPassword());
+		user = _updateStatus(serviceContext, user, userAccount);
+
 		AccountBrief[] accountBriefs = userAccount.getAccountBriefs();
 
 		if (accountBriefs != null) {
@@ -611,11 +614,6 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 				}
 			}
 		}
-
-		user = _updatePassword(
-			user, userAccount.getCurrentPassword(), userAccount.getPassword());
-
-		user = _updateStatus(serviceContext, user, userAccount);
 
 		return _toUserAccount(user);
 	}
@@ -661,19 +659,6 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 
 		User user = accountEntryUserRel.getUser();
 
-		UsersAdminUtil.updateAddresses(
-			Contact.class.getName(), user.getContactId(),
-			_getAddresses(null, userAccount));
-		UsersAdminUtil.updateEmailAddresses(
-			Contact.class.getName(), user.getContactId(),
-			_getServiceBuilderEmailAddresses(null, userAccount));
-		UsersAdminUtil.updatePhones(
-			Contact.class.getName(), user.getContactId(),
-			_getServiceBuilderPhones(null, userAccount));
-		UsersAdminUtil.updateWebsites(
-			Contact.class.getName(), user.getContactId(),
-			_getWebsites(null, userAccount));
-
 		Contact contact = user.getContact();
 
 		String sms = null;
@@ -693,23 +678,36 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 			twitter = userAccountContactInformation.getTwitter();
 		}
 
-		return _toUserAccount(
-			_userLocalService.updateUser(
-				user.getUserId(), null, null, null, false,
-				user.getReminderQueryQuestion(), user.getReminderQueryAnswer(),
-				user.getScreenName(), user.getEmailAddress(),
-				_hasPortrait(null, userAccount),
-				_getPortraitBytes(false, user, userAccount),
-				user.getLanguageId(), user.getTimeZoneId(), user.getGreeting(),
-				user.getComments(), user.getFirstName(), user.getMiddleName(),
-				user.getLastName(), contact.getPrefixListTypeId(),
-				contact.getSuffixListTypeId(), user.isMale(),
-				_getBirthdayMonth(Calendar.JANUARY, userAccount),
-				_getBirthdayDay(1, userAccount),
-				_getBirthdayYear(1977, userAccount), sms, facebook, jabber,
-				skype, twitter, user.getJobTitle(), user.getGroupIds(),
-				user.getOrganizationIds(), user.getRoleIds(), null,
-				user.getUserGroupIds(), _createServiceContext(userAccount)));
+		user = _userLocalService.updateUser(
+			user.getUserId(), null, null, null, false,
+			user.getReminderQueryQuestion(), user.getReminderQueryAnswer(),
+			user.getScreenName(), user.getEmailAddress(),
+			_hasPortrait(null, userAccount),
+			_getPortraitBytes(false, user, userAccount), user.getLanguageId(),
+			user.getTimeZoneId(), user.getGreeting(), user.getComments(),
+			user.getFirstName(), user.getMiddleName(), user.getLastName(),
+			contact.getPrefixListTypeId(), contact.getSuffixListTypeId(),
+			user.isMale(), _getBirthdayMonth(Calendar.JANUARY, userAccount),
+			_getBirthdayDay(1, userAccount),
+			_getBirthdayYear(1977, userAccount), sms, facebook, jabber, skype,
+			twitter, user.getJobTitle(), user.getGroupIds(),
+			user.getOrganizationIds(), user.getRoleIds(), null,
+			user.getUserGroupIds(), _createServiceContext(userAccount));
+
+		UsersAdminUtil.updateAddresses(
+			Contact.class.getName(), user.getContactId(),
+			_getAddresses(null, userAccount));
+		UsersAdminUtil.updateEmailAddresses(
+			Contact.class.getName(), user.getContactId(),
+			_getServiceBuilderEmailAddresses(null, userAccount));
+		UsersAdminUtil.updatePhones(
+			Contact.class.getName(), user.getContactId(),
+			_getServiceBuilderPhones(null, userAccount));
+		UsersAdminUtil.updateWebsites(
+			Contact.class.getName(), user.getContactId(),
+			_getWebsites(null, userAccount));
+
+		return _toUserAccount(user);
 	}
 
 	@Override
@@ -880,7 +878,6 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 
 		user = _userService.updateExternalReferenceCode(
 			user, userAccount.getExternalReferenceCode());
-
 		user = _userService.updatePortrait(
 			user.getUserId(), _getPortraitBytes(false, null, userAccount));
 
@@ -929,18 +926,6 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 				"Unable to put pending user account " + user.getUserId());
 		}
 
-		AccountBrief[] accountBriefs = userAccount.getAccountBriefs();
-
-		if (accountBriefs != null) {
-			_accountEntryUserRelLocalService.
-				deleteAccountEntryUserRelsByAccountUserId(userAccountId);
-
-			for (AccountBrief accountBrief : accountBriefs) {
-				_accountEntryUserRelLocalService.addAccountEntryUserRel(
-					accountBrief.getId(), userAccountId);
-			}
-		}
-
 		String sms = null;
 		String facebook = null;
 		String jabber = null;
@@ -971,44 +956,54 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 			organizationIds = ArrayUtil.toArray(ids);
 		}
 
-		user = _updatePassword(
-			user, userAccount.getCurrentPassword(), userAccount.getPassword());
-
 		ServiceContext serviceContext = _createServiceContext(userAccount);
+
+		user = _userService.updateUser(
+			userAccountId, null, null, null, false, null, null,
+			userAccount.getAlternateName(), userAccount.getEmailAddress(),
+			_hasPortrait(null, userAccount),
+			_getPortraitBytes(false, user, userAccount),
+			GetterUtil.getString(
+				userAccount.getLanguageId(), user.getLanguageId()),
+			user.getTimeZoneId(), user.getGreeting(), user.getComments(),
+			userAccount.getGivenName(), userAccount.getAdditionalName(),
+			userAccount.getFamilyName(), _getPrefixId(null, userAccount),
+			_getSuffixId(null, userAccount), true,
+			_getBirthdayMonth(Calendar.JANUARY, userAccount),
+			_getBirthdayDay(1, userAccount),
+			_getBirthdayYear(1977, userAccount), sms, facebook, jabber, skype,
+			twitter, userAccount.getJobTitle(), user.getGroupIds(),
+			organizationIds, user.getRoleIds(),
+			_userGroupRoleLocalService.getUserGroupRoles(userAccountId),
+			user.getUserGroupIds(), _getAddresses(null, userAccount),
+			_getServiceBuilderEmailAddresses(null, userAccount),
+			_getServiceBuilderPhones(null, userAccount),
+			_getWebsites(null, userAccount),
+			_announcementsDeliveryLocalService.getUserDeliveries(userAccountId),
+			serviceContext);
 
 		user = _userService.updateExternalReferenceCode(
 			userAccountId,
 			GetterUtil.getString(
 				userAccount.getExternalReferenceCode(),
 				user.getExternalReferenceCode()));
-
+		user = _updatePassword(
+			user, userAccount.getCurrentPassword(), userAccount.getPassword());
 		user = _updateStatus(serviceContext, user, userAccount);
 
-		return _toUserAccount(
-			_userService.updateUser(
-				userAccountId, null, null, null, false, null, null,
-				userAccount.getAlternateName(), userAccount.getEmailAddress(),
-				_hasPortrait(null, userAccount),
-				_getPortraitBytes(false, user, userAccount),
-				GetterUtil.getString(
-					userAccount.getLanguageId(), user.getLanguageId()),
-				user.getTimeZoneId(), user.getGreeting(), user.getComments(),
-				userAccount.getGivenName(), userAccount.getAdditionalName(),
-				userAccount.getFamilyName(), _getPrefixId(null, userAccount),
-				_getSuffixId(null, userAccount), true,
-				_getBirthdayMonth(Calendar.JANUARY, userAccount),
-				_getBirthdayDay(1, userAccount),
-				_getBirthdayYear(1977, userAccount), sms, facebook, jabber,
-				skype, twitter, userAccount.getJobTitle(), user.getGroupIds(),
-				organizationIds, user.getRoleIds(),
-				_userGroupRoleLocalService.getUserGroupRoles(userAccountId),
-				user.getUserGroupIds(), _getAddresses(null, userAccount),
-				_getServiceBuilderEmailAddresses(null, userAccount),
-				_getServiceBuilderPhones(null, userAccount),
-				_getWebsites(null, userAccount),
-				_announcementsDeliveryLocalService.getUserDeliveries(
-					userAccountId),
-				serviceContext));
+		AccountBrief[] accountBriefs = userAccount.getAccountBriefs();
+
+		if (accountBriefs != null) {
+			_accountEntryUserRelLocalService.
+				deleteAccountEntryUserRelsByAccountUserId(userAccountId);
+
+			for (AccountBrief accountBrief : accountBriefs) {
+				_accountEntryUserRelLocalService.addAccountEntryUserRel(
+					accountBrief.getId(), userAccountId);
+			}
+		}
+
+		return _toUserAccount(user);
 	}
 
 	@Override
