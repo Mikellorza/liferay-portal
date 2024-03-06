@@ -612,16 +612,10 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 			}
 		}
 
-		_updatePassword(
+		user = _updatePassword(
 			user, userAccount.getCurrentPassword(), userAccount.getPassword());
 
-		Integer workflowStatus = _getWorkflowStatus(
-			userAccount.getStatusAsString());
-
-		if ((workflowStatus != null) && (user.getStatus() != workflowStatus)) {
-			user = _userService.updateStatus(
-				userAccountId, workflowStatus, serviceContext);
-		}
+		user = _updateStatus(serviceContext, user, userAccount);
 
 		return _toUserAccount(user);
 	}
@@ -977,7 +971,7 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 			organizationIds = ArrayUtil.toArray(ids);
 		}
 
-		_updatePassword(
+		user = _updatePassword(
 			user, userAccount.getCurrentPassword(), userAccount.getPassword());
 
 		ServiceContext serviceContext = _createServiceContext(userAccount);
@@ -988,13 +982,7 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 				userAccount.getExternalReferenceCode(),
 				user.getExternalReferenceCode()));
 
-		Integer workflowStatus = _getWorkflowStatus(
-			userAccount.getStatusAsString());
-
-		if ((workflowStatus != null) && (user.getStatus() != workflowStatus)) {
-			user = _userService.updateStatus(
-				userAccountId, workflowStatus, serviceContext);
-		}
+		user = _updateStatus(serviceContext, user, userAccount);
 
 		return _toUserAccount(
 			_userService.updateUser(
@@ -1059,13 +1047,7 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 			_getServiceBuilderPhones(null, userAccount),
 			_getWebsites(null, userAccount), false, serviceContext);
 
-		Integer workflowStatus = _getWorkflowStatus(
-			userAccount.getStatusAsString());
-
-		if ((workflowStatus != null) && (user.getStatus() != workflowStatus)) {
-			user = _userService.updateStatus(
-				user.getUserId(), workflowStatus, serviceContext);
-		}
+		user = _updateStatus(serviceContext, user, userAccount);
 
 		UserAccountContactInformation userAccountContactInformation =
 			userAccount.getUserAccountContactInformation();
@@ -1542,23 +1524,6 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 			Objects::nonNull);
 	}
 
-	private Integer _getWorkflowStatus(String status) throws Exception {
-		Integer workflowStatus = null;
-
-		if (StringUtil.equalsIgnoreCase(
-				UserAccount.Status.ACTIVE.getValue(), status)) {
-
-			workflowStatus = WorkflowConstants.STATUS_APPROVED;
-		}
-		else if (StringUtil.equalsIgnoreCase(
-					UserAccount.Status.INACTIVE.getValue(), status)) {
-
-			workflowStatus = WorkflowConstants.STATUS_INACTIVE;
-		}
-
-		return workflowStatus;
-	}
-
 	private boolean _hasPortrait(User user, UserAccount userAccount) {
 		Long imageId = userAccount.getImageId();
 
@@ -1618,17 +1583,17 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 			_getDTOConverterContext(user.getUserId()), user);
 	}
 
-	private void _updatePassword(
+	private User _updatePassword(
 			User user, String currentPassword, String password)
 		throws Exception {
 
 		if ((user == null) || Validator.isNull(password)) {
-			return;
+			return user;
 		}
 
 		_checkCurrentPassword(user, currentPassword);
 
-		_userService.updatePassword(
+		user = _userService.updatePassword(
 			user.getUserId(), password, password,
 			_isPasswordResetRequired(user));
 
@@ -1654,6 +1619,38 @@ public class UserAccountResourceImpl extends BaseUserAccountResourceImpl {
 				contextHttpServletRequest, contextHttpServletResponse, login,
 				password, false, null);
 		}
+
+		return user;
+	}
+
+	private User _updateStatus(
+			ServiceContext serviceContext, int status, User user)
+		throws Exception {
+
+		return _userService.updateStatus(
+			user.getUserId(), status, serviceContext);
+	}
+
+	private User _updateStatus(
+			ServiceContext serviceContext, User user, UserAccount userAccount)
+		throws Exception {
+
+		if (StringUtil.equalsIgnoreCase(
+				UserAccount.Status.ACTIVE.getValue(),
+				userAccount.getStatusAsString())) {
+
+			return _updateStatus(
+				serviceContext, WorkflowConstants.STATUS_APPROVED, user);
+		}
+		else if (StringUtil.equalsIgnoreCase(
+					UserAccount.Status.INACTIVE.getValue(),
+					userAccount.getStatusAsString())) {
+
+			return _updateStatus(
+				serviceContext, WorkflowConstants.STATUS_INACTIVE, user);
+		}
+
+		return user;
 	}
 
 	private static final EntityModel _entityModel =
