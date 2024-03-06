@@ -52,6 +52,8 @@ export class JournalEditArticlePage {
 
 		await this.propertiesTab.waitFor();
 
+		await this.titlePlaceholder.click();
+
 		await this.titlePlaceholder.fill(title);
 
 		await this.publishButton.waitFor();
