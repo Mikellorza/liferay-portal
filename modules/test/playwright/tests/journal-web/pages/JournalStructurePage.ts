@@ -33,6 +33,12 @@ export class JournalStructurePage {
 		await this.journalPage.goToStructures();
 	}
 
+	async goToCreateNewStructure() {
+		await this.newButton.waitFor();
+
+		await this.newButton.click();
+	}
+
 	async goToJournalStructureAction(action: string, title: string) {
 		await this.page
 			.getByRole('row', {name: title})

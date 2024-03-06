@@ -82,13 +82,13 @@ test('LPD-19462 This is a test to test templates pagination of a selected struct
 
 	await journalPage.goToStructures();
 
-	await journalEditStructurePage.goto();
+	await journalStructurePage.goToCreateNewStructure();
 
 	const title1 = getRandomString();
 
 	await journalEditStructurePage.saveNewStructureWithATextField(title1);
 
-	await journalEditStructurePage.goto();
+	await journalStructurePage.goToCreateNewStructure();
 
 	const title2 = getRandomString();
 
