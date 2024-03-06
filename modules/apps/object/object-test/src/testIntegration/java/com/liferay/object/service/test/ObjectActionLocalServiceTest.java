@@ -1593,7 +1593,7 @@ public class ObjectActionLocalServiceTest {
 		_objectActionLocalService.deleteObjectAction(objectAction5);
 		_objectActionLocalService.deleteObjectAction(objectAction6);
 
-		// Add object action to execute groovy after adding a user
+		// Add object action to execute Groovy after adding a user
 
 		objectAction5 = _objectActionLocalService.addObjectAction(
 			RandomTestUtil.randomString(), TestPropsValues.getUserId(),
@@ -1609,7 +1609,7 @@ public class ObjectActionLocalServiceTest {
 			).build(),
 			false);
 
-		// Add object action to execute groovy after updating a user
+		// Add object action to execute Groovy after updating a user
 
 		objectAction6 = _objectActionLocalService.addObjectAction(
 			RandomTestUtil.randomString(), TestPropsValues.getUserId(),
@@ -1625,7 +1625,7 @@ public class ObjectActionLocalServiceTest {
 			).build(),
 			false);
 
-		// While adding a user, the user is updated and it cannot trigger
+		// While adding a user, the user is updated and it must not trigger
 		// object actions
 
 		User user = UserTestUtil.addUser();
