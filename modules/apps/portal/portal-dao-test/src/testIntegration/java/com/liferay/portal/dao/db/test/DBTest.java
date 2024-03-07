@@ -410,7 +410,6 @@ public class DBTest {
 		db.alterTableDropColumn(connection, TABLE_NAME_1, "typeVarchar");
 
 		Assert.assertFalse(dbInspector.hasColumn(TABLE_NAME_1, "typeVarchar"));
-
 		Assert.assertFalse(dbInspector.hasIndex(TABLE_NAME_1, INDEX_NAME));
 	}
 
@@ -430,7 +429,6 @@ public class DBTest {
 		db.alterTableDropColumn(connection, _TABLE_NAME_2, "id2");
 
 		Assert.assertFalse(dbInspector.hasColumn(_TABLE_NAME_2, "id2"));
-
 		Assert.assertFalse(dbInspector.hasIndex(_TABLE_NAME_2, INDEX_NAME));
 	}
 

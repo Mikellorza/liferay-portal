@@ -84,14 +84,14 @@ public class MySQLDB extends BaseDB {
 				ArrayUtil.remove(primaryKeyColumnNames, columnName));
 		}
 
-		List<IndexMetadata> uniqueIndexes = getIndexes(
+		List<IndexMetadata> indexMetadatas = getIndexes(
 			connection, tableName, columnName, false);
 
-		for (IndexMetadata uniqueIndex : uniqueIndexes) {
-			String[] columnNames = uniqueIndex.getColumnNames();
+		for (IndexMetadata indexMetadata : indexMetadatas) {
+			String[] columnNames = indexMetadata.getColumnNames();
 
 			if (columnNames.length > 1) {
-				runSQL(uniqueIndex.getDropSQL());
+				runSQL(indexMetadata.getDropSQL());
 			}
 		}
 
