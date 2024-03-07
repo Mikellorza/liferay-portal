@@ -381,15 +381,17 @@ public class OrganizationStagedModelDataHandler
 			Country country = (Country)portletDataContext.getZipEntryAsObject(
 				countryPath);
 
-			if (country != null) {
-				StagedModelDataHandlerUtil.importStagedModel(
-					portletDataContext, country);
-
-				country = _countryLocalService.getCountryByA2(
-					portletDataContext.getCompanyId(), country.getA2());
-
-				organization.setCountryId(country.getCountryId());
+			if (country == null) {
+				continue;
 			}
+
+			StagedModelDataHandlerUtil.importStagedModel(
+				portletDataContext, country);
+
+			country = _countryLocalService.getCountryByA2(
+				portletDataContext.getCompanyId(), country.getA2());
+
+			organization.setCountryId(country.getCountryId());
 		}
 
 		return organization;
