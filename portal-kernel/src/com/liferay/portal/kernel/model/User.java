@@ -347,8 +347,6 @@ public interface User extends PersistedModel, UserModel {
 
 	public boolean isPasswordModified();
 
-	public boolean isPasswordResetRequired();
-
 	public boolean isReminderQueryComplete();
 
 	public boolean isServiceAccountUser();

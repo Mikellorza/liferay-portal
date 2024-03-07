@@ -1413,11 +1413,6 @@ public class UserWrapper
 	}
 
 	@Override
-	public boolean isPasswordResetRequired() {
-		return model.isPasswordResetRequired();
-	}
-
-	@Override
 	public boolean isReminderQueryComplete() {
 		return model.isReminderQueryComplete();
 	}
