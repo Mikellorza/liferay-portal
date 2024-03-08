@@ -3925,9 +3925,87 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			throw new UserEmailAddressException.MustNotBeNull();
 		}
 
-		sendEmailUserCreationAttemptNotification(
-			userPersistence.findByC_EA(companyId, emailAddress), companyId,
-			fromName, fromAddress, subject, body, serviceContext);
+		if (Validator.isNull(fromName)) {
+			fromName = PrefsPropsUtil.getString(
+				companyId, PropsKeys.ADMIN_EMAIL_FROM_NAME);
+		}
+
+		if (Validator.isNull(fromAddress)) {
+			fromAddress = PrefsPropsUtil.getString(
+				companyId, PropsKeys.ADMIN_EMAIL_FROM_ADDRESS);
+		}
+
+		User user = userPersistence.findByC_EA(companyId, emailAddress);
+
+		String toName = user.getFullName();
+		String toAddress = user.getEmailAddress();
+
+		PortletPreferences companyPortletPreferences =
+			PrefsPropsUtil.getPreferences(companyId);
+
+		String prefix = "adminEmailUserCreationAttempt";
+
+		String localizedBody = body;
+
+		if (Validator.isNull(body)) {
+			Map<Locale, String> localizedBodyMap =
+				LocalizationUtil.getLocalizationMap(
+					companyPortletPreferences, prefix + "Body",
+					PropsKeys.ADMIN_EMAIL_USER_CREATION_ATTEMPT_BODY);
+
+			localizedBody = _getLocalizedValue(
+				localizedBodyMap, user.getLocale(), LocaleUtil.getDefault());
+		}
+
+		String localizedSubject = subject;
+
+		if (Validator.isNull(subject)) {
+			String subjectProperty =
+				PropsKeys.ADMIN_EMAIL_USER_CREATION_ATTEMPT_SUBJECT;
+
+			Map<Locale, String> localizedSubjectMap =
+				LocalizationUtil.getLocalizationMap(
+					companyPortletPreferences, prefix + "Subject",
+					subjectProperty);
+
+			localizedSubject = _getLocalizedValue(
+				localizedSubjectMap, user.getLocale(), LocaleUtil.getDefault());
+		}
+
+		MailTemplateContextBuilder mailTemplateContextBuilder =
+			MailTemplateFactoryUtil.createMailTemplateContextBuilder();
+
+		mailTemplateContextBuilder.put("[$FROM_ADDRESS$]", fromAddress);
+		mailTemplateContextBuilder.put(
+			"[$FROM_NAME$]", new EscapableObject<>(fromName));
+		mailTemplateContextBuilder.put(
+			"[$PORTAL_URL$]", serviceContext.getPortalURL());
+		mailTemplateContextBuilder.put(
+			"[$REMOTE_ADDRESS$]", serviceContext.getRemoteAddr());
+		mailTemplateContextBuilder.put(
+			"[$REMOTE_HOST$]",
+			new EscapableObject<>(serviceContext.getRemoteHost()));
+		mailTemplateContextBuilder.put("[$TO_ADDRESS$]", toAddress);
+		mailTemplateContextBuilder.put(
+			"[$TO_FIRST_NAME$]", new EscapableObject<>(user.getFirstName()));
+		mailTemplateContextBuilder.put(
+			"[$TO_NAME$]", new EscapableObject<>(toName));
+		mailTemplateContextBuilder.put(
+			"[$USER_ID$]", String.valueOf(user.getUserId()));
+		mailTemplateContextBuilder.put(
+			"[$USER_SCREENNAME$]", new EscapableObject<>(user.getScreenName()));
+
+		MailTemplateContext mailTemplateContext =
+			mailTemplateContextBuilder.build();
+
+		try {
+			_sendNotificationEmail(
+				fromAddress, fromName, toAddress, user, localizedSubject,
+				localizedBody, mailTemplateContext);
+		}
+		catch (PortalException portalException) {
+			ReflectionUtil.throwException(portalException);
+		}
 
 		return false;
 	}
@@ -6522,92 +6600,6 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		throw new SearchException(
 			"Unable to fix the search index after 10 attempts");
-	}
-
-	protected void sendEmailUserCreationAttemptNotification(
-			User user, long companyId, String fromName, String fromAddress,
-			String subject, String body, ServiceContext serviceContext)
-		throws PortalException {
-
-		if (Validator.isNull(fromName)) {
-			fromName = PrefsPropsUtil.getString(
-				companyId, PropsKeys.ADMIN_EMAIL_FROM_NAME);
-		}
-
-		if (Validator.isNull(fromAddress)) {
-			fromAddress = PrefsPropsUtil.getString(
-				companyId, PropsKeys.ADMIN_EMAIL_FROM_ADDRESS);
-		}
-
-		String toName = user.getFullName();
-		String toAddress = user.getEmailAddress();
-
-		PortletPreferences companyPortletPreferences =
-			PrefsPropsUtil.getPreferences(companyId);
-
-		String prefix = "adminEmailUserCreationAttempt";
-
-		String localizedBody = body;
-
-		if (Validator.isNull(body)) {
-			Map<Locale, String> localizedBodyMap =
-				LocalizationUtil.getLocalizationMap(
-					companyPortletPreferences, prefix + "Body",
-					PropsKeys.ADMIN_EMAIL_USER_CREATION_ATTEMPT_BODY);
-
-			localizedBody = _getLocalizedValue(
-				localizedBodyMap, user.getLocale(), LocaleUtil.getDefault());
-		}
-
-		String localizedSubject = subject;
-
-		if (Validator.isNull(subject)) {
-			String subjectProperty =
-				PropsKeys.ADMIN_EMAIL_USER_CREATION_ATTEMPT_SUBJECT;
-
-			Map<Locale, String> localizedSubjectMap =
-				LocalizationUtil.getLocalizationMap(
-					companyPortletPreferences, prefix + "Subject",
-					subjectProperty);
-
-			localizedSubject = _getLocalizedValue(
-				localizedSubjectMap, user.getLocale(), LocaleUtil.getDefault());
-		}
-
-		MailTemplateContextBuilder mailTemplateContextBuilder =
-			MailTemplateFactoryUtil.createMailTemplateContextBuilder();
-
-		mailTemplateContextBuilder.put("[$FROM_ADDRESS$]", fromAddress);
-		mailTemplateContextBuilder.put(
-			"[$FROM_NAME$]", new EscapableObject<>(fromName));
-		mailTemplateContextBuilder.put(
-			"[$PORTAL_URL$]", serviceContext.getPortalURL());
-		mailTemplateContextBuilder.put(
-			"[$REMOTE_ADDRESS$]", serviceContext.getRemoteAddr());
-		mailTemplateContextBuilder.put(
-			"[$REMOTE_HOST$]",
-			new EscapableObject<>(serviceContext.getRemoteHost()));
-		mailTemplateContextBuilder.put("[$TO_ADDRESS$]", toAddress);
-		mailTemplateContextBuilder.put(
-			"[$TO_FIRST_NAME$]", new EscapableObject<>(user.getFirstName()));
-		mailTemplateContextBuilder.put(
-			"[$TO_NAME$]", new EscapableObject<>(toName));
-		mailTemplateContextBuilder.put(
-			"[$USER_ID$]", String.valueOf(user.getUserId()));
-		mailTemplateContextBuilder.put(
-			"[$USER_SCREENNAME$]", new EscapableObject<>(user.getScreenName()));
-
-		MailTemplateContext mailTemplateContext =
-			mailTemplateContextBuilder.build();
-
-		try {
-			_sendNotificationEmail(
-				fromAddress, fromName, toAddress, user, localizedSubject,
-				localizedBody, mailTemplateContext);
-		}
-		catch (PortalException portalException) {
-			ReflectionUtil.throwException(portalException);
-		}
 	}
 
 	protected void sendPasswordNotification(
