@@ -22,6 +22,7 @@ export class ApplicationsMenuPage {
 	private readonly oAuth2Administration: Locator;
 	private readonly objectsMenuItem: Locator;
 	readonly page: Page;
+	private readonly processBuilderItem: Locator;
 	private readonly usersAndOrganizationsItem: Locator;
 
 	constructor(page: Page) {
@@ -46,9 +47,6 @@ export class ApplicationsMenuPage {
 			name: 'Control Panel',
 		});
 		this.homePage = new HomePage(page);
-		this.instanceSettingsLink = page.getByRole('link', {
-			name: 'Instance Settings',
-		});
 		this.dataMigrationCenterMenuItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Data Migration Center',
@@ -70,6 +68,10 @@ export class ApplicationsMenuPage {
 			name: 'Objects',
 		});
 		this.page = page;
+		this.processBuilderItem = page.getByRole('menuitem', {
+			exact: true,
+			name: 'Process Builder',
+		});
 		this.usersAndOrganizationsItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Users and Organizations',
@@ -115,7 +117,7 @@ export class ApplicationsMenuPage {
 
 	async goToInstanceSettings() {
 		await this.goToControlPanel();
-		await this.instanceSettingsLink.click();
+		await this.instanceSettingsMenuItem.click();
 	}
 
 	async goToCommercePanel() {
@@ -136,6 +138,11 @@ export class ApplicationsMenuPage {
 	async goToOauth2Administration() {
 		await this.goToControlPanel();
 		await this.oAuth2Administration.click();
+	}
+
+	async goToProcessBuilder() {
+		await this.goToApplicationsMenu();
+		await this.processBuilderItem.click();
 	}
 
 	async goToUsersAndOrganizations() {
