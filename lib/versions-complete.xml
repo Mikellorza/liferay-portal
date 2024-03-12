@@ -537,40 +537,6 @@
 				</licenses>
 			</library>
 			<library>
-				<file-name>com.liferay.commerce.shipping.engine.fedex.jar!com.fedex.ws.jar</file-name>
-				<version>1.0.0</version>
-				<project-name>com.fedex.ws</project-name>
-				<licenses>
-					<license>
-						<license-name>LGPL 2.1</license-name>
-						<license-url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>com.liferay.commerce.shipping.engine.fedex.jar!commons-discovery.jar</file-name>
-				<version>0.4</version>
-				<project-name>org.apache.commons.discovery</project-name>
-				<project-url>http://jakarta.apache.org/commons/${pom.artifactId.substring(8)}/</project-url>
-				<licenses>
-					<license>
-						<license-name>The Apache Software License, Version 2.0</license-name>
-						<license-url>/LICENSE.txt</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>com.liferay.commerce.shipping.engine.fedex.jar!org.apache.axis.jar</file-name>
-				<version>1.4.LIFERAY-PATCHED-8</version>
-				<project-name>org.apache.axis</project-name>
-				<licenses>
-					<license>
-						<license-name>LGPL 2.1</license-name>
-						<license-url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
 				<file-name>com.liferay.content.dashboard.web.jar!commons-lang3.jar</file-name>
 				<version>3.12.0</version>
 				<project-name>Apache Commons Lang</project-name>
@@ -632,7 +598,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.diff.impl.jar!org.outerj.daisy.diff.jar</file-name>
-				<version>1.2.0-atlassian-hosted.LIFERAY-PATCHED-3</version>
+				<version>1.2.LIFERAY-PATCHED-1</version>
 				<project-name>org.outerj.daisy.diff</project-name>
 				<licenses>
 					<license>
@@ -6747,6 +6713,18 @@
 					<license>
 						<license-name>Common Development and Distribution License 1.0</license-name>
 						<license-url>https://opensource.org/licenses/CDDL-1.0</license-url>
+					</license>
+				</licenses>
+			</library>
+			<library>
+				<file-name>lib/development/snakeyaml.jar</file-name>
+				<version>2.0</version>
+				<project-name>SnakeYAML</project-name>
+				<project-url>https://bitbucket.org/snakeyaml/snakeyaml</project-url>
+				<licenses>
+					<license>
+						<license-name>Apache License, Version 2.0</license-name>
+						<license-url>http://www.apache.org/licenses/LICENSE-2.0.txt</license-url>
 					</license>
 				</licenses>
 			</library>
