@@ -30,8 +30,8 @@ export class FriendlyUrlInstanceSettingsPage {
 	}
 
 	async modifySeparator(inputName: string, value: string) {
-		await this.page.locator('input[name="' + inputName + '"]').click();
-		await this.page.locator('input[name="' + inputName + '"]').fill(value);
+		await this.page.getByTestId(inputName).click();
+		await this.page.getByTestId(inputName).fill(value);
 		await this.saveButton.click();
 		await this.successfullyMessage.waitFor();
 	}
@@ -41,7 +41,7 @@ export class FriendlyUrlInstanceSettingsPage {
 			.getByLabel('URL Separator')
 			.locator('div')
 			.filter({hasText: label})
-			.getByLabel('Reset to Default Value')
+			.getByTestId('reset-default-value')
 			.click();
 		await this.saveButton.click();
 		await this.successfullyMessage.waitFor();
