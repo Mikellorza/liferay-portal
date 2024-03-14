@@ -1143,14 +1143,8 @@ public class StructuredContentResourceTest
 
 		StructuredContent structuredContent = super.randomStructuredContent();
 
-		boolean useReference = true;
-
-		if (localizable) {
-			useReference = false;
-		}
-
 		structuredContent.setContentFields(
-			_randomContentFields(journalArticle, useReference));
+			_randomContentFields(journalArticle, localizable));
 		structuredContent.setContentStructureId(
 			complexDDMStructure.getStructureId());
 		structuredContent.setRelatedContents(
@@ -1169,7 +1163,7 @@ public class StructuredContentResourceTest
 	}
 
 	private ContentField[] _randomContentFields(
-		JournalArticle journalArticle, boolean useReference) {
+		JournalArticle journalArticle, boolean localizable) {
 
 		return new ContentField[] {
 			new ContentField() {
@@ -1191,7 +1185,7 @@ public class StructuredContentResourceTest
 
 							setValue(
 								() -> {
-									if (!useReference) {
+									if (localizable) {
 										return null;
 									}
 
@@ -1212,7 +1206,7 @@ public class StructuredContentResourceTest
 
 							setValue(
 								() -> {
-									if (!useReference) {
+									if (localizable) {
 										return null;
 									}
 
@@ -1235,7 +1229,7 @@ public class StructuredContentResourceTest
 
 							setValue(
 								() -> {
-									if (!useReference) {
+									if (localizable) {
 										return null;
 									}
 
