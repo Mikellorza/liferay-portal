@@ -526,7 +526,7 @@ public class JournalArticleLocalServiceTest {
 			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			StringUtil.randomString(), ContentTypes.IMAGE_JPEG,
 			StringUtil.randomString(), "urltitle", StringUtil.randomString(),
-			StringUtil.randomString(), new byte[0], null, null, null,
+			StringUtil.randomString(), new byte[0], null, null,
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
 		String fileEntryJSONString = _toJSON(fileEntry);
