@@ -47,6 +47,7 @@ import com.liferay.portal.kernel.service.PortletPreferenceValueLocalService;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.EscapableLocalizableFunction;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
@@ -159,6 +160,7 @@ public class AssetEntriesCheckerHelper {
 		}
 
 		_notifySubscribers(
+			layout,
 			_portal.getLayoutFullURL(
 				layout.getGroupId(), portletPreferencesModel.getPortletId()),
 			_subscriptionLocalService.getSubscriptions(
@@ -367,6 +369,19 @@ public class AssetEntriesCheckerHelper {
 		}
 	}
 
+	private String _getGroupDescriptiveName(Layout layout, Locale locale) {
+		try {
+			Group group = _groupLocalService.fetchGroup(layout.getGroupId());
+
+			return group.getDescriptiveName(locale);
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException);
+		}
+
+		return StringPool.BLANK;
+	}
+
 	private List<AssetEntry> _getManuallySelectedAssetEntries(
 		PortletPreferences portletPreferences, long groupId) {
 
@@ -410,7 +425,7 @@ public class AssetEntriesCheckerHelper {
 	}
 
 	private SubscriptionSender _getSubscriptionSender(
-		String layoutURL, PortletPreferences portletPreferences,
+		Layout layout, String layoutURL, PortletPreferences portletPreferences,
 		List<AssetEntry> assetEntries) {
 
 		if (assetEntries.isEmpty()) {
@@ -445,6 +460,16 @@ public class AssetEntriesCheckerHelper {
 		subscriptionSender.setGroupId(assetEntry.getGroupId());
 		subscriptionSender.setHtmlFormat(true);
 		subscriptionSender.setLocalizedBodyMap(localizedBodyMap);
+		subscriptionSender.setLocalizedContextAttribute(
+			"[$ASSET_ENTRIES$]",
+			new EscapableLocalizableFunction(
+				locale -> com.liferay.petra.string.StringUtil.merge(
+					assetEntries, entry -> entry.getTitle(locale),
+					StringPool.COMMA_AND_SPACE)));
+		subscriptionSender.setLocalizedContextAttribute(
+			"[$SITE_NAME$]",
+			new EscapableLocalizableFunction(
+				locale -> _getGroupDescriptiveName(layout, locale)));
 		subscriptionSender.setLocalizedPortletTitleMap(
 			PortletConfigurationUtil.getPortletTitleMap(portletPreferences));
 		subscriptionSender.setLocalizedSubjectMap(localizedSubjectMap);
@@ -459,7 +484,7 @@ public class AssetEntriesCheckerHelper {
 	}
 
 	private void _notifySubscribers(
-		String layoutURL, List<Subscription> subscriptions,
+		Layout layout, String layoutURL, List<Subscription> subscriptions,
 		PortletPreferences portletPreferences, List<AssetEntry> assetEntries) {
 
 		if (!_assetPublisherWebHelper.getEmailAssetEntryAddedEnabled(
@@ -502,7 +527,7 @@ public class AssetEntriesCheckerHelper {
 				assetEntriesToUsersMap.entrySet()) {
 
 			SubscriptionSender subscriptionSender = _getSubscriptionSender(
-				layoutURL, portletPreferences, entry.getKey());
+				layout, layoutURL, portletPreferences, entry.getKey());
 
 			if (subscriptionSender == null) {
 				continue;
