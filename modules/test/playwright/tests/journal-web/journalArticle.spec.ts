@@ -86,25 +86,24 @@ const translationTest = mergeTests(
 prefixUrlTest(
 	'LPD-6813: Make prefix URLs configurable',
 	async ({
+		apiHelpers,
 		displayPageTemplatesPage,
 		friendlyUrlInstanceSettingsPage,
-		journalEditArticlePage,
-		journalPage,
 		page,
+		site,
 	}) => {
-		await journalPage.goto();
-
 		const articleTitle = getRandomString();
 
-		await journalEditArticlePage.publishNewBasicArticle(articleTitle);
+		const contentStructureId = await getBasicWebContentStructureId(
+			apiHelpers
+		);
 
-		const article = page
-			.locator(
-				'#_com_liferay_journal_web_portlet_JournalPortlet_articlesSearchContainer .list-group-item'
-			)
-			.filter({hasText: articleTitle});
-
-		await article.waitFor();
+		await addApprovedStructuredContent(
+			apiHelpers,
+			site.id,
+			contentStructureId,
+			articleTitle
+		);
 
 		await displayPageTemplatesPage.goto();
 
@@ -189,19 +188,34 @@ translationTest(
 
 bulkTest(
 	'LPD-17782: This is a test for bulk permissions of web content',
-	async ({journalEditArticlePage, journalPage, page, site}) => {
+	async ({apiHelpers, journalPage, page, site}) => {
 		const PERMISSIONS_LOCATORS = [
 			{enabled: true, locator: '#guest_ACTION_DELETE'},
 			{enabled: true, locator: '#guest_ACTION_PERMISSIONS'},
 		];
 
-		// Create first article
+		const contentStructureId = await getBasicWebContentStructureId(
+			apiHelpers
+		);
 
 		const title1 = getRandomString();
+		const title2 = getRandomString();
 
-		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
+		await addApprovedStructuredContent(
+			apiHelpers,
+			site.id,
+			contentStructureId,
+			title1
+		);
 
-		await journalEditArticlePage.publishNewBasicArticle(title1);
+		await addApprovedStructuredContent(
+			apiHelpers,
+			site.id,
+			contentStructureId,
+			title2
+		);
+
+		await journalPage.goto(site.friendlyUrlPath);
 
 		const article1 = page
 			.locator(
@@ -209,22 +223,13 @@ bulkTest(
 			)
 			.filter({hasText: title1});
 
-		await article1.waitFor();
-
-		// Create second article
-
-		const title2 = getRandomString();
-
-		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
-
-		await journalEditArticlePage.publishNewBasicArticle(title2);
-
 		const article2 = page
 			.locator(
 				'#_com_liferay_journal_web_portlet_JournalPortlet_articlesSearchContainer .list-group-item'
 			)
 			.filter({hasText: title2});
 
+		await article1.waitFor();
 		await article2.waitFor();
 
 		await journalPage.setJournalArticlePermissions(
