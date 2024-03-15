@@ -64,16 +64,4 @@ export class JournalEditArticlePage {
 			.getByText(`Success:${title} was updated successfully.`)
 			.waitFor();
 	}
-
-	async publishNewBasicArticle(title: string) {
-		await this.fillTitle(title);
-
-		await this.publishButton.waitFor();
-
-		await this.publishButton.click();
-
-		await this.page
-			.getByText(`Success:${title} was created successfully.`)
-			.waitFor();
-	}
 }
