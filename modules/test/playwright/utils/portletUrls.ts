@@ -9,6 +9,8 @@ export const PORTLET_URLS = {
 		'/~/control_panel/manage?p_p_id=com_liferay_document_library_web_portlet_DLAdminPortlet',
 	journal:
 		'/~/control_panel/manage?p_p_id=com_liferay_journal_web_portlet_JournalPortlet',
+	journalTemplates:
+		'/~/control_panel/manage?p_p_id=com_liferay_journal_web_portlet_JournalPortlet&_com_liferay_journal_web_portlet_JournalPortlet_mvcPath=%2Fview_ddm_templates.jsp',
 	knowledgeBase:
 		'/~/control_panel/manage?p_p_id=com_liferay_knowledge_base_web_portlet_AdminPortlet',
 	lockedItems:
