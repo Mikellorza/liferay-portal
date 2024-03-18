@@ -101,10 +101,10 @@ public class AssetPublisherUserNotificationTest {
 			_group.getGroupId(),
 			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID);
 
-		UnsafeRunnable<Exception> jobExecutorUnsafeRunnable =
+		UnsafeRunnable<Exception> unsafeRunnable =
 			_schedulerJobConfiguration.getJobExecutorUnsafeRunnable();
 
-		jobExecutorUnsafeRunnable.run();
+		unsafeRunnable.run();
 
 		_assertAssetPublisherNotifications(
 			_getExpectedMailBody(
@@ -139,10 +139,10 @@ public class AssetPublisherUserNotificationTest {
 			ServiceContextTestUtil.getServiceContext(
 				_group.getGroupId(), _user.getUserId()));
 
-		UnsafeRunnable<Exception> jobExecutorUnsafeRunnable =
+		UnsafeRunnable<Exception> _unsafeRunnable =
 			_schedulerJobConfiguration.getJobExecutorUnsafeRunnable();
 
-		jobExecutorUnsafeRunnable.run();
+		_unsafeRunnable.run();
 
 		_assertAssetPublisherNotifications(
 			_getExpectedMailBody(
