@@ -178,7 +178,15 @@ export default function getAlloyEditorProcessor(
 					}
 				}),
 
-				nativeEditor.on('instanceReady', () => {
+				nativeEditor.on('instanceReady', (event) => {
+					event.editor.dataProcessor.htmlFilter.addRules({
+						elements: {
+							img(element) {
+								element.attributes.alt = '';
+							},
+						},
+					});
+
 					nativeEditor.focus();
 
 					if (clickPosition) {
