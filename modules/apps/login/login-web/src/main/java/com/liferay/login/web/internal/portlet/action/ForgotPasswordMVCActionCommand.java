@@ -205,12 +205,12 @@ public class ForgotPasswordMVCActionCommand extends BaseMVCActionCommand {
 		}
 	}
 
-	private String _getQueryQuestionByEmailHash(
-		String email, Set<String> reminderQueryQuestions) {
+	private String _getReminderQueryQuestion(
+		String login, Set<String> reminderQueryQuestions) {
 
 		List<String> list = new SortedArrayList(reminderQueryQuestions);
 
-		return list.get(Math.abs(email.hashCode()) % list.size());
+		return list.get(Math.abs(login.hashCode()) % list.size());
 	}
 
 	private User _getUser(ActionRequest actionRequest) throws Exception {
@@ -288,7 +288,7 @@ public class ForgotPasswordMVCActionCommand extends BaseMVCActionCommand {
 
 		if (!reminderQueryQuestions.isEmpty()) {
 			guestUser.setReminderQueryQuestion(
-				_getQueryQuestionByEmailHash(
+				_getReminderQueryQuestion(
 					ParamUtil.getString(actionRequest, "login"),
 					reminderQueryQuestions));
 		}
