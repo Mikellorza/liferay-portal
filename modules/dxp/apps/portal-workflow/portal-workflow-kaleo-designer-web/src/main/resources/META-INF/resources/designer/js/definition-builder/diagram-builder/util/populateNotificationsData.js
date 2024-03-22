@@ -34,7 +34,7 @@ const populateNotificationsData = (
 						.then((response) => {
 							initialElements[i].data.notifications.recipients[
 								index
-							].sectionsData = {
+							][0].sectionsData = {
 								id: response.id,
 								name: response.name,
 								roleType: response.roleType,
@@ -127,7 +127,7 @@ const populateNotificationsData = (
 						.then(() => {
 							initialElements[i].data.notifications.recipients[
 								index
-							].sectionsData = sectionsData;
+							][0].sectionsData = sectionsData;
 
 							setElements([...initialElements]);
 						});
