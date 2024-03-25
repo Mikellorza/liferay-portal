@@ -107,7 +107,6 @@ public class AcceptLanguageContextProviderTest {
 			_group.getGroupId(), LocaleUtil.BRAZIL);
 
 		_testCreateContext(Http.Method.GET, user, LocaleUtil.BRAZIL);
-
 		_testCreateContext(Http.Method.POST, user, LocaleUtil.BRAZIL);
 	}
 
@@ -116,7 +115,6 @@ public class AcceptLanguageContextProviderTest {
 		User user = _company.getGuestUser();
 
 		_testCreateContext(Http.Method.GET, user, LocaleUtil.TAIWAN);
-
 		_testCreateContext(Http.Method.POST, user, LocaleUtil.TAIWAN);
 	}
 
@@ -241,11 +239,11 @@ public class AcceptLanguageContextProviderTest {
 
 			addHeader("Host", _company.getVirtualHostname());
 
-			setMethod(method.toString());
-
 			if (!user.isGuestUser()) {
 				setAttribute(WebKeys.USER_ID, user.getUserId());
 			}
+
+			setMethod(method.toString());
 
 			if (ArrayUtil.isNotEmpty(locales)) {
 				setPreferredLocales(Arrays.asList(locales));

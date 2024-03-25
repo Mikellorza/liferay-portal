@@ -127,6 +127,9 @@ public class SortContextProviderTest {
 
 	@Test
 	public void testCreateContextWithDifferentLocale() throws Exception {
+
+		// GET method
+
 		Locale locale = LocaleUtil.TAIWAN;
 
 		MockHttpServletRequest mockHttpServletRequest =
@@ -140,8 +143,6 @@ public class SortContextProviderTest {
 			};
 
 		Class<? extends MockResource> clazz = _mockResource.getClass();
-
-		// GET Method
 
 		mockHttpServletRequest.setMethod(HttpMethod.GET);
 
@@ -158,7 +159,7 @@ public class SortContextProviderTest {
 		Assert.assertEquals("internalTitle", sort.getFieldName());
 		Assert.assertTrue(sort.isReverse());
 
-		// HTTP Method different from GET
+		// POST method
 
 		mockHttpServletRequest.setMethod(HttpMethod.POST);
 

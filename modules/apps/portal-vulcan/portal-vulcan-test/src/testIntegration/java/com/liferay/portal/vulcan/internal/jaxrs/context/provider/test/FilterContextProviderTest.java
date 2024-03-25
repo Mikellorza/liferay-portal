@@ -136,6 +136,9 @@ public class FilterContextProviderTest {
 
 	@Test
 	public void testCreateContextWithDifferentLocale() throws Exception {
+
+		// GET method
+
 		Locale locale = LocaleUtil.TAIWAN;
 
 		MockHttpServletRequest mockHttpServletRequest =
@@ -149,8 +152,6 @@ public class FilterContextProviderTest {
 			};
 
 		Class<? extends MockResource> clazz = _mockResource.getClass();
-
-		// GET Method
 
 		mockHttpServletRequest.setMethod(HttpMethod.GET);
 
@@ -171,7 +172,7 @@ public class FilterContextProviderTest {
 		Assert.assertEquals("example", queryTerm.getValue());
 		Assert.assertEquals("internalTitle", queryTerm.getField());
 
-		// HTTP Method different from GET
+		// POST method
 
 		mockHttpServletRequest.setMethod(HttpMethod.POST);
 
