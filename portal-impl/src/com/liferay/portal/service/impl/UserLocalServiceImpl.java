@@ -4045,9 +4045,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			throw new UserEmailAddressException.MustNotBeNull();
 		}
 
-		User user = userPersistence.findByC_EA(companyId, emailAddress);
-
 		String passwordResetURL = null;
+
+		User user = userPersistence.findByC_EA(companyId, emailAddress);
 
 		PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 
