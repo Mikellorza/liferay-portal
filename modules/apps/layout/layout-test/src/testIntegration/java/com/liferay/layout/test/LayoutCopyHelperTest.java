@@ -662,7 +662,6 @@ public class LayoutCopyHelperTest {
 			Arrays.toString(originalFragmentEntryLinkIds),
 			sourceFragmentEntryLinks.size(),
 			originalFragmentEntryLinkIds.length);
-
 		Assert.assertTrue(
 			ArrayUtil.containsAll(
 				originalFragmentEntryLinkIds,
@@ -679,7 +678,6 @@ public class LayoutCopyHelperTest {
 					sourceFragmentEntryLink.getFragmentEntryLinkId());
 
 			Assert.assertNotNull(copiedFragmentEntryLink);
-
 			Assert.assertEquals(
 				sourceFragmentEntryLink.getConfiguration(),
 				copiedFragmentEntryLink.getConfiguration());
