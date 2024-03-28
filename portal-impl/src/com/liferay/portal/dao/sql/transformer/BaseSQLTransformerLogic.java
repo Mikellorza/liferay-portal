@@ -49,8 +49,8 @@ public abstract class BaseSQLTransformerLogic implements SQLTransformerLogic {
 
 	protected Function<String, String> getCastClobTextFunction() {
 		return _getCastFunction(
-			getCastClobTextPattern(), "CAST_CLOB_TEXT",
-			matcher -> replaceCastClobText(matcher));
+			matcher -> replaceCastClobText(matcher), "CAST_CLOB_TEXT",
+			getCastClobTextPattern());
 	}
 
 	protected Pattern getCastClobTextPattern() {
@@ -60,8 +60,8 @@ public abstract class BaseSQLTransformerLogic implements SQLTransformerLogic {
 
 	protected Function<String, String> getCastLongFunction() {
 		return _getCastFunction(
-			getCastLongPattern(), "CAST_LONG",
-			matcher -> replaceCastLong(matcher));
+			matcher -> replaceCastLong(matcher), "CAST_LONG",
+			getCastLongPattern());
 	}
 
 	protected Pattern getCastLongPattern() {
@@ -70,8 +70,8 @@ public abstract class BaseSQLTransformerLogic implements SQLTransformerLogic {
 
 	protected Function<String, String> getCastTextFunction() {
 		return _getCastFunction(
-			getCastTextPattern(), "CAST_TEXT",
-			matcher -> replaceCastText(matcher));
+			matcher -> replaceCastText(matcher), "CAST_TEXT",
+			getCastTextPattern());
 	}
 
 	protected Pattern getCastTextPattern() {
@@ -233,8 +233,8 @@ public abstract class BaseSQLTransformerLogic implements SQLTransformerLogic {
 	}
 
 	private Function<String, String> _getCastFunction(
-		Pattern castPattern, String castName,
-		Function<Matcher, String> castFunction) {
+		Function<Matcher, String> castFunction, String castName,
+		Pattern castPattern) {
 
 		return new Function<String, String>() {
 
