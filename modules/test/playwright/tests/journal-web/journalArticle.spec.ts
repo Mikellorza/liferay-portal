@@ -91,12 +91,7 @@ const aiCreateImageTest = mergeTests(
 	})
 );
 
-const privateContentIconTest = mergeTests(
-	baseTest,
-	featureFlagsTest({
-		'LPD-10626': true,
-	})
-);
+const privateContentIconTest = mergeTests(baseTest);
 
 privateContentIconTest(
 	'LPD-15807: Identify at a glance if a Web Content is visible for guests in content management',
