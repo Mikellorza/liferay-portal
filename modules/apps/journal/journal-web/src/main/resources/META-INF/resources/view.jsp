@@ -73,6 +73,7 @@ else {
 						).buildString()
 					%>'
 					label="<%= article.getTitle(locale) %>"
+					translated="<%= false %>"
 				/>
 			</liferay-util:buffer>
 
