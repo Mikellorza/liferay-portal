@@ -74,6 +74,12 @@ public interface InfoLocalizedValue<T> {
 			return this;
 		}
 
+		public Builder<T> translate(boolean translate) {
+			_translate = translate;
+
+			return this;
+		}
+
 		public Builder<T> value(Locale locale, T value) {
 			_values.put(locale, value);
 
@@ -99,6 +105,7 @@ public interface InfoLocalizedValue<T> {
 		}
 
 		private Locale _defaultLocale;
+		private boolean _translate = true;
 		private final Map<Locale, T> _values = new HashMap<>();
 
 	}
@@ -159,7 +166,7 @@ public interface InfoLocalizedValue<T> {
 				value = _builder._values.get(getDefaultLocale());
 			}
 
-			if (value instanceof String) {
+			if ((value instanceof String) && _builder._translate) {
 				value = (T)LanguageUtil.get(locale, (String)value);
 			}
 
