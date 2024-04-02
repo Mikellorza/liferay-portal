@@ -988,6 +988,11 @@ public class ObjectDefinitionResourceImpl
 			return null;
 		}
 
+		String permissionName =
+			com.liferay.object.model.ObjectDefinition.class.getName();
+		long rootObjectDefinitionId =
+			serviceBuilderObjectDefinition.getRootObjectDefinitionId();
+
 		ObjectDefinition objectDefinition =
 			com.liferay.object.admin.rest.internal.dto.v1_0.util.
 				ObjectDefinitionUtil.toObjectDefinition(
@@ -1001,12 +1006,6 @@ public class ObjectDefinitionResourceImpl
 					_objectValidationRuleLocalService, _objectViewDTOConverter,
 					_objectViewLocalService, serviceBuilderObjectDefinition,
 					_systemObjectDefinitionManagerRegistry);
-
-		String permissionName =
-			com.liferay.object.model.ObjectDefinition.class.getName();
-
-		long rootObjectDefinitionId =
-			serviceBuilderObjectDefinition.getRootObjectDefinitionId();
 
 		objectDefinition.setActions(
 			() -> HashMapBuilder.put(
