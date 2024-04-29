@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import ClayForm, {ClayInput} from '@clayui/form';
+import ClayForm, {ClayCheckbox, ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -32,6 +32,7 @@ const Feedback = ({message, warning}) => (
 
 const FileNameInput = ({initialValue, portletNamespace, required}) => {
 	const inputId = portletNamespace + 'fileName';
+	const [inputChecked, setInputChecked] = useState(true);
 	const [inputValue, setInputValue] = useState(initialValue);
 	const valueChanged = initialValue !== inputValue;
 
@@ -53,6 +54,7 @@ const FileNameInput = ({initialValue, portletNamespace, required}) => {
 
 			<ClayInput
 				className="form-control"
+				disabled={inputChecked}
 				id={inputId}
 				name={inputId}
 				onChange={({target: {value}}) => setInputValue(value)}
@@ -75,6 +77,14 @@ const FileNameInput = ({initialValue, portletNamespace, required}) => {
 					warning
 				/>
 			)}
+
+			<ClayCheckbox name={`${portletNamespace}automaticallyPopulateCheckbox`}
+						  id={`${portletNamespace}automaticallyPopulateCheckbox`}
+						  label="automaticallyPopulateCheckbox"
+						  checked={inputChecked}
+						  onChange={() => {
+								setInputChecked(!inputChecked);
+						  }}/>
 		</ClayForm.Group>
 	);
 };

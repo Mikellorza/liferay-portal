@@ -48,6 +48,10 @@ const FileNamePicker = ({
 
 			setInputValue(target.value);
 
+			if (document.getElementById(`${namespace}automaticallyPopulateCheckbox`)?.checked) {
+				document.getElementById(`${namespace}fileName`).value = target.value.replace(/^.*[\\]/, '');
+			}
+
 			window[`${namespace}updateFileNameAndTitle`]();
 		}
 	};
