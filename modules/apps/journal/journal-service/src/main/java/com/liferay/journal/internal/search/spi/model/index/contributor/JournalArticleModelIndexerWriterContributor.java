@@ -209,12 +209,6 @@ public class JournalArticleModelIndexerWriterContributor
 	}
 
 	private void _reindexOtherArticleVersions(JournalArticle journalArticle) {
-		if (PortalUtil.getClassNameId(DDMStructure.class) ==
-				journalArticle.getClassNameId()) {
-
-			return;
-		}
-
 		List<JournalArticle> journalArticles =
 			_journalArticleLocalService.getArticles(
 				journalArticle.getGroupId(), journalArticle.getArticleId(),
@@ -226,7 +220,10 @@ public class JournalArticleModelIndexerWriterContributor
 
 		for (JournalArticle versionJournalArticle : journalArticles) {
 			if (Objects.equals(
-					versionJournalArticle.getId(), journalArticle.getId())) {
+					versionJournalArticle.getId(), journalArticle.getId()) ||
+				(!_isIndexAllArticleVersions() &&
+				 (versionJournalArticle.getVersion() >=
+					 journalArticle.getVersion()))) {
 
 				continue;
 			}
