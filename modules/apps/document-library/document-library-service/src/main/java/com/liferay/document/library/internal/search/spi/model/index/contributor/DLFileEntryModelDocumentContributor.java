@@ -15,7 +15,10 @@ import com.liferay.document.library.kernel.service.DLFileEntryMetadataLocalServi
 import com.liferay.document.library.kernel.store.DLStore;
 import com.liferay.document.library.kernel.store.DLStoreRequest;
 import com.liferay.document.library.security.io.InputStreamSanitizer;
+import com.liferay.dynamic.data.mapping.model.DDMField;
+import com.liferay.dynamic.data.mapping.model.DDMFieldAttribute;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMFieldLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.DDMStorageEngineManager;
@@ -222,6 +225,36 @@ public class DLFileEntryModelDocumentContributor
 
 					_ddmIndexer.addAttributes(
 						document, ddmStructure, ddmFormValues);
+
+					Long tiffImageLength = _getDDMFormFieldsValueValue(
+						dlFileEntryMetadata.getDDMStorageId(),
+						"TIFF_IMAGE_LENGTH");
+
+					if (tiffImageLength == null) {
+						continue;
+					}
+
+					Long tiffImageWidth = _getDDMFormFieldsValueValue(
+						dlFileEntryMetadata.getDDMStorageId(),
+						"TIFF_IMAGE_WIDTH");
+
+					if (tiffImageWidth == null) {
+						continue;
+					}
+
+					document.addNumber("imageLength", tiffImageLength);
+					document.addNumber("imageWidth", tiffImageWidth);
+
+					String aspectRatio = "square";
+
+					if (tiffImageLength > tiffImageWidth) {
+						aspectRatio = "tall";
+					}
+					else if (tiffImageLength < tiffImageWidth) {
+						aspectRatio = "wide";
+					}
+
+					document.addText("aspectRatio", aspectRatio);
 				}
 			}
 			catch (Exception exception) {
@@ -313,6 +346,29 @@ public class DLFileEntryModelDocumentContributor
 		return text;
 	}
 
+	private Long _getDDMFormFieldsValueValue(
+		long ddmStorageId, String fieldName) {
+
+		List<DDMField> ddmFields = _ddmFieldLocalService.getDDMFields(
+			ddmStorageId, fieldName);
+
+		if (ListUtil.isEmpty(ddmFields)) {
+			return null;
+		}
+
+		DDMField ddmField = ddmFields.get(0);
+
+		DDMFieldAttribute ddmFieldAttribute =
+			_ddmFieldLocalService.fetchDDMFieldAttribute(
+				ddmField.getFieldId(), StringPool.BLANK, StringPool.BLANK);
+
+		if (ddmFieldAttribute == null) {
+			return null;
+		}
+
+		return Long.valueOf(ddmFieldAttribute.getAttributeValue());
+	}
+
 	private String _getIndexVersionLabel(DLFileEntry dlFileEntry)
 		throws PortalException {
 
@@ -377,6 +433,9 @@ public class DLFileEntryModelDocumentContributor
 
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;
+
+	@Reference
+	private DDMFieldLocalService _ddmFieldLocalService;
 
 	@Reference
 	private DDMIndexer _ddmIndexer;
