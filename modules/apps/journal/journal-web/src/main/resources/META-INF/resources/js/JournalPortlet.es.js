@@ -21,6 +21,7 @@ const AUTO_SAVE_DELAY = 1500;
 export default function _JournalPortlet({
 	articleId: initialArticleId,
 	autoSaveDraftEnabled,
+	autoSaveDraftURL,
 	availableLocales: initialAvailableLocales,
 	classNameId,
 	contentTitle,
@@ -361,7 +362,7 @@ export default function _JournalPortlet({
 			formDateInput.value = Date.now().toString();
 		}
 
-		return fetch(formElement.action, {
+		return fetch(autoSaveDraftURL, {
 			body: new FormData(formElement),
 			method: formElement.method,
 		})
