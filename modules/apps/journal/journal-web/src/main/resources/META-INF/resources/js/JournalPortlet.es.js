@@ -376,9 +376,8 @@ export default function _JournalPortlet({
 			.then((data) => {
 				if (!articleId && data.success) {
 					articleId = data.articleId;
-					document.getElementById(
-						`${namespace}articleId`
-					).value = articleId;
+					document.getElementById(`${namespace}articleId`).value =
+						articleId;
 
 					Liferay.fire('asyncFormSubmission', {articleId});
 
@@ -387,15 +386,12 @@ export default function _JournalPortlet({
 					);
 
 					if (!friendlyUrlInputComponent.getValue()) {
-						const friendlyURL =
-							data.friendlyURL;
+						const friendlyURL = data.friendlyURL;
 						friendlyUrlInputComponent.updateInputLanguage(
 							friendlyURL,
 							defaultLanguageId
 						);
-						friendlyUrlInputComponent.updateInput(
-							friendlyURL
-						);
+						friendlyUrlInputComponent.updateInput(friendlyURL);
 
 						Liferay.fire('journal:update-friendly-url', {
 							friendlyURL,
@@ -404,7 +400,8 @@ export default function _JournalPortlet({
 				}
 				formDateInput.value = data.modifiedDate;
 				lockHolder.lock?.unlock();
-			}).catch((error) => {
+			})
+			.catch((error) => {
 				console.error(error);
 				lockHolder.lock?.unlock(true);
 			});
@@ -527,7 +524,7 @@ function attachFormChangeListener(
 	const mutationObserver = new MutationObserver((mutationRecords) => {
 		const observedMutationRecords = mutationRecords
 			.filter((mutationRecord) => {
-				if (mutationRecord.target.id == `${namespace}formDate`){
+				if (mutationRecord.target.id === `${namespace}formDate`) {
 					return;
 				}
 				else if (mutationRecord.type === 'attributes') {
