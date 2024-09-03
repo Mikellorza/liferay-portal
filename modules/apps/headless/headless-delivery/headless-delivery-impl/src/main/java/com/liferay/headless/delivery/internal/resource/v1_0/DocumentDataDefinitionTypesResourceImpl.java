@@ -13,6 +13,9 @@ import com.liferay.document.library.kernel.service.DLFileEntryTypeService;
 import com.liferay.headless.common.spi.service.context.ServiceContextBuilder;
 import com.liferay.headless.delivery.dto.v1_0.DocumentDataDefinitionType;
 import com.liferay.headless.delivery.resource.v1_0.DocumentDataDefinitionTypesResource;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.service.permission.ModelPermissionsFactory;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
@@ -53,60 +56,65 @@ public class DocumentDataDefinitionTypesResourceImpl
 			Long siteId, DocumentDataDefinitionType documentDataDefinitionType)
 		throws Exception {
 
-		DataDefinitionResource.Builder dataDefinitionResourceBuilder =
-			_dataDefinitionResourceFactory.create();
+		try {
 
-		DataDefinitionResource dataDefinitionResource =
-			dataDefinitionResourceBuilder.user(
-				contextUser
-			).build();
+			DataDefinitionResource.Builder dataDefinitionResourceBuilder =
+				_dataDefinitionResourceFactory.create();
 
-		Map<Locale, String> descriptionMap = LocalizedMapUtil.getLocalizedMap(
-			contextAcceptLanguage.getPreferredLocale(),
-			documentDataDefinitionType.getDescription(),
-			documentDataDefinitionType.getDescription_i18n());
+			DataDefinitionResource dataDefinitionResource =
+				dataDefinitionResourceBuilder.user(
+					contextUser
+				).build();
 
-		Map<Locale, String> nameMap = LocalizedMapUtil.getLocalizedMap(
-			contextAcceptLanguage.getPreferredLocale(),
-			documentDataDefinitionType.getName(),
-			documentDataDefinitionType.getName_i18n());
+			Map<Locale, String> descriptionMap =
+				LocalizedMapUtil.getLocalizedMap(
+					contextAcceptLanguage.getPreferredLocale(),
+					documentDataDefinitionType.getDescription(),
+					documentDataDefinitionType.getDescription_i18n());
 
-		DataDefinition dataDefinition =
-			dataDefinitionResource.postSiteDataDefinitionByContentType(
-				siteId, "document-library",
-				new DataDefinition() {
-					{
-						setAvailableLanguageIds(
-							documentDataDefinitionType::getAvailableLanguages);
-						setDataDefinitionFields(
-							documentDataDefinitionType::
-								getDataDefinitionFields);
-						setDefaultDataLayout(
-							documentDataDefinitionType::getDataLayout);
-						setDescription(
-							() -> LocalizedValueUtil.toStringObjectMap(
-								descriptionMap));
-						setName(
-							() -> LocalizedValueUtil.toStringObjectMap(
-								nameMap));
-						setSiteId(() -> siteId);
-						setUserId(contextUser::getUserId);
-					}
-				});
+			Map<Locale, String> nameMap = LocalizedMapUtil.getLocalizedMap(
+				contextAcceptLanguage.getPreferredLocale(),
+				documentDataDefinitionType.getName(),
+				documentDataDefinitionType.getName_i18n());
 
-		String viewableBy = documentDataDefinitionType.getViewableByAsString();
+			DataDefinition dataDefinition =
+				dataDefinitionResource.postSiteDataDefinitionByContentType(
+					siteId, "document-library",
+					new DataDefinition() {
+						{
+							setAvailableLanguageIds(
+								documentDataDefinitionType::getAvailableLanguages);
+							setDataDefinitionFields(
+								documentDataDefinitionType::
+									getDataDefinitionFields);
+							setDefaultDataLayout(
+								documentDataDefinitionType::getDataLayout);
+							setDescription(
+								() -> LocalizedValueUtil.toStringObjectMap(
+									descriptionMap));
+							setName(
+								() -> LocalizedValueUtil.toStringObjectMap(
+									nameMap));
+							setSiteId(() -> siteId);
+							setUserId(contextUser::getUserId);
+						}
+					});
 
-		if (viewableBy == null) {
-			viewableBy = DocumentDataDefinitionType.ViewableBy.OWNER.getValue();
+			return _toDocumentDataDefinitionType(
+				_dlFileEntryTypeService.addFileEntryType(
+					documentDataDefinitionType.getExternalReferenceCode(),
+					siteId,
+					dataDefinition.getId(), null, nameMap, descriptionMap,
+					ServiceContextBuilder.create(
+						siteId, contextHttpServletRequest,
+						documentDataDefinitionType.getViewableByAsString()
+					).permissions(
+						ModelPermissionsFactory.createWithDefaultPermissions(
+							DLFileEntryType.class.getName())
+					).build()));
+		}catch (Exception exception){
+			throw new Exception(exception);
 		}
-
-		return _toDocumentDataDefinitionType(
-			_dlFileEntryTypeService.addFileEntryType(
-				documentDataDefinitionType.getExternalReferenceCode(), siteId,
-				dataDefinition.getId(), null, nameMap, descriptionMap,
-				ServiceContextBuilder.create(
-					siteId, contextHttpServletRequest, viewableBy
-				).build()));
 	}
 
 	private DocumentDataDefinitionType _toDocumentDataDefinitionType(
