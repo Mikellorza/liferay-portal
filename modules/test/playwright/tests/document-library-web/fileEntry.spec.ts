@@ -39,9 +39,6 @@ export const testFeatureFlagsEnabled = mergeTests(
 	})
 );
 
-export const testUploadMultipleFieldsWithCustomDocumentType =
-	mergeTests(baseTest);
-
 baseTest(
 	'Check order by Relevance in Search of DL',
 	{
@@ -245,7 +242,7 @@ testFeatureFlagsEnabled(
 	}
 );
 
-testUploadMultipleFieldsWithCustomDocumentType(
+baseTest(
 	'Error uploading multiples files with custom document type',
 	{
 		tag: '@LPD-29609',
