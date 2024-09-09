@@ -181,7 +181,7 @@ testFeatureFlagsEnabled(
 
 		await documentLibraryPage.changeView('cards');
 
-		await documentLibraryPage.editFileEntry(title);
+		await documentLibraryPage.goToEditEntry(title);
 
 		await documentLibraryPage.assertPrivateFileIcon();
 
