@@ -107,10 +107,13 @@ export class DocumentLibraryPage {
 
 	async editEntry(entryTitle: string) {
 		await this.page
-			.locator(`.card-body:has-text('${entryTitle}')`)
-			.getByLabel('More actions')
+			.locator(`[data-title="${entryTitle}"]`)
+			.getByLabel('actions')
 			.click();
-		await this.page.getByRole('menuitem', {name: 'Edit'}).click();
+		await this.page
+			.locator('div.dropdown-menu.show')
+			.getByRole('menuitem', {name: 'Edit', exact: true})
+			.click();
 	}
 
 	async editFileEntry(entryTitle: string) {
