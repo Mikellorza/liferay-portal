@@ -105,7 +105,7 @@ export class DocumentLibraryPage {
 			.click();
 	}
 
-	async editEntry(entryTitle: string) {
+	async goToEditEntry(entryTitle: string) {
 		await this.page
 			.locator(`[data-title="${entryTitle}"]`)
 			.getByLabel('actions')
