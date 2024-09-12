@@ -11,6 +11,7 @@ import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.asset.tags.item.selector.AssetTagsItemSelectorReturnType;
 import com.liferay.asset.tags.item.selector.criterion.AssetTagsItemSelectorCriterion;
+import com.liferay.content.dashboard.info.item.ClassNameClassPKInfoItemIdentifier;
 import com.liferay.content.dashboard.item.action.exception.ContentDashboardItemActionException;
 import com.liferay.content.dashboard.item.filter.ContentDashboardItemFilter;
 import com.liferay.content.dashboard.item.filter.provider.ContentDashboardItemFilterProvider;
@@ -35,6 +36,7 @@ import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
@@ -279,7 +281,7 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 				labelItem -> {
 					labelItem.putData(
 						"removeLabelURL",
-						_getRemoveContentDashboardItemSubtypePayloadsURL(
+						_getRemoveLabelURL(
 							contentDashboardItemSubtypes,
 							contentDashboardItemSubtype));
 					labelItem.setCloseable(true);
@@ -919,13 +921,34 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 		};
 	}
 
+	private JSONObject _getJSONObject(
+		JSONArray jsonArray, String className, String entryClassName) {
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			if (jsonObject == null) {
+				continue;
+			}
+
+			if (Objects.equals(jsonObject.getString("className"), className) &&
+				Objects.equals(
+					jsonObject.getString("entryClassName"), entryClassName)) {
+
+				return jsonObject;
+			}
+		}
+
+		return null;
+	}
+
 	private String _getLabel(String key, String value) {
 		return StringBundler.concat(
 			_language.get(httpServletRequest, key), StringPool.COLON,
 			StringPool.SPACE, value);
 	}
 
-	private String _getRemoveContentDashboardItemSubtypePayloadsURL(
+	private String _getRemoveLabelURL(
 			List<? extends ContentDashboardItemSubtype>
 				contentDashboardItemSubtypes,
 			ContentDashboardItemSubtype<?> contentDashboardItemSubtype)
@@ -938,21 +961,81 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 			PortletURLUtil.clone(currentURLObj, liferayPortletResponse)
 		).setParameter(
 			"contentDashboardItemSubtypePayload",
-			() -> TransformUtil.transformToArray(
-				contentDashboardItemSubtypes,
-				curContentDashboardItemSubtype -> {
+			() -> {
+				JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+				for (ContentDashboardItemSubtype
+						curContentDashboardItemSubtype :
+							contentDashboardItemSubtypes) {
+
 					InfoItemReference curInfoItemReference =
 						curContentDashboardItemSubtype.getInfoItemReference();
 
 					if (Objects.equals(
 							infoItemReference, curInfoItemReference)) {
 
-						return null;
+						continue;
 					}
 
-					return curContentDashboardItemSubtype.toJSONString(_locale);
-				},
-				String.class)
+					if (curInfoItemReference.getInfoItemIdentifier() instanceof
+							ClassNameClassPKInfoItemIdentifier) {
+
+						ClassNameClassPKInfoItemIdentifier
+							classNameClassPKInfoItemIdentifier =
+								(ClassNameClassPKInfoItemIdentifier)
+									curInfoItemReference.
+										getInfoItemIdentifier();
+
+						JSONObject jsonObject = _getJSONObject(
+							jsonArray,
+							classNameClassPKInfoItemIdentifier.getClassName(),
+							curInfoItemReference.getClassName());
+
+						if (jsonObject != null) {
+							JSONArray classPKsJSONArray =
+								jsonObject.getJSONArray("classPKs");
+
+							if (classPKsJSONArray != null) {
+								classPKsJSONArray.put(
+									classNameClassPKInfoItemIdentifier.
+										getClassPK());
+							}
+							else {
+								jsonObject.put(
+									"classPKs",
+									JSONUtil.put(
+										classNameClassPKInfoItemIdentifier.
+											getClassPK()));
+							}
+						}
+						else {
+							jsonArray.put(
+								JSONUtil.put(
+									"className",
+									classNameClassPKInfoItemIdentifier.
+										getClassName()
+								).put(
+									"classPKs",
+									JSONUtil.put(
+										String.valueOf(
+											classNameClassPKInfoItemIdentifier.
+												getClassPK()))
+								).put(
+									"entryClassName",
+									curInfoItemReference.getClassName()
+								));
+						}
+					}
+					else {
+						jsonArray.put(
+							JSONUtil.put(
+								"entryClassName",
+								curInfoItemReference.getClassName()));
+					}
+				}
+
+				return jsonArray.toString();
+			}
 		).buildString();
 	}
 
