@@ -12,13 +12,19 @@ import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtypeFactor
 import com.liferay.info.item.ClassPKInfoItemIdentifier;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Cristina González
@@ -106,6 +112,81 @@ public class ContentDashboardItemSubtypeUtil {
 
 			return null;
 		}
+	}
+
+	public static ContentDashboardItemSubtype toContentDashboardItemSubtype(
+		ContentDashboardItemSubtypeFactoryRegistry
+			contentDashboardItemSubtypeFactoryRegistry,
+		String className, String classPK, String entryClassName) {
+
+		if (Validator.isNull(className)) {
+			return toContentDashboardItemSubtype(
+				contentDashboardItemSubtypeFactoryRegistry,
+				new InfoItemReference(entryClassName, 0));
+		}
+
+		return toContentDashboardItemSubtype(
+			contentDashboardItemSubtypeFactoryRegistry,
+			new InfoItemReference(
+				entryClassName,
+				new ClassNameClassPKInfoItemIdentifier(
+					className, GetterUtil.getLong(classPK))));
+	}
+
+	public static List<ContentDashboardItemSubtype>
+		toContentDashboardItemSubtypes(
+			ContentDashboardItemSubtypeFactoryRegistry
+				contentDashboardItemSubtypeFactoryRegistry,
+			String contentDashboardItemSubtypePayload) {
+
+		if (Validator.isNull(contentDashboardItemSubtypePayload)) {
+			return Collections.emptyList();
+		}
+
+		List<ContentDashboardItemSubtype> contentDashboardItemSubtypes =
+			new ArrayList<>();
+
+		try {
+			JSONArray jsonArray = JSONFactoryUtil.createJSONArray(
+				contentDashboardItemSubtypePayload);
+
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+				if (jsonObject == null) {
+					continue;
+				}
+
+				if (jsonObject.has("className")) {
+					JSONArray classPKsJSONArray = jsonObject.getJSONArray(
+						"classPKs");
+
+					if (classPKsJSONArray == null) {
+						continue;
+					}
+
+					for (int j = 0; j < classPKsJSONArray.length(); j++) {
+						contentDashboardItemSubtypes.add(
+							toContentDashboardItemSubtype(
+								contentDashboardItemSubtypeFactoryRegistry,
+								jsonObject.getString("className"),
+								classPKsJSONArray.getString(j),
+								jsonObject.getString(Field.ENTRY_CLASS_NAME)));
+					}
+				}
+				else {
+					contentDashboardItemSubtypes.add(
+						toContentDashboardItemSubtype(
+							contentDashboardItemSubtypeFactoryRegistry, null,
+							null, jsonObject.getString("entryClassName")));
+				}
+			}
+		}
+		catch (JSONException jsonException) {
+			_log.error(jsonException);
+		}
+
+		return contentDashboardItemSubtypes;
 	}
 
 	private static ContentDashboardItemSubtype _toContentDashboardItemSubtype(

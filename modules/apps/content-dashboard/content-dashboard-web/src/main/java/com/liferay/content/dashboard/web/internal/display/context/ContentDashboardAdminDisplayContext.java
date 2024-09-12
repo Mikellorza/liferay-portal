@@ -279,24 +279,12 @@ public class ContentDashboardAdminDisplayContext {
 			return _contentDashboardItemSubtypePayloads;
 		}
 
-		String[] contentDashboardItemSubtypePayloads =
-			ParamUtil.getParameterValues(
-				_liferayPortletRequest, "contentDashboardItemSubtypePayload",
-				new String[0], false);
-
-		if (ArrayUtil.isEmpty(contentDashboardItemSubtypePayloads)) {
-			_contentDashboardItemSubtypePayloads = Collections.emptyList();
-		}
-		else {
-			_contentDashboardItemSubtypePayloads =
-				TransformUtil.transformToList(
-					contentDashboardItemSubtypePayloads,
-					contentDashboardItemSubtypePayload ->
-						ContentDashboardItemSubtypeUtil.
-							toContentDashboardItemSubtype(
-								_contentDashboardItemSubtypeFactoryRegistry,
-								contentDashboardItemSubtypePayload));
-		}
+		_contentDashboardItemSubtypePayloads =
+			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
+				_contentDashboardItemSubtypeFactoryRegistry,
+				ParamUtil.getString(
+					_liferayPortletRequest,
+					"contentDashboardItemSubtypePayload"));
 
 		return _contentDashboardItemSubtypePayloads;
 	}
