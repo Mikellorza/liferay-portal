@@ -142,14 +142,39 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 			onSelect: (selectedItems) => {
 				let redirectURL = itemData?.redirectURL;
 
+				const selectedItemsJSONArray = [];
+
 				selectedItems.forEach((item) => {
-					redirectURL = addParams(
-						`${portletNamespace}contentDashboardItemSubtypePayload=${JSON.stringify(
-							item
-						)}`,
-						redirectURL
+					const entryClassNameItem = selectedItemsJSONArray.find(
+						(object) =>
+							object.entryClassName === item.entryClassName
 					);
+
+					if (entryClassNameItem) {
+						entryClassNameItem.classPKs.push(item.classPK);
+					}
+					else {
+						if (item.className) {
+							selectedItemsJSONArray.push({
+								className: item.className,
+								classPKs: [item.classPK],
+								entryClassName: item.entryClassName,
+							});
+						}
+						else {
+							selectedItemsJSONArray.push({
+								entryClassName: item.entryClassName,
+							});
+						}
+					}
 				});
+
+				redirectURL = addParams(
+					`${portletNamespace}contentDashboardItemSubtypePayload=${JSON.stringify(
+						selectedItemsJSONArray
+					)}`,
+					redirectURL
+				);
 
 				const url = new URL(redirectURL);
 
