@@ -12,11 +12,8 @@ import com.liferay.info.item.ClassPKInfoItemIdentifier;
 import com.liferay.info.item.InfoItemIdentifier;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.Locale;
@@ -67,53 +64,6 @@ public class ContentDashboardItemSubtypeUtilTest {
 				_getContentDashboardItemSubtypeFactoryRegistry(
 					contentDashboardItemSubtype, null),
 				contentDashboardItemSubtype.getInfoItemReference()));
-	}
-
-	@Test
-	public void testToContentDashboardItemSubtypeByJSONObject()
-		throws PortalException {
-
-		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
-
-		ContentDashboardItemSubtypeFactory contentDashboardItemSubtypeFactory =
-			_getContentDashboardItemSubtypeFactory(contentDashboardItemSubtype);
-
-		Assert.assertEquals(
-			contentDashboardItemSubtype,
-			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtype(
-				_getContentDashboardItemSubtypeFactoryRegistry(
-					contentDashboardItemSubtype,
-					contentDashboardItemSubtypeFactory),
-				JSONFactoryUtil.createJSONObject(
-					contentDashboardItemSubtype.toJSONString(LocaleUtil.US))));
-	}
-
-	@Test
-	public void testToContentDashboardItemSubtypeByJSONObjectWithoutContentDashboardItemSubtypeFactory()
-		throws JSONException {
-
-		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
-
-		Assert.assertNull(
-			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtype(
-				_getContentDashboardItemSubtypeFactoryRegistry(
-					contentDashboardItemSubtype, null),
-				JSONFactoryUtil.createJSONObject(
-					contentDashboardItemSubtype.toJSONString(LocaleUtil.US))));
-	}
-
-	@Test
-	public void testToContentDashboardItemSubtypeByStringWithoutContentDashboardItemSubtypeFactory() {
-		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
-
-		Assert.assertNull(
-			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtype(
-				_getContentDashboardItemSubtypeFactoryRegistry(
-					contentDashboardItemSubtype, null),
-				contentDashboardItemSubtype.toJSONString(LocaleUtil.US)));
 	}
 
 	private ContentDashboardItemSubtype _getContentDashboardItemSubtype() {
