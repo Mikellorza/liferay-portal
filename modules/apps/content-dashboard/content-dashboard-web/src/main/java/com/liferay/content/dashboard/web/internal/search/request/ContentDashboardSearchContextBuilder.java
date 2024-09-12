@@ -17,8 +17,8 @@ import com.liferay.content.dashboard.web.internal.constants.ContentDashboardCons
 import com.liferay.content.dashboard.web.internal.item.filter.ContentDashboardItemFilterProviderRegistry;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalServiceUtil;
-import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -41,6 +41,7 @@ import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -91,65 +92,52 @@ public class ContentDashboardSearchContextBuilder {
 		searchContext.setAttribute("status", status);
 		searchContext.setBooleanClauses(_getBooleanClauses());
 
-		String[] contentDashboardItemSubtypePayloads =
-			ParamUtil.getParameterValues(
-				_httpServletRequest, "contentDashboardItemSubtypePayload",
-				new String[0], false);
+		String contentDashboardItemSubtypePayload = ParamUtil.getString(
+			_httpServletRequest, "contentDashboardItemSubtypePayload");
 
-		if (!ArrayUtil.isEmpty(contentDashboardItemSubtypePayloads)) {
-			searchContext.setClassTypeIds(
-				TransformUtil.transformToLongArray(
-					Arrays.asList(contentDashboardItemSubtypePayloads),
-					contentDashboardItemSubtypePayload -> {
-						try {
-							JSONObject jsonObject =
-								JSONFactoryUtil.createJSONObject(
-									contentDashboardItemSubtypePayload);
+		if (Validator.isNotNull(contentDashboardItemSubtypePayload)) {
+			try {
+				JSONArray jsonArray = JSONFactoryUtil.createJSONArray(
+					contentDashboardItemSubtypePayload);
 
-							if (jsonObject.isNull("classPK")) {
-								return null;
-							}
+				List<Long> classTypeIds = new ArrayList<>();
+				String[] entryClassNames = new String[jsonArray.length()];
 
-							return jsonObject.getLong("classPK");
+				for (int i = 0; i < jsonArray.length(); i++) {
+					JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+					if (jsonObject == null) {
+						continue;
+					}
+
+					if (jsonObject.has("className")) {
+						JSONArray classPKsJSONArray = jsonObject.getJSONArray(
+							"classPKs");
+
+						if (classPKsJSONArray == null) {
+							continue;
 						}
-						catch (JSONException jsonException) {
-							_log.error(jsonException);
 
-							return null;
+						for (int j = 0; j < classPKsJSONArray.length(); j++) {
+							classTypeIds.add(classPKsJSONArray.getLong(j));
 						}
-					}));
+					}
+
+					entryClassNames[i] = jsonObject.getString(
+						Field.ENTRY_CLASS_NAME);
+				}
+
+				searchContext.setClassTypeIds(
+					ListUtil.toLongArray(classTypeIds, Long::longValue));
+				searchContext.setEntryClassNames(entryClassNames);
+			}
+			catch (JSONException jsonException) {
+				_log.error(jsonException);
+			}
 		}
 
 		if (_end != null) {
 			searchContext.setEnd(_end);
-		}
-
-		if (!ArrayUtil.isEmpty(contentDashboardItemSubtypePayloads)) {
-			searchContext.setEntryClassNames(
-				TransformUtil.transform(
-					contentDashboardItemSubtypePayloads,
-					contentDashboardItemSubtypePayload -> {
-						try {
-							JSONObject jsonObject =
-								JSONFactoryUtil.createJSONObject(
-									contentDashboardItemSubtypePayload);
-
-							String entryClassName = jsonObject.getString(
-								Field.ENTRY_CLASS_NAME);
-
-							if (Validator.isNull(entryClassName)) {
-								return null;
-							}
-
-							return entryClassName;
-						}
-						catch (JSONException jsonException) {
-							_log.error(jsonException);
-
-							return null;
-						}
-					},
-					String.class));
 		}
 
 		long groupId = ParamUtil.getLong(_httpServletRequest, "scopeId");
