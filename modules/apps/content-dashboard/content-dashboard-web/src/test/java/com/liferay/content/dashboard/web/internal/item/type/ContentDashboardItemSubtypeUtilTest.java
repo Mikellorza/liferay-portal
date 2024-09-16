@@ -158,8 +158,44 @@ public class ContentDashboardItemSubtypeUtilTest {
 			contentDashboardItemSubtype2, contentDashboardItemSubtypes.get(1));
 	}
 
-	private ContentDashboardItemSubtype _getContentDashboardItemSubtype() {
+	@Test
+	public void testToToContentDashboardItemSubtypesByJSONObjectWithTwoItemsWithSameClassName()
+		throws PortalException {
+
 		String className = RandomTestUtil.randomString();
+
+		ContentDashboardItemSubtype contentDashboardItemSubtype1 =
+			_getContentDashboardItemSubtype(className);
+
+		ContentDashboardItemSubtype contentDashboardItemSubtype2 =
+			_getContentDashboardItemSubtype(className);
+
+		List<ContentDashboardItemSubtype> contentDashboardItemSubtypes =
+			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
+				_getContentDashboardItemSubtypeFactoryRegistry(
+					className, contentDashboardItemSubtype1,
+					contentDashboardItemSubtype2),
+				_getContentDashboardItemSubtypesJSONString(
+					Arrays.asList(
+						contentDashboardItemSubtype1,
+						contentDashboardItemSubtype2)));
+
+		Assert.assertEquals(
+			contentDashboardItemSubtypes.toString(), 2,
+			contentDashboardItemSubtypes.size());
+		Assert.assertEquals(
+			contentDashboardItemSubtype1, contentDashboardItemSubtypes.get(0));
+		Assert.assertEquals(
+			contentDashboardItemSubtype2, contentDashboardItemSubtypes.get(1));
+	}
+
+	private ContentDashboardItemSubtype _getContentDashboardItemSubtype() {
+		return _getContentDashboardItemSubtype(RandomTestUtil.randomString());
+	}
+
+	private ContentDashboardItemSubtype _getContentDashboardItemSubtype(
+		String className) {
+
 		Long classPK = RandomTestUtil.randomLong();
 
 		return new ContentDashboardItemSubtype() {
@@ -276,6 +312,36 @@ public class ContentDashboardItemSubtypeUtilTest {
 				contentDashboardItemSubtypeFactory
 			);
 		}
+
+		return contentDashboardItemSubtypeFactoryRegistry;
+	}
+
+	private ContentDashboardItemSubtypeFactoryRegistry
+			_getContentDashboardItemSubtypeFactoryRegistry(
+				String className,
+				ContentDashboardItemSubtype contentDashboardItemSubtype1,
+				ContentDashboardItemSubtype contentDashboardItemSubtype2)
+		throws PortalException {
+
+		ContentDashboardItemSubtypeFactoryRegistry
+			contentDashboardItemSubtypeFactoryRegistry = Mockito.mock(
+				ContentDashboardItemSubtypeFactoryRegistry.class);
+
+		ContentDashboardItemSubtypeFactory contentDashboardItemSubtypeFactory1 =
+			_getContentDashboardItemSubtypeFactory(
+				contentDashboardItemSubtype1);
+
+		ContentDashboardItemSubtypeFactory contentDashboardItemSubtypeFactory2 =
+			_getContentDashboardItemSubtypeFactory(
+				contentDashboardItemSubtype2);
+
+		Mockito.when(
+			contentDashboardItemSubtypeFactoryRegistry.
+				getContentDashboardItemSubtypeFactory(className)
+		).thenReturn(
+			contentDashboardItemSubtypeFactory1,
+			contentDashboardItemSubtypeFactory2
+		);
 
 		return contentDashboardItemSubtypeFactoryRegistry;
 	}
