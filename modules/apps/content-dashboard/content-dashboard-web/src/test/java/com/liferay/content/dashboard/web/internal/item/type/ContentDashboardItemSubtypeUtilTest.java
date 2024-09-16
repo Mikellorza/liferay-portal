@@ -128,6 +128,36 @@ public class ContentDashboardItemSubtypeUtilTest {
 			contentDashboardItemSubtype, contentDashboardItemSubtypes.get(0));
 	}
 
+	@Test
+	public void testToToContentDashboardItemSubtypesByJSONObjectWithTwoItems()
+		throws PortalException {
+
+		ContentDashboardItemSubtype contentDashboardItemSubtype1 =
+			_getContentDashboardItemSubtype();
+
+		ContentDashboardItemSubtype contentDashboardItemSubtype2 =
+			_getContentDashboardItemSubtype();
+
+		List<ContentDashboardItemSubtype> contentDashboardItemSubtypes =
+			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
+				_getContentDashboardItemSubtypeFactoryRegistry(
+					Arrays.asList(
+						contentDashboardItemSubtype1,
+						contentDashboardItemSubtype2)),
+				_getContentDashboardItemSubtypesJSONString(
+					Arrays.asList(
+						contentDashboardItemSubtype1,
+						contentDashboardItemSubtype2)));
+
+		Assert.assertEquals(
+			contentDashboardItemSubtypes.toString(), 2,
+			contentDashboardItemSubtypes.size());
+		Assert.assertEquals(
+			contentDashboardItemSubtype1, contentDashboardItemSubtypes.get(0));
+		Assert.assertEquals(
+			contentDashboardItemSubtype2, contentDashboardItemSubtypes.get(1));
+	}
+
 	private ContentDashboardItemSubtype _getContentDashboardItemSubtype() {
 		String className = RandomTestUtil.randomString();
 		Long classPK = RandomTestUtil.randomLong();
@@ -214,6 +244,38 @@ public class ContentDashboardItemSubtypeUtilTest {
 		).thenReturn(
 			contentDashboardItemSubtypeFactory
 		);
+
+		return contentDashboardItemSubtypeFactoryRegistry;
+	}
+
+	private ContentDashboardItemSubtypeFactoryRegistry
+			_getContentDashboardItemSubtypeFactoryRegistry(
+				List<ContentDashboardItemSubtype> contentDashboardItemSubtypes)
+		throws PortalException {
+
+		ContentDashboardItemSubtypeFactoryRegistry
+			contentDashboardItemSubtypeFactoryRegistry = Mockito.mock(
+				ContentDashboardItemSubtypeFactoryRegistry.class);
+
+		for (ContentDashboardItemSubtype contentDashboardItemSubtype :
+				contentDashboardItemSubtypes) {
+
+			ContentDashboardItemSubtypeFactory
+				contentDashboardItemSubtypeFactory =
+					_getContentDashboardItemSubtypeFactory(
+						contentDashboardItemSubtype);
+
+			InfoItemReference infoItemReference =
+				contentDashboardItemSubtype.getInfoItemReference();
+
+			Mockito.when(
+				contentDashboardItemSubtypeFactoryRegistry.
+					getContentDashboardItemSubtypeFactory(
+						infoItemReference.getClassName())
+			).thenReturn(
+				contentDashboardItemSubtypeFactory
+			);
+		}
 
 		return contentDashboardItemSubtypeFactoryRegistry;
 	}
