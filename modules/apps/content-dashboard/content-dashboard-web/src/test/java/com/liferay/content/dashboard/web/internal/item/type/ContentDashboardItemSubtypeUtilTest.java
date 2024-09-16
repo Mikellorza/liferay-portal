@@ -5,21 +5,25 @@
 
 package com.liferay.content.dashboard.web.internal.item.type;
 
+import com.liferay.content.dashboard.info.item.ClassNameClassPKInfoItemIdentifier;
 import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtype;
 import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtypeFactory;
 import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtypeFactoryRegistry;
-import com.liferay.info.item.ClassPKInfoItemIdentifier;
 import com.liferay.info.item.InfoItemIdentifier;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -70,7 +74,37 @@ public class ContentDashboardItemSubtypeUtilTest {
 	}
 
 	@Test
-	public void testToContentDashboardItemSubtypeByJSONObject()
+	public void testToContentDashboardItemSubtypeByJSONObjectWithoutContentDashboardItemSubtypeFactory()
+		throws JSONException {
+
+		ContentDashboardItemSubtype contentDashboardItemSubtype =
+			_getContentDashboardItemSubtype();
+
+		Assert.assertTrue(
+			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
+				_getContentDashboardItemSubtypeFactoryRegistry(
+					contentDashboardItemSubtype, null),
+				_getContentDashboardItemSubtypesJSONString(
+					Arrays.asList(contentDashboardItemSubtype))
+			).isEmpty());
+	}
+
+	@Test
+	public void testToContentDashboardItemSubtypeByStringWithoutContentDashboardItemSubtypeFactory() {
+		ContentDashboardItemSubtype contentDashboardItemSubtype =
+			_getContentDashboardItemSubtype();
+
+		Assert.assertTrue(
+			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
+				_getContentDashboardItemSubtypeFactoryRegistry(
+					contentDashboardItemSubtype, null),
+				_getContentDashboardItemSubtypesJSONString(
+					Arrays.asList(contentDashboardItemSubtype))
+			).isEmpty());
+	}
+
+	@Test
+	public void testToContentDashboardItemSubtypesByJSONObject()
 		throws PortalException {
 
 		ContentDashboardItemSubtype contentDashboardItemSubtype =
@@ -79,41 +113,19 @@ public class ContentDashboardItemSubtypeUtilTest {
 		ContentDashboardItemSubtypeFactory contentDashboardItemSubtypeFactory =
 			_getContentDashboardItemSubtypeFactory(contentDashboardItemSubtype);
 
-		Assert.assertEquals(
-			contentDashboardItemSubtype,
-			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtype(
+		List<ContentDashboardItemSubtype> contentDashboardItemSubtypes =
+			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
 				_getContentDashboardItemSubtypeFactoryRegistry(
 					contentDashboardItemSubtype,
 					contentDashboardItemSubtypeFactory),
-				JSONFactoryUtil.createJSONObject(
-					contentDashboardItemSubtype.toJSONString(LocaleUtil.US))));
-	}
+				_getContentDashboardItemSubtypesJSONString(
+					Arrays.asList(contentDashboardItemSubtype)));
 
-	@Test
-	public void testToContentDashboardItemSubtypeByJSONObjectWithoutContentDashboardItemSubtypeFactory()
-		throws JSONException {
-
-		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
-
-		Assert.assertNull(
-			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtype(
-				_getContentDashboardItemSubtypeFactoryRegistry(
-					contentDashboardItemSubtype, null),
-				JSONFactoryUtil.createJSONObject(
-					contentDashboardItemSubtype.toJSONString(LocaleUtil.US))));
-	}
-
-	@Test
-	public void testToContentDashboardItemSubtypeByStringWithoutContentDashboardItemSubtypeFactory() {
-		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
-
-		Assert.assertNull(
-			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtype(
-				_getContentDashboardItemSubtypeFactoryRegistry(
-					contentDashboardItemSubtype, null),
-				contentDashboardItemSubtype.toJSONString(LocaleUtil.US)));
+		Assert.assertEquals(
+			contentDashboardItemSubtypes.toString(), 1,
+			contentDashboardItemSubtypes.size());
+		Assert.assertEquals(
+			contentDashboardItemSubtype, contentDashboardItemSubtypes.get(0));
 	}
 
 	private ContentDashboardItemSubtype _getContentDashboardItemSubtype() {
@@ -129,7 +141,9 @@ public class ContentDashboardItemSubtypeUtilTest {
 
 			@Override
 			public InfoItemReference getInfoItemReference() {
-				return new InfoItemReference(className, classPK);
+				return new InfoItemReference(
+					className,
+					new ClassNameClassPKInfoItemIdentifier(className, classPK));
 			}
 
 			@Override
@@ -164,15 +178,15 @@ public class ContentDashboardItemSubtypeUtilTest {
 			infoItemReference.getInfoItemIdentifier();
 
 		Assert.assertTrue(
-			infoItemIdentifier instanceof ClassPKInfoItemIdentifier);
+			infoItemIdentifier instanceof ClassNameClassPKInfoItemIdentifier);
 
-		ClassPKInfoItemIdentifier classPKInfoItemIdentifier =
-			(ClassPKInfoItemIdentifier)
+		ClassNameClassPKInfoItemIdentifier classNameClassPKInfoItemIdentifier =
+			(ClassNameClassPKInfoItemIdentifier)
 				infoItemReference.getInfoItemIdentifier();
 
 		Mockito.when(
 			contentDashboardItemSubtypeFactory.create(
-				classPKInfoItemIdentifier.getClassPK())
+				classNameClassPKInfoItemIdentifier.getClassPK())
 		).thenReturn(
 			contentDashboardItemSubtype
 		);
@@ -202,6 +216,94 @@ public class ContentDashboardItemSubtypeUtilTest {
 		);
 
 		return contentDashboardItemSubtypeFactoryRegistry;
+	}
+
+	private String _getContentDashboardItemSubtypesJSONString(
+		List<ContentDashboardItemSubtype> contentDashboardItemSubtypes) {
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		for (ContentDashboardItemSubtype curContentDashboardItemSubtype :
+				contentDashboardItemSubtypes) {
+
+			InfoItemReference curInfoItemReference =
+				curContentDashboardItemSubtype.getInfoItemReference();
+
+			if (curInfoItemReference.getInfoItemIdentifier() instanceof
+					ClassNameClassPKInfoItemIdentifier) {
+
+				ClassNameClassPKInfoItemIdentifier
+					classNameClassPKInfoItemIdentifier =
+						(ClassNameClassPKInfoItemIdentifier)
+							curInfoItemReference.getInfoItemIdentifier();
+
+				JSONObject jsonObject = _getJSONObject(
+					jsonArray,
+					classNameClassPKInfoItemIdentifier.getClassName(),
+					curInfoItemReference.getClassName());
+
+				if (jsonObject != null) {
+					JSONArray classPKsJSONArray = jsonObject.getJSONArray(
+						"classPKs");
+
+					if (classPKsJSONArray != null) {
+						classPKsJSONArray.put(
+							classNameClassPKInfoItemIdentifier.getClassPK());
+					}
+					else {
+						jsonObject.put(
+							"classPKs",
+							JSONUtil.put(
+								classNameClassPKInfoItemIdentifier.
+									getClassPK()));
+					}
+				}
+				else {
+					jsonArray.put(
+						JSONUtil.put(
+							"className",
+							classNameClassPKInfoItemIdentifier.getClassName()
+						).put(
+							"classPKs",
+							JSONUtil.put(
+								String.valueOf(
+									classNameClassPKInfoItemIdentifier.
+										getClassPK()))
+						).put(
+							"entryClassName",
+							curInfoItemReference.getClassName()
+						));
+				}
+			}
+			else {
+				jsonArray.put(
+					JSONUtil.put(
+						"entryClassName", curInfoItemReference.getClassName()));
+			}
+		}
+
+		return jsonArray.toString();
+	}
+
+	private JSONObject _getJSONObject(
+		JSONArray jsonArray, String className, String entryClassName) {
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			if (jsonObject == null) {
+				continue;
+			}
+
+			if (Objects.equals(jsonObject.getString("className"), className) &&
+				Objects.equals(
+					jsonObject.getString("entryClassName"), entryClassName)) {
+
+				return jsonObject;
+			}
+		}
+
+		return null;
 	}
 
 }
