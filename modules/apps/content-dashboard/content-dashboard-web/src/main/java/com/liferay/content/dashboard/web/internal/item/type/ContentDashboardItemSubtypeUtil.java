@@ -101,13 +101,19 @@ public class ContentDashboardItemSubtypeUtil {
 			contentDashboardItemSubtypePayloadJSONObject.getString("className");
 
 		if (Validator.isNull(className)) {
-			return Arrays.asList(
+			ContentDashboardItemSubtype contentDashboardItemSubtype =
 				toContentDashboardItemSubtype(
 					contentDashboardItemSubtypeFactoryRegistry,
 					new InfoItemReference(
 						contentDashboardItemSubtypePayloadJSONObject.getString(
 							"entryClassName"),
-						0)));
+						0));
+
+			if (contentDashboardItemSubtype != null) {
+				return Arrays.asList(contentDashboardItemSubtype);
+			}
+
+			return Collections.emptyList();
 		}
 
 		JSONArray classPKsJSONArray =
@@ -122,14 +128,18 @@ public class ContentDashboardItemSubtypeUtil {
 			new ArrayList<>();
 
 		for (int j = 0; j < classPKsJSONArray.length(); j++) {
-			contentDashboardItemSubtypes.add(
+			ContentDashboardItemSubtype contentDashboardItemSubtype =
 				toContentDashboardItemSubtype(
 					contentDashboardItemSubtypeFactoryRegistry,
 					contentDashboardItemSubtypePayloadJSONObject.getString(
 						"className"),
 					classPKsJSONArray.getString(j),
 					contentDashboardItemSubtypePayloadJSONObject.getString(
-						Field.ENTRY_CLASS_NAME)));
+						Field.ENTRY_CLASS_NAME));
+
+			if (contentDashboardItemSubtype != null) {
+				contentDashboardItemSubtypes.add(contentDashboardItemSubtype);
+			}
 		}
 
 		return contentDashboardItemSubtypes;
