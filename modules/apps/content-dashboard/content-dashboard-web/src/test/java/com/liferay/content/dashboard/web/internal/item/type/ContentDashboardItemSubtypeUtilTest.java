@@ -9,6 +9,7 @@ import com.liferay.content.dashboard.info.item.ClassNameClassPKInfoItemIdentifie
 import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtype;
 import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtypeFactory;
 import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtypeFactoryRegistry;
+import com.liferay.info.item.ClassPKInfoItemIdentifier;
 import com.liferay.info.item.InfoItemIdentifier;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -47,7 +48,7 @@ public class ContentDashboardItemSubtypeUtilTest {
 		throws PortalException {
 
 		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier();
 
 		ContentDashboardItemSubtypeFactory contentDashboardItemSubtypeFactory =
 			_getContentDashboardItemSubtypeFactory(contentDashboardItemSubtype);
@@ -64,7 +65,7 @@ public class ContentDashboardItemSubtypeUtilTest {
 	@Test
 	public void testToContentDashboardItemSubtypeByClassNameAndClassPKWithoutContentDashboardItemSubtypeFactory() {
 		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier();
 
 		Assert.assertNull(
 			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtype(
@@ -78,7 +79,7 @@ public class ContentDashboardItemSubtypeUtilTest {
 		throws JSONException {
 
 		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier();
 
 		Assert.assertTrue(
 			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
@@ -92,7 +93,7 @@ public class ContentDashboardItemSubtypeUtilTest {
 	@Test
 	public void testToContentDashboardItemSubtypeByStringWithoutContentDashboardItemSubtypeFactory() {
 		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier();
 
 		Assert.assertTrue(
 			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
@@ -108,7 +109,32 @@ public class ContentDashboardItemSubtypeUtilTest {
 		throws PortalException {
 
 		ContentDashboardItemSubtype contentDashboardItemSubtype =
-			_getContentDashboardItemSubtype();
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier();
+
+		ContentDashboardItemSubtypeFactory contentDashboardItemSubtypeFactory =
+			_getContentDashboardItemSubtypeFactory(contentDashboardItemSubtype);
+
+		List<ContentDashboardItemSubtype> contentDashboardItemSubtypes =
+			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
+				_getContentDashboardItemSubtypeFactoryRegistry(
+					contentDashboardItemSubtype,
+					contentDashboardItemSubtypeFactory),
+				_getContentDashboardItemSubtypesJSONString(
+					Arrays.asList(contentDashboardItemSubtype)));
+
+		Assert.assertEquals(
+			contentDashboardItemSubtypes.toString(), 1,
+			contentDashboardItemSubtypes.size());
+		Assert.assertEquals(
+			contentDashboardItemSubtype, contentDashboardItemSubtypes.get(0));
+	}
+
+	@Test
+	public void testToContentDashboardItemSubtypesByJSONObjectWithClassPKInfoItemIdentifier()
+		throws PortalException {
+
+		ContentDashboardItemSubtype contentDashboardItemSubtype =
+			_getContentDashboardItemSubtypeWithClassPKInfoItemIdentifier();
 
 		ContentDashboardItemSubtypeFactory contentDashboardItemSubtypeFactory =
 			_getContentDashboardItemSubtypeFactory(contentDashboardItemSubtype);
@@ -133,10 +159,10 @@ public class ContentDashboardItemSubtypeUtilTest {
 		throws PortalException {
 
 		ContentDashboardItemSubtype contentDashboardItemSubtype1 =
-			_getContentDashboardItemSubtype();
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier();
 
 		ContentDashboardItemSubtype contentDashboardItemSubtype2 =
-			_getContentDashboardItemSubtype();
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier();
 
 		List<ContentDashboardItemSubtype> contentDashboardItemSubtypes =
 			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
@@ -165,10 +191,12 @@ public class ContentDashboardItemSubtypeUtilTest {
 		String className = RandomTestUtil.randomString();
 
 		ContentDashboardItemSubtype contentDashboardItemSubtype1 =
-			_getContentDashboardItemSubtype(className);
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier(
+				className);
 
 		ContentDashboardItemSubtype contentDashboardItemSubtype2 =
-			_getContentDashboardItemSubtype(className);
+			_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier(
+				className);
 
 		List<ContentDashboardItemSubtype> contentDashboardItemSubtypes =
 			ContentDashboardItemSubtypeUtil.toContentDashboardItemSubtypes(
@@ -189,46 +217,6 @@ public class ContentDashboardItemSubtypeUtilTest {
 			contentDashboardItemSubtype2, contentDashboardItemSubtypes.get(1));
 	}
 
-	private ContentDashboardItemSubtype _getContentDashboardItemSubtype() {
-		return _getContentDashboardItemSubtype(RandomTestUtil.randomString());
-	}
-
-	private ContentDashboardItemSubtype _getContentDashboardItemSubtype(
-		String className) {
-
-		Long classPK = RandomTestUtil.randomLong();
-
-		return new ContentDashboardItemSubtype() {
-
-			@Override
-			public String getFullLabel(Locale locale) {
-				return null;
-			}
-
-			@Override
-			public InfoItemReference getInfoItemReference() {
-				return new InfoItemReference(
-					className,
-					new ClassNameClassPKInfoItemIdentifier(className, classPK));
-			}
-
-			@Override
-			public String getLabel(Locale locale) {
-				return null;
-			}
-
-			@Override
-			public String toJSONString(Locale locale) {
-				return JSONUtil.put(
-					"className", className
-				).put(
-					"classPK", classPK
-				).toString();
-			}
-
-		};
-	}
-
 	private ContentDashboardItemSubtypeFactory
 			_getContentDashboardItemSubtypeFactory(
 				ContentDashboardItemSubtype contentDashboardItemSubtype)
@@ -243,16 +231,26 @@ public class ContentDashboardItemSubtypeUtilTest {
 		InfoItemIdentifier infoItemIdentifier =
 			infoItemReference.getInfoItemIdentifier();
 
-		Assert.assertTrue(
-			infoItemIdentifier instanceof ClassNameClassPKInfoItemIdentifier);
+		long classPK;
 
-		ClassNameClassPKInfoItemIdentifier classNameClassPKInfoItemIdentifier =
-			(ClassNameClassPKInfoItemIdentifier)
-				infoItemReference.getInfoItemIdentifier();
+		if (infoItemIdentifier instanceof ClassNameClassPKInfoItemIdentifier) {
+			ClassNameClassPKInfoItemIdentifier
+				classNameClassPKInfoItemIdentifier =
+					(ClassNameClassPKInfoItemIdentifier)
+						infoItemReference.getInfoItemIdentifier();
+
+			classPK = classNameClassPKInfoItemIdentifier.getClassPK();
+		}
+		else {
+			ClassPKInfoItemIdentifier classPKInfoItemIdentifier =
+				(ClassPKInfoItemIdentifier)
+					infoItemReference.getInfoItemIdentifier();
+
+			classPK = classPKInfoItemIdentifier.getClassPK();
+		}
 
 		Mockito.when(
-			contentDashboardItemSubtypeFactory.create(
-				classNameClassPKInfoItemIdentifier.getClassPK())
+			contentDashboardItemSubtypeFactory.create(classPK)
 		).thenReturn(
 			contentDashboardItemSubtype
 		);
@@ -411,6 +409,83 @@ public class ContentDashboardItemSubtypeUtilTest {
 		}
 
 		return jsonArray.toString();
+	}
+
+	private ContentDashboardItemSubtype
+		_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier() {
+
+		return _getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier(
+			RandomTestUtil.randomString());
+	}
+
+	private ContentDashboardItemSubtype
+		_getContentDashboardItemSubtypeWithClassNameClassPKInfoItemIdentifier(
+			String className) {
+
+		Long classPK = RandomTestUtil.randomLong();
+
+		return new ContentDashboardItemSubtype() {
+
+			@Override
+			public String getFullLabel(Locale locale) {
+				return null;
+			}
+
+			@Override
+			public InfoItemReference getInfoItemReference() {
+				return new InfoItemReference(
+					className,
+					new ClassNameClassPKInfoItemIdentifier(className, classPK));
+			}
+
+			@Override
+			public String getLabel(Locale locale) {
+				return null;
+			}
+
+			@Override
+			public String toJSONString(Locale locale) {
+				return JSONUtil.put(
+					"className", className
+				).put(
+					"classPK", classPK
+				).toString();
+			}
+
+		};
+	}
+
+	private ContentDashboardItemSubtype
+		_getContentDashboardItemSubtypeWithClassPKInfoItemIdentifier() {
+
+		String className = RandomTestUtil.randomString();
+
+		return new ContentDashboardItemSubtype() {
+
+			@Override
+			public String getFullLabel(Locale locale) {
+				return null;
+			}
+
+			@Override
+			public InfoItemReference getInfoItemReference() {
+				return new InfoItemReference(
+					className, new ClassPKInfoItemIdentifier(0));
+			}
+
+			@Override
+			public String getLabel(Locale locale) {
+				return null;
+			}
+
+			@Override
+			public String toJSONString(Locale locale) {
+				return JSONUtil.put(
+					"className", className
+				).toString();
+			}
+
+		};
 	}
 
 	private JSONObject _getJSONObject(
