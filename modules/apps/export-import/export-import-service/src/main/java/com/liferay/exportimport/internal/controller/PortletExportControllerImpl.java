@@ -584,7 +584,8 @@ public class PortletExportControllerImpl implements PortletExportController {
 			portletDataContext, portlet);
 
 		if ((portletDataHandler == null) ||
-			portletDataHandler.isDataPortletInstanceLevel()) {
+			portletDataHandler.isDataPortletInstanceLevel() ||
+			!portletDataHandler.isEnabled()) {
 
 			return;
 		}

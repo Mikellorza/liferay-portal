@@ -374,6 +374,10 @@ public class PortletImportControllerImpl implements PortletImportController {
 			return null;
 		}
 
+		if (!portletDataHandler.isEnabled()) {
+			return null;
+		}
+
 		if (_log.isDebugEnabled()) {
 			_log.debug(
 				"Importing data for portlet " +
