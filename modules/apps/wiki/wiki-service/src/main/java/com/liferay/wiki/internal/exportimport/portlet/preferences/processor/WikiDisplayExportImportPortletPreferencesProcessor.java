@@ -15,8 +15,10 @@ import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -53,6 +55,12 @@ public class WikiDisplayExportImportPortletPreferencesProcessor
 
 	@Override
 	public List<Capability> getImportCapabilities() {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				CompanyThreadLocal.getCompanyId(), "LPD-35013")) {
+
+			return null;
+		}
+
 		return ListUtil.fromArray(_capability);
 	}
 
@@ -66,6 +74,12 @@ public class WikiDisplayExportImportPortletPreferencesProcessor
 			PortletDataContext portletDataContext,
 			PortletPreferences portletPreferences)
 		throws PortletDataException {
+
+		if (!FeatureFlagManagerUtil.isEnabled(
+				portletDataContext.getCompanyId(), "LPD-35013")) {
+
+			return null;
+		}
 
 		String portletId = portletDataContext.getPortletId();
 
@@ -135,6 +149,12 @@ public class WikiDisplayExportImportPortletPreferencesProcessor
 			PortletDataContext portletDataContext,
 			PortletPreferences portletPreferences)
 		throws PortletDataException {
+
+		if (!FeatureFlagManagerUtil.isEnabled(
+				portletDataContext.getCompanyId(), "LPD-35013")) {
+
+			return null;
+		}
 
 		try {
 			portletDataContext.importPortletPermissions(

@@ -15,9 +15,11 @@ import com.liferay.exportimport.portlet.preferences.processor.Capability;
 import com.liferay.exportimport.portlet.preferences.processor.ExportImportPortletPreferencesProcessor;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -48,6 +50,12 @@ public class WikiExportImportPortletPreferencesProcessor
 
 	@Override
 	public List<Capability> getExportCapabilities() {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				CompanyThreadLocal.getCompanyId(), "LPD-35013")) {
+
+			return null;
+		}
+
 		return ListUtil.fromArray(
 			_portletDisplayTemplateExporter,
 			_wikiCommentsAndRatingsExporterImporterCapability);
@@ -55,6 +63,12 @@ public class WikiExportImportPortletPreferencesProcessor
 
 	@Override
 	public List<Capability> getImportCapabilities() {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				CompanyThreadLocal.getCompanyId(), "LPD-35013")) {
+
+			return null;
+		}
+
 		return ListUtil.fromArray(
 			_wikiCommentsAndRatingsExporterImporterCapability,
 			_referencedStagedModelImporter, _portletDisplayTemplateImporter);
@@ -65,6 +79,12 @@ public class WikiExportImportPortletPreferencesProcessor
 			PortletDataContext portletDataContext,
 			PortletPreferences portletPreferences)
 		throws PortletDataException {
+
+		if (!FeatureFlagManagerUtil.isEnabled(
+				portletDataContext.getCompanyId(), "LPD-35013")) {
+
+			return null;
+		}
 
 		if (!_exportImportHelper.isExportPortletData(portletDataContext) ||
 			!portletDataContext.getBooleanParameter(
@@ -149,6 +169,12 @@ public class WikiExportImportPortletPreferencesProcessor
 			PortletDataContext portletDataContext,
 			PortletPreferences portletPreferences)
 		throws PortletDataException {
+
+		if (!FeatureFlagManagerUtil.isEnabled(
+				portletDataContext.getCompanyId(), "LPD-35013")) {
+
+			return null;
+		}
 
 		if (!portletDataContext.getBooleanParameter(
 				_wikiPortletDataHandler.getNamespace(), "wiki-pages")) {
