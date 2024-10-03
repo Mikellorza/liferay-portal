@@ -8,6 +8,7 @@ package com.liferay.portal.service.impl;
 import com.liferay.admin.kernel.util.PortalMyAccountApplicationType;
 import com.liferay.expando.kernel.model.CustomAttributesDisplay;
 import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -515,7 +516,15 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 				!portletCustomAttributesDisplays.isEmpty()) {
 
 				customAttributesDisplays.addAll(
-					portletCustomAttributesDisplays);
+					TransformUtil.transform(
+						portletCustomAttributesDisplays,
+						customAttributesDisplay -> {
+							if (!customAttributesDisplay.isEnabled()) {
+								return null;
+							}
+
+							return customAttributesDisplay;
+						}));
 			}
 		}
 
