@@ -16,6 +16,10 @@ public interface CustomAttributesDisplay {
 
 	public String getPortletId();
 
+	public default boolean isEnabled() {
+		return true;
+	}
+
 	public void setClassNameId(long classNameId);
 
 	public void setPortletId(String portletId);
