@@ -205,6 +205,18 @@ public class DLOpenerGoogleDriveManager {
 			((credential.getExpiresInSeconds() <= 0) &&
 			 !credential.refreshToken())) {
 
+			if (_log.isDebugEnabled()) {
+				if (credential == null) {
+					_log.debug(
+						"There is no credentials for user with id:" + userId);
+				}
+				else {
+					_log.debug(
+						"Credential is expired and it is not possible to " +
+							"refresh token");
+				}
+			}
+
 			return false;
 		}
 

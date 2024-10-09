@@ -9,6 +9,8 @@ import com.liferay.document.library.opener.google.drive.web.internal.DLOpenerGoo
 import com.liferay.document.library.opener.google.drive.web.internal.oauth.OAuth2StateUtil;
 import com.liferay.document.library.opener.oauth.OAuth2State;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.PortletURLFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -67,6 +69,19 @@ public class GoogleDrivePortletRequestAuthorizationHelper {
 
 			authorizationURL = HttpComponentsUtil.setParameter(
 				authorizationURL, "prompt", "select_account");
+
+			if (_log.isFatalEnabled()) {
+				_log.fatal("Invalid credentials");
+			}
+		}
+		else {
+			if (_log.isFatalEnabled()) {
+				_log.fatal("Valid credentials");
+			}
+		}
+
+		if (_log.isFatalEnabled()) {
+			_log.fatal("Authorization URL: " + authorizationURL);
 		}
 
 		httpServletResponse.sendRedirect(authorizationURL);
@@ -87,6 +102,9 @@ public class GoogleDrivePortletRequestAuthorizationHelper {
 		return _portal.getCurrentURL(
 			_portal.getHttpServletRequest(portletRequest));
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		GoogleDrivePortletRequestAuthorizationHelper.class);
 
 	@Reference
 	private DLOpenerGoogleDriveManager _dlOpenerGoogleDriveManager;

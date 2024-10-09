@@ -7,6 +7,9 @@ package com.liferay.document.library.opener.google.drive.web.internal.oauth;
 
 import com.liferay.document.library.opener.google.drive.web.internal.constants.DLOpenerGoogleDriveWebConstants;
 import com.liferay.document.library.opener.oauth.OAuth2State;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -23,6 +26,12 @@ public class OAuth2StateUtil {
 	public static void cleanUp(HttpServletRequest httpServletRequest) {
 		HttpSession httpSession = httpServletRequest.getSession();
 
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				"Clearing google-oauth2-state from the session with id:" +
+					httpSession.getId());
+		}
+
 		httpSession.removeAttribute(
 			_SESSION_ATTRIBUTE_NAME_GOOGLE_OAUTH2_STATE);
 	}
@@ -31,6 +40,12 @@ public class OAuth2StateUtil {
 		HttpServletRequest httpServletRequest) {
 
 		HttpSession httpSession = httpServletRequest.getSession();
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				"Getting google-oauth2-state from the session with id:" +
+					httpSession.getId());
+		}
 
 		return (OAuth2State)httpSession.getAttribute(
 			_SESSION_ATTRIBUTE_NAME_GOOGLE_OAUTH2_STATE);
@@ -62,9 +77,25 @@ public class OAuth2StateUtil {
 
 		httpSession.setAttribute(
 			_SESSION_ATTRIBUTE_NAME_GOOGLE_OAUTH2_STATE, oAuth2State);
+
+		if (_log.isFatalEnabled()) {
+			_log.fatal(
+				"Setting google-oauth2-state attribute in the session for " +
+					"user with id:" + oAuth2State.getUserId());
+		}
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				StringBundler.concat(
+					"Setting google-oauth2-state attribute in the session for ",
+					"session with id:", httpSession.getId()));
+		}
 	}
 
 	private static final String _SESSION_ATTRIBUTE_NAME_GOOGLE_OAUTH2_STATE =
 		"google-oauth2-state";
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		OAuth2StateUtil.class);
 
 }

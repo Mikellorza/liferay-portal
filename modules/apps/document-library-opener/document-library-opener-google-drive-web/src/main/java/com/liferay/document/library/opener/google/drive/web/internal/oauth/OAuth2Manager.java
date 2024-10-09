@@ -7,6 +7,7 @@ package com.liferay.document.library.opener.google.drive.web.internal.oauth;
 
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.CredentialStore;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
@@ -14,11 +15,13 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.Strings;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.MemoryDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 
 import com.liferay.document.library.google.drive.configuration.DLGoogleDriveCompanyConfiguration;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -83,7 +86,56 @@ public class OAuth2Manager {
 				_getGoogleAuthorizationCodeFlow(companyId);
 
 			if (googleAuthorizationCodeFlow == null) {
+				if (_log.isFatalEnabled()) {
+					_log.fatal(
+						"No Google authorization code flow found, so that is " +
+							"the reason because there is not returning " +
+								"credentials");
+				}
+
 				return null;
+			}
+
+			if (_log.isFatalEnabled()) {
+				CredentialStore credentialStore =
+					googleAuthorizationCodeFlow.getCredentialStore();
+
+				DataStore<StoredCredential> credentialDataStore =
+					googleAuthorizationCodeFlow.getCredentialDataStore();
+
+				_log.fatal("Google authorization code flow found");
+
+				if (Strings.isNullOrEmpty(String.valueOf(userId))) {
+					_log.fatal(
+						"AuthorizationCodeFlow is not returning a credential " +
+							"because userId is empty");
+				}
+				else if ((credentialDataStore == null) &&
+						 (credentialStore == null)) {
+
+					_log.fatal(
+						"AuthorizationCodeFlow is not returning a credential " +
+							"because credentialDataStore is null and " +
+								"credentialStore is null");
+				}
+				else {
+					if ((credentialDataStore != null) &&
+						(credentialDataStore.get(String.valueOf(userId)) ==
+							null)) {
+
+						_log.fatal(
+							StringBundler.concat(
+								"AuthorizationCodeFlow is not returning a  ",
+								"credential because ",
+								"credentialDataStore.get(userId) is  null, ",
+								"there is no stored credential"));
+					}
+					else {
+						_log.fatal(
+							"There is not possible to load credential to " +
+								"credentialStore for user with id:" + userId);
+					}
+				}
 			}
 
 			return googleAuthorizationCodeFlow.loadCredential(
@@ -111,8 +163,8 @@ public class OAuth2Manager {
 			return false;
 		}
 		catch (ConfigurationException configurationException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(configurationException);
+			if (_log.isFatalEnabled()) {
+				_log.fatal(configurationException);
 			}
 
 			return false;
@@ -200,6 +252,12 @@ public class OAuth2Manager {
 		throws PortalException {
 
 		if (!isConfigured(companyId)) {
+			if (_log.isFatalEnabled()) {
+				_log.fatal(
+					"GoogleAuthorizationCodeFlow is not configured for " +
+						"companyId:" + companyId);
+			}
+
 			return null;
 		}
 
