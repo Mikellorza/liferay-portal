@@ -227,17 +227,6 @@
 				(MBMessage.categoryId != -1)
 		]]>
 	</sql>
-	<sql id="com.liferay.message.boards.kernel.service.persistence.MBThreadFinder.countByG_C">
-		<![CDATA[
-			SELECT
-				COUNT(DISTINCT MBThread.threadId) AS COUNT_VALUE
-			FROM
-				MBThread
-			WHERE
-				(MBThread.groupId = ?) AND
-				(MBThread.categoryId = ?)
-		]]>
-	</sql>
 	<sql id="com.liferay.message.boards.kernel.service.persistence.MBThreadFinder.countByG_U_C">
 		<![CDATA[
 			SELECT

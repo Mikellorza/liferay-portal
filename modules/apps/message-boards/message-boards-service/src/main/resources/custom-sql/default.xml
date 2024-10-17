@@ -277,18 +277,6 @@
 				(MBMessage.categoryId != -1)
 		]]>
 	</sql>
-	<sql id="com.liferay.message.boards.service.persistence.MBThreadFinder.countByG_C">
-		<![CDATA[
-			SELECT
-				COUNT(*) AS COUNT_VALUE
-			FROM
-				MBThread
-			WHERE
-				(MBThread.groupId = ?) AND
-				(MBThread.categoryId = ?) AND
-				([$STATUS$] [$OWNER_USER_ID_AND_OR_CONNECTOR$] [$OWNER_USER_ID$])
-		]]>
-	</sql>
 	<sql id="com.liferay.message.boards.service.persistence.MBThreadFinder.countByG_U_C">
 		<![CDATA[
 			SELECT

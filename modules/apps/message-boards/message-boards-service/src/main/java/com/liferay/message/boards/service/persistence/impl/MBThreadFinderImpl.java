@@ -43,9 +43,6 @@ public class MBThreadFinderImpl
 	public static final String COUNT_BY_G_U =
 		MBThreadFinder.class.getName() + ".countByG_U";
 
-	public static final String COUNT_BY_G_C =
-		MBThreadFinder.class.getName() + ".countByG_C";
-
 	public static final String COUNT_BY_G_U_C =
 		MBThreadFinder.class.getName() + ".countByG_U_C";
 
@@ -87,6 +84,24 @@ public class MBThreadFinderImpl
 
 	public static final String FIND_BY_S_G_U_C =
 		MBThreadFinder.class.getName() + ".findByS_G_U_C";
+
+	@Override
+	public int countByG_C(
+		long groupId, long categoryId,
+		QueryDefinition<MBThread> queryDefinition) {
+
+		if (queryDefinition.isExcludeStatus()) {
+			return MBThreadUtil.countByG_C_NotS(
+				groupId, categoryId, queryDefinition.getStatus());
+		}
+
+		if (queryDefinition.getStatus() != WorkflowConstants.STATUS_ANY) {
+			return MBThreadUtil.countByG_C_S(
+				groupId, categoryId, queryDefinition.getStatus());
+		}
+
+		return MBThreadUtil.countByG_C(groupId, categoryId);
+	}
 
 	@Override
 	public int countByG_U(
@@ -132,14 +147,6 @@ public class MBThreadFinderImpl
 		finally {
 			closeSession(session);
 		}
-	}
-
-	@Override
-	public int countByG_C(
-		long groupId, long categoryId,
-		QueryDefinition<MBThread> queryDefinition) {
-
-		return doCountByG_C(groupId, categoryId, queryDefinition, false);
 	}
 
 	@Override
@@ -397,66 +404,6 @@ public class MBThreadFinderImpl
 
 		return doCountByS_G_U_C(
 			groupId, userId, categoryIds, queryDefinition, false);
-	}
-
-	@Override
-	public int filterCountByG_C(long groupId, long categoryId) {
-		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
-			return MBThreadUtil.countByG_C(groupId, categoryId);
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			QueryDefinition<?> queryDefinition = new QueryDefinition(
-				WorkflowConstants.STATUS_ANY);
-
-			String sql = _customSQL.get(
-				getClass(), COUNT_BY_G_C, queryDefinition,
-				MBThreadImpl.TABLE_NAME);
-
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
-				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
-
-			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
-
-			sqlQuery.addScalar(COUNT_COLUMN_NAME, Type.LONG);
-
-			QueryPos queryPos = QueryPos.getInstance(sqlQuery);
-
-			queryPos.add(groupId);
-			queryPos.add(categoryId);
-			queryPos.add(WorkflowConstants.STATUS_ANY);
-
-			Iterator<Long> iterator = sqlQuery.iterate();
-
-			if (iterator.hasNext()) {
-				Long count = iterator.next();
-
-				if (count != null) {
-					return count.intValue();
-				}
-			}
-
-			return 0;
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	@Override
-	public int filterCountByG_C(
-		long groupId, long categoryId,
-		QueryDefinition<MBThread> queryDefinition) {
-
-		return doCountByG_C(groupId, categoryId, queryDefinition, true);
 	}
 
 	@Override
@@ -830,75 +777,6 @@ public class MBThreadFinderImpl
 
 		return doFindByS_G_U_C(
 			groupId, userId, categoryIds, queryDefinition, false);
-	}
-
-	protected int doCountByG_C(
-		long groupId, long categoryId,
-		QueryDefinition<MBThread> queryDefinition, boolean inlineSQLHelper) {
-
-		if (!inlineSQLHelper || !InlineSQLHelperUtil.isEnabled(groupId)) {
-			if (queryDefinition.isExcludeStatus()) {
-				return MBThreadUtil.countByG_C_NotS(
-					groupId, categoryId, queryDefinition.getStatus());
-			}
-
-			if (queryDefinition.getStatus() != WorkflowConstants.STATUS_ANY) {
-				return MBThreadUtil.countByG_C_S(
-					groupId, categoryId, queryDefinition.getStatus());
-			}
-
-			return MBThreadUtil.countByG_C(groupId, categoryId);
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			String sql = _customSQL.get(
-				getClass(), COUNT_BY_G_C, queryDefinition,
-				MBThreadImpl.TABLE_NAME);
-
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
-				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
-
-			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
-
-			sqlQuery.addScalar(COUNT_COLUMN_NAME, Type.LONG);
-
-			QueryPos queryPos = QueryPos.getInstance(sqlQuery);
-
-			queryPos.add(groupId);
-			queryPos.add(categoryId);
-			queryPos.add(queryDefinition.getStatus());
-
-			if (queryDefinition.getOwnerUserId() > 0) {
-				queryPos.add(queryDefinition.getOwnerUserId());
-
-				if (queryDefinition.isIncludeOwner()) {
-					queryPos.add(WorkflowConstants.STATUS_IN_TRASH);
-				}
-			}
-
-			Iterator<Long> iterator = sqlQuery.iterate();
-
-			if (iterator.hasNext()) {
-				Long count = iterator.next();
-
-				if (count != null) {
-					return count.intValue();
-				}
-			}
-
-			return 0;
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 	}
 
 	protected int doCountByS_G_U(
