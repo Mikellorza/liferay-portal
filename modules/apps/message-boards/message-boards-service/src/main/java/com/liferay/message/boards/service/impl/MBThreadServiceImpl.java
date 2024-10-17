@@ -310,11 +310,9 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 	public List<MBThread> getThreads(
 		long groupId, long categoryId, int status, int start, int end) {
 
-		QueryDefinition<MBThread> queryDefinition = new QueryDefinition<>(
-			status, start, end, null);
-
-		return mbThreadFinder.filterFindByG_C(
-			groupId, categoryId, queryDefinition);
+		return _getThreads(
+			groupId, categoryId,
+			new QueryDefinition<>(status, start, end, null));
 	}
 
 	@Override
@@ -329,8 +327,7 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 			queryDefinition.setOwnerUserId(getUserId());
 		}
 
-		return mbThreadFinder.filterFindByG_C(
-			groupId, categoryId, queryDefinition);
+		return _getThreads(groupId, categoryId, queryDefinition);
 	}
 
 	@Override
@@ -557,6 +554,30 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 			groupId, userId, false, queryDefinition);
 	}
 
+	private List<MBThread> _getThreads(
+		long groupId, long categoryId,
+		QueryDefinition<MBThread> queryDefinition) {
+
+		return mbThreadPersistence.dslQuery(
+			DSLQueryFactoryUtil.select(
+				MBThreadTable.INSTANCE
+			).from(
+				MBThreadTable.INSTANCE
+			).innerJoinON(
+				ResourcePermissionTable.INSTANCE,
+				_inlineSQLHelper.getPermissionWherePredicate(
+					MBThread.class.getName(),
+					MBThreadTable.INSTANCE.rootMessageId, groupId)
+			).where(
+				_getWherePredicate(groupId, categoryId, queryDefinition)
+			).groupBy(
+				MBThreadTable.INSTANCE.priority,
+				MBThreadTable.INSTANCE.lastPostDate
+			).limit(
+				queryDefinition.getStart(), queryDefinition.getEnd()
+			));
+	}
+
 	private int _getThreadsCount(
 		long groupId, long categoryId,
 		QueryDefinition<MBThread> queryDefinition) {
@@ -571,33 +592,40 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 					MBThread.class.getName(),
 					MBThreadTable.INSTANCE.rootMessageId, groupId)
 			).where(
-				MBThreadTable.INSTANCE.groupId.eq(
-					groupId
-				).and(
-					MBThreadTable.INSTANCE.categoryId.eq(categoryId)
-				).and(
-					() -> {
-						Predicate predicate = null;
-
-						if (queryDefinition.getOwnerUserId() > 0) {
-							predicate = MBThreadTable.INSTANCE.userId.eq(
-								queryDefinition.getOwnerUserId());
-
-							if (queryDefinition.isIncludeOwner()) {
-								predicate.and(
-									MBThreadTable.INSTANCE.status.eq(
-										WorkflowConstants.STATUS_IN_TRASH));
-							}
-						}
-
-						return MBThreadTable.INSTANCE.status.eq(
-							queryDefinition.getStatus()
-						).or(
-							predicate
-						);
-					}
-				)
+				_getWherePredicate(groupId, categoryId, queryDefinition)
 			));
+	}
+
+	private Predicate _getWherePredicate(
+		long groupId, long categoryId,
+		QueryDefinition<MBThread> queryDefinition) {
+
+		return MBThreadTable.INSTANCE.groupId.eq(
+			groupId
+		).and(
+			MBThreadTable.INSTANCE.categoryId.eq(categoryId)
+		).and(
+			() -> {
+				Predicate predicate = null;
+
+				if (queryDefinition.getOwnerUserId() > 0) {
+					predicate = MBThreadTable.INSTANCE.userId.eq(
+						queryDefinition.getOwnerUserId());
+
+					if (queryDefinition.isIncludeOwner()) {
+						predicate.and(
+							MBThreadTable.INSTANCE.status.eq(
+								WorkflowConstants.STATUS_IN_TRASH));
+					}
+				}
+
+				return MBThreadTable.INSTANCE.status.eq(
+					queryDefinition.getStatus()
+				).or(
+					predicate
+				);
+			}
+		);
 	}
 
 	@Reference(
