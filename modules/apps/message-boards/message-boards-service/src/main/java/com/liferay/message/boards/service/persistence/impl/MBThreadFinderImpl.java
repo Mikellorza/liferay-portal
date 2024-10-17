@@ -64,9 +64,6 @@ public class MBThreadFinderImpl
 	public static final String FIND_BY_G_U =
 		MBThreadFinder.class.getName() + ".findByG_U";
 
-	public static final String FIND_BY_G_C =
-		MBThreadFinder.class.getName() + ".findByG_C";
-
 	public static final String FIND_BY_G_U_C =
 		MBThreadFinder.class.getName() + ".findByG_U_C";
 
@@ -416,65 +413,36 @@ public class MBThreadFinderImpl
 	}
 
 	@Override
-	public List<MBThread> filterFindByG_C(
-		long groupId, long categoryId, int start, int end) {
-
-		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
-			return MBThreadUtil.findByG_C(groupId, categoryId, start, end);
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			QueryDefinition<?> queryDefinition = new QueryDefinition(
-				WorkflowConstants.STATUS_ANY);
-
-			String sql = _customSQL.get(
-				getClass(), FIND_BY_G_C, queryDefinition,
-				MBThreadImpl.TABLE_NAME);
-
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
-				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
-
-			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
-
-			sqlQuery.addEntity("MBThread", MBThreadImpl.class);
-
-			QueryPos queryPos = QueryPos.getInstance(sqlQuery);
-
-			queryPos.add(groupId);
-			queryPos.add(categoryId);
-			queryPos.add(WorkflowConstants.STATUS_ANY);
-
-			return (List<MBThread>)QueryUtil.list(
-				sqlQuery, getDialect(), start, end);
-		}
-		catch (Exception exception) {
-			throw new SystemException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	@Override
-	public List<MBThread> filterFindByG_C(
-		long groupId, long categoryId,
-		QueryDefinition<MBThread> queryDefinition) {
-
-		return doFindByG_C(groupId, categoryId, queryDefinition, true);
-	}
-
-	@Override
 	public List<MBThread> filterFindByS_G_U_C(
 		long groupId, long userId, long[] categoryIds,
 		QueryDefinition<MBThread> queryDefinition) {
 
 		return doFindByS_G_U_C(
 			groupId, userId, categoryIds, queryDefinition, true);
+	}
+
+	@Override
+	public List<MBThread> findByG_C(
+		long groupId, long categoryId,
+		QueryDefinition<MBThread> queryDefinition) {
+
+		if (queryDefinition.isExcludeStatus()) {
+			return MBThreadUtil.findByG_C_NotS(
+				groupId, categoryId, queryDefinition.getStatus(),
+				queryDefinition.getStart(), queryDefinition.getEnd(),
+				queryDefinition.getOrderByComparator());
+		}
+
+		if (queryDefinition.getStatus() != WorkflowConstants.STATUS_ANY) {
+			return MBThreadUtil.findByG_C_S(
+				groupId, categoryId, queryDefinition.getStatus(),
+				queryDefinition.getStart(), queryDefinition.getEnd(),
+				queryDefinition.getOrderByComparator());
+		}
+
+		return MBThreadUtil.findByG_C(
+			groupId, categoryId, queryDefinition.getStart(),
+			queryDefinition.getEnd(), queryDefinition.getOrderByComparator());
 	}
 
 	@Override
@@ -513,14 +481,6 @@ public class MBThreadFinderImpl
 		finally {
 			closeSession(session);
 		}
-	}
-
-	@Override
-	public List<MBThread> findByG_C(
-		long groupId, long categoryId,
-		QueryDefinition<MBThread> queryDefinition) {
-
-		return doFindByG_C(groupId, categoryId, queryDefinition, false);
 	}
 
 	@Override
@@ -882,77 +842,6 @@ public class MBThreadFinderImpl
 			}
 
 			return 0;
-		}
-		catch (Exception exception) {
-			throw new SystemException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	protected List<MBThread> doFindByG_C(
-		long groupId, long categoryId,
-		QueryDefinition<MBThread> queryDefinition, boolean inlineSQLHelper) {
-
-		if (!inlineSQLHelper || !InlineSQLHelperUtil.isEnabled(groupId)) {
-			if (queryDefinition.isExcludeStatus()) {
-				return MBThreadUtil.findByG_C_NotS(
-					groupId, categoryId, queryDefinition.getStatus(),
-					queryDefinition.getStart(), queryDefinition.getEnd(),
-					queryDefinition.getOrderByComparator());
-			}
-
-			if (queryDefinition.getStatus() != WorkflowConstants.STATUS_ANY) {
-				return MBThreadUtil.findByG_C_S(
-					groupId, categoryId, queryDefinition.getStatus(),
-					queryDefinition.getStart(), queryDefinition.getEnd(),
-					queryDefinition.getOrderByComparator());
-			}
-
-			return MBThreadUtil.findByG_C(
-				groupId, categoryId, queryDefinition.getStart(),
-				queryDefinition.getEnd(),
-				queryDefinition.getOrderByComparator());
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			String sql = _customSQL.get(
-				getClass(), FIND_BY_G_C, queryDefinition,
-				MBThreadImpl.TABLE_NAME);
-
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
-				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
-
-			sql = _customSQL.replaceOrderBy(
-				sql, queryDefinition.getOrderByComparator());
-
-			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
-
-			sqlQuery.addEntity("MBThread", MBThreadImpl.class);
-
-			QueryPos queryPos = QueryPos.getInstance(sqlQuery);
-
-			queryPos.add(groupId);
-			queryPos.add(categoryId);
-			queryPos.add(queryDefinition.getStatus());
-
-			if (queryDefinition.getOwnerUserId() > 0) {
-				queryPos.add(queryDefinition.getOwnerUserId());
-
-				if (queryDefinition.isIncludeOwner()) {
-					queryPos.add(WorkflowConstants.STATUS_IN_TRASH);
-				}
-			}
-
-			return (List<MBThread>)QueryUtil.list(
-				sqlQuery, getDialect(), queryDefinition.getStart(),
-				queryDefinition.getEnd());
 		}
 		catch (Exception exception) {
 			throw new SystemException(exception);

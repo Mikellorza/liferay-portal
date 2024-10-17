@@ -356,20 +356,6 @@
 				MBThread.lastPostDate DESC
 		]]>
 	</sql>
-	<sql id="com.liferay.message.boards.kernel.service.persistence.MBThreadFinder.findByG_C">
-		<![CDATA[
-			SELECT
-				DISTINCT {MBThread.*}
-			FROM
-				MBThread
-			WHERE
-				(MBThread.groupId = ?) AND
-				(MBThread.categoryId = ?)
-			ORDER BY
-				MBThread.priority DESC,
-				MBThread.lastPostDate DESC
-		]]>
-	</sql>
 	<sql id="com.liferay.message.boards.kernel.service.persistence.MBThreadFinder.findByG_U_C">
 		<![CDATA[
 			SELECT
