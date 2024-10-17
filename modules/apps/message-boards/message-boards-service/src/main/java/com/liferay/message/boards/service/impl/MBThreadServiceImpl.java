@@ -10,11 +10,14 @@ import com.liferay.message.boards.exception.LockedThreadException;
 import com.liferay.message.boards.model.MBCategory;
 import com.liferay.message.boards.model.MBMessage;
 import com.liferay.message.boards.model.MBThread;
+import com.liferay.message.boards.model.MBThreadTable;
 import com.liferay.message.boards.service.MBCategoryService;
 import com.liferay.message.boards.service.MBMessageLocalService;
 import com.liferay.message.boards.service.base.MBThreadServiceBaseImpl;
 import com.liferay.message.boards.service.persistence.MBMessageFinder;
 import com.liferay.message.boards.service.persistence.impl.constants.MBPersistenceConstants;
+import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
+import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.configuration.Configuration;
@@ -22,6 +25,7 @@ import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lock.Lock;
 import com.liferay.portal.kernel.lock.LockManager;
+import com.liferay.portal.kernel.model.ResourcePermissionTable;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelper;
@@ -331,15 +335,8 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 
 	@Override
 	public int getThreadsCount(long groupId, long categoryId, int status) {
-		if (status == WorkflowConstants.STATUS_ANY) {
-			return mbThreadFinder.filterCountByG_C(groupId, categoryId);
-		}
-
-		QueryDefinition<MBThread> queryDefinition = new QueryDefinition<>(
-			status);
-
-		return mbThreadFinder.filterCountByG_C(
-			groupId, categoryId, queryDefinition);
+		return _getThreadsCount(
+			groupId, categoryId, new QueryDefinition<>(status));
 	}
 
 	@Override
@@ -354,8 +351,7 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 			queryDefinition.setOwnerUserId(getUserId());
 		}
 
-		return mbThreadFinder.filterCountByG_C(
-			groupId, categoryId, queryDefinition);
+		return _getThreadsCount(groupId, categoryId, queryDefinition);
 	}
 
 	@Override
@@ -559,6 +555,49 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 
 		return mbThreadFinder.countByG_U_A(
 			groupId, userId, false, queryDefinition);
+	}
+
+	private int _getThreadsCount(
+		long groupId, long categoryId,
+		QueryDefinition<MBThread> queryDefinition) {
+
+		return mbThreadPersistence.dslQueryCount(
+			DSLQueryFactoryUtil.count(
+			).from(
+				MBThreadTable.INSTANCE
+			).innerJoinON(
+				ResourcePermissionTable.INSTANCE,
+				_inlineSQLHelper.getPermissionWherePredicate(
+					MBThread.class.getName(),
+					MBThreadTable.INSTANCE.rootMessageId, groupId)
+			).where(
+				MBThreadTable.INSTANCE.groupId.eq(
+					groupId
+				).and(
+					MBThreadTable.INSTANCE.categoryId.eq(categoryId)
+				).and(
+					() -> {
+						Predicate predicate = null;
+
+						if (queryDefinition.getOwnerUserId() > 0) {
+							predicate = MBThreadTable.INSTANCE.userId.eq(
+								queryDefinition.getOwnerUserId());
+
+							if (queryDefinition.isIncludeOwner()) {
+								predicate.and(
+									MBThreadTable.INSTANCE.status.eq(
+										WorkflowConstants.STATUS_IN_TRASH));
+							}
+						}
+
+						return MBThreadTable.INSTANCE.status.eq(
+							queryDefinition.getStatus()
+						).or(
+							predicate
+						);
+					}
+				)
+			));
 	}
 
 	@Reference(
