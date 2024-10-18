@@ -58,9 +58,6 @@ public class MBThreadFinderImpl
 	public static final String COUNT_BY_G_U_C_A =
 		MBThreadFinder.class.getName() + ".countByG_U_C_A";
 
-	public static final String COUNT_BY_S_G_U_C =
-		MBThreadFinder.class.getName() + ".countByS_G_U_C";
-
 	public static final String FIND_BY_G_U =
 		MBThreadFinder.class.getName() + ".findByG_U";
 
@@ -392,24 +389,6 @@ public class MBThreadFinderImpl
 		finally {
 			closeSession(session);
 		}
-	}
-
-	@Override
-	public int countByS_G_U_C(
-		long groupId, long userId, long[] categoryIds,
-		QueryDefinition<MBThread> queryDefinition) {
-
-		return doCountByS_G_U_C(
-			groupId, userId, categoryIds, queryDefinition, false);
-	}
-
-	@Override
-	public int filterCountByS_G_U_C(
-		long groupId, long userId, long[] categoryIds,
-		QueryDefinition<MBThread> queryDefinition) {
-
-		return doCountByS_G_U_C(
-			groupId, userId, categoryIds, queryDefinition, true);
 	}
 
 	@Override
@@ -750,72 +729,6 @@ public class MBThreadFinderImpl
 			String sql = _customSQL.get(getClass(), COUNT_BY_S_G_U);
 
 			sql = updateSQL(sql, queryDefinition);
-
-			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
-
-			sqlQuery.addScalar(COUNT_COLUMN_NAME, Type.LONG);
-
-			QueryPos queryPos = QueryPos.getInstance(sqlQuery);
-
-			queryPos.add(_portal.getClassNameId(MBThread.class.getName()));
-			queryPos.add(groupId);
-			queryPos.add(userId);
-
-			if (queryDefinition.getStatus() != WorkflowConstants.STATUS_ANY) {
-				queryPos.add(queryDefinition.getStatus());
-			}
-
-			Iterator<Long> iterator = sqlQuery.iterate();
-
-			if (iterator.hasNext()) {
-				Long count = iterator.next();
-
-				if (count != null) {
-					return count.intValue();
-				}
-			}
-
-			return 0;
-		}
-		catch (Exception exception) {
-			throw new SystemException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	protected int doCountByS_G_U_C(
-		long groupId, long userId, long[] categoryIds,
-		QueryDefinition<MBThread> queryDefinition, boolean inlineSQLHelper) {
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			String sql = _customSQL.get(getClass(), COUNT_BY_S_G_U_C);
-
-			if (ArrayUtil.isEmpty(categoryIds)) {
-				sql = StringUtil.removeSubstring(
-					sql, "(MBThread.categoryId = ?) AND");
-			}
-			else {
-				String mergedCategoryIds = StringUtil.merge(
-					categoryIds, " OR MBThread.categoryId = ");
-
-				sql = StringUtil.replace(
-					sql, "MBThread.categoryId = ?",
-					"MBThread.categoryId = " + mergedCategoryIds);
-			}
-
-			sql = updateSQL(sql, queryDefinition);
-
-			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
-					sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-					groupId);
-			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
 
