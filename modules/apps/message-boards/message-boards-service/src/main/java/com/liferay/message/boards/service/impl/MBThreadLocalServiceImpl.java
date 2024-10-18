@@ -20,6 +20,7 @@ import com.liferay.message.boards.model.MBCategory;
 import com.liferay.message.boards.model.MBDiscussion;
 import com.liferay.message.boards.model.MBMessage;
 import com.liferay.message.boards.model.MBThread;
+import com.liferay.message.boards.model.MBThreadTable;
 import com.liferay.message.boards.model.MBTreeWalker;
 import com.liferay.message.boards.model.impl.MBTreeWalkerImpl;
 import com.liferay.message.boards.service.MBDiscussionLocalService;
@@ -28,6 +29,8 @@ import com.liferay.message.boards.service.persistence.MBCategoryPersistence;
 import com.liferay.message.boards.service.persistence.MBMessageFinder;
 import com.liferay.message.boards.service.persistence.MBMessagePersistence;
 import com.liferay.message.boards.util.comparator.MessageThreadComparator;
+import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
+import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -38,6 +41,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.ResourcePermissionTable;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
@@ -50,6 +54,7 @@ import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.security.permission.InlineSQLHelper;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ExceptionRetryAcceptor;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -63,12 +68,14 @@ import com.liferay.portal.kernel.spring.aop.Retry;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.view.count.ViewCountManager;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.ratings.kernel.service.RatingsStatsLocalService;
 import com.liferay.social.kernel.model.SocialActivityConstants;
+import com.liferay.subscription.model.SubscriptionTable;
 import com.liferay.subscription.service.SubscriptionLocalService;
 import com.liferay.trash.TrashHelper;
 import com.liferay.trash.exception.RestoreEntryException;
@@ -392,8 +399,29 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		}
 
 		if (subscribed) {
-			return mbThreadFinder.countByS_G_U_C(
-				groupId, userId, null, queryDefinition);
+			return mbThreadPersistence.dslQueryCount(
+				DSLQueryFactoryUtil.count(
+				).from(
+					MBThreadTable.INSTANCE
+				).innerJoinON(
+					SubscriptionTable.INSTANCE,
+					SubscriptionTable.INSTANCE.companyId.eq(
+						MBThreadTable.INSTANCE.companyId
+					).and(
+						SubscriptionTable.INSTANCE.classNameId.eq(
+							_portal.getClassNameId(MBThread.class.getName()))
+					).and(
+						SubscriptionTable.INSTANCE.classPK.eq(
+							MBThreadTable.INSTANCE.threadId)
+					)
+				).innerJoinON(
+					ResourcePermissionTable.INSTANCE,
+					_inlineSQLHelper.getPermissionWherePredicate(
+						MBThread.class.getName(),
+						MBThreadTable.INSTANCE.rootMessageId, groupId)
+				).where(
+					_getWherePredicate(groupId, queryDefinition, userId)
+				));
 		}
 
 		if (includeAnonymous) {
@@ -1144,6 +1172,32 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 	@Reference
 	protected ExpandoRowLocalService expandoRowLocalService;
 
+	private Predicate _getWherePredicate(
+		long groupId, QueryDefinition<MBThread> queryDefinition, long userId) {
+
+		return MBThreadTable.INSTANCE.groupId.eq(
+			groupId
+		).and(
+			MBThreadTable.INSTANCE.userId.eq(userId)
+		).and(
+			() -> {
+				if (queryDefinition.getStatus() ==
+						WorkflowConstants.STATUS_ANY) {
+
+					return null;
+				}
+
+				if (queryDefinition.isExcludeStatus()) {
+					return MBThreadTable.INSTANCE.status.neq(
+						queryDefinition.getStatus());
+				}
+
+				return MBThreadTable.INSTANCE.status.eq(
+					queryDefinition.getStatus());
+			}
+		);
+	}
+
 	private void _moveAttachmentsFolders(
 			MBMessage message, long oldAttachmentsFolderId, MBThread oldThread,
 			MBThread newThread, ServiceContext serviceContext)
@@ -1204,6 +1258,9 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 	private IndexerRegistry _indexerRegistry;
 
 	@Reference
+	private InlineSQLHelper _inlineSQLHelper;
+
+	@Reference
 	private MBCategoryPersistence _mbCategoryPersistence;
 
 	@Reference
@@ -1214,6 +1271,9 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 	@Reference
 	private MBMessagePersistence _mbMessagePersistence;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private RatingsStatsLocalService _ratingsStatsLocalService;

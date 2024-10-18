@@ -33,8 +33,11 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.subscription.model.SubscriptionTable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -293,8 +296,30 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 			QueryDefinition<MBThread> queryDefinition = new QueryDefinition<>(
 				status);
 
-			return mbThreadFinder.filterCountByS_G_U_C(
-				groupId, userId, categoryIds, queryDefinition);
+			return mbThreadPersistence.dslQueryCount(
+				DSLQueryFactoryUtil.count(
+				).from(
+					MBThreadTable.INSTANCE
+				).innerJoinON(
+					SubscriptionTable.INSTANCE,
+					SubscriptionTable.INSTANCE.companyId.eq(
+						MBThreadTable.INSTANCE.companyId
+					).and(
+						SubscriptionTable.INSTANCE.classNameId.eq(
+							_portal.getClassNameId(MBThread.class.getName()))
+					).and(
+						SubscriptionTable.INSTANCE.classPK.eq(
+							MBThreadTable.INSTANCE.threadId)
+					)
+				).innerJoinON(
+					ResourcePermissionTable.INSTANCE,
+					_inlineSQLHelper.getPermissionWherePredicate(
+						MBThread.class.getName(),
+						MBThreadTable.INSTANCE.rootMessageId, groupId)
+				).where(
+					_getWherePredicate(
+						groupId, categoryIds, queryDefinition, userId)
+				));
 		}
 
 		if (includeAnonymous) {
@@ -628,6 +653,42 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 		);
 	}
 
+	private Predicate _getWherePredicate(
+		long groupId, long[] categoryIds,
+		QueryDefinition<MBThread> queryDefinition, long userId) {
+
+		return MBThreadTable.INSTANCE.groupId.eq(
+			groupId
+		).and(
+			() -> {
+				if (ArrayUtil.isEmpty(categoryIds)) {
+					return null;
+				}
+
+				return MBThreadTable.INSTANCE.categoryId.in(
+					ArrayUtil.toArray(categoryIds));
+			}
+		).and(
+			MBThreadTable.INSTANCE.userId.eq(userId)
+		).and(
+			() -> {
+				if (queryDefinition.getStatus() ==
+						WorkflowConstants.STATUS_ANY) {
+
+					return null;
+				}
+
+				if (queryDefinition.isExcludeStatus()) {
+					return MBThreadTable.INSTANCE.status.neq(
+						queryDefinition.getStatus());
+				}
+
+				return MBThreadTable.INSTANCE.status.eq(
+					queryDefinition.getStatus());
+			}
+		);
+	}
+
 	@Reference(
 		target = "(model.class.name=com.liferay.message.boards.model.MBCategory)"
 	)
@@ -658,5 +719,8 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 		target = "(model.class.name=com.liferay.message.boards.model.MBMessage)"
 	)
 	private ModelResourcePermission<MBMessage> _messageModelResourcePermission;
+
+	@Reference
+	private Portal _portal;
 
 }
