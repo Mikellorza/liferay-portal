@@ -343,8 +343,35 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		}
 
 		if (subscribed) {
-			return mbThreadFinder.findByS_G_U_C(
-				groupId, userId, null, queryDefinition);
+			return mbThreadPersistence.dslQuery(
+				DSLQueryFactoryUtil.select(
+					MBThreadTable.INSTANCE
+				).from(
+					MBThreadTable.INSTANCE
+				).innerJoinON(
+					SubscriptionTable.INSTANCE,
+					SubscriptionTable.INSTANCE.companyId.eq(
+						MBThreadTable.INSTANCE.companyId
+					).and(
+						SubscriptionTable.INSTANCE.classNameId.eq(
+							_portal.getClassNameId(MBThread.class.getName()))
+					).and(
+						SubscriptionTable.INSTANCE.classPK.eq(
+							MBThreadTable.INSTANCE.threadId)
+					)
+				).innerJoinON(
+					ResourcePermissionTable.INSTANCE,
+					_inlineSQLHelper.getPermissionWherePredicate(
+						MBThread.class.getName(),
+						MBThreadTable.INSTANCE.rootMessageId, groupId)
+				).where(
+					_getWherePredicate(groupId, queryDefinition, userId)
+				).groupBy(
+					MBThreadTable.INSTANCE.priority,
+					MBThreadTable.INSTANCE.lastPostDate
+				).limit(
+					queryDefinition.getStart(), queryDefinition.getEnd()
+				));
 		}
 
 		if (includeAnonymous) {
