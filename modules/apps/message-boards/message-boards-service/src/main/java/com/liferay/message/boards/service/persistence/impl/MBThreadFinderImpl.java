@@ -5,7 +5,6 @@
 
 package com.liferay.message.boards.service.persistence.impl;
 
-import com.liferay.message.boards.model.MBMessage;
 import com.liferay.message.boards.model.MBThread;
 import com.liferay.message.boards.model.impl.MBThreadImpl;
 import com.liferay.message.boards.service.persistence.MBThreadFinder;
@@ -19,7 +18,6 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -75,9 +73,6 @@ public class MBThreadFinderImpl
 
 	public static final String FIND_BY_G_U_C_A =
 		MBThreadFinder.class.getName() + ".findByG_U_C_A";
-
-	public static final String FIND_BY_S_G_U_C =
-		MBThreadFinder.class.getName() + ".findByS_G_U_C";
 
 	@Override
 	public int countByG_C(
@@ -392,15 +387,6 @@ public class MBThreadFinderImpl
 	}
 
 	@Override
-	public List<MBThread> filterFindByS_G_U_C(
-		long groupId, long userId, long[] categoryIds,
-		QueryDefinition<MBThread> queryDefinition) {
-
-		return doFindByS_G_U_C(
-			groupId, userId, categoryIds, queryDefinition, true);
-	}
-
-	@Override
 	public List<MBThread> findByG_C(
 		long groupId, long categoryId,
 		QueryDefinition<MBThread> queryDefinition) {
@@ -709,15 +695,6 @@ public class MBThreadFinderImpl
 		}
 	}
 
-	@Override
-	public List<MBThread> findByS_G_U_C(
-		long groupId, long userId, long[] categoryIds,
-		QueryDefinition<MBThread> queryDefinition) {
-
-		return doFindByS_G_U_C(
-			groupId, userId, categoryIds, queryDefinition, false);
-	}
-
 	protected int doCountByS_G_U(
 		long groupId, long userId, QueryDefinition<MBThread> queryDefinition) {
 
@@ -755,64 +732,6 @@ public class MBThreadFinderImpl
 			}
 
 			return 0;
-		}
-		catch (Exception exception) {
-			throw new SystemException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	protected List<MBThread> doFindByS_G_U_C(
-		long groupId, long userId, long[] categoryIds,
-		QueryDefinition<MBThread> queryDefinition, boolean inlineSQLHelper) {
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			String sql = _customSQL.get(getClass(), FIND_BY_S_G_U_C);
-
-			if (ArrayUtil.isEmpty(categoryIds)) {
-				sql = StringUtil.removeSubstring(
-					sql, "(MBThread.categoryId = ?) AND");
-			}
-			else {
-				String mergedCategoryIds = StringUtil.merge(
-					categoryIds, " OR MBThread.categoryId = ");
-
-				sql = StringUtil.replace(
-					sql, "MBThread.categoryId = ?",
-					"MBThread.categoryId = " + mergedCategoryIds);
-			}
-
-			sql = updateSQL(sql, queryDefinition);
-
-			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
-					sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-					groupId);
-			}
-
-			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
-
-			sqlQuery.addEntity("MBThread", MBThreadImpl.class);
-
-			QueryPos queryPos = QueryPos.getInstance(sqlQuery);
-
-			queryPos.add(_portal.getClassNameId(MBThread.class.getName()));
-			queryPos.add(groupId);
-			queryPos.add(userId);
-
-			if (queryDefinition.getStatus() != WorkflowConstants.STATUS_ANY) {
-				queryPos.add(queryDefinition.getStatus());
-			}
-
-			return (List<MBThread>)QueryUtil.list(
-				sqlQuery, getDialect(), queryDefinition.getStart(),
-				queryDefinition.getEnd());
 		}
 		catch (Exception exception) {
 			throw new SystemException(exception);

@@ -432,24 +432,4 @@
 				MBThread.lastPostDate DESC
 		]]>
 	</sql>
-	<sql id="com.liferay.message.boards.kernel.service.persistence.MBThreadFinder.findByS_G_U_C">
-		<![CDATA[
-			SELECT
-				DISTINCT {MBThread.*}
-			FROM
-				MBThread
-			INNER JOIN
-				Subscription ON
-					(Subscription.companyId = MBThread.companyId) AND
-					(Subscription.classNameId = ?) AND
-					(Subscription.classPK = MBThread.threadId)
-			WHERE
-				(MBThread.groupId = ?) AND
-				(MBThread.categoryId = ?) AND
-				(Subscription.userId = ?)
-			ORDER BY
-				MBThread.priority DESC,
-				MBThread.lastPostDate DESC
-		]]>
-	</sql>
 </custom-sql>
