@@ -417,9 +417,9 @@ public class MBThreadFinderImpl
 				getClass(), COUNT_BY_G_C, queryDefinition,
 				MBThreadImpl.TABLE_NAME);
 
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
+			sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
+				new long[] {groupId});
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
 
@@ -488,9 +488,9 @@ public class MBThreadFinderImpl
 				getClass(), FIND_BY_G_C, queryDefinition,
 				MBThreadImpl.TABLE_NAME);
 
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
+			sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
+				new long[] {groupId});
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
 
@@ -859,9 +859,9 @@ public class MBThreadFinderImpl
 				getClass(), COUNT_BY_G_C, queryDefinition,
 				MBThreadImpl.TABLE_NAME);
 
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
+			sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
+				new long[] {groupId});
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
 
@@ -974,9 +974,9 @@ public class MBThreadFinderImpl
 			sql = updateSQL(sql, queryDefinition);
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-					groupId);
+					new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
@@ -1047,9 +1047,9 @@ public class MBThreadFinderImpl
 				getClass(), FIND_BY_G_C, queryDefinition,
 				MBThreadImpl.TABLE_NAME);
 
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
+			sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
+				new long[] {groupId});
 
 			sql = _customSQL.replaceOrderBy(
 				sql, queryDefinition.getOrderByComparator());
@@ -1111,9 +1111,9 @@ public class MBThreadFinderImpl
 			sql = updateSQL(sql, queryDefinition);
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-					groupId);
+					new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);

@@ -192,9 +192,9 @@ public class MBCategoryFinderImpl
 				getClass(), COUNT_C_BY_G_P, queryDefinition,
 				MBCategoryImpl.TABLE_NAME);
 
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
+			sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 				sql, MBCategory.class.getName(), "MBCategory.categoryId",
-				groupId);
+				new long[] {groupId});
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
 
@@ -261,9 +261,9 @@ public class MBCategoryFinderImpl
 			sql = updateSQL(sql, queryDefinition);
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBCategory.class.getName(), "MBCategory.categoryId",
-					groupId);
+					new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
@@ -331,9 +331,9 @@ public class MBCategoryFinderImpl
 				MBThreadImpl.TABLE_NAME);
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-					groupId);
+					new long[] {groupId});
 			}
 
 			sb.append(sql);
@@ -344,9 +344,9 @@ public class MBCategoryFinderImpl
 				MBCategoryImpl.TABLE_NAME);
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBCategory.class.getName(), "MBCategory.categoryId",
-					groupId);
+					new long[] {groupId});
 			}
 
 			sb.append(sql);
@@ -440,9 +440,9 @@ public class MBCategoryFinderImpl
 				getClass(), FIND_C_BY_G_P, queryDefinition,
 				MBCategoryImpl.TABLE_NAME);
 
-			sql = InlineSQLHelperUtil.replacePermissionCheck(
+			sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 				sql, MBCategory.class.getName(), "MBCategory.categoryId",
-				groupId);
+				new long[] {groupId});
 
 			sql = _customSQL.replaceOrderBy(
 				sql, queryDefinition.getOrderByComparator());
@@ -519,9 +519,9 @@ public class MBCategoryFinderImpl
 			sql = updateSQL(sql, queryDefinition);
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBCategory.class.getName(), "MBCategory.categoryId",
-					groupId);
+					new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
@@ -592,9 +592,9 @@ public class MBCategoryFinderImpl
 				MBThreadImpl.TABLE_NAME);
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-					groupId);
+					new long[] {groupId});
 			}
 
 			sb.append(sql);
@@ -605,9 +605,9 @@ public class MBCategoryFinderImpl
 				MBCategoryImpl.TABLE_NAME);
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBCategory.class.getName(), "MBCategory.categoryId",
-					groupId);
+					new long[] {groupId});
 			}
 
 			sb.append(sql);

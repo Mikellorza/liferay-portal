@@ -385,9 +385,9 @@ public class MBMessageFinderImpl
 			}
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(),
-					"currentMessage.rootMessageId", groupId);
+					"currentMessage.rootMessageId", new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
@@ -456,9 +456,9 @@ public class MBMessageFinderImpl
 			}
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(),
-					"currentMessage.rootMessageId", groupId);
+					"currentMessage.rootMessageId", new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
@@ -543,9 +543,9 @@ public class MBMessageFinderImpl
 			}
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(),
-					"currentMessage.rootMessageId", groupId);
+					"currentMessage.rootMessageId", new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
@@ -620,9 +620,9 @@ public class MBMessageFinderImpl
 			}
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(),
-					"currentMessage.rootMessageId", groupId);
+					"currentMessage.rootMessageId", new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
@@ -682,9 +682,9 @@ public class MBMessageFinderImpl
 			}
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(),
-					"currentMessage.rootMessageId", groupId);
+					"currentMessage.rootMessageId", new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
@@ -761,9 +761,9 @@ public class MBMessageFinderImpl
 			}
 
 			if (inlineSQLHelper) {
-				sql = InlineSQLHelperUtil.replacePermissionCheck(
+				sql = InlineSQLHelperUtil.replacePermissionCheckWithInnerJoin(
 					sql, MBMessage.class.getName(),
-					"currentMessage.rootMessageId", groupId);
+					"currentMessage.rootMessageId", new long[] {groupId});
 			}
 
 			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
