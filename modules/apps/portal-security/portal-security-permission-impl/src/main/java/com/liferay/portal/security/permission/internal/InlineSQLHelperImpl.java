@@ -311,6 +311,26 @@ public class InlineSQLHelperImpl implements InlineSQLHelper {
 			resourcePermissionSQL);
 	}
 
+	@Override
+	public String replacePermissionCheckWithInnerJoin(
+		String sql, String className, String classPKField, long[] groupIds) {
+
+		PermissionChecker permissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		if ((sql == null) ||
+			_skipReplace(
+				permissionChecker, className, classPKField, groupIds)) {
+
+			return sql;
+		}
+
+		return _insertInnerJoinResourcePermissionSQL(
+			sql, classPKField,
+			_getResourcePermissionSQL(
+				permissionChecker, className, null, groupIds, null));
+	}
+
 	@Activate
 	protected void activate(
 		BundleContext bundleContext, Map<String, Object> properties) {
@@ -636,6 +656,34 @@ public class InlineSQLHelperImpl implements InlineSQLHelper {
 		}
 
 		return ArrayUtil.toLongArray(roleIds);
+	}
+
+	private String _insertInnerJoinResourcePermissionSQL(
+		String sql, String classPKField, String permissionSQL) {
+
+		StringBundler sb = new StringBundler(7);
+
+		int pos = sql.lastIndexOf(_WHERE_CLAUSE);
+
+		if (pos == -1) {
+			sb.append(sql);
+			sb.append(" inner join (");
+			sb.append(permissionSQL);
+			sb.append(") ResourcePermission ON ");
+			sb.append(classPKField);
+			sb.append(" = ResourcePermission.primKeyId");
+		}
+		else {
+			sb.append(sql.substring(0, pos));
+			sb.append(" inner join (");
+			sb.append(permissionSQL);
+			sb.append(") ResourcePermission ON ");
+			sb.append(classPKField);
+			sb.append(" = ResourcePermission.primKeyId ");
+			sb.append(sql.substring(pos));
+		}
+
+		return sb.toString();
 	}
 
 	private DSLQuery _insertResourcePermissionQuery(

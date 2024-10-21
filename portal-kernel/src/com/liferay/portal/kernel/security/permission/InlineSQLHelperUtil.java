@@ -195,6 +195,16 @@ public class InlineSQLHelperUtil {
 			bridgeJoin);
 	}
 
+	public static String replacePermissionCheckWithInnerJoin(
+		String sql, String className, String classPKField, long[] groupIds) {
+
+		InlineSQLHelper inlineSQLPermission =
+			_inlineSQLPermissionSnapshot.get();
+
+		return inlineSQLPermission.replacePermissionCheckWithInnerJoin(
+			sql, className, classPKField, groupIds);
+	}
+
 	private static final Snapshot<InlineSQLHelper>
 		_inlineSQLPermissionSnapshot = new Snapshot<>(
 			InlineSQLHelperUtil.class, InlineSQLHelper.class);
