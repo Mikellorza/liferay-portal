@@ -24,7 +24,11 @@ import javax.portlet.PortletPreferences;
 public class UpgradePortletPreferences
 	extends BasePortletPreferencesUpgradeProcess {
 
-	public UpgradePortletPreferences(DLAppLocalService dlAppLocalService, GroupLocalService groupLocalService, RepositoryLocalService repositoryLocalService) {
+	public UpgradePortletPreferences(
+		DLAppLocalService dlAppLocalService,
+		GroupLocalService groupLocalService,
+		RepositoryLocalService repositoryLocalService) {
+
 		_dlAppLocalService = dlAppLocalService;
 		_groupLocalService = groupLocalService;
 		_repositoryLocalService = repositoryLocalService;
@@ -37,15 +41,16 @@ public class UpgradePortletPreferences
 
 	@Override
 	protected String upgradePreferences(
-		long companyId, long ownerId, int ownerType, long plid,
-		String portletId, String xml)
+			long companyId, long ownerId, int ownerType, long plid,
+			String portletId, String xml)
 		throws Exception {
 
 		PortletPreferences portletPreferences =
 			PortletPreferencesFactoryUtil.fromXML(
 				companyId, ownerId, ownerType, plid, portletId, xml);
 
-		long rootFolderId = GetterUtil.getLong(portletPreferences.getValue("rootFolderId", "-1"));
+		long rootFolderId = GetterUtil.getLong(
+			portletPreferences.getValue("rootFolderId", "-1"));
 
 		if (rootFolderId == -1) {
 			return PortletPreferencesFactoryUtil.toXML(portletPreferences);
@@ -59,12 +64,14 @@ public class UpgradePortletPreferences
 			rootFolderExternalReferenceCode = folder.getExternalReferenceCode();
 		}
 
-		portletPreferences.setValue("rootFolderExternalReferenceCode", rootFolderExternalReferenceCode);
+		portletPreferences.setValue(
+			"rootFolderExternalReferenceCode", rootFolderExternalReferenceCode);
 
-		long selectedRepositoryId = GetterUtil.getLong(portletPreferences.getValue("selectedRepositoryId", null));
+		long selectedRepositoryId = GetterUtil.getLong(
+			portletPreferences.getValue("selectedRepositoryId", null));
 
-		Repository selectedRepository =
-			_repositoryLocalService.fetchRepository(selectedRepositoryId);
+		Repository selectedRepository = _repositoryLocalService.fetchRepository(
+			selectedRepositoryId);
 
 		String selectedRepositoryExternalReferenceCode = "";
 		long repositoryGroupId = 0;
@@ -83,17 +90,18 @@ public class UpgradePortletPreferences
 			repositoryGroupId = selectedRepositoryId;
 		}
 
-		portletPreferences.setValue("selectedRepositoryExternalReferenceCode", selectedRepositoryExternalReferenceCode);
+		portletPreferences.setValue(
+			"selectedRepositoryExternalReferenceCode",
+			selectedRepositoryExternalReferenceCode);
 
-		portletPreferences.setValue("repositoryGroupId", String.valueOf(repositoryGroupId));
+		portletPreferences.setValue(
+			"repositoryGroupId", String.valueOf(repositoryGroupId));
 
 		return PortletPreferencesFactoryUtil.toXML(portletPreferences);
 	}
 
 	private final DLAppLocalService _dlAppLocalService;
-
 	private final GroupLocalService _groupLocalService;
-
 	private final RepositoryLocalService _repositoryLocalService;
 
 }
