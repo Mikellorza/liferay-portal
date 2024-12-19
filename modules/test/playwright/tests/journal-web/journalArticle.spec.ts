@@ -210,6 +210,74 @@ baseTest(
 	}
 );
 
+baseTest(
+	'Web Content Schedule Publication Feature Flag is only in UTC and wrong time is displayed after scheduled',
+	{
+		tag: '@LPD-44904',
+	},
+	async ({journalEditArticlePage, page, site}) => {
+		page.on('dialog', (dialog) => dialog.accept());
+
+		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
+
+		const title = getRandomString();
+
+		await journalEditArticlePage.content.waitFor();
+
+		await journalEditArticlePage.fillTitle(title);
+
+		await expect(async () => {
+			await clickAndExpectToBeVisible({
+				autoClick: true,
+				target: page.getByRole('menuitem', {
+					name: /publish with permissions|publier avec permissions/i,
+				}),
+				trigger: page.getByRole('button', {
+					name: /select and confirm publish settings|sélectionnez et confirmez les/i,
+				}),
+			});
+
+			await expect(page.getByLabel('Viewable By')).toBeVisible({
+				timeout: 2000,
+			});
+		}).toPass();
+
+		const now = new Date();
+
+		now.setMinutes(now.getMinutes() - 5);
+
+		const beforeNowUTC = new Date(
+			now.toLocaleString('en-US', {timeZone: 'UTC'})
+		);
+
+		await expect(
+			page.getByText('Error: The date entered is in the past.')
+		).toBeVisible();
+
+		await page
+			.getByPlaceholder('YYYY-MM-DD HH:mm')
+			.fill(
+				`${beforeNowUTC.getFullYear()}-${String(beforeNowUTC.getMonth() + 1).padStart(2, '0')}-${String(beforeNowUTC.getDate()).padStart(2, '0')} ${String(beforeNowUTC.getHours()).padStart(2, '0')}:${String(beforeNowUTC.getMinutes()).padStart(2, '0')}`
+			);
+
+		now.setMinutes(now.getMinutes() + 5);
+
+		const afterNowUTC = new Date(
+			now.toLocaleString('en-US', {timeZone: 'UTC'})
+		);
+
+		await page
+			.getByPlaceholder('YYYY-MM-DD HH:mm')
+			.fill(
+				`${afterNowUTC.getFullYear()}-${String(afterNowUTC.getMonth() + 1).padStart(2, '0')}-${String(afterNowUTC.getDate()).padStart(2, '0')} ${String(afterNowUTC.getHours()).padStart(2, '0')}:${String(afterNowUTC.getMinutes()).padStart(2, '0')}`
+			);
+
+		await expect(
+			page.getByText('Error: The date entered is in the past.')
+		).not.toBeVisible();
+	}
+);
+
 translationAndAutosaveTest(
 	'Article selector should only list approved content',
 	{
