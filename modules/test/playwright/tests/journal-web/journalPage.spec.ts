@@ -11,6 +11,9 @@ import {loginTest} from '../../fixtures/loginTest';
 import getBasicWebContentStructureId from '../../utils/structured-content/getBasicWebContentStructureId';
 import {journalPagesTest} from './fixtures/journalPagesTest';
 import getDataStructureDefinition from './utils/getDataStructureDefinition';
+import addApprovedStructuredContent
+	from "../../utils/structured-content/addApprovedStructuredContent";
+import getRandomString from "../../utils/getRandomString";
 
 export const test = mergeTests(
 	apiHelpersTest,
@@ -140,5 +143,70 @@ test(
 		await expect(
 			page.getByRole('link', {name: 'Second Web content'})
 		).toBeVisible();
+	}
+);
+
+test(
+	'When pagination with highlighted structures, the selected structure is lost.',
+	{
+		tag: '@LPD-45163',
+	},
+	async ({apiHelpers, journalEditArticlePage, journalPage, page, site}) => {
+		await addApprovedStructuredContent({
+			apiHelpers,
+			contentStructureId: await getBasicWebContentStructureId(apiHelpers),
+			siteId: site.id,
+			title: getRandomString(),
+		});
+
+		const structureName = 'Highlighted structure Test';
+
+		const dataDefinition = getDataStructureDefinition({
+			defaultLanguageId: 'en_US',
+			fields: [{name: 'Text', repeatable: false}],
+			name: structureName,
+		});
+
+		const structure = await apiHelpers.dataEngine.createStructure(
+			site.id,
+			dataDefinition
+		);
+
+		for (let i = 0; i < 5; i++) {
+			await addApprovedStructuredContent({
+				apiHelpers,
+				contentStructureId: Number(structure.id),
+				siteId: site.id,
+				title: getRandomString(),
+			});
+		}
+
+		await journalPage.goto(site.friendlyUrlPath);
+
+		await page.getByLabel('Options').click();
+		await page.getByRole('menuitem', { name: 'Configuration' }).click();
+
+		await page.getByLabel('Select Highlighted Structures').click();
+
+		const iframeLocator = page.frameLocator('iframe[title="Select Structures"]');
+
+		await iframeLocator.getByLabel(structureName).check();
+
+		await page.getByRole('button', { name: 'Add' }).click();
+
+		const saveButtonLocator = await page.getByRole('button', { name: 'Save' });
+
+		await saveButtonLocator.click();
+		await saveButtonLocator.click();
+
+		await journalPage.goto(site.friendlyUrlPath);
+
+		await page.getByRole('menuitem', { name: structureName }).click();
+
+		await page.getByLabel('Items per Page').click();
+
+		await page.getByRole('option', { name: '4 Entries per Page' }).click();
+
+		await expect(page.getByText('Showing 1 to 4 of 5 entries.')).toBeVisible();
 	}
 );
