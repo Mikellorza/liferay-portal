@@ -102,7 +102,9 @@ public class MultipleUploadResponseHandler implements UploadResponseHandler {
 				status = ServletResponseConstants.SC_FILE_EXTENSION_EXCEPTION;
 			}
 			else if (portalException instanceof FileMimeTypeException) {
-				message = _getAllowedMimeTypes(themeDisplay);
+				message = themeDisplay.translate(
+					"file-must-be-one-of-the-following-mime-types-x",
+					_getAllowedMimeTypes(themeDisplay));
 				status = ServletResponseConstants.SC_FILE_MIME_TYPE_EXCEPTION;
 			}
 			else if (portalException instanceof FileNameException) {
