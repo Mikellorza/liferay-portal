@@ -6,12 +6,16 @@
 package com.liferay.document.library.web.internal.portlet.action.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.document.library.configuration.DLFileEntryMimeTypeConfiguration;
 import com.liferay.document.library.constants.DLPortletKeys;
+import com.liferay.document.library.kernel.exception.FileMimeTypeException;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.portal.configuration.test.util.CompanyConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.PortletConfigFactoryUtil;
@@ -34,7 +38,9 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.JavaConstants;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
@@ -61,6 +67,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * @author Alicia García
@@ -209,6 +216,113 @@ public class EditFileEntryMVCActionCommandTest {
 		Assert.assertEquals("image (1)", actualFileEntry.getTitle());
 	}
 
+	@Test(expected = FileMimeTypeException.class)
+	public void testProcessActionAddMultipleFileEntriesWithInvalidMimetype()
+		throws Exception {
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						DLFileEntryMimeTypeConfiguration.class.getName(),
+						HashMapDictionaryBuilder.<String, Object>put(
+							"fileMimeTypes", new String[] {"text/html"}
+						).build())) {
+
+			FileEntry tempFileEntry = _dlAppService.addTempFileEntry(
+				_group.getGroupId(), 0, _TEMP_FOLDER_NAME, "text.txt",
+				_getInputStream(), "text/plain");
+
+			_processAction(
+				_getMockLiferayPortletActionRequest(
+					_getParameters(
+						Constants.ADD_MULTIPLE, 0, _group.getGroupId(),
+						new String[] {tempFileEntry.getFileName()})),
+				new MockLiferayPortletActionResponse());
+		}
+	}
+
+	@Test
+	public void testProcessActionAddMultipleFileEntriesWithInvalidMimetype2()
+		throws Exception {
+
+		FileEntry tempFileEntry = _dlAppService.addTempFileEntry(
+			_group.getGroupId(), 0, _TEMP_FOLDER_NAME, "text.txt",
+			_getInputStream(), "text/plain");
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						DLFileEntryMimeTypeConfiguration.class.getName(),
+						HashMapDictionaryBuilder.<String, Object>put(
+							"fileMimeTypes", new String[] {"text/html"}
+						).build())) {
+
+			MockLiferayPortletActionResponse mockLiferayPortletActionResponse =
+				new MockLiferayPortletActionResponse();
+
+			_processAction(
+				_getMockLiferayPortletActionRequest(
+					_getParameters(
+						Constants.ADD_MULTIPLE, 0, _group.getGroupId(),
+						new String[] {tempFileEntry.getFileName()})),
+				mockLiferayPortletActionResponse);
+
+			MockHttpServletResponse mockHttpServletResponse =
+				(MockHttpServletResponse)
+					mockLiferayPortletActionResponse.getHttpServletResponse();
+
+			Assert.assertEquals(
+				JSONUtil.put(
+					JSONUtil.put(
+						"added", false
+					).put(
+						"errorMessage",
+						"File must be one of the following mime types: " +
+							"text/html."
+					).put(
+						"fileName", "text.txt"
+					).put(
+						"originalFileName", "text.txt"
+					)
+				).toString(),
+				mockHttpServletResponse.getContentAsString());
+		}
+	}
+
+	@Test
+	public void testProcessActionAddMultipleFileEntriesWithValidMimetype()
+		throws Exception {
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						DLFileEntryMimeTypeConfiguration.class.getName(),
+						HashMapDictionaryBuilder.<String, Object>put(
+							"fileMimeTypes", new String[] {"text/plain"}
+						).build())) {
+
+			FileEntry tempFileEntry = _dlAppService.addTempFileEntry(
+				_group.getGroupId(), 0, _TEMP_FOLDER_NAME, "text.txt",
+				_getInputStream(), "text/plain");
+
+			_processAction(
+				_getMockLiferayPortletActionRequest(
+					_getParameters(
+						Constants.ADD_MULTIPLE, 0, _group.getGroupId(),
+						new String[] {tempFileEntry.getFileName()})),
+				new MockLiferayPortletActionResponse());
+
+			FileEntry actualFileEntry =
+				_dlAppLocalService.getFileEntryByFileName(
+					_group.getGroupId(), 0, "text.txt");
+
+			Assert.assertEquals("text", actualFileEntry.getTitle());
+		}
+	}
+
 	@Test
 	public void testProcessActionCheckIn()
 		throws PortalException, PortletException {
@@ -348,6 +462,7 @@ public class EditFileEntryMVCActionCommandTest {
 
 		themeDisplay.setCompany(
 			_companyLocalService.getCompany(TestPropsValues.getCompanyId()));
+		themeDisplay.setLocale(LocaleUtil.US);
 		themeDisplay.setPermissionChecker(
 			PermissionThreadLocal.getPermissionChecker());
 		themeDisplay.setRequest(new MockHttpServletRequest());
