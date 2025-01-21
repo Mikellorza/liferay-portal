@@ -261,9 +261,9 @@ public class DLFileEntryLocalServiceImpl
 			PortalUtil.getCurrentAndAncestorSiteGroupIds(groupId), folderId,
 			fileEntryTypeId);
 
-		_validateFile(
+		_validateFile(user.getCompanyId(),
 			groupId, folderId, 0, fileEntryTypeId, fileName, extension,
-			inputStreamExtension, title, displayDate, expirationDate);
+			inputStreamExtension,mimeType, title, displayDate, expirationDate);
 
 		long fileEntryId = counterLocalService.increment();
 
@@ -3815,10 +3815,10 @@ public class DLFileEntryLocalServiceImpl
 
 			Date date = new Date();
 
-			_validateFile(
+			_validateFile(dlFileEntry.getCompanyId(),
 				dlFileEntry.getGroupId(), dlFileEntry.getFolderId(),
 				dlFileEntry.getFileEntryId(), fileEntryTypeId, fileName,
-				extension, inputStreamExtension, title, displayDate,
+				extension, inputStreamExtension,mimeType, title, displayDate,
 				expirationDate);
 
 			// File version
@@ -3994,9 +3994,10 @@ public class DLFileEntryLocalServiceImpl
 		}
 	}
 
-	private void _validateFile(
+	private void _validateFile(long companyId,
 			long groupId, long folderId, long fileEntryId, long fileEntryTypeId,
 			String fileName, String extension, String inputStreamExtension,
+			String mimeType,
 			String title, Date displayDate, Date expirationDate)
 		throws PortalException {
 
@@ -4007,9 +4008,11 @@ public class DLFileEntryLocalServiceImpl
 
 		if ((dlFileEntryType.getScope() !=
 				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_SCOPE_SYSTEM) ||
-			Validator.isNotNull(extension)) {
+			Validator.isNotNull(extension) || Validator.isNull(mimeType)) {
 
 			_validateFileExtension(fileName, extension, inputStreamExtension);
+
+			DLValidatorUtil.validateFileMimeType(companyId,mimeType);
 		}
 
 		validateFile(groupId, folderId, fileEntryId, fileName, title);
