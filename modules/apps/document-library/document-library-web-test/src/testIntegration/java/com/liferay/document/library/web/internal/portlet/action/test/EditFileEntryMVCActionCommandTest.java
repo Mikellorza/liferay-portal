@@ -6,11 +6,13 @@
 package com.liferay.document.library.web.internal.portlet.action.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.document.library.configuration.DLFileEntryMimeTypeConfiguration;
 import com.liferay.document.library.constants.DLPortletKeys;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.portal.configuration.test.util.CompanyConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
@@ -34,6 +36,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ProxyUtil;
@@ -99,6 +102,40 @@ public class EditFileEntryMVCActionCommandTest {
 			_group.getGroupId(), tempFileEntry.getFolderId(), "image.jpg");
 
 		Assert.assertEquals("image", actualFileEntry.getTitle());
+	}
+
+	@Test
+	public void testProcessActionAddMultipleFileEntries2() throws Exception {
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						DLFileEntryMimeTypeConfiguration.class.getName(),
+						HashMapDictionaryBuilder.<String, Object>put(
+							"fileMimeTypes", new String[] {"text/plain"}
+						).build())) {
+
+			FileEntry tempFileEntry = TempFileEntryUtil.addTempFileEntry(
+				_group.getGroupId(), TestPropsValues.getUserId(),
+				_TEMP_FOLDER_NAME,
+				TempFileEntryUtil.getTempFileName("image.jpg"),
+				_getInputStream(), ContentTypes.IMAGE_JPEG);
+
+			_processAction(
+				_getMockLiferayPortletActionRequest(
+					_getParameters(
+						Constants.ADD_MULTIPLE, tempFileEntry.getFolderId(),
+						tempFileEntry.getRepositoryId(),
+						new String[] {tempFileEntry.getFileName()})),
+				new MockLiferayPortletActionResponse());
+
+			FileEntry actualFileEntry =
+				_dlAppLocalService.getFileEntryByFileName(
+					_group.getGroupId(), tempFileEntry.getFolderId(),
+					"image.jpg");
+
+			Assert.assertEquals("image", actualFileEntry.getTitle());
+		}
 	}
 
 	@Test
