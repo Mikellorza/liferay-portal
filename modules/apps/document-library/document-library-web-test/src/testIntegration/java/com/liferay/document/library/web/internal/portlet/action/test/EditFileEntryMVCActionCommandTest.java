@@ -13,9 +13,13 @@ import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.test.util.CompanyConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.PortletConfigFactoryUtil;
@@ -43,6 +47,7 @@ import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ProxyUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.test.rule.Inject;
@@ -66,8 +71,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartHttpServletRequest;
 
 /**
  * @author Alicia García
@@ -226,12 +232,15 @@ public class EditFileEntryMVCActionCommandTest {
 						TestPropsValues.getCompanyId(),
 						DLFileEntryMimeTypeConfiguration.class.getName(),
 						HashMapDictionaryBuilder.<String, Object>put(
-							"fileMimeTypes", new String[] {"text/html"}
+							"fileMimeTypes",
+							new String[] {ContentTypes.TEXT_PLAIN}
 						).build())) {
 
-			FileEntry tempFileEntry = _dlAppService.addTempFileEntry(
-				_group.getGroupId(), 0, _TEMP_FOLDER_NAME, "text.txt",
-				_getInputStream(), "text/plain");
+			FileEntry tempFileEntry = TempFileEntryUtil.addTempFileEntry(
+				_group.getGroupId(), TestPropsValues.getUserId(),
+				_TEMP_FOLDER_NAME,
+				TempFileEntryUtil.getTempFileName("text.html"),
+				_getInputStream(), ContentTypes.TEXT_HTML);
 
 			_processAction(
 				_getMockLiferayPortletActionRequest(
@@ -246,48 +255,58 @@ public class EditFileEntryMVCActionCommandTest {
 	public void testProcessActionAddMultipleFileEntriesWithInvalidMimetype2()
 		throws Exception {
 
-		FileEntry tempFileEntry = _dlAppService.addTempFileEntry(
-			_group.getGroupId(), 0, _TEMP_FOLDER_NAME, "text.txt",
-			_getInputStream(), "text/plain");
-
 		try (CompanyConfigurationTemporarySwapper
-				companyConfigurationTemporarySwapper =
+				companyConfigurationTemporarySwapper1 =
 					new CompanyConfigurationTemporarySwapper(
 						TestPropsValues.getCompanyId(),
 						DLFileEntryMimeTypeConfiguration.class.getName(),
 						HashMapDictionaryBuilder.<String, Object>put(
-							"fileMimeTypes", new String[] {"text/html"}
+							"fileMimeTypes", new String[] {"*"}
 						).build())) {
 
-			MockLiferayPortletActionResponse mockLiferayPortletActionResponse =
-				new MockLiferayPortletActionResponse();
+			FileEntry tempFileEntry = TempFileEntryUtil.addTempFileEntry(
+				_group.getGroupId(), TestPropsValues.getUserId(),
+				_TEMP_FOLDER_NAME,
+				TempFileEntryUtil.getTempFileName("text.html"),
+				_getInputStream(), ContentTypes.TEXT_HTML);
 
-			_processAction(
-				_getMockLiferayPortletActionRequest(
-					_getParameters(
-						Constants.ADD_MULTIPLE, 0, _group.getGroupId(),
-						new String[] {tempFileEntry.getFileName()})),
-				mockLiferayPortletActionResponse);
+			try (CompanyConfigurationTemporarySwapper
+					companyConfigurationTemporarySwapper2 =
+						new CompanyConfigurationTemporarySwapper(
+							TestPropsValues.getCompanyId(),
+							DLFileEntryMimeTypeConfiguration.class.getName(),
+							HashMapDictionaryBuilder.<String, Object>put(
+								"fileMimeTypes",
+								new String[] {ContentTypes.TEXT_PLAIN}
+							).build())) {
 
-			MockHttpServletResponse mockHttpServletResponse =
-				(MockHttpServletResponse)
-					mockLiferayPortletActionResponse.getHttpServletResponse();
+				MockLiferayPortletActionResponse
+					mockLiferayPortletActionResponse =
+						new MockLiferayPortletActionResponse();
 
-			Assert.assertEquals(
-				JSONUtil.put(
-					JSONUtil.put(
-						"added", false
-					).put(
-						"errorMessage",
-						"File must be one of the following mime types: " +
-							"text/html."
-					).put(
-						"fileName", "text.txt"
-					).put(
-						"originalFileName", "text.txt"
-					)
-				).toString(),
-				mockHttpServletResponse.getContentAsString());
+				_processAction(
+					_getMockLiferayPortletActionRequest(
+						_getParameters(
+							Constants.ADD_MULTIPLE, 0, _group.getGroupId(),
+							new String[] {tempFileEntry.getFileName()})),
+					mockLiferayPortletActionResponse);
+
+				MockHttpServletResponse mockHttpServletResponse =
+					(MockHttpServletResponse)
+						mockLiferayPortletActionResponse.
+							getHttpServletResponse();
+
+				JSONArray jsonArray = JSONFactoryUtil.createJSONArray(
+					mockHttpServletResponse.getContentAsString());
+
+				Assert.assertEquals(1, jsonArray.length());
+
+				JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+				Assert.assertEquals(
+					"File must be one of the following mime types: text/plain.",
+					jsonObject.getString("errorMessage"));
+			}
 		}
 	}
 
@@ -301,12 +320,15 @@ public class EditFileEntryMVCActionCommandTest {
 						TestPropsValues.getCompanyId(),
 						DLFileEntryMimeTypeConfiguration.class.getName(),
 						HashMapDictionaryBuilder.<String, Object>put(
-							"fileMimeTypes", new String[] {"text/plain"}
+							"fileMimeTypes",
+							new String[] {ContentTypes.TEXT_PLAIN}
 						).build())) {
 
-			FileEntry tempFileEntry = _dlAppService.addTempFileEntry(
-				_group.getGroupId(), 0, _TEMP_FOLDER_NAME, "text.txt",
-				_getInputStream(), "text/plain");
+			FileEntry tempFileEntry = TempFileEntryUtil.addTempFileEntry(
+				_group.getGroupId(), TestPropsValues.getUserId(),
+				_TEMP_FOLDER_NAME,
+				TempFileEntryUtil.getTempFileName("text.txt"),
+				_getInputStream(), ContentTypes.TEXT_PLAIN);
 
 			_processAction(
 				_getMockLiferayPortletActionRequest(
@@ -396,6 +418,21 @@ public class EditFileEntryMVCActionCommandTest {
 		Assert.assertTrue(actualFileEntry.isCheckedOut());
 	}
 
+	private MockMultipartHttpServletRequest
+		_createMockMultipartHttpServletRequest() {
+
+		MockMultipartHttpServletRequest mockMultipartHttpServletRequest =
+			new MockMultipartHttpServletRequest();
+
+		mockMultipartHttpServletRequest.setCharacterEncoding(StringPool.UTF8);
+		mockMultipartHttpServletRequest.setContentType(
+			StringBundler.concat(
+				MediaType.MULTIPART_FORM_DATA_VALUE,
+				"; boundary=WebKitFormBoundary", StringUtil.randomString()));
+
+		return mockMultipartHttpServletRequest;
+	}
+
 	private InputStream _getInputStream() {
 		return new ByteArrayInputStream("test".getBytes());
 	}
@@ -404,17 +441,23 @@ public class EditFileEntryMVCActionCommandTest {
 			Map<String, String[]> parameters)
 		throws PortalException {
 
-		MockLiferayPortletActionRequest mockLiferayPortletActionRequest =
-			new MockLiferayPortletActionRequest();
+		MockMultipartHttpServletRequest mockMultipartHttpServletRequest =
+			_createMockMultipartHttpServletRequest();
 
-		mockLiferayPortletActionRequest.setAttribute(
+		MockLiferayPortletActionRequest mockLiferayPortletActionRequest =
+			new MockLiferayPortletActionRequest(
+				mockMultipartHttpServletRequest);
+
+		mockMultipartHttpServletRequest.setAttribute(
 			JavaConstants.JAVAX_PORTLET_CONFIG,
 			PortletConfigFactoryUtil.create(
 				_portletLocalService.getPortletById(
 					DLPortletKeys.DOCUMENT_LIBRARY),
 				null));
+
 		mockLiferayPortletActionRequest.setAttribute(
-			WebKeys.THEME_DISPLAY, _getThemeDisplay());
+			WebKeys.THEME_DISPLAY,
+			_getThemeDisplay(mockMultipartHttpServletRequest));
 
 		for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
 			mockLiferayPortletActionRequest.setParameter(
@@ -457,7 +500,10 @@ public class EditFileEntryMVCActionCommandTest {
 		).build();
 	}
 
-	private ThemeDisplay _getThemeDisplay() throws PortalException {
+	private ThemeDisplay _getThemeDisplay(
+			MockMultipartHttpServletRequest mockMultipartHttpServletRequest)
+		throws PortalException {
+
 		ThemeDisplay themeDisplay = new ThemeDisplay();
 
 		themeDisplay.setCompany(
@@ -465,7 +511,7 @@ public class EditFileEntryMVCActionCommandTest {
 		themeDisplay.setLocale(LocaleUtil.US);
 		themeDisplay.setPermissionChecker(
 			PermissionThreadLocal.getPermissionChecker());
-		themeDisplay.setRequest(new MockHttpServletRequest());
+		themeDisplay.setRequest(mockMultipartHttpServletRequest);
 		themeDisplay.setScopeGroupId(_group.getGroupId());
 		themeDisplay.setServerName("localhost");
 		themeDisplay.setServerPort(8080);
