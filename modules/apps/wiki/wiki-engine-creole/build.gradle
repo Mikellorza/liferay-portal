@@ -7,16 +7,11 @@ apply plugin: "antlr"
 String parserDirName = "com/liferay/wiki/engine/creole/internal/parser/parser"
 List<String> startParameterTaskNames = gradle.startParameter.taskNames
 
-configurations {
-	compileInclude {
-		extendsFrom antlr
-	}
-}
-
 dependencies {
 	antlr group: "org.antlr", name: "antlr", version: "3.0.1"
 
 	compileInclude group: "antlr", name: "antlr", version: "2.7.7"
+	compileInclude group: "org.antlr", name: "antlr", version: "3.0.1"
 	compileInclude group: "org.antlr", name: "stringtemplate", version: "3.0"
 
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "default"
@@ -97,7 +92,7 @@ public class ${javaClass}"""
 	}
 
 	enabled = startParameterTaskNames.contains("generateGrammarSource")
-	maxHeapSize = "1512m"
+	maxHeapSize = "4096m"
 	outputDirectory = new File(temporaryDir, "generated")
 }
 
