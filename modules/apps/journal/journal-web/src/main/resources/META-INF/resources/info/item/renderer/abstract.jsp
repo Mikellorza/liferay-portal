@@ -23,12 +23,12 @@ AssetRenderer<?> assetRenderer = (AssetRenderer)request.getAttribute(WebKeys.ASS
 		<div class="asset-summary">
 			<c:if test="<%= article.isSmallImage() %>">
 				<aui:style type="text/css">
-					.journal-web-info-item-abstract-background-image {
+					.journal-web-info-item-abstract-background-image<%= article.getArticleId() %> {
 						background-image: url(<%= article.getArticleImageURL(themeDisplay) %>);
 					}
 				</aui:style>
 
-				<div class="aspect-ratio aspect-ratio-8-to-3 aspect-ratio-bg-cover cover-image journal-web-info-item-abstract-background-image mb-4"></div>
+				<div class="aspect-ratio aspect-ratio-8-to-3 aspect-ratio-bg-cover cover-image journal-web-info-item-abstract-background-image<%= article.getArticleId() %> mb-4"></div>
 			</c:if>
 
 			<%

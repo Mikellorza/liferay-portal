@@ -16,12 +16,12 @@ JournalArticleDisplay articleDisplay = (JournalArticleDisplay)request.getAttribu
 <div class="asset-summary">
 	<c:if test="<%= articleDisplay.isSmallImage() %>">
 		<aui:style type="text/css">
-			.journal-web-abstract-asset-background-image {
+			.journal-web-abstract-asset-background-image<%= articleDisplay.getArticleId() %> {
 				background-image: url(<%= articleDisplay.getArticleDisplayImageURL(themeDisplay) %>);
 			}
 		</aui:style>
 
-		<div class="aspect-ratio aspect-ratio-8-to-3 aspect-ratio-bg-cover cover-image journal-web-abstract-asset-background-image mb-4"></div>
+		<div class="aspect-ratio aspect-ratio-8-to-3 aspect-ratio-bg-cover cover-image journal-web-abstract-asset-background-image<%= articleDisplay.getArticleId() %> mb-4"></div>
 	</c:if>
 
 	<%
