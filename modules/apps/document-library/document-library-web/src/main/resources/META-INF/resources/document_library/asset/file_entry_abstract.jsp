@@ -30,12 +30,12 @@ FileVersion fileVersion = (FileVersion)request.getAttribute(WebKeys.DOCUMENT_LIB
 		<c:choose>
 			<c:when test="<%= Validator.isNotNull(previewURL) %>">
 				<aui:style type="text/css">
-					.file-entry-abstract-asset-background-image {
+					.file-entry-abstract-asset-background-image<%= fileEntry.getFileEntryId() %> {
 					background-image: url(<%= previewURL %>);
 					}
 				</aui:style>
 
-				<div class="aspect-ratio aspect-ratio-8-to-3 aspect-ratio-bg-cover cover-image file-entry-abstract-asset-background-image mb-4"></div>
+				<div class="aspect-ratio aspect-ratio-8-to-3 aspect-ratio-bg-cover cover-image file-entry-abstract-asset-background-image<%= fileEntry.getFileEntryId() %> mb-4"></div>
 			</c:when>
 			<c:otherwise>
 				<div class="aspect-ratio aspect-ratio-8-to-3 bg-light mb-4">
