@@ -5,17 +5,19 @@
 
 package com.liferay.headless.delivery.internal.dto.v1_0.converter;
 
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.depot.service.DepotEntryService;
 import com.liferay.headless.delivery.dto.v1_0.ObjectEntryFolder;
 import com.liferay.headless.delivery.dto.v1_0.util.CreatorUtil;
 import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 import com.liferay.portal.vulcan.util.GroupUtil;
+import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,12 +46,15 @@ public class ObjectEntryFolderDTOConverter
 			_objectEntryFolderLocalService.getObjectEntryFolder(
 				(Long)dtoConverterContext.getId());
 
-		Group group = _groupLocalService.getGroup(
+		DepotEntry depotEntry = _depotEntryService.getGroupDepotEntry(
 			objectEntryFolder.getGroupId());
+
+		Group group = depotEntry.getGroup();
 
 		return new ObjectEntryFolder() {
 			{
 				setActions(dtoConverterContext::getActions);
+				setAssetLibraryId(depotEntry::getDepotEntryId);
 				setAssetLibraryKey(() -> GroupUtil.getAssetLibraryKey(group));
 				setCreator(
 					() -> CreatorUtil.toCreator(
@@ -61,6 +66,12 @@ public class ObjectEntryFolderDTOConverter
 				setExternalReferenceCode(
 					objectEntryFolder::getExternalReferenceCode);
 				setId(objectEntryFolder::getObjectEntryFolderId);
+				setLabel(
+					() -> objectEntryFolder.getLabel(
+						dtoConverterContext.getLocale()));
+				setLabel_i18n(
+					() -> LocalizedMapUtil.getLanguageIdMap(
+						objectEntryFolder.getLabelMap()));
 				setName(objectEntryFolder::getName);
 				setNumberOfObjectEntries(
 					() ->
@@ -91,7 +102,7 @@ public class ObjectEntryFolderDTOConverter
 	}
 
 	@Reference
-	private GroupLocalService _groupLocalService;
+	private DepotEntryService _depotEntryService;
 
 	@Reference
 	private ObjectEntryFolderLocalService _objectEntryFolderLocalService;
