@@ -48,6 +48,8 @@ public class CardsFDSViewContextContributor
 			).put(
 				"image", baseCardsFDSView.getImage()
 			).put(
+				"labels", baseCardsFDSView.getLabels()
+			).put(
 				"sticker", baseCardsFDSView.getSticker()
 			).put(
 				"symbol", baseCardsFDSView.getSymbol()
