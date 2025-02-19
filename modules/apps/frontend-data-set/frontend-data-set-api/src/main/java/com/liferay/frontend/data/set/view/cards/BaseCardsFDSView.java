@@ -30,6 +30,10 @@ public abstract class BaseCardsFDSView implements FDSView {
 		return FDSConstants.CARDS;
 	}
 
+	public String[] getLabels() {
+		return new String[0];
+	}
+
 	public String getLink() {
 		return StringPool.BLANK;
 	}
