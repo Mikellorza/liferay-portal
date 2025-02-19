@@ -2173,8 +2173,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 			testDeleteSiteStructuredContentByExternalReferenceCode_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test
@@ -2207,8 +2207,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 			testGetSiteStructuredContentByExternalReferenceCode_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test
@@ -2429,8 +2429,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 			testPutSiteStructuredContentByExternalReferenceCode_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test
@@ -2459,8 +2459,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 			testGetSiteStructuredContentByKey_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test
@@ -2618,8 +2618,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 			testGetSiteStructuredContentByUuid_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test
@@ -3366,8 +3366,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 			testDeleteStructuredContent_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test
@@ -3472,8 +3472,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 	protected StructuredContent testGetStructuredContent_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test
@@ -3637,8 +3637,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 	protected StructuredContent testPutStructuredContent_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test
@@ -3668,8 +3668,8 @@ public abstract class BaseStructuredContentResourceTestCase {
 			testDeleteStructuredContentMyRating_addStructuredContent()
 		throws Exception {
 
-		return structuredContentResource.postSiteStructuredContent(
-			testGroup.getGroupId(), randomStructuredContent());
+		return structuredContentResource.postAssetLibraryStructuredContent(
+			testDepotEntry.getDepotEntryId(), randomStructuredContent());
 	}
 
 	@Test

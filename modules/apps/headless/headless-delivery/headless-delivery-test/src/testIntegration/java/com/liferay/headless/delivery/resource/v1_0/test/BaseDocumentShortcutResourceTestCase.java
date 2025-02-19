@@ -451,8 +451,8 @@ public abstract class BaseDocumentShortcutResourceTestCase {
 	protected DocumentShortcut testDeleteDocumentShortcut_addDocumentShortcut()
 		throws Exception {
 
-		return documentShortcutResource.postSiteDocumentShortcut(
-			testGroup.getGroupId(), randomDocumentShortcut());
+		return documentShortcutResource.postAssetLibraryDocumentShortcut(
+			testDepotEntry.getDepotEntryId(), randomDocumentShortcut());
 	}
 
 	@Test
@@ -557,8 +557,8 @@ public abstract class BaseDocumentShortcutResourceTestCase {
 	protected DocumentShortcut testGetDocumentShortcut_addDocumentShortcut()
 		throws Exception {
 
-		return documentShortcutResource.postSiteDocumentShortcut(
-			testGroup.getGroupId(), randomDocumentShortcut());
+		return documentShortcutResource.postAssetLibraryDocumentShortcut(
+			testDepotEntry.getDepotEntryId(), randomDocumentShortcut());
 	}
 
 	@Test
@@ -721,8 +721,8 @@ public abstract class BaseDocumentShortcutResourceTestCase {
 	protected DocumentShortcut testPutDocumentShortcut_addDocumentShortcut()
 		throws Exception {
 
-		return documentShortcutResource.postSiteDocumentShortcut(
-			testGroup.getGroupId(), randomDocumentShortcut());
+		return documentShortcutResource.postAssetLibraryDocumentShortcut(
+			testDepotEntry.getDepotEntryId(), randomDocumentShortcut());
 	}
 
 	@Test
@@ -1074,8 +1074,8 @@ public abstract class BaseDocumentShortcutResourceTestCase {
 			testDeleteSiteDocumentShortcutByExternalReferenceCode_addDocumentShortcut()
 		throws Exception {
 
-		return documentShortcutResource.postSiteDocumentShortcut(
-			testGroup.getGroupId(), randomDocumentShortcut());
+		return documentShortcutResource.postAssetLibraryDocumentShortcut(
+			testDepotEntry.getDepotEntryId(), randomDocumentShortcut());
 	}
 
 	@Test
@@ -1107,8 +1107,8 @@ public abstract class BaseDocumentShortcutResourceTestCase {
 			testGetSiteDocumentShortcutByExternalReferenceCode_addDocumentShortcut()
 		throws Exception {
 
-		return documentShortcutResource.postSiteDocumentShortcut(
-			testGroup.getGroupId(), randomDocumentShortcut());
+		return documentShortcutResource.postAssetLibraryDocumentShortcut(
+			testDepotEntry.getDepotEntryId(), randomDocumentShortcut());
 	}
 
 	@Test
@@ -1328,8 +1328,8 @@ public abstract class BaseDocumentShortcutResourceTestCase {
 			testPutSiteDocumentShortcutByExternalReferenceCode_addDocumentShortcut()
 		throws Exception {
 
-		return documentShortcutResource.postSiteDocumentShortcut(
-			testGroup.getGroupId(), randomDocumentShortcut());
+		return documentShortcutResource.postAssetLibraryDocumentShortcut(
+			testDepotEntry.getDepotEntryId(), randomDocumentShortcut());
 	}
 
 	protected void appendGraphQLFieldValue(StringBuilder sb, Object value)

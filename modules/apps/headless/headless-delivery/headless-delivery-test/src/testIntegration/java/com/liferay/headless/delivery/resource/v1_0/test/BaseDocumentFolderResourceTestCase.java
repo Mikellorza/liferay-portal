@@ -985,8 +985,8 @@ public abstract class BaseDocumentFolderResourceTestCase {
 	protected DocumentFolder testDeleteDocumentFolder_addDocumentFolder()
 		throws Exception {
 
-		return documentFolderResource.postSiteDocumentFolder(
-			testGroup.getGroupId(), randomDocumentFolder());
+		return documentFolderResource.postAssetLibraryDocumentFolder(
+			testDepotEntry.getDepotEntryId(), randomDocumentFolder());
 	}
 
 	@Test
@@ -1088,8 +1088,8 @@ public abstract class BaseDocumentFolderResourceTestCase {
 	protected DocumentFolder testGetDocumentFolder_addDocumentFolder()
 		throws Exception {
 
-		return documentFolderResource.postSiteDocumentFolder(
-			testGroup.getGroupId(), randomDocumentFolder());
+		return documentFolderResource.postAssetLibraryDocumentFolder(
+			testDepotEntry.getDepotEntryId(), randomDocumentFolder());
 	}
 
 	@Test
@@ -1248,8 +1248,8 @@ public abstract class BaseDocumentFolderResourceTestCase {
 	protected DocumentFolder testPutDocumentFolder_addDocumentFolder()
 		throws Exception {
 
-		return documentFolderResource.postSiteDocumentFolder(
-			testGroup.getGroupId(), randomDocumentFolder());
+		return documentFolderResource.postAssetLibraryDocumentFolder(
+			testDepotEntry.getDepotEntryId(), randomDocumentFolder());
 	}
 
 	@Test
@@ -1277,8 +1277,8 @@ public abstract class BaseDocumentFolderResourceTestCase {
 			testDeleteDocumentFolderMyRating_addDocumentFolder()
 		throws Exception {
 
-		return documentFolderResource.postSiteDocumentFolder(
-			testGroup.getGroupId(), randomDocumentFolder());
+		return documentFolderResource.postAssetLibraryDocumentFolder(
+			testDepotEntry.getDepotEntryId(), randomDocumentFolder());
 	}
 
 	@Test
@@ -2716,8 +2716,8 @@ public abstract class BaseDocumentFolderResourceTestCase {
 			testDeleteSiteDocumentsFolderByExternalReferenceCode_addDocumentFolder()
 		throws Exception {
 
-		return documentFolderResource.postSiteDocumentFolder(
-			testGroup.getGroupId(), randomDocumentFolder());
+		return documentFolderResource.postAssetLibraryDocumentFolder(
+			testDepotEntry.getDepotEntryId(), randomDocumentFolder());
 	}
 
 	@Test
@@ -2749,8 +2749,8 @@ public abstract class BaseDocumentFolderResourceTestCase {
 			testGetSiteDocumentsFolderByExternalReferenceCode_addDocumentFolder()
 		throws Exception {
 
-		return documentFolderResource.postSiteDocumentFolder(
-			testGroup.getGroupId(), randomDocumentFolder());
+		return documentFolderResource.postAssetLibraryDocumentFolder(
+			testDepotEntry.getDepotEntryId(), randomDocumentFolder());
 	}
 
 	@Test
@@ -2969,8 +2969,8 @@ public abstract class BaseDocumentFolderResourceTestCase {
 			testPutSiteDocumentsFolderByExternalReferenceCode_addDocumentFolder()
 		throws Exception {
 
-		return documentFolderResource.postSiteDocumentFolder(
-			testGroup.getGroupId(), randomDocumentFolder());
+		return documentFolderResource.postAssetLibraryDocumentFolder(
+			testDepotEntry.getDepotEntryId(), randomDocumentFolder());
 	}
 
 	@Rule

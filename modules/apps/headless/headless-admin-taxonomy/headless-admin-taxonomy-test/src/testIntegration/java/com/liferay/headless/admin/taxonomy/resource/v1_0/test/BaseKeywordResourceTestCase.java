@@ -1121,8 +1121,8 @@ public abstract class BaseKeywordResourceTestCase {
 	}
 
 	protected Keyword testDeleteKeyword_addKeyword() throws Exception {
-		return keywordResource.postSiteKeyword(
-			testGroup.getGroupId(), randomKeyword());
+		return keywordResource.postAssetLibraryKeyword(
+			testDepotEntry.getDepotEntryId(), randomKeyword());
 	}
 
 	@Test
@@ -1209,8 +1209,8 @@ public abstract class BaseKeywordResourceTestCase {
 	}
 
 	protected Keyword testGetKeyword_addKeyword() throws Exception {
-		return keywordResource.postSiteKeyword(
-			testGroup.getGroupId(), randomKeyword());
+		return keywordResource.postAssetLibraryKeyword(
+			testDepotEntry.getDepotEntryId(), randomKeyword());
 	}
 
 	@Test
@@ -1322,8 +1322,8 @@ public abstract class BaseKeywordResourceTestCase {
 	}
 
 	protected Keyword testPutKeyword_addKeyword() throws Exception {
-		return keywordResource.postSiteKeyword(
-			testGroup.getGroupId(), randomKeyword());
+		return keywordResource.postAssetLibraryKeyword(
+			testDepotEntry.getDepotEntryId(), randomKeyword());
 	}
 
 	@Test
@@ -1879,8 +1879,8 @@ public abstract class BaseKeywordResourceTestCase {
 	protected Keyword testDeleteSiteKeywordByExternalReferenceCode_addKeyword()
 		throws Exception {
 
-		return keywordResource.postSiteKeyword(
-			testGroup.getGroupId(), randomKeyword());
+		return keywordResource.postAssetLibraryKeyword(
+			testDepotEntry.getDepotEntryId(), randomKeyword());
 	}
 
 	@Test
@@ -1908,8 +1908,8 @@ public abstract class BaseKeywordResourceTestCase {
 	protected Keyword testGetSiteKeywordByExternalReferenceCode_addKeyword()
 		throws Exception {
 
-		return keywordResource.postSiteKeyword(
-			testGroup.getGroupId(), randomKeyword());
+		return keywordResource.postAssetLibraryKeyword(
+			testDepotEntry.getDepotEntryId(), randomKeyword());
 	}
 
 	@Test
@@ -2113,8 +2113,8 @@ public abstract class BaseKeywordResourceTestCase {
 	protected Keyword testPutSiteKeywordByExternalReferenceCode_addKeyword()
 		throws Exception {
 
-		return keywordResource.postSiteKeyword(
-			testGroup.getGroupId(), randomKeyword());
+		return keywordResource.postAssetLibraryKeyword(
+			testDepotEntry.getDepotEntryId(), randomKeyword());
 	}
 
 	@Test
