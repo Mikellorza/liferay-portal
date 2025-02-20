@@ -31,6 +31,11 @@ public class ContentSectionCardsFDSView extends BaseCardsFDSView {
 	}
 
 	@Override
+	public String[] getLabels() {
+		return new String[] {"embedded.status"};
+	}
+
+	@Override
 	public String getTitle() {
 		return "title";
 	}
