@@ -5,11 +5,16 @@
 
 package com.liferay.site.cms.site.initializer.internal.frontend.data.set.view.cards;
 
+import com.liferay.frontend.data.set.model.FDSLabelTypeItem;
 import com.liferay.frontend.data.set.view.FDSView;
 import com.liferay.frontend.data.set.view.cards.BaseCardsFDSView;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.site.cms.site.initializer.internal.constants.CMSSiteInitializerFDSNames;
 
+import java.util.Locale;
+
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Mikel Lorza
@@ -36,8 +41,18 @@ public class ContentSectionCardsFDSView extends BaseCardsFDSView {
 	}
 
 	@Override
+	public FDSLabelTypeItem[] getLabelTypes(Locale locale) {
+		return new FDSLabelTypeItem[] {
+			new FDSLabelTypeItem("success", _language.get(locale, "approved"))
+		};
+	}
+
+	@Override
 	public String getTitle() {
 		return "title";
 	}
+
+	@Reference
+	private Language _language;
 
 }
