@@ -32,13 +32,15 @@ public class CardsFDSViewContextContributor
 		FDSView fdsView, Locale locale) {
 
 		if (fdsView instanceof BaseCardsFDSView) {
-			return _serialize((BaseCardsFDSView)fdsView);
+			return _serialize((BaseCardsFDSView)fdsView,locale);
 		}
 
 		return Collections.emptyMap();
 	}
 
-	private Map<String, Object> _serialize(BaseCardsFDSView baseCardsFDSView) {
+	private Map<String, Object> _serialize(
+		BaseCardsFDSView baseCardsFDSView, Locale locale) {
+
 		return HashMapBuilder.<String, Object>put(
 			"schema",
 			HashMapBuilder.<String, Object>put(
@@ -49,6 +51,8 @@ public class CardsFDSViewContextContributor
 				"image", baseCardsFDSView.getImage()
 			).put(
 				"labels", baseCardsFDSView.getLabels()
+			).put(
+				"labelTypes", baseCardsFDSView.getLabelTypes(locale)
 			).put(
 				"sticker", baseCardsFDSView.getSticker()
 			).put(
