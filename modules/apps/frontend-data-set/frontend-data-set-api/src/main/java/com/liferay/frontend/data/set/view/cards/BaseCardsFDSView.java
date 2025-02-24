@@ -6,8 +6,11 @@
 package com.liferay.frontend.data.set.view.cards;
 
 import com.liferay.frontend.data.set.constants.FDSConstants;
+import com.liferay.frontend.data.set.model.FDSLabelTypeItem;
 import com.liferay.frontend.data.set.view.FDSView;
 import com.liferay.petra.string.StringPool;
+
+import java.util.Locale;
 
 /**
  * @author Bruno Basto
@@ -32,6 +35,10 @@ public abstract class BaseCardsFDSView implements FDSView {
 
 	public String[] getLabels() {
 		return new String[0];
+	}
+
+	public FDSLabelTypeItem[] getLabelTypes(Locale locale) {
+		return new FDSLabelTypeItem[0];
 	}
 
 	public String getLink() {
