@@ -7,6 +7,8 @@ package com.liferay.site.cms.site.initializer.internal.fragment.renderer;
 
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.fragment.renderer.FragmentRendererContext;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
@@ -92,7 +94,8 @@ public class ContentsSectionFragmentRenderer implements FragmentRenderer {
 				ContentsSectionDisplayContext.class.getName(),
 				new ContentsSectionDisplayContext(
 					_cmsSiteInitializerConfiguration, httpServletRequest,
-					_language));
+					_language, _objectDefinitionLocalService,
+					_objectFolderLocalService));
 
 			requestDispatcher.include(httpServletRequest, httpServletResponse);
 		}
@@ -116,6 +119,12 @@ public class ContentsSectionFragmentRenderer implements FragmentRenderer {
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
+	private ObjectFolderLocalService _objectFolderLocalService;
 
 	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.site.cms.site.initializer)"

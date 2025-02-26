@@ -8,9 +8,17 @@ package com.liferay.site.cms.site.initializer.internal.display.context;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectFolder;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectFolderLocalService;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.URLCodec;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
 import java.util.ArrayList;
@@ -27,16 +35,34 @@ public abstract class BaseSectionDisplayContext {
 
 	public BaseSectionDisplayContext(
 		CMSSiteInitializerConfiguration cmsSiteInitializerConfiguration,
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest,
+		ObjectDefinitionLocalService objectDefinitionLocalService,
+		ObjectFolderLocalService objectFolderLocalService) {
 
 		this.cmsSiteInitializerConfiguration = cmsSiteInitializerConfiguration;
 		this.httpServletRequest = httpServletRequest;
+		this.objectDefinitionLocalService = objectDefinitionLocalService;
+		this.objectFolderLocalService = objectFolderLocalService;
+
+		themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 	}
 
 	public String getAPIURL() {
-		String[] entryClassNames = getEntryClassNames();
+		String[] objectFolderExternalReferenceCodes =
+			getObjectFolderExternalReferenceCodes();
 
-		if (entryClassNames.length == 0) {
+		String[] entryClassNames = null;
+
+		if (ArrayUtil.isEmpty(objectFolderExternalReferenceCodes)) {
+			entryClassNames = getEntryClassNames();
+		}
+		else {
+			entryClassNames = _getEntryClassNames(
+				objectFolderExternalReferenceCodes);
+		}
+
+		if (ArrayUtil.isEmpty(entryClassNames)) {
 			return "/o/search/v1.0/search?emptySearch=true" +
 				"&nestedFields=embedded";
 		}
@@ -44,7 +70,9 @@ public abstract class BaseSectionDisplayContext {
 		StringBundler sb = new StringBundler(3);
 
 		sb.append("/o/search/v1.0/search?emptySearch=true&entryClassNames=");
-		sb.append(ArrayUtil.toString(entryClassNames, StringPool.BLANK));
+		sb.append(
+			URLCodec.encodeURL(
+				ArrayUtil.toString(entryClassNames, StringPool.BLANK)));
 		sb.append("&nestedFields=embedded");
 
 		return sb.toString();
@@ -70,8 +98,49 @@ public abstract class BaseSectionDisplayContext {
 		return new ArrayList<>();
 	}
 
+	public String[] getObjectFolderExternalReferenceCodes() {
+		return new String[0];
+	}
+
 	protected final CMSSiteInitializerConfiguration
 		cmsSiteInitializerConfiguration;
 	protected final HttpServletRequest httpServletRequest;
+	protected final ObjectDefinitionLocalService objectDefinitionLocalService;
+	protected final ObjectFolderLocalService objectFolderLocalService;
+	protected final ThemeDisplay themeDisplay;
+
+	private List<String> _getEntryClassNames(
+		String objectFolderExternalReferenceCode) {
+
+		ObjectFolder objectFolder =
+			objectFolderLocalService.fetchObjectFolderByExternalReferenceCode(
+				objectFolderExternalReferenceCode, themeDisplay.getCompanyId());
+
+		if (objectFolder == null) {
+			return Collections.emptyList();
+		}
+
+		List<ObjectDefinition> objectDefinitions =
+			objectDefinitionLocalService.getObjectFolderObjectDefinitions(
+				objectFolder.getObjectFolderId());
+
+		return TransformUtil.transform(
+			objectDefinitions, ObjectDefinition::getClassName);
+	}
+
+	private String[] _getEntryClassNames(
+		String[] objectFolderExternalReferenceCodes) {
+
+		List<String> entryClassNames = new ArrayList<>();
+
+		for (String objectFolderExternalReferenceCode :
+				objectFolderExternalReferenceCodes) {
+
+			entryClassNames.addAll(
+				_getEntryClassNames(objectFolderExternalReferenceCode));
+		}
+
+		return ArrayUtil.toStringArray(entryClassNames);
+	}
 
 }

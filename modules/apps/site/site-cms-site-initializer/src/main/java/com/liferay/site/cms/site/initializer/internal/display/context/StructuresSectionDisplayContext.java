@@ -7,6 +7,8 @@ package com.liferay.site.cms.site.initializer.internal.display.context;
 
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -28,9 +30,13 @@ public class StructuresSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public StructuresSectionDisplayContext(
 		CMSSiteInitializerConfiguration cmsSiteInitializerConfiguration,
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest,
+		ObjectDefinitionLocalService objectDefinitionLocalService,
+		ObjectFolderLocalService objectFolderLocalService) {
 
-		super(cmsSiteInitializerConfiguration, httpServletRequest);
+		super(
+			cmsSiteInitializerConfiguration, httpServletRequest,
+			objectDefinitionLocalService, objectFolderLocalService);
 	}
 
 	@Override

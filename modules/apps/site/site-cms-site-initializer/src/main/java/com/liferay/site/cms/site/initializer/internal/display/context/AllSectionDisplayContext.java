@@ -7,6 +7,8 @@ package com.liferay.site.cms.site.initializer.internal.display.context;
 
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
@@ -22,9 +24,13 @@ public class AllSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public AllSectionDisplayContext(
 		CMSSiteInitializerConfiguration cmsSiteInitializerConfiguration,
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest,
+		ObjectDefinitionLocalService objectDefinitionLocalService,
+		ObjectFolderLocalService objectFolderLocalService) {
 
-		super(cmsSiteInitializerConfiguration, httpServletRequest);
+		super(
+			cmsSiteInitializerConfiguration, httpServletRequest,
+			objectDefinitionLocalService, objectFolderLocalService);
 	}
 
 	@Override
