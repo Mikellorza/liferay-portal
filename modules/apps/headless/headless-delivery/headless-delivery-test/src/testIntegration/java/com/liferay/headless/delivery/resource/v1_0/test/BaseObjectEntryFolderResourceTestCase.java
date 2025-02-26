@@ -724,8 +724,8 @@ public abstract class BaseObjectEntryFolderResourceTestCase {
 			testDeleteObjectEntryFolder_addObjectEntryFolder()
 		throws Exception {
 
-		return objectEntryFolderResource.postAssetLibraryObjectEntryFolder(
-			testDepotEntry.getDepotEntryId(), randomObjectEntryFolder());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -830,8 +830,8 @@ public abstract class BaseObjectEntryFolderResourceTestCase {
 	protected ObjectEntryFolder testGetObjectEntryFolder_addObjectEntryFolder()
 		throws Exception {
 
-		return objectEntryFolderResource.postAssetLibraryObjectEntryFolder(
-			testDepotEntry.getDepotEntryId(), randomObjectEntryFolder());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -995,8 +995,8 @@ public abstract class BaseObjectEntryFolderResourceTestCase {
 	protected ObjectEntryFolder testPutObjectEntryFolder_addObjectEntryFolder()
 		throws Exception {
 
-		return objectEntryFolderResource.postAssetLibraryObjectEntryFolder(
-			testDepotEntry.getDepotEntryId(), randomObjectEntryFolder());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Rule

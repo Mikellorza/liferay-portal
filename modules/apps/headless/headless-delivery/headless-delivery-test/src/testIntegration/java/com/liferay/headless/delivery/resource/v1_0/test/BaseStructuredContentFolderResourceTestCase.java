@@ -1784,10 +1784,8 @@ public abstract class BaseStructuredContentFolderResourceTestCase {
 			testDeleteSiteStructuredContentFolderByExternalReferenceCode_addStructuredContentFolder()
 		throws Exception {
 
-		return structuredContentFolderResource.
-			postAssetLibraryStructuredContentFolder(
-				testDepotEntry.getDepotEntryId(),
-				randomStructuredContentFolder());
+		return structuredContentFolderResource.postSiteStructuredContentFolder(
+			testGroup.getGroupId(), randomStructuredContentFolder());
 	}
 
 	@Test
@@ -1820,10 +1818,8 @@ public abstract class BaseStructuredContentFolderResourceTestCase {
 			testGetSiteStructuredContentFolderByExternalReferenceCode_addStructuredContentFolder()
 		throws Exception {
 
-		return structuredContentFolderResource.
-			postAssetLibraryStructuredContentFolder(
-				testDepotEntry.getDepotEntryId(),
-				randomStructuredContentFolder());
+		return structuredContentFolderResource.postSiteStructuredContentFolder(
+			testGroup.getGroupId(), randomStructuredContentFolder());
 	}
 
 	@Test
@@ -2046,10 +2042,8 @@ public abstract class BaseStructuredContentFolderResourceTestCase {
 			testPutSiteStructuredContentFolderByExternalReferenceCode_addStructuredContentFolder()
 		throws Exception {
 
-		return structuredContentFolderResource.
-			postAssetLibraryStructuredContentFolder(
-				testDepotEntry.getDepotEntryId(),
-				randomStructuredContentFolder());
+		return structuredContentFolderResource.postSiteStructuredContentFolder(
+			testGroup.getGroupId(), randomStructuredContentFolder());
 	}
 
 	@Test
@@ -2759,10 +2753,8 @@ public abstract class BaseStructuredContentFolderResourceTestCase {
 			testDeleteStructuredContentFolder_addStructuredContentFolder()
 		throws Exception {
 
-		return structuredContentFolderResource.
-			postAssetLibraryStructuredContentFolder(
-				testDepotEntry.getDepotEntryId(),
-				randomStructuredContentFolder());
+		return structuredContentFolderResource.postSiteStructuredContentFolder(
+			testGroup.getGroupId(), randomStructuredContentFolder());
 	}
 
 	@Test
@@ -2868,10 +2860,8 @@ public abstract class BaseStructuredContentFolderResourceTestCase {
 			testGetStructuredContentFolder_addStructuredContentFolder()
 		throws Exception {
 
-		return structuredContentFolderResource.
-			postAssetLibraryStructuredContentFolder(
-				testDepotEntry.getDepotEntryId(),
-				randomStructuredContentFolder());
+		return structuredContentFolderResource.postSiteStructuredContentFolder(
+			testGroup.getGroupId(), randomStructuredContentFolder());
 	}
 
 	@Test
@@ -3044,10 +3034,8 @@ public abstract class BaseStructuredContentFolderResourceTestCase {
 			testPutStructuredContentFolder_addStructuredContentFolder()
 		throws Exception {
 
-		return structuredContentFolderResource.
-			postAssetLibraryStructuredContentFolder(
-				testDepotEntry.getDepotEntryId(),
-				randomStructuredContentFolder());
+		return structuredContentFolderResource.postSiteStructuredContentFolder(
+			testGroup.getGroupId(), randomStructuredContentFolder());
 	}
 
 	@Test

@@ -791,9 +791,8 @@ public abstract class BaseDocumentDataDefinitionTypeResourceTestCase {
 		throws Exception {
 
 		return documentDataDefinitionTypeResource.
-			postAssetLibraryDocumentDataDefinitionType(
-				testDepotEntry.getDepotEntryId(),
-				randomDocumentDataDefinitionType());
+			postSiteDocumentDataDefinitionType(
+				testGroup.getGroupId(), randomDocumentDataDefinitionType());
 	}
 
 	@Test
@@ -901,9 +900,8 @@ public abstract class BaseDocumentDataDefinitionTypeResourceTestCase {
 		throws Exception {
 
 		return documentDataDefinitionTypeResource.
-			postAssetLibraryDocumentDataDefinitionType(
-				testDepotEntry.getDepotEntryId(),
-				randomDocumentDataDefinitionType());
+			postSiteDocumentDataDefinitionType(
+				testGroup.getGroupId(), randomDocumentDataDefinitionType());
 	}
 
 	@Test

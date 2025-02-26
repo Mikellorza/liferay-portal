@@ -35,10 +35,12 @@ import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.batch.engine.VulcanBatchEngineTaskItemDelegate;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineExportTaskResource;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineImportTaskResource;
+import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegate;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.ActionUtil;
+import com.liferay.portal.vulcan.util.UriInfoUtil;
 
 import java.io.Serializable;
 
@@ -68,7 +70,8 @@ import javax.ws.rs.core.UriInfo;
 @javax.ws.rs.Path("/v1.0")
 public abstract class BaseObjectEntryFolderResourceImpl
 	implements EntityModelResource, ObjectEntryFolderResource,
-			   VulcanBatchEngineTaskItemDelegate<ObjectEntryFolder> {
+			   VulcanBatchEngineTaskItemDelegate<ObjectEntryFolder>,
+			   VulcanCRUDItemDelegate<ObjectEntryFolder> {
 
 	/**
 	 * Invoke this method with the command line:
@@ -671,8 +674,25 @@ public abstract class BaseObjectEntryFolderResourceImpl
 			Map<String, Serializable> parameters)
 		throws Exception {
 
-		for (ObjectEntryFolder objectEntryFolder : objectEntryFolders) {
-			deleteObjectEntryFolder(objectEntryFolder.getId());
+		UnsafeFunction<ObjectEntryFolder, ObjectEntryFolder, Exception>
+			objectEntryFolderUnsafeFunction = objectEntryFolder -> {
+				deleteObjectEntryFolder(objectEntryFolder.getId());
+
+				return objectEntryFolder;
+			};
+
+		if (contextBatchUnsafeBiConsumer != null) {
+			contextBatchUnsafeBiConsumer.accept(
+				objectEntryFolders, objectEntryFolderUnsafeFunction);
+		}
+		else if (contextBatchUnsafeConsumer != null) {
+			contextBatchUnsafeConsumer.accept(
+				objectEntryFolders, objectEntryFolderUnsafeFunction::apply);
+		}
+		else {
+			for (ObjectEntryFolder objectEntryFolder : objectEntryFolders) {
+				objectEntryFolderUnsafeFunction.apply(objectEntryFolder);
+			}
 		}
 	}
 
@@ -816,6 +836,11 @@ public abstract class BaseObjectEntryFolderResourceImpl
 		return null;
 	}
 
+	@Override
+	public ObjectEntryFolder getItem(Long id) throws Exception {
+		return getObjectEntryFolder(id);
+	}
+
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {
 		this.contextAcceptLanguage = contextAcceptLanguage;
 	}
@@ -857,7 +882,8 @@ public abstract class BaseObjectEntryFolderResourceImpl
 	}
 
 	public void setContextUriInfo(UriInfo contextUriInfo) {
-		this.contextUriInfo = contextUriInfo;
+		this.contextUriInfo = UriInfoUtil.getVulcanUriInfo(
+			getApplicationPath(), contextUriInfo);
 	}
 
 	public void setContextUser(
@@ -900,6 +926,10 @@ public abstract class BaseObjectEntryFolderResourceImpl
 
 	public void setSortParserProvider(SortParserProvider sortParserProvider) {
 		this.sortParserProvider = sortParserProvider;
+	}
+
+	protected String getApplicationPath() {
+		return "headless-delivery";
 	}
 
 	public void setVulcanBatchEngineExportTaskResource(

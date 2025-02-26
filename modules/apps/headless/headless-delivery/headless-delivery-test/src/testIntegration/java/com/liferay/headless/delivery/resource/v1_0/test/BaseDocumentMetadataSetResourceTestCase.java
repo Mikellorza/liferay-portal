@@ -774,8 +774,8 @@ public abstract class BaseDocumentMetadataSetResourceTestCase {
 			testDeleteDocumentMetadataSet_addDocumentMetadataSet()
 		throws Exception {
 
-		return documentMetadataSetResource.postAssetLibraryDocumentMetadataSet(
-			testDepotEntry.getDepotEntryId(), randomDocumentMetadataSet());
+		return documentMetadataSetResource.postSiteDocumentMetadataSet(
+			testGroup.getGroupId(), randomDocumentMetadataSet());
 	}
 
 	@Test
@@ -881,8 +881,8 @@ public abstract class BaseDocumentMetadataSetResourceTestCase {
 			testGetDocumentMetadataSet_addDocumentMetadataSet()
 		throws Exception {
 
-		return documentMetadataSetResource.postAssetLibraryDocumentMetadataSet(
-			testDepotEntry.getDepotEntryId(), randomDocumentMetadataSet());
+		return documentMetadataSetResource.postSiteDocumentMetadataSet(
+			testGroup.getGroupId(), randomDocumentMetadataSet());
 	}
 
 	@Test
@@ -1352,8 +1352,8 @@ public abstract class BaseDocumentMetadataSetResourceTestCase {
 			testDeleteSiteDocumentMetadataSetByExternalReferenceCode_addDocumentMetadataSet()
 		throws Exception {
 
-		return documentMetadataSetResource.postAssetLibraryDocumentMetadataSet(
-			testDepotEntry.getDepotEntryId(), randomDocumentMetadataSet());
+		return documentMetadataSetResource.postSiteDocumentMetadataSet(
+			testGroup.getGroupId(), randomDocumentMetadataSet());
 	}
 
 	@Test
@@ -1386,8 +1386,8 @@ public abstract class BaseDocumentMetadataSetResourceTestCase {
 			testGetSiteDocumentMetadataSetByExternalReferenceCode_addDocumentMetadataSet()
 		throws Exception {
 
-		return documentMetadataSetResource.postAssetLibraryDocumentMetadataSet(
-			testDepotEntry.getDepotEntryId(), randomDocumentMetadataSet());
+		return documentMetadataSetResource.postSiteDocumentMetadataSet(
+			testGroup.getGroupId(), randomDocumentMetadataSet());
 	}
 
 	@Test
@@ -1610,8 +1610,8 @@ public abstract class BaseDocumentMetadataSetResourceTestCase {
 			testPutSiteDocumentMetadataSetByExternalReferenceCode_addDocumentMetadataSet()
 		throws Exception {
 
-		return documentMetadataSetResource.postAssetLibraryDocumentMetadataSet(
-			testDepotEntry.getDepotEntryId(), randomDocumentMetadataSet());
+		return documentMetadataSetResource.postSiteDocumentMetadataSet(
+			testGroup.getGroupId(), randomDocumentMetadataSet());
 	}
 
 	protected void appendGraphQLFieldValue(StringBuilder sb, Object value)

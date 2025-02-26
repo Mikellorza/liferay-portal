@@ -1678,9 +1678,8 @@ public abstract class BaseDocumentResourceTestCase {
 	}
 
 	protected Document testDeleteDocument_addDocument() throws Exception {
-		return documentResource.postAssetLibraryDocument(
-			testDepotEntry.getDepotEntryId(), randomDocument(),
-			getMultipartFiles());
+		return documentResource.postSiteDocument(
+			testGroup.getGroupId(), randomDocument(), getMultipartFiles());
 	}
 
 	@Test
@@ -1770,9 +1769,8 @@ public abstract class BaseDocumentResourceTestCase {
 	}
 
 	protected Document testGetDocument_addDocument() throws Exception {
-		return documentResource.postAssetLibraryDocument(
-			testDepotEntry.getDepotEntryId(), randomDocument(),
-			getMultipartFiles());
+		return documentResource.postSiteDocument(
+			testGroup.getGroupId(), randomDocument(), getMultipartFiles());
 	}
 
 	@Test
@@ -1918,9 +1916,8 @@ public abstract class BaseDocumentResourceTestCase {
 	}
 
 	protected Document testPutDocument_addDocument() throws Exception {
-		return documentResource.postAssetLibraryDocument(
-			testDepotEntry.getDepotEntryId(), randomDocument(),
-			getMultipartFiles());
+		return documentResource.postSiteDocument(
+			testGroup.getGroupId(), randomDocument(), getMultipartFiles());
 	}
 
 	@Test
@@ -1944,9 +1941,8 @@ public abstract class BaseDocumentResourceTestCase {
 	protected Document testDeleteDocumentMyRating_addDocument()
 		throws Exception {
 
-		return documentResource.postAssetLibraryDocument(
-			testDepotEntry.getDepotEntryId(), randomDocument(),
-			getMultipartFiles());
+		return documentResource.postSiteDocument(
+			testGroup.getGroupId(), randomDocument(), getMultipartFiles());
 	}
 
 	@Test
@@ -2534,9 +2530,8 @@ public abstract class BaseDocumentResourceTestCase {
 			testDeleteSiteDocumentByExternalReferenceCode_addDocument()
 		throws Exception {
 
-		return documentResource.postAssetLibraryDocument(
-			testDepotEntry.getDepotEntryId(), randomDocument(),
-			getMultipartFiles());
+		return documentResource.postSiteDocument(
+			testGroup.getGroupId(), randomDocument(), getMultipartFiles());
 	}
 
 	@Test
@@ -2564,9 +2559,8 @@ public abstract class BaseDocumentResourceTestCase {
 	protected Document testGetSiteDocumentByExternalReferenceCode_addDocument()
 		throws Exception {
 
-		return documentResource.postAssetLibraryDocument(
-			testDepotEntry.getDepotEntryId(), randomDocument(),
-			getMultipartFiles());
+		return documentResource.postSiteDocument(
+			testGroup.getGroupId(), randomDocument(), getMultipartFiles());
 	}
 
 	@Test
@@ -2777,9 +2771,8 @@ public abstract class BaseDocumentResourceTestCase {
 	protected Document testPutSiteDocumentByExternalReferenceCode_addDocument()
 		throws Exception {
 
-		return documentResource.postAssetLibraryDocument(
-			testDepotEntry.getDepotEntryId(), randomDocument(),
-			getMultipartFiles());
+		return documentResource.postSiteDocument(
+			testGroup.getGroupId(), randomDocument(), getMultipartFiles());
 	}
 
 	@Test
