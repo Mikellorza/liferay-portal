@@ -8,6 +8,13 @@ package com.liferay.site.cms.site.initializer.internal.display.context.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
+import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectEntryFolder;
+import com.liferay.object.model.ObjectFolder;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectFolderLocalService;
+import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
@@ -18,11 +25,15 @@ import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +69,21 @@ public class ContentsSectionDisplayContextTest {
 	}
 
 	@Test
+	public void testGetAPIURL() throws Exception {
+		String apiURL = _getAPIURL();
+
+		Assert.assertNotNull(apiURL);
+
+		Assert.assertTrue(apiURL.contains("emptySearch=true"));
+
+		String entryClassNames = URLCodec.encodeURL(
+			ArrayUtil.toString(_getEntryClassNames(), StringPool.BLANK));
+
+		Assert.assertTrue(
+			apiURL.contains("entryClassNames=" + entryClassNames));
+	}
+
+	@Test
 	public void testGetFDSActionDropdownItems() throws Exception {
 		List<FDSActionDropdownItem> fdsActionDropdownItems =
 			_getFDSActionDropdownItems();
@@ -86,10 +112,15 @@ public class ContentsSectionDisplayContextTest {
 		Assert.assertEquals("item", fdsActionDropdownItem.get("type"));
 	}
 
-	private List<FDSActionDropdownItem> _getFDSActionDropdownItems()
-		throws Exception {
+	private String _getAPIURL() throws Exception {
+		return ReflectionTestUtil.invoke(
+			_getContentsSectionDisplayContext(_getMockHttpServletRequest()),
+			"getAPIURL", new Class<?>[0]);
+	}
 
-		HttpServletRequest httpServletRequest = _getMockHttpServletRequest();
+	private Object _getContentsSectionDisplayContext(
+			HttpServletRequest httpServletRequest)
+		throws Exception {
 
 		_fragmentRenderer.render(
 			null, httpServletRequest, new MockHttpServletResponse());
@@ -100,9 +131,44 @@ public class ContentsSectionDisplayContextTest {
 
 		Assert.assertNotNull(contentsSectionDisplayContext);
 
+		return contentsSectionDisplayContext;
+	}
+
+	private String[] _getEntryClassNames() {
+		List<String> entryClassNames = new ArrayList<>();
+
+		entryClassNames.add(ObjectEntryFolder.class.getName());
+
+		entryClassNames.addAll(_getEntryClassNames("L_CMS_CONTENT_STRUCTURES"));
+
+		return ArrayUtil.toStringArray(entryClassNames);
+	}
+
+	private List<String> _getEntryClassNames(
+		String objectFolderExternalReferenceCode) {
+
+		ObjectFolder objectFolder =
+			_objectFolderLocalService.fetchObjectFolderByExternalReferenceCode(
+				objectFolderExternalReferenceCode, _group.getCompanyId());
+
+		if (objectFolder == null) {
+			return Collections.emptyList();
+		}
+
+		List<ObjectDefinition> objectDefinitions =
+			_objectDefinitionLocalService.getObjectFolderObjectDefinitions(
+				objectFolder.getObjectFolderId());
+
+		return TransformUtil.transform(
+			objectDefinitions, ObjectDefinition::getClassName);
+	}
+
+	private List<FDSActionDropdownItem> _getFDSActionDropdownItems()
+		throws Exception {
+
 		return ReflectionTestUtil.invoke(
-			contentsSectionDisplayContext, "getFDSActionDropdownItems",
-			new Class<?>[0]);
+			_getContentsSectionDisplayContext(_getMockHttpServletRequest()),
+			"getFDSActionDropdownItems", new Class<?>[0]);
 	}
 
 	private HttpServletRequest _getMockHttpServletRequest() throws Exception {
@@ -143,5 +209,11 @@ public class ContentsSectionDisplayContextTest {
 
 	@DeleteAfterTestRun
 	private Group _group;
+
+	@Inject
+	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Inject
+	private ObjectFolderLocalService _objectFolderLocalService;
 
 }
