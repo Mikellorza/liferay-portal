@@ -9,14 +9,14 @@ import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
 import java.util.List;
@@ -33,14 +33,15 @@ public class ContentsSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public ContentsSectionDisplayContext(
 		CMSSiteInitializerConfiguration cmsSiteInitializerConfiguration,
-		HttpServletRequest httpServletRequest, Language language) {
+		HttpServletRequest httpServletRequest, Language language,
+		ObjectDefinitionLocalService objectDefinitionLocalService,
+		ObjectFolderLocalService objectFolderLocalService) {
 
-		super(cmsSiteInitializerConfiguration, httpServletRequest);
+		super(
+			cmsSiteInitializerConfiguration, httpServletRequest,
+			objectDefinitionLocalService, objectFolderLocalService);
 
 		_language = language;
-
-		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
 	}
 
 	@Override
@@ -111,7 +112,7 @@ public class ContentsSectionDisplayContext extends BaseSectionDisplayContext {
 				).setMVCPath(
 					"/edit_permissions.jsp"
 				).setRedirect(
-					_themeDisplay.getURLCurrent()
+					themeDisplay.getURLCurrent()
 				).setParameter(
 					"modelResource", "{entryClassName}"
 				).setParameter(
@@ -126,7 +127,10 @@ public class ContentsSectionDisplayContext extends BaseSectionDisplayContext {
 				"modal-permissions"));
 	}
 
+	public String[] getObjectFolderExternalReferenceCodes() {
+		return new String[] {"L_CMS_CONTENT_STRUCTURES"};
+	}
+
 	private final Language _language;
-	private final ThemeDisplay _themeDisplay;
 
 }

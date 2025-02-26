@@ -9,6 +9,8 @@ import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -26,9 +28,13 @@ public class FilesSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public FilesSectionDisplayContext(
 		CMSSiteInitializerConfiguration cmsSiteInitializerConfiguration,
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest,
+		ObjectDefinitionLocalService objectDefinitionLocalService,
+		ObjectFolderLocalService objectFolderLocalService) {
 
-		super(cmsSiteInitializerConfiguration, httpServletRequest);
+		super(
+			cmsSiteInitializerConfiguration, httpServletRequest,
+			objectDefinitionLocalService, objectFolderLocalService);
 	}
 
 	@Override
@@ -82,9 +88,8 @@ public class FilesSectionDisplayContext extends BaseSectionDisplayContext {
 		).build();
 	}
 
-	@Override
-	public String[] getEntryClassNames() {
-		return cmsSiteInitializerConfiguration.filesClassNames();
+	public String[] getObjectFolderExternalReferenceCodes() {
+		return new String[] {"L_CMS_FILE_TYPES"};
 	}
 
 }
