@@ -9,6 +9,7 @@ import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.model.ObjectFolder;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFolderLocalService;
@@ -132,6 +133,8 @@ public abstract class BaseSectionDisplayContext {
 		String[] objectFolderExternalReferenceCodes) {
 
 		List<String> entryClassNames = new ArrayList<>();
+
+		entryClassNames.add(ObjectEntryFolder.class.getName());
 
 		for (String objectFolderExternalReferenceCode :
 				objectFolderExternalReferenceCodes) {
