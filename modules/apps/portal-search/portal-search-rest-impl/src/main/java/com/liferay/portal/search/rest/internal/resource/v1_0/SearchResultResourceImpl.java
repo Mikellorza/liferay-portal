@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.search.generic.MatchAllQuery;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -621,7 +622,7 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 				_setDescription(assetRenderer, fields, searchResult, summary);
 				_setTitle(assetRenderer, fields, searchResult, summary);
 			}
-
+			searchResult.setClassNameId(_classNameLocalService.getClassNameId(entryClassName));
 			searchResult.setEntryClassName(() -> entryClassName);
 
 			_setDTOFields(
@@ -641,6 +642,7 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 				contextUser.getUserId()),
 			searchResults, pagination, searchHits.getTotalHits());
 	}
+
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		SearchResultResourceImpl.class);
@@ -672,5 +674,8 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 	@Reference
 	private VulcanCRUDItemDelegateBuilderRegistry
 		_vulcanCRUDItemDelegateBuilderRegistry;
+
+	@Reference
+	private ClassNameLocalService _classNameLocalService;
 
 }
