@@ -623,6 +623,14 @@ public abstract class BaseSearchResultResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("classNameId", additionalAssertFieldName)) {
+				if (searchResult.getClassNameId() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("description", additionalAssertFieldName)) {
 				if (searchResult.getDescription() == null) {
 					valid = false;
@@ -794,6 +802,17 @@ public abstract class BaseSearchResultResourceTestCase {
 				if (!equals(
 						(Map)searchResult1.getActions(),
 						(Map)searchResult2.getActions())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("classNameId", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						searchResult1.getClassNameId(),
+						searchResult2.getClassNameId())) {
 
 					return false;
 				}
@@ -995,6 +1014,11 @@ public abstract class BaseSearchResultResourceTestCase {
 		sb.append(" ");
 
 		if (entityFieldName.equals("actions")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
+		}
+
+		if (entityFieldName.equals("classNameId")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
 		}
@@ -1300,6 +1324,7 @@ public abstract class BaseSearchResultResourceTestCase {
 	protected SearchResult randomSearchResult() throws Exception {
 		return new SearchResult() {
 			{
+				classNameId = RandomTestUtil.randomLong();
 				dateCreated = RandomTestUtil.nextDate();
 				dateModified = RandomTestUtil.nextDate();
 				description = StringUtil.toLowerCase(

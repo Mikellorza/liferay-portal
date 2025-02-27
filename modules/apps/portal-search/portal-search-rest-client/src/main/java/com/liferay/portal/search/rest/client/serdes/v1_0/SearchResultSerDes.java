@@ -62,6 +62,16 @@ public class SearchResultSerDes {
 			sb.append(_toJSON(searchResult.getActions()));
 		}
 
+		if (searchResult.getClassNameId() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"classNameId\": ");
+
+			sb.append(searchResult.getClassNameId());
+		}
+
 		if (searchResult.getDateCreated() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -204,6 +214,14 @@ public class SearchResultSerDes {
 			map.put("actions", String.valueOf(searchResult.getActions()));
 		}
 
+		if (searchResult.getClassNameId() == null) {
+			map.put("classNameId", null);
+		}
+		else {
+			map.put(
+				"classNameId", String.valueOf(searchResult.getClassNameId()));
+		}
+
 		if (searchResult.getDateCreated() == null) {
 			map.put("dateCreated", null);
 		}
@@ -288,6 +306,9 @@ public class SearchResultSerDes {
 			if (Objects.equals(jsonParserFieldName, "actions")) {
 				return true;
 			}
+			else if (Objects.equals(jsonParserFieldName, "classNameId")) {
+				return false;
+			}
 			else if (Objects.equals(jsonParserFieldName, "dateCreated")) {
 				return false;
 			}
@@ -325,6 +346,12 @@ public class SearchResultSerDes {
 				if (jsonParserFieldValue != null) {
 					searchResult.setActions(
 						(Map<String, Map<String, String>>)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "classNameId")) {
+				if (jsonParserFieldValue != null) {
+					searchResult.setClassNameId(
+						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "dateCreated")) {

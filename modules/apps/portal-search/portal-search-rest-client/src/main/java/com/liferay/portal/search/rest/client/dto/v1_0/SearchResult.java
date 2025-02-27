@@ -49,6 +49,27 @@ public class SearchResult implements Cloneable, Serializable {
 
 	protected Map<String, Map<String, String>> actions;
 
+	public Long getClassNameId() {
+		return classNameId;
+	}
+
+	public void setClassNameId(Long classNameId) {
+		this.classNameId = classNameId;
+	}
+
+	public void setClassNameId(
+		UnsafeSupplier<Long, Exception> classNameIdUnsafeSupplier) {
+
+		try {
+			classNameId = classNameIdUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Long classNameId;
+
 	public Date getDateCreated() {
 		return dateCreated;
 	}

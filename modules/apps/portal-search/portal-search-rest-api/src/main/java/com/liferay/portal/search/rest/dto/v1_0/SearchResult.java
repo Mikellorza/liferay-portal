@@ -98,6 +98,47 @@ public class SearchResult implements Serializable {
 	@JsonIgnore
 	private Supplier<Map<String, Map<String, String>>> _actionsSupplier;
 
+	@Schema(description = "The class name id")
+	public Long getClassNameId() {
+		if (_classNameIdSupplier != null) {
+			classNameId = _classNameIdSupplier.get();
+
+			_classNameIdSupplier = null;
+		}
+
+		return classNameId;
+	}
+
+	public void setClassNameId(Long classNameId) {
+		this.classNameId = classNameId;
+
+		_classNameIdSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setClassNameId(
+		UnsafeSupplier<Long, Exception> classNameIdUnsafeSupplier) {
+
+		_classNameIdSupplier = () -> {
+			try {
+				return classNameIdUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(description = "The class name id")
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Long classNameId;
+
+	@JsonIgnore
+	private Supplier<Long> _classNameIdSupplier;
+
 	@Schema(description = "The time the item was created.")
 	public Date getDateCreated() {
 		if (_dateCreatedSupplier != null) {
@@ -466,6 +507,18 @@ public class SearchResult implements Serializable {
 			sb.append("\"actions\": ");
 
 			sb.append(_toJSON(actions));
+		}
+
+		Long classNameId = getClassNameId();
+
+		if (classNameId != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"classNameId\": ");
+
+			sb.append(classNameId);
 		}
 
 		Date dateCreated = getDateCreated();
