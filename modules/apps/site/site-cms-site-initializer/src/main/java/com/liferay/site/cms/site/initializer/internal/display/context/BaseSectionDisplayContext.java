@@ -16,6 +16,7 @@ import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.URLCodec;
@@ -95,7 +96,9 @@ public abstract class BaseSectionDisplayContext {
 		return new String[0];
 	}
 
-	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
+	public List<FDSActionDropdownItem> getFDSActionDropdownItems()
+		throws PortalException {
+
 		return new ArrayList<>();
 	}
 

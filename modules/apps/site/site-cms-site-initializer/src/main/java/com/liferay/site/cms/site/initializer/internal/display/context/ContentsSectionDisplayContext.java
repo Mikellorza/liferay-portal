@@ -11,12 +11,16 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFolderLocalService;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.sharing.model.SharingEntry;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
 import java.util.List;
@@ -101,7 +105,9 @@ public class ContentsSectionDisplayContext extends BaseSectionDisplayContext {
 		return cmsSiteInitializerConfiguration.contentsClassNames();
 	}
 
-	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
+	public List<FDSActionDropdownItem> getFDSActionDropdownItems()
+		throws PortalException {
+
 		return ListUtil.fromArray(
 			new FDSActionDropdownItem(
 				PortletURLBuilder.create(
@@ -125,7 +131,32 @@ public class ContentsSectionDisplayContext extends BaseSectionDisplayContext {
 				).buildString(),
 				"password-policies", "permissions",
 				_language.get(httpServletRequest, "permissions"), "get", null,
-				"modal-permissions"));
+				"modal-permissions"),
+			new FDSActionDropdownItem(null,
+				null,
+				_language.get(
+					httpServletRequest,
+					"an-unexpected-error-occurred-while-sharing-the-item"),
+				PortletURLBuilder.create(
+					PortletProviderUtil.getPortletURL(
+						httpServletRequest, SharingEntry.class.getName(),
+						PortletProvider.Action.EDIT)
+				).setRedirect(
+					themeDisplay.getURLCurrent()
+				).setParameter(
+					"classNameId", "{classNameId}"
+				).setParameter(
+					"classPK", "{embedded.id}"
+				).setParameter(
+					"modelResourceDescription", "Share"
+				).setWindowState(
+					LiferayWindowState.POP_UP
+				).buildString(),
+				"share", "share", _language.get(httpServletRequest, "share"),
+				"get", "md", null, null,
+				_language.get(
+					httpServletRequest, "the-item-was-shared-successfully"),
+				"modal", "Share", "item"));
 	}
 
 	public String[] getObjectFolderExternalReferenceCodes() {
