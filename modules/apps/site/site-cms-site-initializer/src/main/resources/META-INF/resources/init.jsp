@@ -6,6 +6,7 @@
 --%>
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
+taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/frontend-data-set" prefix="frontend-data-set" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
@@ -17,6 +18,8 @@ page import="com.liferay.site.cms.site.initializer.internal.display.context.Cate
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ContentsSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.FilesSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.StructuresSectionDisplayContext" %>
+
+<liferay-frontend:defineObjects />
 
 <liferay-theme:defineObjects />
 

@@ -14,13 +14,10 @@ import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
-import com.liferay.portal.kernel.portlet.PortletProvider;
-import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.sharing.model.SharingEntry;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
 import java.util.List;
@@ -132,31 +129,9 @@ public class ContentsSectionDisplayContext extends BaseSectionDisplayContext {
 				"password-policies", "permissions",
 				_language.get(httpServletRequest, "permissions"), "get", null,
 				"modal-permissions"),
-			new FDSActionDropdownItem(null,
-				null,
-				_language.get(
-					httpServletRequest,
-					"an-unexpected-error-occurred-while-sharing-the-item"),
-				PortletURLBuilder.create(
-					PortletProviderUtil.getPortletURL(
-						httpServletRequest, SharingEntry.class.getName(),
-						PortletProvider.Action.EDIT)
-				).setRedirect(
-					themeDisplay.getURLCurrent()
-				).setParameter(
-					"classNameId", "{classNameId}"
-				).setParameter(
-					"classPK", "{embedded.id}"
-				).setParameter(
-					"modelResourceDescription", "Share"
-				).setWindowState(
-					LiferayWindowState.POP_UP
-				).buildString(),
-				"share", "share", _language.get(httpServletRequest, "share"),
-				"get", "md", null, null,
-				_language.get(
-					httpServletRequest, "the-item-was-shared-successfully"),
-				"modal", "Share", "item"));
+			new FDSActionDropdownItem(
+				null, "share", "share",
+				_language.get(httpServletRequest, "share"), null, null, null));
 	}
 
 	public String[] getObjectFolderExternalReferenceCodes() {

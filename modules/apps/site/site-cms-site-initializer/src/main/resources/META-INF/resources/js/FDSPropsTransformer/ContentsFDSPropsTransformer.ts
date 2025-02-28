@@ -26,5 +26,15 @@ export default function ContentFDSPropsTransformer({
 				ACTIONS
 			),
 		},
+		onActionDropdownItemClick({action, itemData}: any) {
+			if (action.data.id === 'share') {
+				console.log(itemData);
+				Liferay.Sharing.share(
+					itemData.classNameId,
+					itemData.embedded.id,
+					itemData.embedded.label
+				);
+			}
+		},
 	};
 }
