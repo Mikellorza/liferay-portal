@@ -40,4 +40,18 @@ public interface CMSSiteInitializerConfiguration {
 	)
 	public String[] filesObjectDefinitionFolderExternalReferenceCodes();
 
+	@Meta.AD(
+		deflt = "L_CONTENTS",
+		name = "contents-root-object-entry-folder-external-reference-code",
+		required = false
+	)
+	public String contentsRootObjectEntryFolderExternalReferenceCode();
+
+	@Meta.AD(
+		deflt = "L_FILES",
+		name = "files-root-object-entry-folder-external-reference-code",
+		required = false
+	)
+	public String filesRootObjectEntryFolderExternalReferenceCode();
+
 }
