@@ -11,16 +11,20 @@ import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.entry.util.ObjectEntryValuesUtil;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.ObjectFolder;
 import com.liferay.object.rest.dto.v1_0.ListEntry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Document;
@@ -42,6 +46,7 @@ import java.math.BigDecimal;
 
 import java.text.Format;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +64,7 @@ public class ObjectEntryModelDocumentContributor
 			accountEntryOrganizationRelLocalService,
 		String className,
 		ObjectDefinitionLocalService objectDefinitionLocalService,
+		ObjectEntryFolderLocalService objectEntryFolderLocalService,
 		ObjectEntryLocalService objectEntryLocalService,
 		ObjectFieldLocalService objectFieldLocalService,
 		ObjectFolderLocalService objectFolderLocalService) {
@@ -67,6 +73,7 @@ public class ObjectEntryModelDocumentContributor
 			accountEntryOrganizationRelLocalService;
 		_className = className;
 		_objectDefinitionLocalService = objectDefinitionLocalService;
+		_objectEntryFolderLocalService = objectEntryFolderLocalService;
 		_objectEntryLocalService = objectEntryLocalService;
 		_objectFieldLocalService = objectFieldLocalService;
 		_objectFolderLocalService = objectFolderLocalService;
@@ -347,10 +354,45 @@ public class ObjectEntryModelDocumentContributor
 
 		document.add(
 			new Field("objectEntryTitle", objectEntry.getTitleValue()));
+		document.addKeyword(
+			"rootObjectEntryFolderExternalReferenceCode",
+			_getRootObjectEntryFolderExternalReferenceCode(
+				_objectEntryFolderLocalService.getObjectEntryFolder(
+					objectEntry.getObjectEntryFolderId())));
 	}
 
 	private String _getDateString(Object value) {
 		return _format.format(value);
+	}
+
+	private String _getRootObjectEntryFolderExternalReferenceCode(
+		ObjectEntryFolder objectEntryFolder) {
+
+		List<String> treePaths = Arrays.asList(
+			StringUtil.split(
+				objectEntryFolder.getTreePath(), CharPool.FORWARD_SLASH));
+
+		if (ListUtil.isEmpty(treePaths) || (treePaths.size() < 3)) {
+			return StringPool.BLANK;
+		}
+
+		try {
+			ObjectEntryFolder rootObjectEntryFolder =
+				_objectEntryFolderLocalService.getObjectEntryFolder(
+					Long.valueOf(treePaths.get(1)));
+
+			return rootObjectEntryFolder.getExternalReferenceCode();
+		}
+		catch (PortalException portalException) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to get folder " + treePaths.get(0) +
+						" while indexing document",
+					portalException);
+			}
+		}
+
+		return StringPool.BLANK;
 	}
 
 	private String _getSortableValue(String value) {
@@ -379,6 +421,7 @@ public class ObjectEntryModelDocumentContributor
 		_accountEntryOrganizationRelLocalService;
 	private final String _className;
 	private final ObjectDefinitionLocalService _objectDefinitionLocalService;
+	private final ObjectEntryFolderLocalService _objectEntryFolderLocalService;
 	private final ObjectEntryLocalService _objectEntryLocalService;
 	private final ObjectFieldLocalService _objectFieldLocalService;
 	private final ObjectFolderLocalService _objectFolderLocalService;

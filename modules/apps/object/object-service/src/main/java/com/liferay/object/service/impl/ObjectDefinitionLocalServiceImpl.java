@@ -72,6 +72,7 @@ import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectActionLocalService;
 import com.liferay.object.service.ObjectDefinitionLocalServiceUtil;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
+import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectEntryService;
 import com.liferay.object.service.ObjectFieldLocalService;
@@ -942,13 +943,14 @@ public class ObjectDefinitionLocalServiceImpl
 				_assetEntryLocalService, _bundleContext,
 				_dynamicQueryBatchIndexingActionableFactory, _groupLocalService,
 				_listTypeLocalService, _objectActionLocalService,
-				objectDefinitionLocalService, _objectEntryLocalService,
-				_objectEntryService, _objectFieldLocalService,
-				_objectFolderLocalService, _objectLayoutLocalService,
-				_objectLayoutTabLocalService, _objectRelationshipLocalService,
-				_objectScopeProviderRegistry, _objectViewLocalService,
-				_organizationLocalService, _ploEntryLocalService, _portal,
-				_portletLocalService, _resourceActions, _userLocalService,
+				objectDefinitionLocalService, _objectEntryFolderLocalService,
+				_objectEntryLocalService, _objectEntryService,
+				_objectFieldLocalService, _objectFolderLocalService,
+				_objectLayoutLocalService, _objectLayoutTabLocalService,
+				_objectRelationshipLocalService, _objectScopeProviderRegistry,
+				_objectViewLocalService, _organizationLocalService,
+				_ploEntryLocalService, _portal, _portletLocalService,
+				_resourceActions, _userLocalService,
 				_resourcePermissionLocalService, _searchLocalizationHelper,
 				_workflowStatusModelPreFilterContributor,
 				_userGroupRoleLocalService);
@@ -3037,6 +3039,9 @@ public class ObjectDefinitionLocalServiceImpl
 	@Reference
 	private ObjectDefinitionSettingLocalService
 		_objectDefinitionSettingLocalService;
+
+	@Reference
+	private ObjectEntryFolderLocalService _objectEntryFolderLocalService;
 
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
