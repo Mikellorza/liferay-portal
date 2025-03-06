@@ -35,6 +35,10 @@ public class SearchResultEntityModel implements EntityModel {
 				new StringEntityField(
 					"objectDefinitionFolder",
 					locale -> "objectDefinitionFolder")),
+			new CollectionEntityField(
+				new StringEntityField(
+					"rootObjectEntryFolderExternalReferenceCode",
+					locale -> "rootObjectEntryFolderExternalReferenceCode")),
 			new DateTimeEntityField(
 				"dateCreated",
 				locale -> Field.getSortableFieldName(Field.CREATE_DATE),
