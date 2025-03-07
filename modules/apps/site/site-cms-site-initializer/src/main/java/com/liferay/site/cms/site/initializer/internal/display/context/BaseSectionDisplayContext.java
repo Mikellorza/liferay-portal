@@ -39,22 +39,15 @@ public abstract class BaseSectionDisplayContext {
 	}
 
 	public String getAPIURL() {
-		String[] rootParentObjectEntryFolderExternalReferenceCodes =
-			getRootObjectEntryFolderExternalReferenceCodes();
-
-		StringBundler sb = new StringBundler(5);
+		StringBundler sb = new StringBundler(4);
 
 		sb.append("/o/search/v1.0/search?emptySearch=true");
 
-		if (ArrayUtil.isNotEmpty(
-				rootParentObjectEntryFolderExternalReferenceCodes)) {
+		String filter = getFilter();
 
-			sb.append(
-				"&filter=rootObjectEntryFolderExternalReferenceCode in ('");
-			sb.append(
-				StringUtil.merge(
-					rootParentObjectEntryFolderExternalReferenceCodes, "','"));
-			sb.append("')");
+		if (filter != null) {
+			sb.append("&filter=");
+			sb.append(filter);
 		}
 
 		sb.append("&nestedFields=embedded");
@@ -78,6 +71,25 @@ public abstract class BaseSectionDisplayContext {
 		throws Exception {
 
 		return new ArrayList<>();
+	}
+
+	public String getFilter() {
+		String[] rootObjectEntryFolderExternalReferenceCodes =
+			getRootObjectEntryFolderExternalReferenceCodes();
+
+		if (ArrayUtil.isEmpty(rootObjectEntryFolderExternalReferenceCodes)) {
+			return null;
+		}
+
+		StringBundler sb = new StringBundler(3);
+
+		sb.append("rootObjectEntryFolderExternalReferenceCode in ('");
+		sb.append(
+			StringUtil.merge(
+				rootObjectEntryFolderExternalReferenceCodes, "','"));
+		sb.append("')");
+
+		return sb.toString();
 	}
 
 	public String[] getRootObjectEntryFolderExternalReferenceCodes() {
