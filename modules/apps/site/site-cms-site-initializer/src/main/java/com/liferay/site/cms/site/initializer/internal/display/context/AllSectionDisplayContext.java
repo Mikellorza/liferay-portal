@@ -9,6 +9,8 @@ import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.service.ObjectDefinitionService;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
@@ -97,6 +99,31 @@ public class AllSectionDisplayContext extends BaseSectionDisplayContext {
 				null, "trash", "delete",
 				LanguageUtil.get(httpServletRequest, "delete"), "delete",
 				"delete", "headless"));
+	}
+
+	@Override
+	public String getFilter() {
+		String filter = super.getFilter();
+
+		StringBundler sb = new StringBundler(5);
+
+		if (Validator.isNotNull(filter)) {
+			sb.append(filter);
+			sb.append(" and ");
+		}
+
+		sb.append("objectDefinitionFolder in ('");
+		sb.append(
+			StringUtil.merge(
+				ArrayUtil.append(
+					cmsSiteInitializerConfiguration.
+						contentsObjectDefinitionFolderExternalReferenceCodes(),
+					cmsSiteInitializerConfiguration.
+						filesObjectDefinitionFolderExternalReferenceCodes()),
+				"','"));
+		sb.append("')");
+
+		return sb.toString();
 	}
 
 	@Override
