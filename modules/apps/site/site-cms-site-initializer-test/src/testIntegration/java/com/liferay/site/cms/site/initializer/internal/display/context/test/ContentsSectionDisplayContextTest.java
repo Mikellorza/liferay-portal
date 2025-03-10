@@ -66,10 +66,12 @@ public class ContentsSectionDisplayContextTest
 
 		StringBundler sb = new StringBundler(3);
 
-		sb.append("filter=objectDefinitionFolder in ('");
+		sb.append(
+			"filter=rootParentObjectEntryFolderExternalReferenceCode in ('");
 		sb.append(
 			StringUtil.merge(
-				_getObjectDefinitionFolderExternalReferenceCodes(), "','"));
+				_getRootParentObjectEntryFolderExternalReferenceCodes(),
+				"','"));
 		sb.append("')");
 
 		Assert.assertTrue(apiURL.contains(sb.toString()));
@@ -195,12 +197,22 @@ public class ContentsSectionDisplayContextTest
 			"getFDSActionDropdownItems", new Class<?>[0]);
 	}
 
-	private String[] _getObjectDefinitionFolderExternalReferenceCodes()
+	private HttpServletRequest _getMockHttpServletRequest() throws Exception {
+		HttpServletRequest httpServletRequest = new MockHttpServletRequest();
+
+		httpServletRequest.setAttribute(
+			WebKeys.THEME_DISPLAY, _getThemeDisplay(httpServletRequest));
+
+		return httpServletRequest;
+	}
+
+	private String[] _getRootParentObjectEntryFolderExternalReferenceCodes()
 		throws Exception {
 
 		return ReflectionTestUtil.invoke(
-			_getContentsSectionDisplayContext(getMockHttpServletRequest()),
-			"getObjectDefinitionFolderExternalReferenceCodes", new Class<?>[0]);
+			_getContentsSectionDisplayContext(_getMockHttpServletRequest()),
+			"getRootParentObjectEntryFolderExternalReferenceCodes",
+			new Class<?>[0]);
 	}
 
 	@Inject(
