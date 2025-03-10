@@ -16,6 +16,7 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
 import java.util.List;
@@ -123,9 +124,20 @@ public class ContentsSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	@Override
-	public String[] getObjectDefinitionFolderExternalReferenceCodes() {
-		return cmsSiteInitializerConfiguration.
-			contentsObjectDefinitionFolderExternalReferenceCodes();
+	public String[] getRootObjectEntryFolderExternalReferenceCodes() {
+		String contentsRootObjectEntryFolderExternalReferenceCode =
+			cmsSiteInitializerConfiguration.
+				contentsRootObjectEntryFolderExternalReferenceCode();
+
+		if (Validator.isNotNull(
+				contentsRootObjectEntryFolderExternalReferenceCode)) {
+
+			return new String[] {
+				contentsRootObjectEntryFolderExternalReferenceCode
+			};
+		}
+
+		return new String[0];
 	}
 
 	private final Language _language;

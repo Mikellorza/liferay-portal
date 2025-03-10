@@ -16,8 +16,10 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -98,12 +100,34 @@ public class AllSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	@Override
-	public String[] getObjectDefinitionFolderExternalReferenceCodes() {
-		return ArrayUtil.append(
+	public String[] getRootObjectEntryFolderExternalReferenceCodes() {
+		List<String> rootObjectEntryFolderExternalReferenceCodes =
+			new ArrayList<>();
+
+		String contentsRootObjectEntryFolderExternalReferenceCode =
 			cmsSiteInitializerConfiguration.
-				contentsObjectDefinitionFolderExternalReferenceCodes(),
+				contentsRootObjectEntryFolderExternalReferenceCode();
+
+		if (Validator.isNotNull(
+				contentsRootObjectEntryFolderExternalReferenceCode)) {
+
+			rootObjectEntryFolderExternalReferenceCodes.add(
+				contentsRootObjectEntryFolderExternalReferenceCode);
+		}
+
+		String filesRootObjectEntryFolderExternalReferenceCodeString =
 			cmsSiteInitializerConfiguration.
-				filesObjectDefinitionFolderExternalReferenceCodes());
+				filesRootObjectEntryFolderExternalReferenceCode();
+
+		if (Validator.isNotNull(
+				filesRootObjectEntryFolderExternalReferenceCodeString)) {
+
+			rootObjectEntryFolderExternalReferenceCodes.add(
+				filesRootObjectEntryFolderExternalReferenceCodeString);
+		}
+
+		return ArrayUtil.toStringArray(
+			rootObjectEntryFolderExternalReferenceCodes);
 	}
 
 	private String _getPermissionsURL() throws Exception {

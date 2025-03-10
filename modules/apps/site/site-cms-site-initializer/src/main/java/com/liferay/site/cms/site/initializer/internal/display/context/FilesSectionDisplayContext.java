@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
 import java.util.List;
@@ -92,9 +93,20 @@ public class FilesSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	@Override
-	public String[] getObjectDefinitionFolderExternalReferenceCodes() {
-		return cmsSiteInitializerConfiguration.
-			filesObjectDefinitionFolderExternalReferenceCodes();
+	public String[] getRootObjectEntryFolderExternalReferenceCodes() {
+		String filesRootObjectEntryFolderExternalReferenceCodeString =
+			cmsSiteInitializerConfiguration.
+				filesRootObjectEntryFolderExternalReferenceCode();
+
+		if (Validator.isNotNull(
+				filesRootObjectEntryFolderExternalReferenceCodeString)) {
+
+			return new String[] {
+				filesRootObjectEntryFolderExternalReferenceCodeString
+			};
+		}
+
+		return new String[0];
 	}
 
 	private final Language _language;

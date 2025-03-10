@@ -11,6 +11,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
@@ -38,18 +39,25 @@ public abstract class BaseSectionDisplayContext {
 	}
 
 	public String getAPIURL() {
-		String[] objectDefinitionFolderExternalReferenceCodes =
-			getObjectDefinitionFolderExternalReferenceCodes();
+		String[] rootParentObjectEntryFolderExternalReferenceCodes =
+			getRootObjectEntryFolderExternalReferenceCodes();
 
-		StringBundler sb = new StringBundler(4);
+		StringBundler sb = new StringBundler(5);
 
-		sb.append("/o/search/v1.0/search?emptySearch=true&");
-		sb.append("filter=objectDefinitionFolder in ('");
+		sb.append("/o/search/v1.0/search?emptySearch=true");
 
-		sb.append(
-			StringUtil.merge(
-				objectDefinitionFolderExternalReferenceCodes, "','"));
-		sb.append("')&nestedFields=embedded");
+		if (ArrayUtil.isNotEmpty(
+				rootParentObjectEntryFolderExternalReferenceCodes)) {
+
+			sb.append(
+				"&filter=rootObjectEntryFolderExternalReferenceCode in ('");
+			sb.append(
+				StringUtil.merge(
+					rootParentObjectEntryFolderExternalReferenceCodes, "','"));
+			sb.append("')");
+		}
+
+		sb.append("&nestedFields=embedded");
 
 		return sb.toString();
 	}
@@ -72,7 +80,7 @@ public abstract class BaseSectionDisplayContext {
 		return new ArrayList<>();
 	}
 
-	public String[] getObjectDefinitionFolderExternalReferenceCodes() {
+	public String[] getRootObjectEntryFolderExternalReferenceCodes() {
 		return new String[0];
 	}
 
