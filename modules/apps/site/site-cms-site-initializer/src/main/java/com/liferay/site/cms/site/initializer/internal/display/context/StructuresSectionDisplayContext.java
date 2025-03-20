@@ -15,6 +15,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
+import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.portlet.url.builder.ResourceURLBuilder;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
@@ -97,7 +98,15 @@ public class StructuresSectionDisplayContext extends BaseSectionDisplayContext {
 				LanguageUtil.get(httpServletRequest, "export-as-json"), "get",
 				"exportObjectDefinition", null),
 			new FDSActionDropdownItem(
-				"", "import", "import",
+				PortletURLBuilder.create(
+					PortletURLFactoryUtil.create(
+						httpServletRequest,
+						ObjectPortletKeys.OBJECT_DEFINITIONS,
+						PortletRequest.ACTION_PHASE)
+				).setActionName(
+					"/object_definitions/import_object_definition"
+				).buildString(),
+				"import", "import",
 				LanguageUtil.get(httpServletRequest, "import-and-override"),
 				null, null, null),
 			new FDSActionDropdownItem(
