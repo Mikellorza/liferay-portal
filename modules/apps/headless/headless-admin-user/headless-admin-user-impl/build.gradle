@@ -26,4 +26,6 @@ dependencies {
 	compileOnly project(":core:petra:petra-function")
 	compileOnly project(":core:petra:petra-lang")
 	compileOnly project(":core:petra:petra-string")
+	compileOnly project(":apps:object:object-api")
+	compileOnly project(":apps:info:info-api")
 }
