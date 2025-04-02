@@ -1091,6 +1091,11 @@ components:
                         Block of actions allowed by the user making the request.
                     readOnly: true
                     type: object
+                assetSubType:
+                    description:
+                        The shared asset sub type.
+                    readOnly: true
+                    type: string
                 assetType:
                     description:
                         The shared asset type.
