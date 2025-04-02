@@ -170,6 +170,7 @@ public abstract class BaseSharedAssetResourceTestCase {
 
 		SharedAsset sharedAsset = randomSharedAsset();
 
+		sharedAsset.setAssetSubType(regex);
 		sharedAsset.setAssetType(regex);
 		sharedAsset.setClassName(regex);
 		sharedAsset.setExternalReferenceCode(regex);
@@ -182,6 +183,7 @@ public abstract class BaseSharedAssetResourceTestCase {
 
 		sharedAsset = SharedAssetSerDes.toDTO(json);
 
+		Assert.assertEquals(regex, sharedAsset.getAssetSubType());
 		Assert.assertEquals(regex, sharedAsset.getAssetType());
 		Assert.assertEquals(regex, sharedAsset.getClassName());
 		Assert.assertEquals(regex, sharedAsset.getExternalReferenceCode());
@@ -1078,6 +1080,14 @@ public abstract class BaseSharedAssetResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("assetSubType", additionalAssertFieldName)) {
+				if (sharedAsset.getAssetSubType() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("assetType", additionalAssertFieldName)) {
 				if (sharedAsset.getAssetType() == null) {
 					valid = false;
@@ -1278,6 +1288,17 @@ public abstract class BaseSharedAssetResourceTestCase {
 				if (!equals(
 						(Map)sharedAsset1.getActions(),
 						(Map)sharedAsset2.getActions())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("assetSubType", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						sharedAsset1.getAssetSubType(),
+						sharedAsset2.getAssetSubType())) {
 
 					return false;
 				}
@@ -1519,6 +1540,52 @@ public abstract class BaseSharedAssetResourceTestCase {
 		if (entityFieldName.equals("actions")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
+		}
+
+		if (entityFieldName.equals("assetSubType")) {
+			Object object = sharedAsset.getAssetSubType();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
 		}
 
 		if (entityFieldName.equals("assetType")) {
@@ -1874,6 +1941,8 @@ public abstract class BaseSharedAssetResourceTestCase {
 	protected SharedAsset randomSharedAsset() throws Exception {
 		return new SharedAsset() {
 			{
+				assetSubType = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
 				assetType = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
 				className = StringUtil.toLowerCase(
