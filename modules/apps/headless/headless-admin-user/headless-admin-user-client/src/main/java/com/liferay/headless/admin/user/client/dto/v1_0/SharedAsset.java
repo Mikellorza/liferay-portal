@@ -70,6 +70,27 @@ public class SharedAsset implements Cloneable, Serializable {
 
 	protected Map<String, Map<String, String>> actions;
 
+	public String getAssetSubType() {
+		return assetSubType;
+	}
+
+	public void setAssetSubType(String assetSubType) {
+		this.assetSubType = assetSubType;
+	}
+
+	public void setAssetSubType(
+		UnsafeSupplier<String, Exception> assetSubTypeUnsafeSupplier) {
+
+		try {
+			assetSubType = assetSubTypeUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String assetSubType;
+
 	public String getAssetType() {
 		return assetType;
 	}

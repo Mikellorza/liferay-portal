@@ -82,6 +82,20 @@ public class SharedAssetSerDes {
 			sb.append(_toJSON(sharedAsset.getActions()));
 		}
 
+		if (sharedAsset.getAssetSubType() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"assetSubType\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(sharedAsset.getAssetSubType()));
+
+			sb.append("\"");
+		}
+
 		if (sharedAsset.getAssetType() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -258,6 +272,14 @@ public class SharedAssetSerDes {
 			map.put("actions", String.valueOf(sharedAsset.getActions()));
 		}
 
+		if (sharedAsset.getAssetSubType() == null) {
+			map.put("assetSubType", null);
+		}
+		else {
+			map.put(
+				"assetSubType", String.valueOf(sharedAsset.getAssetSubType()));
+		}
+
 		if (sharedAsset.getAssetType() == null) {
 			map.put("assetType", null);
 		}
@@ -365,6 +387,9 @@ public class SharedAssetSerDes {
 			else if (Objects.equals(jsonParserFieldName, "actions")) {
 				return true;
 			}
+			else if (Objects.equals(jsonParserFieldName, "assetSubType")) {
+				return false;
+			}
 			else if (Objects.equals(jsonParserFieldName, "assetType")) {
 				return false;
 			}
@@ -419,6 +444,11 @@ public class SharedAssetSerDes {
 				if (jsonParserFieldValue != null) {
 					sharedAsset.setActions(
 						(Map<String, Map<String, String>>)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "assetSubType")) {
+				if (jsonParserFieldValue != null) {
+					sharedAsset.setAssetSubType((String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "assetType")) {

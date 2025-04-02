@@ -143,6 +143,49 @@ public class SharedAsset implements Serializable {
 	private Supplier<Map<String, Map<String, String>>> _actionsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "The shared asset sub type."
+	)
+	public String getAssetSubType() {
+		if (_assetSubTypeSupplier != null) {
+			assetSubType = _assetSubTypeSupplier.get();
+
+			_assetSubTypeSupplier = null;
+		}
+
+		return assetSubType;
+	}
+
+	public void setAssetSubType(String assetSubType) {
+		this.assetSubType = assetSubType;
+
+		_assetSubTypeSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setAssetSubType(
+		UnsafeSupplier<String, Exception> assetSubTypeUnsafeSupplier) {
+
+		_assetSubTypeSupplier = () -> {
+			try {
+				return assetSubTypeUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(description = "The shared asset sub type.")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected String assetSubType;
+
+	@JsonIgnore
+	private Supplier<String> _assetSubTypeSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "The shared asset type."
 	)
 	public String getAssetType() {
@@ -678,6 +721,22 @@ public class SharedAsset implements Serializable {
 			sb.append("\"actions\": ");
 
 			sb.append(_toJSON(actions));
+		}
+
+		String assetSubType = getAssetSubType();
+
+		if (assetSubType != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"assetSubType\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(assetSubType));
+
+			sb.append("\"");
 		}
 
 		String assetType = getAssetType();
