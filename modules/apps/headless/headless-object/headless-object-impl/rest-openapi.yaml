@@ -362,7 +362,7 @@ paths:
                                     $ref: "#/components/schemas/Collaborator"
                                 type: array
             tags: ["Collaborator"]
-    "/object-entry-folders/{objectEntryFolderId}/collaborators/by-type/{collaboratorType}/{collaboratorId}":
+    "/object-entry-folders/{objectEntryFolderId}/collaborators/by-type/{type}/{collaboratorId}":
         delete:
             description:
                 Deletes the collaborator for an object entry folder and returns a 204 if the operation succeeds.
@@ -375,7 +375,7 @@ paths:
                         format: int64
                         type: integer
                 -   in: path
-                    name: collaboratorType
+                    name: type
                     required: true
                     schema:
                         type: string
@@ -403,7 +403,7 @@ paths:
                         format: int64
                         type: integer
                 -   in: path
-                    name: collaboratorType
+                    name: type
                     required: true
                     schema:
                         type: string
@@ -447,7 +447,7 @@ paths:
                         format: int64
                         type: integer
                 -   in: path
-                    name: collaboratorType
+                    name: type
                     required: true
                     schema:
                         type: string
@@ -775,7 +775,7 @@ paths:
                                     $ref: "#/components/schemas/Collaborator"
                                 type: array
             tags: ["Collaborator"]
-    "/scopes/{scopeKey}/object-entry-folders/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{collaboratorType}/{collaboratorId}":
+    "/scopes/{scopeKey}/object-entry-folders/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{type}/{collaboratorId}":
         delete:
             description:
                 Deletes the collaborator for an object entry folder and returns a 204 if the operation succeeds.
@@ -792,7 +792,7 @@ paths:
                     schema:
                         type: string
                 -   in: path
-                    name: collaboratorType
+                    name: type
                     required: true
                     schema:
                         type: string
@@ -824,7 +824,7 @@ paths:
                     schema:
                         type: string
                 -   in: path
-                    name: collaboratorType
+                    name: type
                     required: true
                     schema:
                         type: string
@@ -872,7 +872,7 @@ paths:
                     schema:
                         type: string
                 -   in: path
-                    name: collaboratorType
+                    name: type
                     required: true
                     schema:
                         type: string
