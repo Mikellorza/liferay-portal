@@ -43,8 +43,7 @@ public class CollaboratorUtil {
 
 	public static Collaborator addOrUpdateCollaborator(
 			AcceptLanguage acceptLanguage, long classNameId, long classPK,
-			Collaborator collaborator, long collaboratorId,
-			String collaboratorType,
+			Collaborator collaborator, long collaboratorId, String type,
 			DTOConverter<SharingEntry, Collaborator> dtoConverter,
 			DTOConverterRegistry dtoConverterRegistry, long groupId,
 			SharingEntryService sharingEntryService,
@@ -56,8 +55,8 @@ public class CollaboratorUtil {
 			acceptLanguage, dtoConverter, dtoConverterRegistry,
 			_addOrUpdateSharingEntry(
 				classNameId, classPK, collaborator, collaboratorId,
-				getCollaboratorType(collaboratorType), groupId,
-				sharingEntryService, userGroupLocalService, userLocalService),
+				getType(type), groupId, sharingEntryService,
+				userGroupLocalService, userLocalService),
 			uriInfo, user);
 	}
 
@@ -106,11 +105,10 @@ public class CollaboratorUtil {
 
 	public static void deleteCollaborator(
 			long classNameId, long classPK, Long collaboratorId,
-			Collaborator.Type collaboratorType,
-			SharingEntryService sharingEntryService)
+			Collaborator.Type type, SharingEntryService sharingEntryService)
 		throws Exception {
 
-		if (Objects.equals(Collaborator.Type.USER, collaboratorType)) {
+		if (Objects.equals(Collaborator.Type.USER, type)) {
 			sharingEntryService.deleteSharingEntry(
 				0, collaboratorId, classNameId, classPK);
 		}
@@ -122,13 +120,13 @@ public class CollaboratorUtil {
 
 	public static Collaborator getCollaborator(
 			AcceptLanguage acceptLanguage, long classNameId, long classPK,
-			Long collaboratorId, Collaborator.Type collaboratorType,
+			Long collaboratorId, Collaborator.Type type,
 			DTOConverter<SharingEntry, Collaborator> dtoConverter,
 			DTOConverterRegistry dtoConverterRegistry,
 			SharingEntryService sharingEntryService, UriInfo uriInfo, User user)
 		throws Exception {
 
-		if (Objects.equals(Collaborator.Type.USER, collaboratorType)) {
+		if (Objects.equals(Collaborator.Type.USER, type)) {
 			return toCollaborator(
 				acceptLanguage, dtoConverter, dtoConverterRegistry,
 				sharingEntryService.getSharingEntry(
@@ -165,28 +163,6 @@ public class CollaboratorUtil {
 				classNameId, classPK));
 	}
 
-	public static Collaborator.Type getCollaboratorType(
-		String collaboratorType) {
-
-		Collaborator.Type collaboratorTypeEnum = null;
-
-		try {
-			collaboratorTypeEnum = Collaborator.Type.create(collaboratorType);
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(illegalArgumentException);
-			}
-		}
-
-		if (collaboratorTypeEnum == null) {
-			throw new IllegalArgumentException(
-				"Collaborator type must be \"User\" or \"UserGroup\"");
-		}
-
-		return collaboratorTypeEnum;
-	}
-
 	public static long getGroupId(
 			long companyId, GroupLocalService groupLocalService,
 			String scopeKey)
@@ -206,6 +182,26 @@ public class CollaboratorUtil {
 		throw new NoSuchGroupException();
 	}
 
+	public static Collaborator.Type getType(String type) {
+		Collaborator.Type typeEnum = null;
+
+		try {
+			typeEnum = Collaborator.Type.create(type);
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(illegalArgumentException);
+			}
+		}
+
+		if (typeEnum == null) {
+			throw new IllegalArgumentException(
+				"Collaborator type must be \"User\" or \"UserGroup\"");
+		}
+
+		return typeEnum;
+	}
+
 	public static Collaborator toCollaborator(
 			AcceptLanguage acceptLanguage,
 			DTOConverter<SharingEntry, Collaborator> dtoConverter,
@@ -223,8 +219,8 @@ public class CollaboratorUtil {
 
 	private static SharingEntry _addOrUpdateSharingEntry(
 			long classNameId, long classPK, Collaborator collaborator,
-			long collaboratorId, Collaborator.Type collaboratorType,
-			long groupId, SharingEntryService sharingEntryService,
+			long collaboratorId, Collaborator.Type type, long groupId,
+			SharingEntryService sharingEntryService,
 			UserGroupLocalService userGroupLocalService,
 			UserLocalService userLocalService)
 		throws Exception {
@@ -232,7 +228,7 @@ public class CollaboratorUtil {
 		long toUserGroupId = 0;
 		long toUserId = 0;
 
-		if (Objects.equals(Collaborator.Type.USER_GROUP, collaboratorType)) {
+		if (Objects.equals(Collaborator.Type.USER_GROUP, type)) {
 			UserGroup userGroup = userGroupLocalService.getUserGroup(
 				collaboratorId);
 

@@ -65,7 +65,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				objectEntry.getModelClassName()),
 			objectEntry.getObjectEntryId(), collaboratorId,
-			CollaboratorUtil.getCollaboratorType(type), _sharingEntryService);
+			CollaboratorUtil.getType(type), _sharingEntryService);
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				objectEntry.getModelClassName()),
 			objectEntry.getObjectEntryId(), collaboratorId,
-			CollaboratorUtil.getCollaboratorType(type), _sharingEntryService);
+			CollaboratorUtil.getType(type), _sharingEntryService);
 	}
 
 	@Override
@@ -108,9 +108,9 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				objectEntry.getModelClassName()),
 			objectEntry.getObjectEntryId(), collaboratorId,
-			CollaboratorUtil.getCollaboratorType(type),
-			_collaboratorDTOConverter, _dtoConverterRegistry,
-			_sharingEntryService, contextUriInfo, contextUser);
+			CollaboratorUtil.getType(type), _collaboratorDTOConverter,
+			_dtoConverterRegistry, _sharingEntryService, contextUriInfo,
+			contextUser);
 	}
 
 	@Override
@@ -156,9 +156,9 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				objectEntry.getModelClassName()),
 			objectEntry.getObjectEntryId(), collaboratorId,
-			CollaboratorUtil.getCollaboratorType(type),
-			_collaboratorDTOConverter, _dtoConverterRegistry,
-			_sharingEntryService, contextUriInfo, contextUser);
+			CollaboratorUtil.getType(type), _collaboratorDTOConverter,
+			_dtoConverterRegistry, _sharingEntryService, contextUriInfo,
+			contextUser);
 	}
 
 	@Override
