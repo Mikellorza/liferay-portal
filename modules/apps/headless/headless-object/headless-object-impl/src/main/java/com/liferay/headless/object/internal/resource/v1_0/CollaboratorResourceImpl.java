@@ -37,10 +37,8 @@ import org.osgi.service.component.annotations.ServiceScope;
 public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 
 	@Override
-	public void
-			deleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-				Long objectEntryFolderId, String collaboratorType,
-				Long collaboratorId)
+	public void deleteObjectEntryFolderCollaboratorByTypeCollaborator(
+			Long objectEntryFolderId, String type, Long collaboratorId)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
@@ -55,15 +53,14 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				ObjectEntryFolder.class.getName()),
 			objectEntryFolder.getObjectEntryFolderId(), collaboratorId,
-			CollaboratorUtil.getCollaboratorType(collaboratorType),
-			_sharingEntryService);
+			CollaboratorUtil.getCollaboratorType(type), _sharingEntryService);
 	}
 
 	@Override
 	public void
-			deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-				String scopeKey, String externalReferenceCode,
-				String collaboratorType, Long collaboratorId)
+			deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+				String scopeKey, String externalReferenceCode, String type,
+				Long collaboratorId)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
@@ -83,15 +80,12 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				ObjectEntryFolder.class.getName()),
 			objectEntryFolder.getObjectEntryFolderId(), collaboratorId,
-			CollaboratorUtil.getCollaboratorType(collaboratorType),
-			_sharingEntryService);
+			CollaboratorUtil.getCollaboratorType(type), _sharingEntryService);
 	}
 
 	@Override
-	public Collaborator
-			getObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-				Long objectEntryFolderId, String collaboratorType,
-				Long collaboratorId)
+	public Collaborator getObjectEntryFolderCollaboratorByTypeCollaborator(
+			Long objectEntryFolderId, String type, Long collaboratorId)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
@@ -107,7 +101,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				ObjectEntryFolder.class.getName()),
 			objectEntryFolder.getObjectEntryFolderId(), collaboratorId,
-			CollaboratorUtil.getCollaboratorType(collaboratorType),
+			CollaboratorUtil.getCollaboratorType(type),
 			_collaboratorDTOConverter, _dtoConverterRegistry,
 			_sharingEntryService, contextUriInfo, contextUser);
 	}
@@ -138,9 +132,9 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 
 	@Override
 	public Collaborator
-			getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-				String scopeKey, String externalReferenceCode,
-				String collaboratorType, Long collaboratorId)
+			getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+				String scopeKey, String externalReferenceCode, String type,
+				Long collaboratorId)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
@@ -161,7 +155,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				ObjectEntryFolder.class.getName()),
 			objectEntryFolder.getObjectEntryFolderId(), collaboratorId,
-			CollaboratorUtil.getCollaboratorType(collaboratorType),
+			CollaboratorUtil.getCollaboratorType(type),
 			_collaboratorDTOConverter, _dtoConverterRegistry,
 			_sharingEntryService, contextUriInfo, contextUser);
 	}
@@ -253,10 +247,9 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 	}
 
 	@Override
-	public Collaborator
-			putObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-				Long objectEntryFolderId, String collaboratorType,
-				Long collaboratorId, Collaborator collaborator)
+	public Collaborator putObjectEntryFolderCollaboratorByTypeCollaborator(
+			Long objectEntryFolderId, String type, Long collaboratorId,
+			Collaborator collaborator)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
@@ -272,7 +265,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				ObjectEntryFolder.class.getName()),
 			objectEntryFolder.getObjectEntryFolderId(), collaborator,
-			collaboratorId, collaboratorType, _collaboratorDTOConverter,
+			collaboratorId, type, _collaboratorDTOConverter,
 			_dtoConverterRegistry, objectEntryFolder.getGroupId(),
 			_sharingEntryService, _userGroupLocalService, contextUriInfo,
 			contextUser, _userLocalService);
@@ -280,10 +273,9 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 
 	@Override
 	public Collaborator
-			putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-				String scopeKey, String externalReferenceCode,
-				String collaboratorType, Long collaboratorId,
-				Collaborator collaborator)
+			putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+				String scopeKey, String externalReferenceCode, String type,
+				Long collaboratorId, Collaborator collaborator)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
@@ -304,7 +296,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 			_classNameLocalService.getClassNameId(
 				ObjectEntryFolder.class.getName()),
 			objectEntryFolder.getObjectEntryFolderId(), collaborator,
-			collaboratorId, collaboratorType, _collaboratorDTOConverter,
+			collaboratorId, type, _collaboratorDTOConverter,
 			_dtoConverterRegistry, objectEntryFolder.getGroupId(),
 			_sharingEntryService, _userGroupLocalService, contextUriInfo,
 			contextUser, _userLocalService);
