@@ -86,7 +86,7 @@ public class CollaboratorResourceTest {
 	}
 
 	@Test
-	public void testDeleteObjectEntryCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testDeleteObjectEntryCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		ObjectEntry objectEntry = _addObjectEntry();
@@ -102,7 +102,7 @@ public class CollaboratorResourceTest {
 	}
 
 	@Test
-	public void testDeleteScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testDeleteScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		ObjectEntry objectEntry = _addObjectEntry();
@@ -119,7 +119,7 @@ public class CollaboratorResourceTest {
 	}
 
 	@Test
-	public void testGetObjectEntryCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testGetObjectEntryCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		ObjectEntry objectEntry = _addObjectEntry();
@@ -160,7 +160,7 @@ public class CollaboratorResourceTest {
 	}
 
 	@Test
-	public void testGetScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testGetScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		ObjectEntry objectEntry = _addObjectEntry();
@@ -244,7 +244,7 @@ public class CollaboratorResourceTest {
 	}
 
 	@Test
-	public void testPutObjectEntryCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testPutObjectEntryCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		ObjectEntry objectEntry = _addObjectEntry();
@@ -261,7 +261,7 @@ public class CollaboratorResourceTest {
 	}
 
 	@Test
-	public void testPutScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testPutScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		ObjectEntry objectEntry = _addObjectEntry();
