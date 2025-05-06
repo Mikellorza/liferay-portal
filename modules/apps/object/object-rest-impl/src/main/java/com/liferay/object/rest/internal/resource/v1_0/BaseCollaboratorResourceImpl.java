@@ -77,7 +77,7 @@ public abstract class BaseCollaboratorResourceImpl
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "collaboratorType"
+				name = "type"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
@@ -90,19 +90,18 @@ public abstract class BaseCollaboratorResourceImpl
 	)
 	@javax.ws.rs.DELETE
 	@javax.ws.rs.Path(
-		"/{objectEntryId}/collaborators/by-type/{collaboratorType}/{collaboratorId}"
+		"/{objectEntryId}/collaborators/by-type/{type}/{collaboratorId}"
 	)
 	@javax.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public void deleteObjectEntryCollaboratorByTypeCollaboratorTypeCollaborator(
+	public void deleteObjectEntryCollaboratorByTypeCollaborator(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.validation.constraints.NotNull
 			@javax.ws.rs.PathParam("objectEntryId")
 			Long objectEntryId,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@javax.validation.constraints.NotNull
-			@javax.ws.rs.PathParam("collaboratorType")
-			String collaboratorType,
+			@javax.validation.constraints.NotNull @javax.ws.rs.PathParam("type")
+			String type,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.validation.constraints.NotNull
 			@javax.ws.rs.PathParam("collaboratorId")
@@ -125,7 +124,7 @@ public abstract class BaseCollaboratorResourceImpl
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "collaboratorType"
+				name = "type"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
@@ -138,12 +137,12 @@ public abstract class BaseCollaboratorResourceImpl
 	)
 	@javax.ws.rs.DELETE
 	@javax.ws.rs.Path(
-		"/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{collaboratorType}/{collaboratorId}"
+		"/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{type}/{collaboratorId}"
 	)
 	@javax.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
 	public void
-			deleteScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
+			deleteScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator(
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("scopeKey")
@@ -154,8 +153,8 @@ public abstract class BaseCollaboratorResourceImpl
 				String externalReferenceCode,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
-				@javax.ws.rs.PathParam("collaboratorType")
-				String collaboratorType,
+				@javax.ws.rs.PathParam("type")
+				String type,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("collaboratorId")
@@ -174,7 +173,7 @@ public abstract class BaseCollaboratorResourceImpl
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "collaboratorType"
+				name = "type"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
@@ -199,20 +198,20 @@ public abstract class BaseCollaboratorResourceImpl
 	)
 	@javax.ws.rs.GET
 	@javax.ws.rs.Path(
-		"/{objectEntryId}/collaborators/by-type/{collaboratorType}/{collaboratorId}"
+		"/{objectEntryId}/collaborators/by-type/{type}/{collaboratorId}"
 	)
 	@javax.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
 	public com.liferay.headless.object.dto.v1_0.Collaborator
-			getObjectEntryCollaboratorByTypeCollaboratorTypeCollaborator(
+			getObjectEntryCollaboratorByTypeCollaborator(
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("objectEntryId")
 				Long objectEntryId,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
-				@javax.ws.rs.PathParam("collaboratorType")
-				String collaboratorType,
+				@javax.ws.rs.PathParam("type")
+				String type,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("collaboratorId")
@@ -287,7 +286,7 @@ public abstract class BaseCollaboratorResourceImpl
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "collaboratorType"
+				name = "type"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
@@ -312,12 +311,12 @@ public abstract class BaseCollaboratorResourceImpl
 	)
 	@javax.ws.rs.GET
 	@javax.ws.rs.Path(
-		"/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{collaboratorType}/{collaboratorId}"
+		"/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{type}/{collaboratorId}"
 	)
 	@javax.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
 	public com.liferay.headless.object.dto.v1_0.Collaborator
-			getScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
+			getScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator(
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("scopeKey")
@@ -328,8 +327,8 @@ public abstract class BaseCollaboratorResourceImpl
 				String externalReferenceCode,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
-				@javax.ws.rs.PathParam("collaboratorType")
-				String collaboratorType,
+				@javax.ws.rs.PathParam("type")
+				String type,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("collaboratorId")
@@ -549,7 +548,7 @@ public abstract class BaseCollaboratorResourceImpl
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "collaboratorType"
+				name = "type"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
@@ -562,21 +561,21 @@ public abstract class BaseCollaboratorResourceImpl
 	)
 	@javax.ws.rs.Consumes({"application/json", "application/xml"})
 	@javax.ws.rs.Path(
-		"/{objectEntryId}/collaborators/by-type/{collaboratorType}/{collaboratorId}"
+		"/{objectEntryId}/collaborators/by-type/{type}/{collaboratorId}"
 	)
 	@javax.ws.rs.Produces({"application/json", "application/xml"})
 	@javax.ws.rs.PUT
 	@Override
 	public com.liferay.headless.object.dto.v1_0.Collaborator
-			putObjectEntryCollaboratorByTypeCollaboratorTypeCollaborator(
+			putObjectEntryCollaboratorByTypeCollaborator(
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("objectEntryId")
 				Long objectEntryId,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
-				@javax.ws.rs.PathParam("collaboratorType")
-				String collaboratorType,
+				@javax.ws.rs.PathParam("type")
+				String type,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("collaboratorId")
@@ -602,7 +601,7 @@ public abstract class BaseCollaboratorResourceImpl
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "collaboratorType"
+				name = "type"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
@@ -615,13 +614,13 @@ public abstract class BaseCollaboratorResourceImpl
 	)
 	@javax.ws.rs.Consumes({"application/json", "application/xml"})
 	@javax.ws.rs.Path(
-		"/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{collaboratorType}/{collaboratorId}"
+		"/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{type}/{collaboratorId}"
 	)
 	@javax.ws.rs.Produces({"application/json", "application/xml"})
 	@javax.ws.rs.PUT
 	@Override
 	public com.liferay.headless.object.dto.v1_0.Collaborator
-			putScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
+			putScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator(
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("scopeKey")
@@ -632,8 +631,8 @@ public abstract class BaseCollaboratorResourceImpl
 				String externalReferenceCode,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
-				@javax.ws.rs.PathParam("collaboratorType")
-				String collaboratorType,
+				@javax.ws.rs.PathParam("type")
+				String type,
 				@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 				@javax.validation.constraints.NotNull
 				@javax.ws.rs.PathParam("collaboratorId")
