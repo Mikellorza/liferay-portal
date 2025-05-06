@@ -75,7 +75,7 @@ public class CollaboratorResourceTest extends BaseCollaboratorResourceTestCase {
 
 	@Override
 	@Test
-	public void testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaboratorNotFound()
+	public void testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorNotFound()
 		throws Exception {
 
 		// Namespace headlessObject_v1_0
@@ -91,7 +91,7 @@ public class CollaboratorResourceTest extends BaseCollaboratorResourceTestCase {
 						"headlessObject_v1_0",
 						new GraphQLField(
 							"objectEntryFolderCollaboratorByType" +
-								"CollaboratorTypeCollaborator",
+								"Collaborator",
 							HashMapBuilder.<String, Object>put(
 								"collaboratorId", irrelevantCollaboratorId
 							).put(
@@ -127,7 +127,7 @@ public class CollaboratorResourceTest extends BaseCollaboratorResourceTestCase {
 
 	@Override
 	@Test
-	public void testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaboratorNotFound()
+	public void testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorNotFound()
 		throws Exception {
 
 		// Namespace headlessObject_v1_0
@@ -169,7 +169,7 @@ public class CollaboratorResourceTest extends BaseCollaboratorResourceTestCase {
 				invokeGraphQLQuery(
 					new GraphQLField(
 						"scopeScopeKeyObjectEntryFolderByExternalReference" +
-							"CodeCollaboratorByTypeCollaboratorType" +
+							"CodeCollaboratorByType" +
 								"Collaborator",
 						HashMapBuilder.<String, Object>put(
 							"collaboratorId", irrelevantCollaboratorId
@@ -233,20 +233,20 @@ public class CollaboratorResourceTest extends BaseCollaboratorResourceTestCase {
 
 	@Override
 	@Test
-	public void testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		Collaborator postCollaborator =
-			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator();
 		Collaborator randomCollaborator = randomCollaborator();
 
 		Collaborator putCollaborator =
 			collaboratorResource.
-				putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey(),
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+				putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey(),
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 						postCollaborator),
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getType(),
 					postCollaborator.getId(), randomCollaborator);
 
 		assertEquals(randomCollaborator, putCollaborator);
@@ -254,11 +254,11 @@ public class CollaboratorResourceTest extends BaseCollaboratorResourceTestCase {
 
 		Collaborator getCollaborator =
 			collaboratorResource.
-				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey(),
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey(),
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 						postCollaborator),
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getType(),
 					putCollaborator.getId());
 
 		assertEquals(randomCollaborator, getCollaborator);
@@ -288,7 +288,7 @@ public class CollaboratorResourceTest extends BaseCollaboratorResourceTestCase {
 
 	@Override
 	protected Collaborator
-			testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testDeleteObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		return _addUserCollaborator(_objectEntryFolder);
@@ -296,7 +296,7 @@ public class CollaboratorResourceTest extends BaseCollaboratorResourceTestCase {
 
 	@Override
 	protected String
-			testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
+			testDeleteObjectEntryFolderCollaboratorByTypeCollaborator_getType()
 		throws Exception {
 
 		return Collaborator.Type.USER.getValue();

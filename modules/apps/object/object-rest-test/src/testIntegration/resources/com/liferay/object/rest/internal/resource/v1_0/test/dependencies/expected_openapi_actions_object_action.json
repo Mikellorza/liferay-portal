@@ -1848,10 +1848,10 @@
 				]
 			}
 		},
-		"/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{collaboratorType}/{collaboratorId}": {
+		"/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/collaborators/by-type/{type}/{collaboratorId}": {
 			"delete": {
 				"description": "Deletes the collaborator for an object entry and returns a 204 if the operation succeeds.",
-				"operationId": "deleteScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator",
+				"operationId": "deleteScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator",
 				"parameters": [
 					{
 						"in": "path",
@@ -1871,7 +1871,7 @@
 					},
 					{
 						"in": "path",
-						"name": "collaboratorType",
+						"name": "type",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -1903,7 +1903,7 @@
 			},
 			"get": {
 				"description": "Retrieves the collaborator for an object entry.",
-				"operationId": "getScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator",
+				"operationId": "getScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator",
 				"parameters": [
 					{
 						"in": "path",
@@ -1923,7 +1923,7 @@
 					},
 					{
 						"in": "path",
-						"name": "collaboratorType",
+						"name": "type",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -1982,7 +1982,7 @@
 			},
 			"put": {
 				"description": "Add or update a collaborator received in the request.",
-				"operationId": "putScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator",
+				"operationId": "putScopeScopeKeyByExternalReferenceCodeCollaboratorByTypeCollaborator",
 				"parameters": [
 					{
 						"in": "path",
@@ -2002,7 +2002,7 @@
 					},
 					{
 						"in": "path",
-						"name": "collaboratorType",
+						"name": "type",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -2480,10 +2480,10 @@
 				]
 			}
 		},
-		"/{object1Id}/collaborators/by-type/{collaboratorType}/{collaboratorId}": {
+		"/{object1Id}/collaborators/by-type/{type}/{collaboratorId}": {
 			"delete": {
 				"description": "Deletes the collaborator for an object entry and returns a 204 if the operation succeeds.",
-				"operationId": "deleteObject1CollaboratorByTypeCollaboratorTypeCollaborator",
+				"operationId": "deleteObject1CollaboratorByTypeCollaborator",
 				"parameters": [
 					{
 						"in": "path",
@@ -2495,7 +2495,7 @@
 					},
 					{
 						"in": "path",
-						"name": "collaboratorType",
+						"name": "type",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -2527,7 +2527,7 @@
 			},
 			"get": {
 				"description": "Retrieves the collaborator for an object entry.",
-				"operationId": "getObject1CollaboratorByTypeCollaboratorTypeCollaborator",
+				"operationId": "getObject1CollaboratorByTypeCollaborator",
 				"parameters": [
 					{
 						"in": "path",
@@ -2539,7 +2539,7 @@
 					},
 					{
 						"in": "path",
-						"name": "collaboratorType",
+						"name": "type",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -2598,7 +2598,7 @@
 			},
 			"put": {
 				"description": "Add or update a collaborator received in the request.",
-				"operationId": "putObject1CollaboratorByTypeCollaboratorTypeCollaborator",
+				"operationId": "putObject1CollaboratorByTypeCollaborator",
 				"parameters": [
 					{
 						"in": "path",
@@ -2610,7 +2610,7 @@
 					},
 					{
 						"in": "path",
-						"name": "collaboratorType",
+						"name": "type",
 						"required": true,
 						"schema": {
 							"type": "string"
