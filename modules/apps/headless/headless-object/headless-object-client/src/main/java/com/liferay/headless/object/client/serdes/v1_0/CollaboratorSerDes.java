@@ -178,7 +178,7 @@ public class CollaboratorSerDes {
 
 			sb.append("\"");
 
-			sb.append(collaborator.getType());
+			sb.append(_escape(collaborator.getType()));
 
 			sb.append("\"");
 		}
@@ -393,8 +393,7 @@ public class CollaboratorSerDes {
 			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {
 				if (jsonParserFieldValue != null) {
-					collaborator.setType(
-						Collaborator.Type.create((String)jsonParserFieldValue));
+					collaborator.setType((String)jsonParserFieldValue);
 				}
 			}
 		}

@@ -48,22 +48,18 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface CollaboratorResource {
 
-	public void
-			deleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-				Long objectEntryFolderId, String collaboratorType,
-				Long collaboratorId)
+	public void deleteObjectEntryFolderCollaboratorByTypeCollaborator(
+			Long objectEntryFolderId, String type, Long collaboratorId)
 		throws Exception;
 
 	public void
-			deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-				String scopeKey, String externalReferenceCode,
-				String collaboratorType, Long collaboratorId)
+			deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+				String scopeKey, String externalReferenceCode, String type,
+				Long collaboratorId)
 		throws Exception;
 
-	public Collaborator
-			getObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-				Long objectEntryFolderId, String collaboratorType,
-				Long collaboratorId)
+	public Collaborator getObjectEntryFolderCollaboratorByTypeCollaborator(
+			Long objectEntryFolderId, String type, Long collaboratorId)
 		throws Exception;
 
 	public Page<Collaborator> getObjectEntryFolderCollaboratorsPage(
@@ -71,9 +67,9 @@ public interface CollaboratorResource {
 		throws Exception;
 
 	public Collaborator
-			getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-				String scopeKey, String externalReferenceCode,
-				String collaboratorType, Long collaboratorId)
+			getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+				String scopeKey, String externalReferenceCode, String type,
+				Long collaboratorId)
 		throws Exception;
 
 	public Page<Collaborator>
@@ -97,17 +93,15 @@ public interface CollaboratorResource {
 				Collaborator[] collaborators)
 		throws Exception;
 
-	public Collaborator
-			putObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-				Long objectEntryFolderId, String collaboratorType,
-				Long collaboratorId, Collaborator collaborator)
+	public Collaborator putObjectEntryFolderCollaboratorByTypeCollaborator(
+			Long objectEntryFolderId, String type, Long collaboratorId,
+			Collaborator collaborator)
 		throws Exception;
 
 	public Collaborator
-			putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-				String scopeKey, String externalReferenceCode,
-				String collaboratorType, Long collaboratorId,
-				Collaborator collaborator)
+			putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+				String scopeKey, String externalReferenceCode, String type,
+				Long collaboratorId, Collaborator collaborator)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
