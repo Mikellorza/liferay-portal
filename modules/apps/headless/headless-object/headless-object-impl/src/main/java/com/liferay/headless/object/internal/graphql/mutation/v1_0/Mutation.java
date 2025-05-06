@@ -58,11 +58,10 @@ public class Mutation {
 	@GraphQLField(
 		description = "Deletes the collaborator for an object entry folder and returns a 204 if the operation succeeds."
 	)
-	public boolean
-			deleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-				@GraphQLName("objectEntryFolderId") Long objectEntryFolderId,
-				@GraphQLName("collaboratorType") String collaboratorType,
-				@GraphQLName("collaboratorId") Long collaboratorId)
+	public boolean deleteObjectEntryFolderCollaboratorByTypeCollaborator(
+			@GraphQLName("objectEntryFolderId") Long objectEntryFolderId,
+			@GraphQLName("type") String type,
+			@GraphQLName("collaboratorId") Long collaboratorId)
 		throws Exception {
 
 		_applyVoidComponentServiceObjects(
@@ -70,8 +69,8 @@ public class Mutation {
 			this::_populateResourceContext,
 			collaboratorResource ->
 				collaboratorResource.
-					deleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-						objectEntryFolderId, collaboratorType, collaboratorId));
+					deleteObjectEntryFolderCollaboratorByTypeCollaborator(
+						objectEntryFolderId, type, collaboratorId));
 
 		return true;
 	}
@@ -80,11 +79,11 @@ public class Mutation {
 		description = "Deletes the collaborator for an object entry folder and returns a 204 if the operation succeeds."
 	)
 	public boolean
-			deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
+			deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
 				@GraphQLName("scopeKey") String scopeKey,
 				@GraphQLName("externalReferenceCode") String
 					externalReferenceCode,
-				@GraphQLName("collaboratorType") String collaboratorType,
+				@GraphQLName("type") String type,
 				@GraphQLName("collaboratorId") Long collaboratorId)
 		throws Exception {
 
@@ -93,9 +92,8 @@ public class Mutation {
 			this::_populateResourceContext,
 			collaboratorResource ->
 				collaboratorResource.
-					deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-						scopeKey, externalReferenceCode, collaboratorType,
-						collaboratorId));
+					deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+						scopeKey, externalReferenceCode, type, collaboratorId));
 
 		return true;
 	}
@@ -166,12 +164,11 @@ public class Mutation {
 	@GraphQLField(
 		description = "Add or update a collaborator received in the request."
 	)
-	public Collaborator
-			updateObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-				@GraphQLName("objectEntryFolderId") Long objectEntryFolderId,
-				@GraphQLName("collaboratorType") String collaboratorType,
-				@GraphQLName("collaboratorId") Long collaboratorId,
-				@GraphQLName("collaborator") Collaborator collaborator)
+	public Collaborator updateObjectEntryFolderCollaboratorByTypeCollaborator(
+			@GraphQLName("objectEntryFolderId") Long objectEntryFolderId,
+			@GraphQLName("type") String type,
+			@GraphQLName("collaboratorId") Long collaboratorId,
+			@GraphQLName("collaborator") Collaborator collaborator)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
@@ -179,8 +176,8 @@ public class Mutation {
 			this::_populateResourceContext,
 			collaboratorResource ->
 				collaboratorResource.
-					putObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-						objectEntryFolderId, collaboratorType, collaboratorId,
+					putObjectEntryFolderCollaboratorByTypeCollaborator(
+						objectEntryFolderId, type, collaboratorId,
 						collaborator));
 	}
 
@@ -188,11 +185,11 @@ public class Mutation {
 		description = "Add or update a collaborator received in the request."
 	)
 	public Collaborator
-			updateScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
+			updateScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
 				@GraphQLName("scopeKey") String scopeKey,
 				@GraphQLName("externalReferenceCode") String
 					externalReferenceCode,
-				@GraphQLName("collaboratorType") String collaboratorType,
+				@GraphQLName("type") String type,
 				@GraphQLName("collaboratorId") Long collaboratorId,
 				@GraphQLName("collaborator") Collaborator collaborator)
 		throws Exception {
@@ -202,9 +199,9 @@ public class Mutation {
 			this::_populateResourceContext,
 			collaboratorResource ->
 				collaboratorResource.
-					putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-						scopeKey, externalReferenceCode, collaboratorType,
-						collaboratorId, collaborator));
+					putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+						scopeKey, externalReferenceCode, type, collaboratorId,
+						collaborator));
 	}
 
 	@GraphQLField(

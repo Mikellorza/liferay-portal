@@ -184,47 +184,36 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testDeleteObjectEntryFolderCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		@SuppressWarnings("PMD.UnusedLocalVariable")
 		Collaborator collaborator =
-			testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testDeleteObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator();
 
 		assertHttpResponseStatusCode(
 			204,
 			collaboratorResource.
-				deleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaboratorHttpResponse(
-					testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId(),
-					testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					collaborator.getId()));
+				deleteObjectEntryFolderCollaboratorByTypeCollaboratorHttpResponse(
+					testDeleteObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId(),
+					collaborator.getType(), collaborator.getId()));
 
 		assertHttpResponseStatusCode(
 			404,
 			collaboratorResource.
-				getObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaboratorHttpResponse(
-					testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId(),
-					testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					collaborator.getId()));
+				getObjectEntryFolderCollaboratorByTypeCollaboratorHttpResponse(
+					testDeleteObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId(),
+					collaborator.getType(), collaborator.getId()));
 		assertHttpResponseStatusCode(
 			404,
 			collaboratorResource.
-				getObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaboratorHttpResponse(
-					testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId(),
-					testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					0L));
+				getObjectEntryFolderCollaboratorByTypeCollaboratorHttpResponse(
+					testDeleteObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId(),
+					collaborator.getType(), 0L));
 	}
 
 	protected Long
-			testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId()
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
-	protected String
-			testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
+			testDeleteObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -232,7 +221,7 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected Collaborator
-			testDeleteObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testDeleteObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -240,43 +229,39 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		@SuppressWarnings("PMD.UnusedLocalVariable")
 		Collaborator collaborator =
-			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator();
 
 		assertHttpResponseStatusCode(
 			204,
 			collaboratorResource.
-				deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaboratorHttpResponse(
-					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey(),
-					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+				deleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorHttpResponse(
+					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey(),
+					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 						collaborator),
-					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					collaborator.getId()));
+					collaborator.getType(), collaborator.getId()));
 
 		assertHttpResponseStatusCode(
 			404,
 			collaboratorResource.
-				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaboratorHttpResponse(
-					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey(),
+				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorHttpResponse(
+					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey(),
 					collaborator.getExternalReferenceCode(),
-					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					collaborator.getId()));
+					collaborator.getType(), collaborator.getId()));
 		assertHttpResponseStatusCode(
 			404,
 			collaboratorResource.
-				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaboratorHttpResponse(
-					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey(),
-					"-",
-					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					0L));
+				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorHttpResponse(
+					testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey(),
+					"-", collaborator.getType(), 0L));
 	}
 
 	protected String
-			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey()
+			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -284,23 +269,15 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected String
-			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 				Collaborator collaborator)
 		throws Exception {
 
 		return collaborator.getExternalReferenceCode();
 	}
 
-	protected String
-			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
 	protected Collaborator
-			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testDeleteScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -308,33 +285,24 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testGetObjectEntryFolderCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		Collaborator postCollaborator =
-			testGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testGetObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator();
 
 		Collaborator getCollaborator =
 			collaboratorResource.
-				getObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-					testGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId(),
-					testGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					postCollaborator.getId());
+				getObjectEntryFolderCollaboratorByTypeCollaborator(
+					testGetObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId(),
+					postCollaborator.getType(), postCollaborator.getId());
 
 		assertEquals(postCollaborator, getCollaborator);
 		assertValid(getCollaborator);
 	}
 
 	protected Long
-			testGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId()
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
-	protected String
-			testGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
+			testGetObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -342,7 +310,7 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected Collaborator
-			testGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testGetObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -350,11 +318,11 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		Collaborator collaborator =
-			testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator();
 
 		// No namespace
 
@@ -365,18 +333,17 @@ public abstract class BaseCollaboratorResourceTestCase {
 					JSONUtil.getValueAsString(
 						invokeGraphQLQuery(
 							new GraphQLField(
-								"objectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator",
+								"objectEntryFolderCollaboratorByTypeCollaborator",
 								new HashMap<String, Object>() {
 									{
 										put(
 											"objectEntryFolderId",
-											testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId());
+											testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId());
 
 										put(
-											"collaboratorType",
-											"\"" +
-												testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType() +
-													"\"");
+											"type",
+											"\"" + collaborator.getType() +
+												"\"");
 
 										put(
 											"collaboratorId",
@@ -385,7 +352,7 @@ public abstract class BaseCollaboratorResourceTestCase {
 								},
 								getGraphQLFields())),
 						"JSONObject/data",
-						"Object/objectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator"))));
+						"Object/objectEntryFolderCollaboratorByTypeCollaborator"))));
 
 		// Using the namespace headlessObject_v1_0
 
@@ -398,18 +365,17 @@ public abstract class BaseCollaboratorResourceTestCase {
 							new GraphQLField(
 								"headlessObject_v1_0",
 								new GraphQLField(
-									"objectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator",
+									"objectEntryFolderCollaboratorByTypeCollaborator",
 									new HashMap<String, Object>() {
 										{
 											put(
 												"objectEntryFolderId",
-												testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId());
+												testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId());
 
 											put(
-												"collaboratorType",
-												"\"" +
-													testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType() +
-														"\"");
+												"type",
+												"\"" + collaborator.getType() +
+													"\"");
 
 											put(
 												"collaboratorId",
@@ -418,19 +384,11 @@ public abstract class BaseCollaboratorResourceTestCase {
 									},
 									getGraphQLFields()))),
 						"JSONObject/data", "JSONObject/headlessObject_v1_0",
-						"Object/objectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator"))));
+						"Object/objectEntryFolderCollaboratorByTypeCollaborator"))));
 	}
 
 	protected Long
-			testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId()
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
-	protected String
-			testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
+			testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -438,12 +396,11 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaboratorNotFound()
+	public void testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorNotFound()
 		throws Exception {
 
 		Long irrelevantObjectEntryFolderId = RandomTestUtil.randomLong();
-		String irrelevantCollaboratorType =
-			"\"" + RandomTestUtil.randomString() + "\"";
+		String irrelevantType = "\"" + RandomTestUtil.randomString() + "\"";
 		Long irrelevantCollaboratorId = RandomTestUtil.randomLong();
 
 		// No namespace
@@ -453,15 +410,13 @@ public abstract class BaseCollaboratorResourceTestCase {
 			JSONUtil.getValueAsString(
 				invokeGraphQLQuery(
 					new GraphQLField(
-						"objectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator",
+						"objectEntryFolderCollaboratorByTypeCollaborator",
 						new HashMap<String, Object>() {
 							{
 								put(
 									"objectEntryFolderId",
 									irrelevantObjectEntryFolderId);
-								put(
-									"collaboratorType",
-									irrelevantCollaboratorType);
+								put("type", irrelevantType);
 								put("collaboratorId", irrelevantCollaboratorId);
 							}
 						},
@@ -478,15 +433,13 @@ public abstract class BaseCollaboratorResourceTestCase {
 					new GraphQLField(
 						"headlessObject_v1_0",
 						new GraphQLField(
-							"objectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator",
+							"objectEntryFolderCollaboratorByTypeCollaborator",
 							new HashMap<String, Object>() {
 								{
 									put(
 										"objectEntryFolderId",
 										irrelevantObjectEntryFolderId);
-									put(
-										"collaboratorType",
-										irrelevantCollaboratorType);
+									put("type", irrelevantType);
 									put(
 										"collaboratorId",
 										irrelevantCollaboratorId);
@@ -498,7 +451,7 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected Collaborator
-			testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testGraphQLGetObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		return testGraphQLCollaborator_addCollaborator();
@@ -687,27 +640,26 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		Collaborator postCollaborator =
-			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator();
 
 		Collaborator getCollaborator =
 			collaboratorResource.
-				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-					testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey(),
-					testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+					testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey(),
+					testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 						postCollaborator),
-					testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					postCollaborator.getId());
+					postCollaborator.getType(), postCollaborator.getId());
 
 		assertEquals(postCollaborator, getCollaborator);
 		assertValid(getCollaborator);
 	}
 
 	protected String
-			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey()
+			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -715,23 +667,15 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected String
-			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 				Collaborator collaborator)
 		throws Exception {
 
 		return collaborator.getExternalReferenceCode();
 	}
 
-	protected String
-			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
 	protected Collaborator
-			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -739,11 +683,11 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		Collaborator collaborator =
-			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator();
 
 		// No namespace
 
@@ -754,26 +698,25 @@ public abstract class BaseCollaboratorResourceTestCase {
 					JSONUtil.getValueAsString(
 						invokeGraphQLQuery(
 							new GraphQLField(
-								"scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator",
+								"scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator",
 								new HashMap<String, Object>() {
 									{
 										put(
 											"scopeKey",
 											"\"" +
-												testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey() +
+												testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey() +
 													"\"");
 
 										put(
 											"externalReferenceCode",
 											"\"" +
-												testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+												testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 													collaborator) + "\"");
 
 										put(
-											"collaboratorType",
-											"\"" +
-												testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType() +
-													"\"");
+											"type",
+											"\"" + collaborator.getType() +
+												"\"");
 
 										put(
 											"collaboratorId",
@@ -782,7 +725,7 @@ public abstract class BaseCollaboratorResourceTestCase {
 								},
 								getGraphQLFields())),
 						"JSONObject/data",
-						"Object/scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator"))));
+						"Object/scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator"))));
 
 		// Using the namespace headlessObject_v1_0
 
@@ -795,26 +738,25 @@ public abstract class BaseCollaboratorResourceTestCase {
 							new GraphQLField(
 								"headlessObject_v1_0",
 								new GraphQLField(
-									"scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator",
+									"scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator",
 									new HashMap<String, Object>() {
 										{
 											put(
 												"scopeKey",
 												"\"" +
-													testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey() +
+													testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey() +
 														"\"");
 
 											put(
 												"externalReferenceCode",
 												"\"" +
-													testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+													testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 														collaborator) + "\"");
 
 											put(
-												"collaboratorType",
-												"\"" +
-													testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType() +
-														"\"");
+												"type",
+												"\"" + collaborator.getType() +
+													"\"");
 
 											put(
 												"collaboratorId",
@@ -823,11 +765,11 @@ public abstract class BaseCollaboratorResourceTestCase {
 									},
 									getGraphQLFields()))),
 						"JSONObject/data", "JSONObject/headlessObject_v1_0",
-						"Object/scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator"))));
+						"Object/scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator"))));
 	}
 
 	protected String
-			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey()
+			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -835,30 +777,21 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected String
-			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 				Collaborator collaborator)
 		throws Exception {
 
 		return collaborator.getExternalReferenceCode();
 	}
 
-	protected String
-			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
 	@Test
-	public void testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaboratorNotFound()
+	public void testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorNotFound()
 		throws Exception {
 
 		String irrelevantScopeKey = "\"" + RandomTestUtil.randomString() + "\"";
 		String irrelevantExternalReferenceCode =
 			"\"" + RandomTestUtil.randomString() + "\"";
-		String irrelevantCollaboratorType =
-			"\"" + RandomTestUtil.randomString() + "\"";
+		String irrelevantType = "\"" + RandomTestUtil.randomString() + "\"";
 		Long irrelevantCollaboratorId = RandomTestUtil.randomLong();
 
 		// No namespace
@@ -868,16 +801,14 @@ public abstract class BaseCollaboratorResourceTestCase {
 			JSONUtil.getValueAsString(
 				invokeGraphQLQuery(
 					new GraphQLField(
-						"scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator",
+						"scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator",
 						new HashMap<String, Object>() {
 							{
 								put("scopeKey", irrelevantScopeKey);
 								put(
 									"externalReferenceCode",
 									irrelevantExternalReferenceCode);
-								put(
-									"collaboratorType",
-									irrelevantCollaboratorType);
+								put("type", irrelevantType);
 								put("collaboratorId", irrelevantCollaboratorId);
 							}
 						},
@@ -894,16 +825,14 @@ public abstract class BaseCollaboratorResourceTestCase {
 					new GraphQLField(
 						"headlessObject_v1_0",
 						new GraphQLField(
-							"scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator",
+							"scopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator",
 							new HashMap<String, Object>() {
 								{
 									put("scopeKey", irrelevantScopeKey);
 									put(
 										"externalReferenceCode",
 										irrelevantExternalReferenceCode);
-									put(
-										"collaboratorType",
-										irrelevantCollaboratorType);
+									put("type", irrelevantType);
 									put(
 										"collaboratorId",
 										irrelevantCollaboratorId);
@@ -915,7 +844,7 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected Collaborator
-			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testGraphQLGetScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		return testGraphQLCollaborator_addCollaborator();
@@ -1157,45 +1086,36 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testPutObjectEntryFolderCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		Collaborator postCollaborator =
-			testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testPutObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator();
 
 		Collaborator randomCollaborator = randomCollaborator();
 
 		Collaborator putCollaborator =
 			collaboratorResource.
-				putObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-					testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId(),
-					testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					postCollaborator.getId(), randomCollaborator);
+				putObjectEntryFolderCollaboratorByTypeCollaborator(
+					testPutObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId(),
+					postCollaborator.getType(), postCollaborator.getId(),
+					randomCollaborator);
 
 		assertEquals(randomCollaborator, putCollaborator);
 		assertValid(putCollaborator);
 
 		Collaborator getCollaborator =
 			collaboratorResource.
-				getObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator(
-					testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId(),
-					testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					putCollaborator.getId());
+				getObjectEntryFolderCollaboratorByTypeCollaborator(
+					testPutObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId(),
+					putCollaborator.getType(), putCollaborator.getId());
 
 		assertEquals(randomCollaborator, getCollaborator);
 		assertValid(getCollaborator);
 	}
 
 	protected Long
-			testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getObjectEntryFolderId()
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
-	protected String
-			testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
+			testPutObjectEntryFolderCollaboratorByTypeCollaborator_getObjectEntryFolderId()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -1203,7 +1123,7 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected Collaborator
-			testPutObjectEntryFolderCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testPutObjectEntryFolderCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -1211,40 +1131,39 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	@Test
-	public void testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator()
+	public void testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator()
 		throws Exception {
 
 		Collaborator postCollaborator =
-			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator();
+			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator();
 
 		Collaborator randomCollaborator = randomCollaborator();
 
 		Collaborator putCollaborator =
 			collaboratorResource.
-				putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey(),
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+				putScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey(),
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 						postCollaborator),
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					postCollaborator.getId(), randomCollaborator);
+					postCollaborator.getType(), postCollaborator.getId(),
+					randomCollaborator);
 
 		assertEquals(randomCollaborator, putCollaborator);
 		assertValid(putCollaborator);
 
 		Collaborator getCollaborator =
 			collaboratorResource.
-				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey(),
+				getScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator(
+					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey(),
 					putCollaborator.getExternalReferenceCode(),
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType(),
-					putCollaborator.getId());
+					putCollaborator.getType(), putCollaborator.getId());
 
 		assertEquals(randomCollaborator, getCollaborator);
 		assertValid(getCollaborator);
 	}
 
 	protected String
-			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getScopeKey()
+			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getScopeKey()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -1252,23 +1171,15 @@ public abstract class BaseCollaboratorResourceTestCase {
 	}
 
 	protected String
-			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getExternalReferenceCode(
+			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_getExternalReferenceCode(
 				Collaborator collaborator)
 		throws Exception {
 
 		return collaborator.getExternalReferenceCode();
 	}
 
-	protected String
-			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_getCollaboratorType()
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
 	protected Collaborator
-			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaboratorTypeCollaborator_addCollaborator()
+			testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeCollaboratorByTypeCollaborator_addCollaborator()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
