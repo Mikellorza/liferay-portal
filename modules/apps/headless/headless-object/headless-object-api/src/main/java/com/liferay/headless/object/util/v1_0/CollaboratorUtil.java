@@ -43,10 +43,10 @@ public class CollaboratorUtil {
 
 	public static Collaborator addOrUpdateCollaborator(
 			AcceptLanguage acceptLanguage, long classNameId, long classPK,
-			Collaborator collaborator, long collaboratorId, String type,
+			Collaborator collaborator, long collaboratorId,
 			DTOConverter<SharingEntry, Collaborator> dtoConverter,
 			DTOConverterRegistry dtoConverterRegistry, long groupId,
-			SharingEntryService sharingEntryService,
+			SharingEntryService sharingEntryService, String type,
 			UserGroupLocalService userGroupLocalService, UriInfo uriInfo,
 			User user, UserLocalService userLocalService)
 		throws Exception {
