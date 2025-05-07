@@ -467,7 +467,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 						<#if freeMarkerTool.isPathParameter(javaMethodParameter, javaMethodSignature.operation)>
 							<#if stringUtil.equals(javaMethodParameter.parameterName, schemaVarName + "Id")>
 								${schemaVarName}.getId()
-							<#elseif properties?keys?seq_contains(javaMethodParameter.parameterName)>
+							<#elseif properties?keys?seq_contains(javaMethodParameter.parameterName) && stringUtil.equals(properties[javaMethodParameter.parameterName], javaMethodParameter.parameterType)>
 								<#if freeMarkerTool.isParameterNameSchemaRelated(javaMethodParameter.parameterName, javaMethodSignature.path, schemaName)>
 									${schemaVarName}.get${javaMethodParameter.parameterName?cap_first}()
 								<#else>
