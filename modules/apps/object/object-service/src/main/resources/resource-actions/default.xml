@@ -53,12 +53,14 @@
 		<permissions>
 			<supports>
 				<action-key>ADD_FOLDER</action-key>
+				<action-key>ADD_OBJECT_ENTRY</action-key>
 				<action-key>DELETE</action-key>
 				<action-key>UPDATE</action-key>
 				<action-key>VIEW</action-key>
 			</supports>
 			<guest-unsupported>
 				<action-key>ADD_FOLDER</action-key>
+				<action-key>ADD_OBJECT_ENTRY</action-key>
 				<action-key>DELETE</action-key>
 				<action-key>UPDATE</action-key>
 			</guest-unsupported>
