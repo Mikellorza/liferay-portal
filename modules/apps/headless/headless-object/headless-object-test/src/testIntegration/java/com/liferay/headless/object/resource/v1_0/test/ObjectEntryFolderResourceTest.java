@@ -12,6 +12,7 @@ import com.liferay.headless.object.client.dto.v1_0.ObjectEntryFolder;
 import com.liferay.headless.object.client.pagination.Page;
 import com.liferay.headless.object.client.pagination.Pagination;
 import com.liferay.headless.object.client.problem.Problem;
+import com.liferay.headless.object.client.resource.v1_0.ObjectEntryFolderResource;
 import com.liferay.object.constants.ObjectEntryFolderConstants;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Group;
@@ -28,6 +29,7 @@ import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.StringEntityField;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.util.PropsValues;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,6 +64,30 @@ public class ObjectEntryFolderResourceTest
 
 		_testDepotEntryGroup = _groupLocalService.getGroup(
 			_testDepotEntry.getGroupId());
+	}
+
+	@Test
+	public void testGetObjectEntryFolderWithPermissions() throws Exception {
+		objectEntryFolderResource = ObjectEntryFolderResource.builder(
+		).authentication(
+			"test@liferay.com", PropsValues.DEFAULT_ADMIN_PASSWORD
+		).locale(
+			LocaleUtil.getDefault()
+		).parameters(
+			"nestedFields", "permissions"
+		).build();
+
+		ObjectEntryFolder postObjectEntryFolder =
+			testGetObjectEntryFolder_addObjectEntryFolder();
+
+		ObjectEntryFolder getObjectEntryFolder =
+			objectEntryFolderResource.getObjectEntryFolder(
+				postObjectEntryFolder.getId());
+
+		Assert.assertNotNull(getObjectEntryFolder.getPermissions());
+
+		assertEquals(postObjectEntryFolder, getObjectEntryFolder);
+		assertValid(getObjectEntryFolder);
 	}
 
 	@Override
