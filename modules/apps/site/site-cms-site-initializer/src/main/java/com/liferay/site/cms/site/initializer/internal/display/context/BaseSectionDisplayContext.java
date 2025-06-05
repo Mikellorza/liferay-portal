@@ -99,7 +99,7 @@ public abstract class BaseSectionDisplayContext {
 			sb.append(getCMSSectionFilterString());
 		}
 
-		sb.append("&nestedFields=embedded,file.thumbnailURL");
+		sb.append("&nestedFields=embedded,file.thumbnailURL,permissions");
 
 		return sb.toString();
 	}

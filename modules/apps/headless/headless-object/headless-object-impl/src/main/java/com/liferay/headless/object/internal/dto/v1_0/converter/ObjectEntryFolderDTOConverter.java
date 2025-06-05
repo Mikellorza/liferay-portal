@@ -12,12 +12,18 @@ import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.PermissionService;
+import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 import com.liferay.portal.vulcan.fields.NestedFieldsSupplier;
+import com.liferay.portal.vulcan.permission.Permission;
+import com.liferay.portal.vulcan.permission.PermissionUtil;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
+
+import java.util.Collection;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -111,6 +117,7 @@ public class ObjectEntryFolderDTOConverter
 
 						return null;
 					});
+				setPermissions(() -> _toPermissions(objectEntryFolder));
 				setScopeKey(
 					() -> {
 						Group group = _groupLocalService.fetchGroup(
@@ -165,6 +172,33 @@ public class ObjectEntryFolderDTOConverter
 		};
 	}
 
+	private Permission[] _toPermissions(
+			com.liferay.object.model.ObjectEntryFolder objectEntryFolder)
+		throws Exception {
+
+		return NestedFieldsSupplier.supply(
+			"permissions",
+			nestedFieldNames -> {
+				_permissionService.checkPermission(
+					objectEntryFolder.getGroupId(),
+					com.liferay.object.model.ObjectEntryFolder.class.getName(),
+					objectEntryFolder.getObjectEntryFolderId());
+
+				Collection<Permission> permissions =
+					PermissionUtil.getPermissions(
+						objectEntryFolder.getCompanyId(),
+						_resourceActionLocalService.getResourceActions(
+							com.liferay.object.model.ObjectEntryFolder.class.
+								getName()),
+						objectEntryFolder.getObjectEntryFolderId(),
+						com.liferay.object.model.ObjectEntryFolder.class.
+							getName(),
+						null);
+
+				return permissions.toArray(new Permission[0]);
+			});
+	}
+
 	@Reference
 	private GroupLocalService _groupLocalService;
 
@@ -175,7 +209,13 @@ public class ObjectEntryFolderDTOConverter
 	private ObjectEntryLocalService _objectEntryLocalService;
 
 	@Reference
+	private PermissionService _permissionService;
+
+	@Reference
 	private Portal _portal;
+
+	@Reference
+	private ResourceActionLocalService _resourceActionLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;
