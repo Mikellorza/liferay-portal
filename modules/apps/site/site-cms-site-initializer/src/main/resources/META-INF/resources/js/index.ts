@@ -19,6 +19,7 @@ export {default as FolderFDSPropsTransformer} from './main/FDSPropsTransformer/F
 export {default as StructureUsagesFDSPropsTransformer} from './main/FDSPropsTransformer/StructureUsagesFDSPropsTransformer';
 export {default as StructuresFDSPropsTransformer} from './main/FDSPropsTransformer/StructuresFDSPropsTransformer';
 export {default as TagUsagesFDSPropsTransformer} from './main/FDSPropsTransformer/TagUsagesFDSPropsTransformer';
+export {default as ViewVersionHistoryFDSPropsTransformer} from './main/FDSPropsTransformer/ViewVersionHistoryFDSPropsTransformer';
 export {default as VocabularyFDSPropsTransformer} from './main/FDSPropsTransformer/VocabularyFDSPropsTransformer';
 export {default as CategorizationToolbar} from './main/categorization/CategorizationToolbar';
 export {default as EditCategoryPage} from './main/categorization/categories/EditCategoryPage';

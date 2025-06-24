@@ -78,7 +78,11 @@ public class ViewVersionHistoryDisplayContext {
 			new FDSActionDropdownItem(
 				"{actions.restore.href}", "restore", "restore",
 				_language.get(_httpServletRequest, "restore"), "put", "restore",
-				"headless"));
+				"headless"),
+			new FDSActionDropdownItem(
+				"{file.link.href}", "download", "download",
+				_language.get(_httpServletRequest, "download"), "get", null,
+				"link"));
 	}
 
 	private final HttpServletRequest _httpServletRequest;
