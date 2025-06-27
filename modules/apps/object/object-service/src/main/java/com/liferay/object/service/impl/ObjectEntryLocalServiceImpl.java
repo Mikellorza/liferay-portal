@@ -5697,9 +5697,11 @@ public class ObjectEntryLocalServiceImpl
 		_updateResourcePermissions(
 			objectDefinition, objectEntry, serviceContext);
 
-		_deleteFileEntries(
-			objectEntry.getValues(), objectEntry.getObjectDefinitionId(),
-			transientValues);
+		if (!objectDefinition.isEnableObjectEntryVersioning()) {
+			_deleteFileEntries(
+				objectEntry.getValues(), objectEntry.getObjectDefinitionId(),
+				transientValues);
+		}
 
 		_executeObjectActions(
 			objectEntry.getCompanyId(),
