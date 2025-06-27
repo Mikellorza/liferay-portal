@@ -7,6 +7,7 @@ package com.liferay.object.service.impl;
 
 import com.liferay.object.configuration.ObjectEntryVersionConfiguration;
 import com.liferay.object.entry.util.ObjectEntryDTOConverterUtil;
+import com.liferay.object.exception.NoSuchObjectEntryVersionException;
 import com.liferay.object.exception.RequiredObjectEntryVersionException;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectEntryVersion;
@@ -211,6 +212,20 @@ public class ObjectEntryVersionLocalServiceImpl
 	}
 
 	@Override
+	public boolean isLatestObjectEntryVersion(long objectEntryId, int version)
+		throws PortalException {
+
+		ObjectEntryVersion objectEntryVersion = _getLatestObjectEntryVersion(
+			objectEntryId);
+
+		if (version == objectEntryVersion.getVersion()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
 	public ObjectEntryVersion updateLatestObjectEntryVersion(
 			ObjectEntry objectEntry)
 		throws PortalException {
@@ -284,6 +299,14 @@ public class ObjectEntryVersionLocalServiceImpl
 		objectEntryVersion.setStatusDate(date);
 
 		return objectEntryVersionPersistence.update(objectEntryVersion);
+	}
+
+	private ObjectEntryVersion _getLatestObjectEntryVersion(long objectEntryId)
+		throws NoSuchObjectEntryVersionException {
+
+		return objectEntryVersionPersistence.findByObjectEntryId_First(
+			objectEntryId,
+			ObjectEntryVersionVersionComparator.getInstance(false));
 	}
 
 	private ObjectEntryVersion _updateObjectEntryVersion(
