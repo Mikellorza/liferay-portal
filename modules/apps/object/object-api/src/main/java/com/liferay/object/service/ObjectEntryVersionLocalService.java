@@ -209,11 +209,13 @@ public interface ObjectEntryVersionLocalService
 	public long dynamicQueryCount(
 		DynamicQuery dynamicQuery, Projection projection);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public ObjectEntryVersion expireObjectEntryVersion(
 			long userId, ObjectEntry objectEntry, int version,
 			ServiceContext serviceContext)
 		throws PortalException;
 
+	@Indexable(type = IndexableType.REINDEX)
 	public ObjectEntryVersion expireObjectEntryVersion(
 			long userId, ObjectEntryVersion objectEntryVersion)
 		throws PortalException;
@@ -323,6 +325,7 @@ public interface ObjectEntryVersionLocalService
 	public boolean isLatestObjectEntryVersion(long objectEntryId, int version)
 		throws PortalException;
 
+	@Indexable(type = IndexableType.REINDEX)
 	public ObjectEntryVersion updateLatestObjectEntryVersion(
 			ObjectEntry objectEntry)
 		throws PortalException;
