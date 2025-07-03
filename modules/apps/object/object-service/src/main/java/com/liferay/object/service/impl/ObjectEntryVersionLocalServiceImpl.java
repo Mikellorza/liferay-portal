@@ -108,7 +108,7 @@ public class ObjectEntryVersionLocalServiceImpl
 							objectEntryVersion.getObjectEntryVersionId());
 				}
 
-				deleteObjectEntryVersion(
+				objectEntryVersionLocalService.deleteObjectEntryVersion(
 					objectEntryVersion.getObjectEntryId(),
 					objectEntryVersion.getVersion());
 			}
