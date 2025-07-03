@@ -153,13 +153,13 @@ public interface DefaultObjectEntryManager extends ObjectEntryManager {
 
 	public Page<ObjectEntry> getVersionedObjectEntries(
 			DTOConverterContext dtoConverterContext, long objectEntryId,
-			Pagination pagination)
+			String search, Pagination pagination, Sort[] sorts)
 		throws Exception;
 
 	public Page<ObjectEntry> getVersionedObjectEntries(
 			DTOConverterContext dtoConverterContext,
 			String externalReferenceCode, ObjectDefinition objectDefinition,
-			String scopeKey, Pagination pagination)
+			String scopeKey, String search, Pagination pagination, Sort[] sorts)
 		throws Exception;
 
 	public ObjectEntry partialUpdateObjectEntry(

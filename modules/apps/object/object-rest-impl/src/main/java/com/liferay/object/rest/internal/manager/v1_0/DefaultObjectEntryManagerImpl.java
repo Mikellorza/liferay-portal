@@ -914,32 +914,52 @@ public class DefaultObjectEntryManagerImpl
 	@Override
 	public Page<ObjectEntry> getVersionedObjectEntries(
 			DTOConverterContext dtoConverterContext, long objectEntryId,
-			Pagination pagination)
+			String search, Pagination pagination, Sort[] sorts)
 		throws Exception {
 
 		com.liferay.object.model.ObjectEntry serviceBuilderObjectEntry =
 			objectEntryLocalService.getObjectEntry(objectEntryId);
 
-		return Page.of(
-			TransformUtil.transform(
-				_objectEntryVersionService.getObjectEntryVersions(
-					objectEntryId, _getStartPosition(pagination),
-					_getEndPosition(pagination)),
-				objectEntryVersion -> _objectEntryDTOConverter.toDTO(
-					_getObjectEntryVersionDTOConverterContext(
-						dtoConverterContext, objectEntryVersion,
-						serviceBuilderObjectEntry),
-					serviceBuilderObjectEntry)),
-			pagination,
-			_objectEntryVersionService.getObjectEntryVersionsCount(
-				objectEntryId));
+		return SearchUtil.search(
+			Collections.emptyMap(),
+			booleanQuery -> {
+				BooleanFilter booleanFilter =
+					booleanQuery.getPreBooleanFilter();
+
+				booleanFilter.add(
+					new TermFilter(
+						"objectEntryId", String.valueOf(objectEntryId)),
+					BooleanClauseOccur.MUST);
+			},
+			null, ObjectEntryVersion.class.getName(), search, pagination,
+			queryConfig -> queryConfig.setSelectedFieldNames("version"),
+			searchContext -> {
+				searchContext.setCompanyId(
+					serviceBuilderObjectEntry.getCompanyId());
+
+				if (Validator.isNotNull(search)) {
+					searchContext.setKeywords(search);
+				}
+
+				searchContext.setAttribute(
+					"entryClassName", ObjectEntryVersion.class.getName());
+			},
+			sorts,
+			document -> _objectEntryDTOConverter.toDTO(
+				_getObjectEntryVersionDTOConverterContext(
+					dtoConverterContext,
+					_objectEntryVersionService.getObjectEntryVersion(
+						objectEntryId,
+						GetterUtil.getInteger(document.get(Field.VERSION))),
+					serviceBuilderObjectEntry),
+				serviceBuilderObjectEntry));
 	}
 
 	@Override
 	public Page<ObjectEntry> getVersionedObjectEntries(
 			DTOConverterContext dtoConverterContext,
 			String externalReferenceCode, ObjectDefinition objectDefinition,
-			String scopeKey, Pagination pagination)
+			String scopeKey, String search, Pagination pagination, Sort[] sorts)
 		throws Exception {
 
 		com.liferay.object.model.ObjectEntry serviceBuilderObjectEntry =
@@ -949,7 +969,7 @@ public class DefaultObjectEntryManagerImpl
 
 		return getVersionedObjectEntries(
 			dtoConverterContext, serviceBuilderObjectEntry.getObjectEntryId(),
-			pagination);
+			search, pagination, sorts);
 	}
 
 	@Override

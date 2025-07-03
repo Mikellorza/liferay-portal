@@ -323,7 +323,8 @@ public class ObjectEntryResourceImpl
 
 	@Override
 	public Page<ObjectEntry> getByExternalReferenceCodeVersionsPage(
-			String externalReferenceCode, Pagination pagination)
+			String externalReferenceCode, String search, Pagination pagination,
+			Sort[] sorts)
 		throws Exception {
 
 		if (!_objectDefinition.isEnableObjectEntryVersioning()) {
@@ -337,7 +338,7 @@ public class ObjectEntryResourceImpl
 
 		return defaultObjectEntryManager.getVersionedObjectEntries(
 			_getDTOConverterContext(null), externalReferenceCode,
-			_objectDefinition, null, pagination);
+			_objectDefinition, null, search, pagination, sorts);
 	}
 
 	@Override
@@ -370,7 +371,8 @@ public class ObjectEntryResourceImpl
 
 	@Override
 	public Page<ObjectEntry> getObjectEntriesVersionsPage(
-			Long objectEntryId, Pagination pagination)
+			Long objectEntryId, String search, Pagination pagination,
+			Sort[] sorts)
 		throws Exception {
 
 		if (!_objectDefinition.isEnableObjectEntryVersioning()) {
@@ -383,7 +385,8 @@ public class ObjectEntryResourceImpl
 					_objectDefinition.getStorageType()));
 
 		return defaultObjectEntryManager.getVersionedObjectEntries(
-			_getDTOConverterContext(objectEntryId), objectEntryId, pagination);
+			_getDTOConverterContext(objectEntryId), objectEntryId, search,
+			pagination, sorts);
 	}
 
 	@Override
@@ -479,8 +482,8 @@ public class ObjectEntryResourceImpl
 	@Override
 	public Page<ObjectEntry>
 			getScopeScopeKeyByExternalReferenceCodeVersionsPage(
-				String scopeKey, String externalReferenceCode,
-				Pagination pagination)
+				String scopeKey, String externalReferenceCode, String search,
+				Pagination pagination, Sort[] sorts)
 		throws Exception {
 
 		if (!_objectDefinition.isEnableObjectEntryVersioning()) {
@@ -494,7 +497,7 @@ public class ObjectEntryResourceImpl
 
 		return defaultObjectEntryManager.getVersionedObjectEntries(
 			_getDTOConverterContext(null), externalReferenceCode,
-			_objectDefinition, scopeKey, pagination);
+			_objectDefinition, scopeKey, search, pagination, sorts);
 	}
 
 	@Override
