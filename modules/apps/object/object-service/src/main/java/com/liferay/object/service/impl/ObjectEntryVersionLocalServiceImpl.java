@@ -16,6 +16,7 @@ import com.liferay.object.util.comparator.ObjectEntryVersionCreateDateComparator
 import com.liferay.object.util.comparator.ObjectEntryVersionVersionComparator;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -157,13 +158,26 @@ public class ObjectEntryVersionLocalServiceImpl
 	public void deleteObjectEntryVersionByObjectDefinitionId(
 		Long objectDefinitionId) {
 
-		objectEntryVersionPersistence.removeByObjectDefinitionId(
-			objectDefinitionId);
+		for (ObjectEntryVersion objectEntryVersion :
+				objectEntryVersionPersistence.findByObjectDefinitionId(
+					objectDefinitionId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+					null)) {
+
+			objectEntryVersionLocalService.deleteObjectEntryVersion(
+				objectEntryVersion);
+		}
 	}
 
 	@Override
 	public void deleteObjectEntryVersions(long objectEntryId) {
-		objectEntryVersionPersistence.removeByObjectEntryId(objectEntryId);
+		for (ObjectEntryVersion objectEntryVersion :
+				objectEntryVersionPersistence.findByObjectEntryId(
+					objectEntryId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+					null)) {
+
+			objectEntryVersionLocalService.deleteObjectEntryVersion(
+				objectEntryVersion);
+		}
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
