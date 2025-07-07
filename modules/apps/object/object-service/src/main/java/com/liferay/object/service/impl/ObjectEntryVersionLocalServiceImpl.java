@@ -51,6 +51,7 @@ import org.osgi.service.component.annotations.Reference;
 public class ObjectEntryVersionLocalServiceImpl
 	extends ObjectEntryVersionLocalServiceBaseImpl {
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public ObjectEntryVersion addObjectEntryVersion(ObjectEntry objectEntry)
 		throws PortalException {
