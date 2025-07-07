@@ -339,8 +339,8 @@ public class ObjectEntryModelContributorManager {
 		document.add(new Field("objectEntryContent", sb.toString()));
 
 		document.addKeyword("objectEntryId", objectEntry.getObjectEntryId());
-		document.add(
-			new Field("objectEntryTitle", objectEntry.getTitleValue()));
+		document.addKeywordSortable(
+			"objectEntryTitle", objectEntry.getTitleValue());
 
 		ObjectFolder objectFolder = _objectFolderLocalService.getObjectFolder(
 			objectDefinition.getObjectFolderId());
