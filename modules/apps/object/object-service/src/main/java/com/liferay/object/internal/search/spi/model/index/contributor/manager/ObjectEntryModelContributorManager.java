@@ -355,6 +355,8 @@ public class ObjectEntryModelContributorManager {
 			_contributeObjectEntryFolder(
 				document, objectEntry.getObjectEntryFolderId());
 		}
+
+		document.addLocalizedText(Field.TITLE, objectEntry.getTitleMap(), true);
 	}
 
 	private void _contributeObjectEntryFolder(
