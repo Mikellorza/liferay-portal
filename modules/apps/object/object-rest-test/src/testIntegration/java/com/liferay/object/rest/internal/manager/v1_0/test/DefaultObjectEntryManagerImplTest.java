@@ -8385,7 +8385,7 @@ public class DefaultObjectEntryManagerImplTest
 			int versionNumber)
 		throws Exception {
 
-		return _defaultObjectEntryManager.addObjectEntry(
+		ObjectEntry objectEntry = _defaultObjectEntryManager.addObjectEntry(
 			dtoConverterContext, objectDefinition,
 			new ObjectEntry() {
 				{
@@ -8406,6 +8406,9 @@ public class DefaultObjectEntryManagerImplTest
 				}
 			},
 			scopeKey);
+
+		return _defaultObjectEntryManager.getObjectEntryByVersion(
+			dtoConverterContext, objectEntry.getId(), versionNumber);
 	}
 
 	private void _addObjectFieldSettingWithDefaultValue(
@@ -9724,7 +9727,7 @@ public class DefaultObjectEntryManagerImplTest
 			int versionNumber)
 		throws Exception {
 
-		return _defaultObjectEntryManager.updateObjectEntry(
+		_defaultObjectEntryManager.updateObjectEntry(
 			TestPropsValues.getCompanyId(), dtoConverterContext,
 			objectEntry.getExternalReferenceCode(), objectDefinition,
 			new ObjectEntry() {
@@ -9745,6 +9748,9 @@ public class DefaultObjectEntryManagerImplTest
 				}
 			},
 			objectEntry.getScopeKey());
+
+		return _defaultObjectEntryManager.getObjectEntryByVersion(
+			dtoConverterContext, objectEntry.getId(), versionNumber);
 	}
 
 	private static DefaultObjectEntryManager _defaultObjectEntryManager;
