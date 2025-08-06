@@ -1482,7 +1482,8 @@ public class ObjectDefinitionLocalServiceImpl
 		_validateEnableObjectEntrySubscription(
 			enableObjectEntrySubscription, modifiable, system);
 		_validateEnableObjectEntryVersioning(
-			enableObjectEntryVersioning, modifiable, null, system);
+			enableIndexSearch, enableObjectEntryVersioning, modifiable, null,
+			system);
 		_validateLabel(labelMap);
 		_validateName(0, user.getCompanyId(), modifiable, name, system);
 		_validatePluralLabel(pluralLabelMap);
@@ -2483,8 +2484,9 @@ public class ObjectDefinitionLocalServiceImpl
 			enableObjectEntrySubscription, objectDefinition.isModifiable(),
 			objectDefinition.isSystem());
 		_validateEnableObjectEntryVersioning(
-			enableObjectEntryVersioning, objectDefinition.isModifiable(),
-			objectDefinition, objectDefinition.isSystem());
+			enableIndexSearch, enableObjectEntryVersioning,
+			objectDefinition.isModifiable(), objectDefinition,
+			objectDefinition.isSystem());
 		_validateLabel(labelMap);
 		_validatePluralLabel(pluralLabelMap);
 
@@ -2938,8 +2940,9 @@ public class ObjectDefinitionLocalServiceImpl
 	}
 
 	private void _validateEnableObjectEntryVersioning(
-			boolean enableObjectEntryVersioning, boolean modifiable,
-			ObjectDefinition objectDefinition, boolean system)
+			boolean enableIndexSearch, boolean enableObjectEntryVersioning,
+			boolean modifiable, ObjectDefinition objectDefinition,
+			boolean system)
 		throws PortalException {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
@@ -2952,6 +2955,12 @@ public class ObjectDefinitionLocalServiceImpl
 			throw new ObjectDefinitionEnableObjectEntryVersioningException(
 				"Enable object entry versioning is not allowed for " +
 					"unmodifiable system object definitions");
+		}
+
+		if (enableObjectEntryVersioning && !enableIndexSearch) {
+			throw new ObjectDefinitionEnableObjectEntryVersioningException(
+				"Enable object entry versioning is not allowed for " +
+					"non-indexed search object definitions");
 		}
 
 		if ((objectDefinition != null) && objectDefinition.isApproved() &&
