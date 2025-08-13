@@ -72,7 +72,8 @@ public class ViewFilesSectionDisplayContext
 		return HashMapBuilder.<String, Object>put(
 			"description",
 			LanguageUtil.get(
-				httpServletRequest, "click-new-to-create-your-first-file")
+				httpServletRequest,
+				"click-new-or-drag-and-drop-your-files-here")
 		).put(
 			"image", "/states/cms_empty_state_files.svg"
 		).put(
@@ -108,7 +109,7 @@ public class ViewFilesSectionDisplayContext
 
 	@Override
 	protected String getEmptyStateDescriptionKey() {
-		return "click-new-to-create-your-first-file";
+		return "click-new-or-drag-and-drop-your-files-here";
 	}
 
 }
