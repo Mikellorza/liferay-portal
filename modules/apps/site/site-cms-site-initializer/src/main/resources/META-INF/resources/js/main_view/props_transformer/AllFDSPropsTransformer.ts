@@ -11,7 +11,10 @@ import AssetTypeInfoPanel from '../info_panel/AssetTypeInfoPanelContent';
 import {EVENTS} from '../info_panel/util/constants';
 import FilePreviewerModalContent from '../modal/FilePreviewerModalContent';
 import createAssetAction from './actions/createAssetAction';
-import multipleFilesUploadAction from './actions/multipleFilesUploadAction';
+import fileDropAction from './actions/fileDropAction';
+import multipleFilesUploadAction, {
+	MultipleFileUploaderData,
+} from './actions/multipleFilesUploadAction';
 import shareAction from './actions/shareAction';
 import AuthorRenderer from './cell_renderers/AuthorRenderer';
 import NameRenderer from './cell_renderers/NameRenderer';
@@ -34,9 +37,11 @@ export default function AllFDSPropsTransformer({
 }: {
 	additionalProps: {
 		autocompleteURL: string;
+		baseFolderViewURL: string;
 		cmsGroupId?: number;
 		collaboratorURLs: Record<string, string>;
-	};
+		redirect: string;
+	} & MultipleFileUploaderData;
 	creationMenu: any;
 	itemsActions?: any[];
 	otherProps: any;
@@ -74,6 +79,16 @@ export default function AllFDSPropsTransformer({
 					type: 'internal',
 				} as IInternalRenderer,
 			],
+		},
+		fileDropSettings: {
+			enabled: true,
+			isDropTarget: ({item}: {item: any}) => {
+				return item.entryClassName.includes(
+					'com.liferay.object.model.ObjectEntryFolder'
+				);
+			},
+			onFileDrop: (droppedFiles: any, dropTarget?: any) =>
+				fileDropAction(additionalProps, droppedFiles, dropTarget),
 		},
 		infoPanelComponent: () => AssetTypeInfoPanel({additionalProps}),
 		itemsActions: itemsActions.map((action) => {
