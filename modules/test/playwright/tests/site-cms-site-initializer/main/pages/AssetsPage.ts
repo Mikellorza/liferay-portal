@@ -16,12 +16,25 @@ export class AssetsPage {
 
 	readonly dataSetFragmentPage: DataSetPage;
 	readonly newButton: Locator;
+	readonly modalContainer: Locator;
+	readonly modal: {
+		body: Locator;
+		container: Locator;
+		title: Locator;
+	};
 
 	constructor(page: Page) {
 		this.page = page;
 
 		this.dataSetFragmentPage = new DataSetPage(page);
 		this.newButton = page.getByLabel('New');
+
+		const modalContainer = page.locator('.modal-dialog');
+		this.modal = {
+			body: modalContainer.locator('.modal-body'),
+			container: modalContainer,
+			title: modalContainer.locator('.modal-title'),
+		};
 	}
 
 	async gotoAll() {
