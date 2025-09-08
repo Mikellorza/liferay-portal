@@ -5,11 +5,18 @@
 
 import {IInternalRenderer} from '@liferay/frontend-data-set-web';
 import {openModal} from 'frontend-js-components-web';
+import {sub} from 'frontend-js-web';
 
 import formatActionURL from '../../common/utils/formatActionURL';
-import FilePreviewerModalContent from '../modal/FilePreviewerModalContent';
+import FilePreviewerModalContent, {
+	File,
+} from '../modal/FilePreviewerModalContent';
+import deleteEntryAction from './actions/deleteEntryAction';
 import shareAction from './actions/shareAction';
 import AssetRenderer from './cell_renderers/AssetRenderer';
+
+const OBJECT_ENTRY_FOLDER_CLASS_NAME =
+	'com.liferay.object.model.ObjectEntryFolder';
 
 export default function HomeRecentAssetsFDSPropsTransformer({
 	additionalProps,
@@ -66,12 +73,57 @@ export default function HomeRecentAssetsFDSPropsTransformer({
 			action,
 			event,
 			itemData,
+			loadData,
 		}: {
 			action: any;
 			event: Event;
-			itemData: any;
+			itemData: {
+				actions: {
+					delete: {href: string; method: string};
+				};
+				embedded: {
+					creator: any;
+					file: File;
+					id: number;
+					title: string;
+				};
+				entryClassName: string;
+				title: string;
+			};
+			loadData: () => {};
 		}) => {
-			if (
+			if (action.data.id === 'delete') {
+				event?.preventDefault();
+
+				deleteEntryAction({
+					bodyHTML:
+						itemData.entryClassName ===
+						OBJECT_ENTRY_FOLDER_CLASS_NAME
+							? sub(
+									Liferay.Language.get(
+										'delete-folder-confirmation-body'
+									),
+									itemData.title
+								)
+							: sub(
+									Liferay.Language.get(
+										'delete-asset-confirmation-body'
+									),
+									itemData.title
+								),
+					deleteAction: itemData.actions.delete,
+					loadData,
+					successMessage: sub(
+						Liferay.Language.get('x-was-successfully-deleted'),
+						`<strong>${itemData.title}</strong>`
+					),
+					title: sub(
+						Liferay.Language.get('delete-asset-confirmation-title'),
+						itemData.title
+					),
+				});
+			}
+			else if (
 				action?.data?.id === 'export-for-translation' ||
 				action?.data?.id === 'import-translation'
 			) {

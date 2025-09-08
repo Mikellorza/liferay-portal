@@ -14,7 +14,7 @@ import classNames from 'classnames';
 import {ImagePreviewer} from 'document-library-preview-image';
 import React from 'react';
 
-type File = {
+export type File = {
 	externalReferenceCode: string;
 	id: number;
 	link: {

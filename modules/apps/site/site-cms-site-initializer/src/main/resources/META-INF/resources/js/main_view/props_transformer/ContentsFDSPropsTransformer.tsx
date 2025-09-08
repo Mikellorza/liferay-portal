@@ -5,6 +5,7 @@
 
 import {IInternalRenderer, IView} from '@liferay/frontend-data-set-web';
 import {openModal} from 'frontend-js-components-web';
+import {sub} from 'frontend-js-web';
 import React from 'react';
 
 import formatActionURL from '../../common/utils/formatActionURL';
@@ -13,6 +14,7 @@ import AssetTypeInfoPanel from '../info_panel/AssetTypeInfoPanelContent';
 import createAssetAction from './actions/createAssetAction';
 import createFolderAction from './actions/createFolderAction';
 import deleteAssetEntriesBulkAction from './actions/deleteAssetEntriesBulkAction';
+import deleteEntryAction from './actions/deleteEntryAction';
 import shareAction from './actions/shareAction';
 import AuthorRenderer from './cell_renderers/AuthorRenderer';
 import NameRenderer from './cell_renderers/NameRenderer';
@@ -124,12 +126,56 @@ export default function ContentFDSPropsTransformer({
 			action,
 			event,
 			itemData,
+			loadData,
 		}: {
 			action: any;
 			event: Event;
-			itemData: any;
+			itemData: {
+				actions: {
+					delete: {href: string; method: string};
+				};
+				embedded: {
+					creator: any;
+					id: number;
+					title: string;
+				};
+				entryClassName: string;
+				title: string;
+			};
+			loadData: () => {};
 		}) => {
-			if (
+			if (action.data.id === 'delete') {
+				event?.preventDefault();
+
+				deleteEntryAction({
+					bodyHTML:
+						itemData.entryClassName ===
+						OBJECT_ENTRY_FOLDER_CLASS_NAME
+							? sub(
+									Liferay.Language.get(
+										'delete-folder-confirmation-body'
+									),
+									itemData.title
+								)
+							: sub(
+									Liferay.Language.get(
+										'delete-asset-confirmation-body'
+									),
+									itemData.title
+								),
+					deleteAction: itemData.actions.delete,
+					loadData,
+					successMessage: sub(
+						Liferay.Language.get('x-was-successfully-deleted'),
+						`<strong>${itemData.title}</strong>`
+					),
+					title: sub(
+						Liferay.Language.get('delete-asset-confirmation-title'),
+						itemData.title
+					),
+				});
+			}
+			else if (
 				action?.data?.id === 'export-for-translation' ||
 				action?.data?.id === 'import-translation'
 			) {
