@@ -5,7 +5,6 @@
 
 import {IInternalRenderer, IView} from '@liferay/frontend-data-set-web';
 import {openModal} from 'frontend-js-components-web';
-import {sub} from 'frontend-js-web';
 import React from 'react';
 
 import {START_TASK} from '../../common/utils/events';
@@ -17,7 +16,7 @@ import FilePreviewerModalContent, {
 import createAssetAction from './actions/createAssetAction';
 import createFolderAction from './actions/createFolderAction';
 import deleteAssetEntriesBulkAction from './actions/deleteAssetEntriesBulkAction';
-import deleteEntryAction from './actions/deleteEntryAction';
+import handleDeleteAction from './actions/handleDeleteAction';
 import multipleFilesUploadAction from './actions/multipleFilesUploadAction';
 import shareAction from './actions/shareAction';
 import AuthorRenderer from './cell_renderers/AuthorRenderer';
@@ -172,35 +171,7 @@ export default function FilesFDSPropsTransformer({
 			loadData: () => {};
 		}) => {
 			if (action.data.id === 'delete') {
-				event?.preventDefault();
-
-				deleteEntryAction({
-					bodyHTML:
-						itemData.entryClassName ===
-						OBJECT_ENTRY_FOLDER_CLASS_NAME
-							? sub(
-									Liferay.Language.get(
-										'delete-folder-confirmation-body'
-									),
-									itemData.title
-								)
-							: sub(
-									Liferay.Language.get(
-										'delete-asset-confirmation-body'
-									),
-									itemData.title
-								),
-					deleteAction: itemData.actions.delete,
-					loadData,
-					successMessage: sub(
-						Liferay.Language.get('x-was-successfully-deleted'),
-						itemData.title
-					),
-					title: sub(
-						Liferay.Language.get('delete-asset-confirmation-title'),
-						itemData.title
-					),
-				});
+				handleDeleteAction({action, event, itemData, loadData});
 			}
 			else if (action?.data?.id === 'view-file') {
 				openModal({
