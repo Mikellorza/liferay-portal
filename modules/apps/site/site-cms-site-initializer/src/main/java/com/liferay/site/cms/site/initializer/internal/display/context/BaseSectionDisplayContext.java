@@ -423,12 +423,9 @@ public abstract class BaseSectionDisplayContext {
 				language.get(httpServletRequest, "permissions"), "get", null,
 				"modal-permissions"),
 			new FDSActionDropdownItem(
-				language.get(
-					httpServletRequest,
-					"are-you-sure-you-want-to-delete-this-entry"),
-				null, "trash", "delete",
+				"{actions.delete.href}", "trash", "delete",
 				language.get(httpServletRequest, "delete"), "delete", "delete",
-				"headless"));
+				null));
 	}
 
 	public Map<String, Object> getToolbarProps() throws PortalException {
