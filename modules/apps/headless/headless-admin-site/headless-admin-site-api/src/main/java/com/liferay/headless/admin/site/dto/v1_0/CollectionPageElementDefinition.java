@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
@@ -383,7 +384,7 @@ public class CollectionPageElementDefinition
 		description = "the collection page element's layout."
 	)
 	@Valid
-	public Layout getLayout() {
+	public Object getLayout() {
 		if (_layoutSupplier != null) {
 			layout = _layoutSupplier.get();
 
@@ -393,7 +394,7 @@ public class CollectionPageElementDefinition
 		return layout;
 	}
 
-	public void setLayout(Layout layout) {
+	public void setLayout(Object layout) {
 		this.layout = layout;
 
 		_layoutSupplier = null;
@@ -401,7 +402,7 @@ public class CollectionPageElementDefinition
 
 	@JsonIgnore
 	public void setLayout(
-		UnsafeSupplier<Layout, Exception> layoutUnsafeSupplier) {
+		UnsafeSupplier<Object, Exception> layoutUnsafeSupplier) {
 
 		_layoutSupplier = () -> {
 			try {
@@ -418,10 +419,10 @@ public class CollectionPageElementDefinition
 
 	@GraphQLField(description = "the collection page element's layout.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Layout layout;
+	protected Object layout;
 
 	@JsonIgnore
-	private Supplier<Layout> _layoutSupplier;
+	private Supplier<Object> _layoutSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "The style of a list of items in the collection page element."
@@ -968,7 +969,7 @@ public class CollectionPageElementDefinition
 			sb.append("]");
 		}
 
-		Layout layout = getLayout();
+		Object layout = getLayout();
 
 		if (layout != null) {
 			if (sb.length() > 1) {
@@ -977,7 +978,17 @@ public class CollectionPageElementDefinition
 
 			sb.append("\"layout\": ");
 
-			sb.append(String.valueOf(layout));
+			if (layout instanceof Map) {
+				sb.append(JSONFactoryUtil.createJSONObject((Map<?, ?>)layout));
+			}
+			else if (layout instanceof String) {
+				sb.append("\"");
+				sb.append(_escape((String)layout));
+				sb.append("\"");
+			}
+			else {
+				sb.append(layout);
+			}
 		}
 
 		String listItemStyle = getListItemStyle();

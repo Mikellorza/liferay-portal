@@ -177,8 +177,14 @@ public class CollectionPageElementDefinitionSerDes {
 
 			sb.append("\"layout\": ");
 
-			sb.append(
-				String.valueOf(collectionPageElementDefinition.getLayout()));
+			if (collectionPageElementDefinition.getLayout() instanceof String) {
+				sb.append("\"");
+				sb.append((String)collectionPageElementDefinition.getLayout());
+				sb.append("\"");
+			}
+			else {
+				sb.append(collectionPageElementDefinition.getLayout());
+			}
 		}
 
 		if (collectionPageElementDefinition.getListItemStyle() != null) {
@@ -672,7 +678,7 @@ public class CollectionPageElementDefinitionSerDes {
 			else if (Objects.equals(jsonParserFieldName, "layout")) {
 				if (jsonParserFieldValue != null) {
 					collectionPageElementDefinition.setLayout(
-						LayoutSerDes.toDTO((String)jsonParserFieldValue));
+						(Object)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "listItemStyle")) {

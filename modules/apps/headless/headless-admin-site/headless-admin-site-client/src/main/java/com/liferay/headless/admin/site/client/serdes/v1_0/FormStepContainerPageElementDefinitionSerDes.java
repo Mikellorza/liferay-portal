@@ -181,9 +181,17 @@ public class FormStepContainerPageElementDefinitionSerDes {
 
 			sb.append("\"layout\": ");
 
-			sb.append(
-				String.valueOf(
-					formStepContainerPageElementDefinition.getLayout()));
+			if (formStepContainerPageElementDefinition.getLayout() instanceof
+					String) {
+
+				sb.append("\"");
+				sb.append(
+					(String)formStepContainerPageElementDefinition.getLayout());
+				sb.append("\"");
+			}
+			else {
+				sb.append(formStepContainerPageElementDefinition.getLayout());
+			}
 		}
 
 		if (formStepContainerPageElementDefinition.getName() != null) {
@@ -441,7 +449,7 @@ public class FormStepContainerPageElementDefinitionSerDes {
 			else if (Objects.equals(jsonParserFieldName, "layout")) {
 				if (jsonParserFieldValue != null) {
 					formStepContainerPageElementDefinition.setLayout(
-						LayoutSerDes.toDTO((String)jsonParserFieldValue));
+						(Object)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "name")) {

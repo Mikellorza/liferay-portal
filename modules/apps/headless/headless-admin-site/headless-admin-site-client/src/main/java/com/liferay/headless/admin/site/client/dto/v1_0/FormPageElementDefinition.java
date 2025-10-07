@@ -175,16 +175,16 @@ public class FormPageElementDefinition
 
 	protected Boolean indexed;
 
-	public Layout getLayout() {
+	public Object getLayout() {
 		return layout;
 	}
 
-	public void setLayout(Layout layout) {
+	public void setLayout(Object layout) {
 		this.layout = layout;
 	}
 
 	public void setLayout(
-		UnsafeSupplier<Layout, Exception> layoutUnsafeSupplier) {
+		UnsafeSupplier<Object, Exception> layoutUnsafeSupplier) {
 
 		try {
 			layout = layoutUnsafeSupplier.get();
@@ -194,7 +194,7 @@ public class FormPageElementDefinition
 		}
 	}
 
-	protected Layout layout;
+	protected Object layout;
 
 	public String getName() {
 		return name;
