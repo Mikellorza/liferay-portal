@@ -183,16 +183,16 @@ public class CollectionPageElementDefinition
 
 	protected FragmentViewport[] fragmentViewports;
 
-	public Object getLayout() {
+	public Layout getLayout() {
 		return layout;
 	}
 
-	public void setLayout(Object layout) {
+	public void setLayout(Layout layout) {
 		this.layout = layout;
 	}
 
 	public void setLayout(
-		UnsafeSupplier<Object, Exception> layoutUnsafeSupplier) {
+		UnsafeSupplier<Layout, Exception> layoutUnsafeSupplier) {
 
 		try {
 			layout = layoutUnsafeSupplier.get();
@@ -202,7 +202,7 @@ public class CollectionPageElementDefinition
 		}
 	}
 
-	protected Object layout;
+	protected Layout layout;
 
 	public String getListItemStyle() {
 		return listItemStyle;

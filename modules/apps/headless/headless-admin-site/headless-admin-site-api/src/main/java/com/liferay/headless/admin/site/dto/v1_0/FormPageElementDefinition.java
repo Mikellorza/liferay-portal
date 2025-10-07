@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
@@ -372,7 +371,7 @@ public class FormPageElementDefinition
 		description = "The form page element's layout."
 	)
 	@Valid
-	public Object getLayout() {
+	public Layout getLayout() {
 		if (_layoutSupplier != null) {
 			layout = _layoutSupplier.get();
 
@@ -382,7 +381,7 @@ public class FormPageElementDefinition
 		return layout;
 	}
 
-	public void setLayout(Object layout) {
+	public void setLayout(Layout layout) {
 		this.layout = layout;
 
 		_layoutSupplier = null;
@@ -390,7 +389,7 @@ public class FormPageElementDefinition
 
 	@JsonIgnore
 	public void setLayout(
-		UnsafeSupplier<Object, Exception> layoutUnsafeSupplier) {
+		UnsafeSupplier<Layout, Exception> layoutUnsafeSupplier) {
 
 		_layoutSupplier = () -> {
 			try {
@@ -407,10 +406,10 @@ public class FormPageElementDefinition
 
 	@GraphQLField(description = "The form page element's layout.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Object layout;
+	protected Layout layout;
 
 	@JsonIgnore
-	private Supplier<Object> _layoutSupplier;
+	private Supplier<Layout> _layoutSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "The custom name of a form page element."
@@ -603,7 +602,7 @@ public class FormPageElementDefinition
 			sb.append(indexed);
 		}
 
-		Object layout = getLayout();
+		Layout layout = getLayout();
 
 		if (layout != null) {
 			if (sb.length() > 1) {
@@ -612,17 +611,7 @@ public class FormPageElementDefinition
 
 			sb.append("\"layout\": ");
 
-			if (layout instanceof Map) {
-				sb.append(JSONFactoryUtil.createJSONObject((Map<?, ?>)layout));
-			}
-			else if (layout instanceof String) {
-				sb.append("\"");
-				sb.append(_escape((String)layout));
-				sb.append("\"");
-			}
-			else {
-				sb.append(layout);
-			}
+			sb.append(String.valueOf(layout));
 		}
 
 		String name = getName();

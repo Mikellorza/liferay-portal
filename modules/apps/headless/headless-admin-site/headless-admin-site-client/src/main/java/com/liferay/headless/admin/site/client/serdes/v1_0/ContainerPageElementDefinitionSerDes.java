@@ -188,14 +188,8 @@ public class ContainerPageElementDefinitionSerDes {
 
 			sb.append("\"layout\": ");
 
-			if (containerPageElementDefinition.getLayout() instanceof String) {
-				sb.append("\"");
-				sb.append((String)containerPageElementDefinition.getLayout());
-				sb.append("\"");
-			}
-			else {
-				sb.append(containerPageElementDefinition.getLayout());
-			}
+			sb.append(
+				String.valueOf(containerPageElementDefinition.getLayout()));
 		}
 
 		if (containerPageElementDefinition.getName() != null) {
@@ -478,7 +472,7 @@ public class ContainerPageElementDefinitionSerDes {
 			else if (Objects.equals(jsonParserFieldName, "layout")) {
 				if (jsonParserFieldValue != null) {
 					containerPageElementDefinition.setLayout(
-						(Object)jsonParserFieldValue);
+						LayoutSerDes.toDTO((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "name")) {
