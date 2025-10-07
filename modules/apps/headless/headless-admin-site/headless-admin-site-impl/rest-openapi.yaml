@@ -1944,7 +1944,18 @@ components:
             # @review
             description:
                 Represents settings related with the site navigation of a page.
+            discriminator:
+                mapping:
+                    SiteNavigationSettings: "#/components/schemas/SitePageNavigationSettings"
+                    WidgetTemplateNavigationSettings: "#/components/schemas/WidgetPageTemplateNavigationSettings"
+                propertyName: navigationSettingsType
             properties:
+                navigationSettingsType:
+                    # @review
+                    description:
+                        The navigation settings's type (SitePage, WidgetPageTemplate).
+                    enum: [SitePageNavigationSettings, WidgetPageTemplateNavigationSettings]
+                    type: string
                 target:
                     # @review
                     description:
@@ -2873,6 +2884,21 @@ components:
                     description:
                         The localized submission of page type.
             type: object
+        SiteNavigationSettings:
+            # @review
+            description:
+                A fragment inline value.
+            properties:
+                test1:
+                    type: string
+        SitePageNavigationSettings:
+            allOf:
+                -   $ref: "#/components/schemas/NavigationSettings"
+                -   $ref: "#/components/schemas/SiteNavigationSettings"
+            # @review
+            description:
+                The navigation settings of a site page.
+            type: object
         SitemapSettings:
             # @review
             description:
@@ -3542,6 +3568,21 @@ components:
             description:
                 A widget page template.
             type: object
+        WidgetTemplateNavigationSettings:
+            # @review
+            description:
+                A fragment inline value.
+            properties:
+                test1:
+                    type: string
+        WidgetPageTemplateNavigationSettings:
+            allOf:
+                -   $ref: "#/components/schemas/NavigationSettings"
+                -   $ref: "#/components/schemas/WidgetTemplateNavigationSettings"
+            # @review
+            description:
+                The navigation settings of a widget page template.
+            type: object
         WidgetPageTemplateSettings:
             allOf:
                 -   $ref: "#/components/schemas/PageTemplateSettings"
@@ -3597,7 +3638,7 @@ components:
 info:
     description:
         "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
-        'com.liferay.headless.admin.site.client', and version '1.0.16'."
+        'com.liferay.headless.admin.site.client', and version '1.0.17'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html
