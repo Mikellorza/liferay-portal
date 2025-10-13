@@ -21,6 +21,7 @@ import com.liferay.headless.admin.site.dto.v1_0.ModulePageElementDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.PageElement;
 import com.liferay.headless.admin.site.dto.v1_0.PageElementDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.WidgetInstancePageElementDefinition;
+import com.liferay.headless.admin.site.internal.dto.v1_0.util.PageElementDefinitionTypeUtil;
 import com.liferay.layout.util.constants.LayoutDataItemTypeConstants;
 import com.liferay.layout.util.structure.CollectionStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.ColumnLayoutStructureItem;
@@ -120,86 +121,75 @@ public class PageElementDTOConverter
 			LayoutStructureItem layoutStructureItem)
 		throws Exception {
 
+		PageElementDefinition pageElementDefinition = null;
+
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_COLLECTION)) {
 
-			return _collectionPageElementDefinitionDTOConverter.toDTO(
-				(CollectionStyledLayoutStructureItem)layoutStructureItem);
+			pageElementDefinition =
+				_collectionPageElementDefinitionDTOConverter.toDTO(
+					(CollectionStyledLayoutStructureItem)layoutStructureItem);
 		}
 
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_COLLECTION_ITEM)) {
 
-			CollectionItemPageElementDefinition
-				collectionItemPageElementDefinition =
-					new CollectionItemPageElementDefinition();
-
-			collectionItemPageElementDefinition.setType(
-				PageElementDefinition.Type.COLLECTION_ITEM);
-
-			return collectionItemPageElementDefinition;
+			pageElementDefinition = new CollectionItemPageElementDefinition();
 		}
 
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_COLUMN)) {
 
-			return _modulePageElementDefinitionDTOConverter.toDTO(
-				(ColumnLayoutStructureItem)layoutStructureItem);
+			pageElementDefinition =
+				_modulePageElementDefinitionDTOConverter.toDTO(
+					dtoConverterContext,
+					(ColumnLayoutStructureItem)layoutStructureItem);
 		}
 
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_CONTAINER)) {
 
-			return _containerPageElementDefinitionDTOConverter.toDTO(
-				dtoConverterContext,
-				(ContainerStyledLayoutStructureItem)layoutStructureItem);
+			pageElementDefinition =
+				_containerPageElementDefinitionDTOConverter.toDTO(
+					dtoConverterContext,
+					(ContainerStyledLayoutStructureItem)layoutStructureItem);
 		}
 
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_DROP_ZONE)) {
 
-			DropZonePageElementDefinition dropZonePageElementDefinition =
-				new DropZonePageElementDefinition();
-
-			dropZonePageElementDefinition.setType(
-				PageElementDefinition.Type.DROP_ZONE);
-
-			return dropZonePageElementDefinition;
+			pageElementDefinition = new DropZonePageElementDefinition();
 		}
 
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_FORM)) {
 
-			return _formPageElementDefinitionDTOConverter.toDTO(
-				(FormStyledLayoutStructureItem)layoutStructureItem);
+			pageElementDefinition =
+				_formPageElementDefinitionDTOConverter.toDTO(
+					(FormStyledLayoutStructureItem)layoutStructureItem);
 		}
 
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_FORM_STEP)) {
 
-			FormStepPageElementDefinition formStepPageElementDefinition =
-				new FormStepPageElementDefinition();
-
-			formStepPageElementDefinition.setType(
-				PageElementDefinition.Type.FORM_STEP);
-
-			return formStepPageElementDefinition;
+			pageElementDefinition = new FormStepPageElementDefinition();
 		}
 
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_FORM_STEP_CONTAINER)) {
 
-			return _formStepContainerPageElementDefinitionDTOConverter.toDTO(
-				(FormStepContainerStyledLayoutStructureItem)
-					layoutStructureItem);
+			pageElementDefinition =
+				_formStepContainerPageElementDefinitionDTOConverter.toDTO(
+					(FormStepContainerStyledLayoutStructureItem)
+						layoutStructureItem);
 		}
 
 		if (Objects.equals(
@@ -211,20 +201,24 @@ public class PageElementDTOConverter
 					(FragmentStyledLayoutStructureItem)layoutStructureItem;
 
 			if (!_isWidgetInstance(fragmentStyledLayoutStructureItem)) {
-				return _fragmentInstancePageElementDefinitionDTOConverter.toDTO(
-					fragmentStyledLayoutStructureItem);
+				pageElementDefinition =
+					_fragmentInstancePageElementDefinitionDTOConverter.toDTO(
+						fragmentStyledLayoutStructureItem);
 			}
-
-			return _widgetInstancePageElementDefinitionDTOConverter.toDTO(
-				dtoConverterContext, fragmentStyledLayoutStructureItem);
+			else {
+				pageElementDefinition =
+					_widgetInstancePageElementDefinitionDTOConverter.toDTO(
+						fragmentStyledLayoutStructureItem);
+			}
 		}
 
 		if (Objects.equals(
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_FRAGMENT_DROP_ZONE)) {
 
-			return _fragmentDropZonePageElementDefinitionDTOConverter.toDTO(
-				(FragmentDropZoneLayoutStructureItem)layoutStructureItem);
+			pageElementDefinition =
+				_fragmentDropZonePageElementDefinitionDTOConverter.toDTO(
+					(FragmentDropZoneLayoutStructureItem)layoutStructureItem);
 		}
 
 		if (Objects.equals(
@@ -238,9 +232,29 @@ public class PageElementDTOConverter
 				layoutStructureItem.getItemType(),
 				LayoutDataItemTypeConstants.TYPE_ROW)) {
 
-			return _gridPageElementDefinitionDTOConverter.toDTO(
-				dtoConverterContext,
-				(RowStyledLayoutStructureItem)layoutStructureItem);
+			pageElementDefinition =
+				_gridPageElementDefinitionDTOConverter.toDTO(
+					dtoConverterContext,
+					(RowStyledLayoutStructureItem)layoutStructureItem);
+		}
+
+		if (pageElementDefinition != null) {
+			if (Objects.equals(
+					layoutStructureItem.getItemType(),
+					LayoutDataItemTypeConstants.TYPE_FRAGMENT) &&
+				_isWidgetInstance(
+					(FragmentStyledLayoutStructureItem)layoutStructureItem)) {
+
+				pageElementDefinition.setType(
+					() -> PageElementDefinition.Type.WIDGET);
+			}
+			else {
+				pageElementDefinition.setType(
+					() -> PageElementDefinitionTypeUtil.toExternalType(
+						layoutStructureItem.getItemType()));
+			}
+
+			return pageElementDefinition;
 		}
 
 		throw new UnsupportedOperationException();
