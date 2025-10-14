@@ -13,7 +13,6 @@ import com.liferay.headless.admin.site.dto.v1_0.FragmentMappedValueItemContextRe
 import com.liferay.headless.admin.site.dto.v1_0.FragmentMappedValueItemExternalReference;
 import com.liferay.headless.admin.site.dto.v1_0.FragmentMappedValueItemReference;
 import com.liferay.headless.admin.site.dto.v1_0.Mapping;
-import com.liferay.headless.admin.site.dto.v1_0.Scope;
 import com.liferay.info.item.ClassPKInfoItemIdentifier;
 import com.liferay.info.item.ERCInfoItemIdentifier;
 import com.liferay.info.item.InfoItemDetails;
@@ -27,10 +26,8 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -366,33 +363,12 @@ public class FragmentLinkUtil {
 		return jsonObject;
 	}
 
-	private static Long _getGroupId(Scope scope, long scopeGroupId) {
-		if ((scope == null) || (scope.getExternalReferenceCode() == null)) {
-			return scopeGroupId;
-		}
-
-		Long companyId = CompanyUtil.getCompanyId(scopeGroupId);
-
-		if (companyId == null) {
-			return null;
-		}
-
-		Group group = GroupLocalServiceUtil.fetchGroupByExternalReferenceCode(
-			scope.getExternalReferenceCode(), companyId);
-
-		if (group == null) {
-			return null;
-		}
-
-		return group.getGroupId();
-	}
-
 	private static JSONObject _getMappedLayoutJSONObject(
 		FragmentMappedValueItemExternalReference
 			fragmentMappedValueItemExternalReference,
 		long scopeGroupId) {
 
-		Long groupId = _getGroupId(
+		Long groupId = GroupUtil.getGroupId(
 			fragmentMappedValueItemExternalReference.getScope(), scopeGroupId);
 
 		if (groupId == null) {
