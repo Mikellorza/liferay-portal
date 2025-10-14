@@ -120,6 +120,7 @@ public class PageElementDTOConverter
 				LayoutDataItemTypeConstants.TYPE_COLLECTION)) {
 
 			return _collectionPageElementDefinitionDTOConverter.toDTO(
+				dtoConverterContext,
 				(CollectionStyledLayoutStructureItem)layoutStructureItem);
 		}
 
