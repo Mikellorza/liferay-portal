@@ -477,10 +477,7 @@ public class FragmentLinkUtil {
 			return null;
 		}
 
-		Group group = GroupLocalServiceUtil.getGroupByExternalReferenceCode(
-			itemExternalReferenceCode, companyId);
-
-		if ((group == null) || (group.getGroupId() == scopeGroupId)) {
+        Group group = GroupLocalServiceUtil.fetchGroupByExternalReferenceCode(
 			return null;
 		}
 
