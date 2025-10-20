@@ -7,7 +7,6 @@ package com.liferay.headless.admin.site.client.serdes.v1_0;
 
 import com.liferay.headless.admin.site.client.dto.v1_0.CollectionPageElementDefinition;
 import com.liferay.headless.admin.site.client.dto.v1_0.CollectionViewport;
-import com.liferay.headless.admin.site.client.dto.v1_0.FragmentViewport;
 import com.liferay.headless.admin.site.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -51,6 +50,18 @@ public class CollectionPageElementDefinitionSerDes {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("{");
+
+		if (collectionPageElementDefinition.getCollectionListStyle() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"collectionListStyle\": ");
+
+			sb.append(
+				String.valueOf(
+					collectionPageElementDefinition.getCollectionListStyle()));
+		}
 
 		if (collectionPageElementDefinition.getCollectionReference() != null) {
 			if (sb.length() > 1) {
@@ -128,86 +139,14 @@ public class CollectionPageElementDefinitionSerDes {
 						getEmptyCollectionConfig()));
 		}
 
-		if (collectionPageElementDefinition.getFragmentStyle() != null) {
+		if (collectionPageElementDefinition.getHidden() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"fragmentStyle\": ");
+			sb.append("\"hidden\": ");
 
-			sb.append(
-				String.valueOf(
-					collectionPageElementDefinition.getFragmentStyle()));
-		}
-
-		if (collectionPageElementDefinition.getFragmentViewports() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"fragmentViewports\": ");
-
-			sb.append("[");
-
-			for (int i = 0;
-				 i <
-					 collectionPageElementDefinition.
-						 getFragmentViewports().length;
-				 i++) {
-
-				sb.append(
-					String.valueOf(
-						collectionPageElementDefinition.getFragmentViewports()
-							[i]));
-
-				if ((i + 1) < collectionPageElementDefinition.
-						getFragmentViewports().length) {
-
-					sb.append(", ");
-				}
-			}
-
-			sb.append("]");
-		}
-
-		if (collectionPageElementDefinition.getLayout() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"layout\": ");
-
-			sb.append(
-				String.valueOf(collectionPageElementDefinition.getLayout()));
-		}
-
-		if (collectionPageElementDefinition.getListItemStyle() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"listItemStyle\": ");
-
-			sb.append("\"");
-
-			sb.append(
-				_escape(collectionPageElementDefinition.getListItemStyle()));
-
-			sb.append("\"");
-		}
-
-		if (collectionPageElementDefinition.getListStyle() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"listStyle\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(collectionPageElementDefinition.getListStyle()));
-
-			sb.append("\"");
+			sb.append(collectionPageElementDefinition.getHidden());
 		}
 
 		if (collectionPageElementDefinition.getName() != null) {
@@ -222,16 +161,6 @@ public class CollectionPageElementDefinitionSerDes {
 			sb.append(_escape(collectionPageElementDefinition.getName()));
 
 			sb.append("\"");
-		}
-
-		if (collectionPageElementDefinition.getNumberOfColumns() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"numberOfColumns\": ");
-
-			sb.append(collectionPageElementDefinition.getNumberOfColumns());
 		}
 
 		if (collectionPageElementDefinition.getNumberOfItems() != null) {
@@ -279,21 +208,6 @@ public class CollectionPageElementDefinitionSerDes {
 			sb.append("\"");
 		}
 
-		if (collectionPageElementDefinition.getTemplateKey() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"templateKey\": ");
-
-			sb.append("\"");
-
-			sb.append(
-				_escape(collectionPageElementDefinition.getTemplateKey()));
-
-			sb.append("\"");
-		}
-
 		if (collectionPageElementDefinition.getType() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -329,6 +243,16 @@ public class CollectionPageElementDefinitionSerDes {
 		}
 
 		Map<String, String> map = new TreeMap<>();
+
+		if (collectionPageElementDefinition.getCollectionListStyle() == null) {
+			map.put("collectionListStyle", null);
+		}
+		else {
+			map.put(
+				"collectionListStyle",
+				String.valueOf(
+					collectionPageElementDefinition.getCollectionListStyle()));
+		}
 
 		if (collectionPageElementDefinition.getCollectionReference() == null) {
 			map.put("collectionReference", null);
@@ -383,52 +307,13 @@ public class CollectionPageElementDefinitionSerDes {
 						getEmptyCollectionConfig()));
 		}
 
-		if (collectionPageElementDefinition.getFragmentStyle() == null) {
-			map.put("fragmentStyle", null);
+		if (collectionPageElementDefinition.getHidden() == null) {
+			map.put("hidden", null);
 		}
 		else {
 			map.put(
-				"fragmentStyle",
-				String.valueOf(
-					collectionPageElementDefinition.getFragmentStyle()));
-		}
-
-		if (collectionPageElementDefinition.getFragmentViewports() == null) {
-			map.put("fragmentViewports", null);
-		}
-		else {
-			map.put(
-				"fragmentViewports",
-				String.valueOf(
-					collectionPageElementDefinition.getFragmentViewports()));
-		}
-
-		if (collectionPageElementDefinition.getLayout() == null) {
-			map.put("layout", null);
-		}
-		else {
-			map.put(
-				"layout",
-				String.valueOf(collectionPageElementDefinition.getLayout()));
-		}
-
-		if (collectionPageElementDefinition.getListItemStyle() == null) {
-			map.put("listItemStyle", null);
-		}
-		else {
-			map.put(
-				"listItemStyle",
-				String.valueOf(
-					collectionPageElementDefinition.getListItemStyle()));
-		}
-
-		if (collectionPageElementDefinition.getListStyle() == null) {
-			map.put("listStyle", null);
-		}
-		else {
-			map.put(
-				"listStyle",
-				String.valueOf(collectionPageElementDefinition.getListStyle()));
+				"hidden",
+				String.valueOf(collectionPageElementDefinition.getHidden()));
 		}
 
 		if (collectionPageElementDefinition.getName() == null) {
@@ -438,16 +323,6 @@ public class CollectionPageElementDefinitionSerDes {
 			map.put(
 				"name",
 				String.valueOf(collectionPageElementDefinition.getName()));
-		}
-
-		if (collectionPageElementDefinition.getNumberOfColumns() == null) {
-			map.put("numberOfColumns", null);
-		}
-		else {
-			map.put(
-				"numberOfColumns",
-				String.valueOf(
-					collectionPageElementDefinition.getNumberOfColumns()));
 		}
 
 		if (collectionPageElementDefinition.getNumberOfItems() == null) {
@@ -490,16 +365,6 @@ public class CollectionPageElementDefinitionSerDes {
 					collectionPageElementDefinition.getPaginationType()));
 		}
 
-		if (collectionPageElementDefinition.getTemplateKey() == null) {
-			map.put("templateKey", null);
-		}
-		else {
-			map.put(
-				"templateKey",
-				String.valueOf(
-					collectionPageElementDefinition.getTemplateKey()));
-		}
-
 		if (collectionPageElementDefinition.getType() == null) {
 			map.put("type", null);
 		}
@@ -527,7 +392,12 @@ public class CollectionPageElementDefinitionSerDes {
 
 		@Override
 		protected boolean parseMaps(String jsonParserFieldName) {
-			if (Objects.equals(jsonParserFieldName, "collectionReference")) {
+			if (Objects.equals(jsonParserFieldName, "collectionListStyle")) {
+				return false;
+			}
+			else if (Objects.equals(
+						jsonParserFieldName, "collectionReference")) {
+
 				return false;
 			}
 			else if (Objects.equals(
@@ -546,25 +416,10 @@ public class CollectionPageElementDefinitionSerDes {
 
 				return false;
 			}
-			else if (Objects.equals(jsonParserFieldName, "fragmentStyle")) {
-				return false;
-			}
-			else if (Objects.equals(jsonParserFieldName, "fragmentViewports")) {
-				return false;
-			}
-			else if (Objects.equals(jsonParserFieldName, "layout")) {
-				return false;
-			}
-			else if (Objects.equals(jsonParserFieldName, "listItemStyle")) {
-				return false;
-			}
-			else if (Objects.equals(jsonParserFieldName, "listStyle")) {
+			else if (Objects.equals(jsonParserFieldName, "hidden")) {
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "name")) {
-				return false;
-			}
-			else if (Objects.equals(jsonParserFieldName, "numberOfColumns")) {
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "numberOfItems")) {
@@ -581,9 +436,6 @@ public class CollectionPageElementDefinitionSerDes {
 			else if (Objects.equals(jsonParserFieldName, "paginationType")) {
 				return false;
 			}
-			else if (Objects.equals(jsonParserFieldName, "templateKey")) {
-				return false;
-			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {
 				return false;
 			}
@@ -596,7 +448,16 @@ public class CollectionPageElementDefinitionSerDes {
 			CollectionPageElementDefinition collectionPageElementDefinition,
 			String jsonParserFieldName, Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "collectionReference")) {
+			if (Objects.equals(jsonParserFieldName, "collectionListStyle")) {
+				if (jsonParserFieldValue != null) {
+					collectionPageElementDefinition.setCollectionListStyle(
+						CollectionListStyleSerDes.toDTO(
+							(String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(
+						jsonParserFieldName, "collectionReference")) {
+
 				if (jsonParserFieldValue != null) {
 					collectionPageElementDefinition.setCollectionReference(
 						CollectionReferenceSerDes.toDTO(
@@ -644,59 +505,16 @@ public class CollectionPageElementDefinitionSerDes {
 							(String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "fragmentStyle")) {
+			else if (Objects.equals(jsonParserFieldName, "hidden")) {
 				if (jsonParserFieldValue != null) {
-					collectionPageElementDefinition.setFragmentStyle(
-						FragmentStyleSerDes.toDTO(
-							(String)jsonParserFieldValue));
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "fragmentViewports")) {
-				if (jsonParserFieldValue != null) {
-					Object[] jsonParserFieldValues =
-						(Object[])jsonParserFieldValue;
-
-					FragmentViewport[] fragmentViewportsArray =
-						new FragmentViewport[jsonParserFieldValues.length];
-
-					for (int i = 0; i < fragmentViewportsArray.length; i++) {
-						fragmentViewportsArray[i] =
-							FragmentViewportSerDes.toDTO(
-								(String)jsonParserFieldValues[i]);
-					}
-
-					collectionPageElementDefinition.setFragmentViewports(
-						fragmentViewportsArray);
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "layout")) {
-				if (jsonParserFieldValue != null) {
-					collectionPageElementDefinition.setLayout(
-						BasicLayoutSerDes.toDTO((String)jsonParserFieldValue));
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "listItemStyle")) {
-				if (jsonParserFieldValue != null) {
-					collectionPageElementDefinition.setListItemStyle(
-						(String)jsonParserFieldValue);
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "listStyle")) {
-				if (jsonParserFieldValue != null) {
-					collectionPageElementDefinition.setListStyle(
-						(String)jsonParserFieldValue);
+					collectionPageElementDefinition.setHidden(
+						(Boolean)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "name")) {
 				if (jsonParserFieldValue != null) {
 					collectionPageElementDefinition.setName(
 						(String)jsonParserFieldValue);
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "numberOfColumns")) {
-				if (jsonParserFieldValue != null) {
-					collectionPageElementDefinition.setNumberOfColumns(
-						Integer.valueOf((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "numberOfItems")) {
@@ -724,12 +542,6 @@ public class CollectionPageElementDefinitionSerDes {
 					collectionPageElementDefinition.setPaginationType(
 						CollectionPageElementDefinition.PaginationType.create(
 							(String)jsonParserFieldValue));
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "templateKey")) {
-				if (jsonParserFieldValue != null) {
-					collectionPageElementDefinition.setTemplateKey(
-						(String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {

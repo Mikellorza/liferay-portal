@@ -26,6 +26,30 @@ public class CollectionPageElementDefinition
 		return CollectionPageElementDefinitionSerDes.toDTO(json);
 	}
 
+	public CollectionListStyle getCollectionListStyle() {
+		return collectionListStyle;
+	}
+
+	public void setCollectionListStyle(
+		CollectionListStyle collectionListStyle) {
+
+		this.collectionListStyle = collectionListStyle;
+	}
+
+	public void setCollectionListStyle(
+		UnsafeSupplier<CollectionListStyle, Exception>
+			collectionListStyleUnsafeSupplier) {
+
+		try {
+			collectionListStyle = collectionListStyleUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected CollectionListStyle collectionListStyle;
+
 	public CollectionReference getCollectionReference() {
 		return collectionReference;
 	}
@@ -140,111 +164,26 @@ public class CollectionPageElementDefinition
 
 	protected EmptyCollectionConfig emptyCollectionConfig;
 
-	public FragmentStyle getFragmentStyle() {
-		return fragmentStyle;
+	public Boolean getHidden() {
+		return hidden;
 	}
 
-	public void setFragmentStyle(FragmentStyle fragmentStyle) {
-		this.fragmentStyle = fragmentStyle;
+	public void setHidden(Boolean hidden) {
+		this.hidden = hidden;
 	}
 
-	public void setFragmentStyle(
-		UnsafeSupplier<FragmentStyle, Exception> fragmentStyleUnsafeSupplier) {
+	public void setHidden(
+		UnsafeSupplier<Boolean, Exception> hiddenUnsafeSupplier) {
 
 		try {
-			fragmentStyle = fragmentStyleUnsafeSupplier.get();
+			hidden = hiddenUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected FragmentStyle fragmentStyle;
-
-	public FragmentViewport[] getFragmentViewports() {
-		return fragmentViewports;
-	}
-
-	public void setFragmentViewports(FragmentViewport[] fragmentViewports) {
-		this.fragmentViewports = fragmentViewports;
-	}
-
-	public void setFragmentViewports(
-		UnsafeSupplier<FragmentViewport[], Exception>
-			fragmentViewportsUnsafeSupplier) {
-
-		try {
-			fragmentViewports = fragmentViewportsUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected FragmentViewport[] fragmentViewports;
-
-	public BasicLayout getLayout() {
-		return layout;
-	}
-
-	public void setLayout(BasicLayout layout) {
-		this.layout = layout;
-	}
-
-	public void setLayout(
-		UnsafeSupplier<BasicLayout, Exception> layoutUnsafeSupplier) {
-
-		try {
-			layout = layoutUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected BasicLayout layout;
-
-	public String getListItemStyle() {
-		return listItemStyle;
-	}
-
-	public void setListItemStyle(String listItemStyle) {
-		this.listItemStyle = listItemStyle;
-	}
-
-	public void setListItemStyle(
-		UnsafeSupplier<String, Exception> listItemStyleUnsafeSupplier) {
-
-		try {
-			listItemStyle = listItemStyleUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected String listItemStyle;
-
-	public String getListStyle() {
-		return listStyle;
-	}
-
-	public void setListStyle(String listStyle) {
-		this.listStyle = listStyle;
-	}
-
-	public void setListStyle(
-		UnsafeSupplier<String, Exception> listStyleUnsafeSupplier) {
-
-		try {
-			listStyle = listStyleUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected String listStyle;
+	protected Boolean hidden;
 
 	public String getName() {
 		return name;
@@ -264,27 +203,6 @@ public class CollectionPageElementDefinition
 	}
 
 	protected String name;
-
-	public Integer getNumberOfColumns() {
-		return numberOfColumns;
-	}
-
-	public void setNumberOfColumns(Integer numberOfColumns) {
-		this.numberOfColumns = numberOfColumns;
-	}
-
-	public void setNumberOfColumns(
-		UnsafeSupplier<Integer, Exception> numberOfColumnsUnsafeSupplier) {
-
-		try {
-			numberOfColumns = numberOfColumnsUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected Integer numberOfColumns;
 
 	public Integer getNumberOfItems() {
 		return numberOfItems;
@@ -379,27 +297,6 @@ public class CollectionPageElementDefinition
 
 	protected PaginationType paginationType;
 
-	public String getTemplateKey() {
-		return templateKey;
-	}
-
-	public void setTemplateKey(String templateKey) {
-		this.templateKey = templateKey;
-	}
-
-	public void setTemplateKey(
-		UnsafeSupplier<String, Exception> templateKeyUnsafeSupplier) {
-
-		try {
-			templateKey = templateKeyUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected String templateKey;
-
 	@Override
 	public CollectionPageElementDefinition clone()
 		throws CloneNotSupportedException {
@@ -437,7 +334,7 @@ public class CollectionPageElementDefinition
 
 	public static enum PaginationType {
 
-		NONE("None"), NUMERIC("Numeric"), REGULAR("Regular"), SIMPLE("Simple");
+		NONE("None"), NUMERIC("Numeric"), SIMPLE("Simple");
 
 		public static PaginationType create(String value) {
 			for (PaginationType paginationType : values()) {

@@ -5,7 +5,7 @@
 
 package com.liferay.headless.admin.site.client.serdes.v1_0;
 
-import com.liferay.headless.admin.site.client.dto.v1_0.ClassNameReference;
+import com.liferay.headless.admin.site.client.dto.v1_0.ListStyle;
 import com.liferay.headless.admin.site.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -21,24 +21,22 @@ import java.util.TreeMap;
  * @generated
  */
 @Generated("")
-public class ClassNameReferenceSerDes {
+public class ListStyleSerDes {
 
-	public static ClassNameReference toDTO(String json) {
-		ClassNameReferenceJSONParser classNameReferenceJSONParser =
-			new ClassNameReferenceJSONParser();
+	public static ListStyle toDTO(String json) {
+		ListStyleJSONParser listStyleJSONParser = new ListStyleJSONParser();
 
-		return classNameReferenceJSONParser.parseToDTO(json);
+		return listStyleJSONParser.parseToDTO(json);
 	}
 
-	public static ClassNameReference[] toDTOs(String json) {
-		ClassNameReferenceJSONParser classNameReferenceJSONParser =
-			new ClassNameReferenceJSONParser();
+	public static ListStyle[] toDTOs(String json) {
+		ListStyleJSONParser listStyleJSONParser = new ListStyleJSONParser();
 
-		return classNameReferenceJSONParser.parseToDTOs(json);
+		return listStyleJSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(ClassNameReference classNameReference) {
-		if (classNameReference == null) {
+	public static String toJSON(ListStyle listStyle) {
+		if (listStyle == null) {
 			return "null";
 		}
 
@@ -46,30 +44,40 @@ public class ClassNameReferenceSerDes {
 
 		sb.append("{");
 
-		if (classNameReference.getClassName() != null) {
+		if (listStyle.getListStyleDefinition() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"className\": ");
+			sb.append("\"listStyleDefinition\": ");
+
+			sb.append(String.valueOf(listStyle.getListStyleDefinition()));
+		}
+
+		if (listStyle.getListStyleType() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"listStyleType\": ");
 
 			sb.append("\"");
 
-			sb.append(_escape(classNameReference.getClassName()));
+			sb.append(listStyle.getListStyleType());
 
 			sb.append("\"");
 		}
 
-		if (classNameReference.getCollectionType() != null) {
+		if (listStyle.getCollectionListStyleType() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"collectionType\": ");
+			sb.append("\"collectionListStyleType\": ");
 
 			sb.append("\"");
 
-			sb.append(classNameReference.getCollectionType());
+			sb.append(listStyle.getCollectionListStyleType());
 
 			sb.append("\"");
 		}
@@ -80,60 +88,70 @@ public class ClassNameReferenceSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		ClassNameReferenceJSONParser classNameReferenceJSONParser =
-			new ClassNameReferenceJSONParser();
+		ListStyleJSONParser listStyleJSONParser = new ListStyleJSONParser();
 
-		return classNameReferenceJSONParser.parseToMap(json);
+		return listStyleJSONParser.parseToMap(json);
 	}
 
-	public static Map<String, String> toMap(
-		ClassNameReference classNameReference) {
-
-		if (classNameReference == null) {
+	public static Map<String, String> toMap(ListStyle listStyle) {
+		if (listStyle == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (classNameReference.getClassName() == null) {
-			map.put("className", null);
+		if (listStyle.getListStyleDefinition() == null) {
+			map.put("listStyleDefinition", null);
 		}
 		else {
 			map.put(
-				"className", String.valueOf(classNameReference.getClassName()));
+				"listStyleDefinition",
+				String.valueOf(listStyle.getListStyleDefinition()));
 		}
 
-		if (classNameReference.getCollectionType() == null) {
-			map.put("collectionType", null);
+		if (listStyle.getListStyleType() == null) {
+			map.put("listStyleType", null);
 		}
 		else {
 			map.put(
-				"collectionType",
-				String.valueOf(classNameReference.getCollectionType()));
+				"listStyleType", String.valueOf(listStyle.getListStyleType()));
+		}
+
+		if (listStyle.getCollectionListStyleType() == null) {
+			map.put("collectionListStyleType", null);
+		}
+		else {
+			map.put(
+				"collectionListStyleType",
+				String.valueOf(listStyle.getCollectionListStyleType()));
 		}
 
 		return map;
 	}
 
-	public static class ClassNameReferenceJSONParser
-		extends BaseJSONParser<ClassNameReference> {
+	public static class ListStyleJSONParser extends BaseJSONParser<ListStyle> {
 
 		@Override
-		protected ClassNameReference createDTO() {
-			return new ClassNameReference();
+		protected ListStyle createDTO() {
+			return new ListStyle();
 		}
 
 		@Override
-		protected ClassNameReference[] createDTOArray(int size) {
-			return new ClassNameReference[size];
+		protected ListStyle[] createDTOArray(int size) {
+			return new ListStyle[size];
 		}
 
 		@Override
 		protected boolean parseMaps(String jsonParserFieldName) {
-			if (Objects.equals(jsonParserFieldName, "className")) {
+			if (Objects.equals(jsonParserFieldName, "listStyleDefinition")) {
 				return false;
 			}
-			else if (Objects.equals(jsonParserFieldName, "collectionType")) {
+			else if (Objects.equals(jsonParserFieldName, "listStyleType")) {
+				return false;
+			}
+			else if (Objects.equals(
+						jsonParserFieldName, "collectionListStyleType")) {
+
 				return false;
 			}
 
@@ -142,19 +160,29 @@ public class ClassNameReferenceSerDes {
 
 		@Override
 		protected void setField(
-			ClassNameReference classNameReference, String jsonParserFieldName,
+			ListStyle listStyle, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "className")) {
+			if (Objects.equals(jsonParserFieldName, "listStyleDefinition")) {
 				if (jsonParserFieldValue != null) {
-					classNameReference.setClassName(
-						(String)jsonParserFieldValue);
+					listStyle.setListStyleDefinition(
+						ListStyleDefinitionSerDes.toDTO(
+							(String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "collectionType")) {
+			else if (Objects.equals(jsonParserFieldName, "listStyleType")) {
 				if (jsonParserFieldValue != null) {
-					classNameReference.setCollectionType(
-						ClassNameReference.CollectionType.create(
+					listStyle.setListStyleType(
+						ListStyle.ListStyleType.create(
+							(String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(
+						jsonParserFieldName, "collectionListStyleType")) {
+
+				if (jsonParserFieldValue != null) {
+					listStyle.setCollectionListStyleType(
+						ListStyle.CollectionListStyleType.create(
 							(String)jsonParserFieldValue));
 				}
 			}

@@ -5,7 +5,7 @@
 
 package com.liferay.headless.admin.site.client.serdes.v1_0;
 
-import com.liferay.headless.admin.site.client.dto.v1_0.CollectionViewportDefinition;
+import com.liferay.headless.admin.site.client.dto.v1_0.ListStyleDefinition;
 import com.liferay.headless.admin.site.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -21,28 +21,24 @@ import java.util.TreeMap;
  * @generated
  */
 @Generated("")
-public class CollectionViewportDefinitionSerDes {
+public class ListStyleDefinitionSerDes {
 
-	public static CollectionViewportDefinition toDTO(String json) {
-		CollectionViewportDefinitionJSONParser
-			collectionViewportDefinitionJSONParser =
-				new CollectionViewportDefinitionJSONParser();
+	public static ListStyleDefinition toDTO(String json) {
+		ListStyleDefinitionJSONParser listStyleDefinitionJSONParser =
+			new ListStyleDefinitionJSONParser();
 
-		return collectionViewportDefinitionJSONParser.parseToDTO(json);
+		return listStyleDefinitionJSONParser.parseToDTO(json);
 	}
 
-	public static CollectionViewportDefinition[] toDTOs(String json) {
-		CollectionViewportDefinitionJSONParser
-			collectionViewportDefinitionJSONParser =
-				new CollectionViewportDefinitionJSONParser();
+	public static ListStyleDefinition[] toDTOs(String json) {
+		ListStyleDefinitionJSONParser listStyleDefinitionJSONParser =
+			new ListStyleDefinitionJSONParser();
 
-		return collectionViewportDefinitionJSONParser.parseToDTOs(json);
+		return listStyleDefinitionJSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(
-		CollectionViewportDefinition collectionViewportDefinition) {
-
-		if (collectionViewportDefinition == null) {
+	public static String toJSON(ListStyleDefinition listStyleDefinition) {
+		if (listStyleDefinition == null) {
 			return "null";
 		}
 
@@ -50,7 +46,7 @@ public class CollectionViewportDefinitionSerDes {
 
 		sb.append("{");
 
-		if (collectionViewportDefinition.getAlign() != null) {
+		if (listStyleDefinition.getAlign() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -59,12 +55,12 @@ public class CollectionViewportDefinitionSerDes {
 
 			sb.append("\"");
 
-			sb.append(collectionViewportDefinition.getAlign());
+			sb.append(listStyleDefinition.getAlign());
 
 			sb.append("\"");
 		}
 
-		if (collectionViewportDefinition.getFlexWrap() != null) {
+		if (listStyleDefinition.getFlexWrap() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -73,22 +69,22 @@ public class CollectionViewportDefinitionSerDes {
 
 			sb.append("\"");
 
-			sb.append(collectionViewportDefinition.getFlexWrap());
+			sb.append(listStyleDefinition.getFlexWrap());
 
 			sb.append("\"");
 		}
 
-		if (collectionViewportDefinition.getHidden() != null) {
+		if (listStyleDefinition.getGutters() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"hidden\": ");
+			sb.append("\"gutters\": ");
 
-			sb.append(collectionViewportDefinition.getHidden());
+			sb.append(listStyleDefinition.getGutters());
 		}
 
-		if (collectionViewportDefinition.getJustify() != null) {
+		if (listStyleDefinition.getJustify() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -97,19 +93,33 @@ public class CollectionViewportDefinitionSerDes {
 
 			sb.append("\"");
 
-			sb.append(collectionViewportDefinition.getJustify());
+			sb.append(listStyleDefinition.getJustify());
 
 			sb.append("\"");
 		}
 
-		if (collectionViewportDefinition.getNumberOfColumns() != null) {
+		if (listStyleDefinition.getNumberOfColumns() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"numberOfColumns\": ");
 
-			sb.append(collectionViewportDefinition.getNumberOfColumns());
+			sb.append(listStyleDefinition.getNumberOfColumns());
+		}
+
+		if (listStyleDefinition.getVerticalAlignment() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"verticalAlignment\": ");
+
+			sb.append("\"");
+
+			sb.append(listStyleDefinition.getVerticalAlignment());
+
+			sb.append("\"");
 		}
 
 		sb.append("}");
@@ -118,82 +128,84 @@ public class CollectionViewportDefinitionSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		CollectionViewportDefinitionJSONParser
-			collectionViewportDefinitionJSONParser =
-				new CollectionViewportDefinitionJSONParser();
+		ListStyleDefinitionJSONParser listStyleDefinitionJSONParser =
+			new ListStyleDefinitionJSONParser();
 
-		return collectionViewportDefinitionJSONParser.parseToMap(json);
+		return listStyleDefinitionJSONParser.parseToMap(json);
 	}
 
 	public static Map<String, String> toMap(
-		CollectionViewportDefinition collectionViewportDefinition) {
+		ListStyleDefinition listStyleDefinition) {
 
-		if (collectionViewportDefinition == null) {
+		if (listStyleDefinition == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (collectionViewportDefinition.getAlign() == null) {
+		if (listStyleDefinition.getAlign() == null) {
 			map.put("align", null);
 		}
 		else {
-			map.put(
-				"align",
-				String.valueOf(collectionViewportDefinition.getAlign()));
+			map.put("align", String.valueOf(listStyleDefinition.getAlign()));
 		}
 
-		if (collectionViewportDefinition.getFlexWrap() == null) {
+		if (listStyleDefinition.getFlexWrap() == null) {
 			map.put("flexWrap", null);
 		}
 		else {
 			map.put(
-				"flexWrap",
-				String.valueOf(collectionViewportDefinition.getFlexWrap()));
+				"flexWrap", String.valueOf(listStyleDefinition.getFlexWrap()));
 		}
 
-		if (collectionViewportDefinition.getHidden() == null) {
-			map.put("hidden", null);
+		if (listStyleDefinition.getGutters() == null) {
+			map.put("gutters", null);
 		}
 		else {
 			map.put(
-				"hidden",
-				String.valueOf(collectionViewportDefinition.getHidden()));
+				"gutters", String.valueOf(listStyleDefinition.getGutters()));
 		}
 
-		if (collectionViewportDefinition.getJustify() == null) {
+		if (listStyleDefinition.getJustify() == null) {
 			map.put("justify", null);
 		}
 		else {
 			map.put(
-				"justify",
-				String.valueOf(collectionViewportDefinition.getJustify()));
+				"justify", String.valueOf(listStyleDefinition.getJustify()));
 		}
 
-		if (collectionViewportDefinition.getNumberOfColumns() == null) {
+		if (listStyleDefinition.getNumberOfColumns() == null) {
 			map.put("numberOfColumns", null);
 		}
 		else {
 			map.put(
 				"numberOfColumns",
-				String.valueOf(
-					collectionViewportDefinition.getNumberOfColumns()));
+				String.valueOf(listStyleDefinition.getNumberOfColumns()));
+		}
+
+		if (listStyleDefinition.getVerticalAlignment() == null) {
+			map.put("verticalAlignment", null);
+		}
+		else {
+			map.put(
+				"verticalAlignment",
+				String.valueOf(listStyleDefinition.getVerticalAlignment()));
 		}
 
 		return map;
 	}
 
-	public static class CollectionViewportDefinitionJSONParser
-		extends BaseJSONParser<CollectionViewportDefinition> {
+	public static class ListStyleDefinitionJSONParser
+		extends BaseJSONParser<ListStyleDefinition> {
 
 		@Override
-		protected CollectionViewportDefinition createDTO() {
-			return new CollectionViewportDefinition();
+		protected ListStyleDefinition createDTO() {
+			return new ListStyleDefinition();
 		}
 
 		@Override
-		protected CollectionViewportDefinition[] createDTOArray(int size) {
-			return new CollectionViewportDefinition[size];
+		protected ListStyleDefinition[] createDTOArray(int size) {
+			return new ListStyleDefinition[size];
 		}
 
 		@Override
@@ -204,13 +216,16 @@ public class CollectionViewportDefinitionSerDes {
 			else if (Objects.equals(jsonParserFieldName, "flexWrap")) {
 				return false;
 			}
-			else if (Objects.equals(jsonParserFieldName, "hidden")) {
+			else if (Objects.equals(jsonParserFieldName, "gutters")) {
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "justify")) {
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "numberOfColumns")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "verticalAlignment")) {
 				return false;
 			}
 
@@ -219,40 +234,47 @@ public class CollectionViewportDefinitionSerDes {
 
 		@Override
 		protected void setField(
-			CollectionViewportDefinition collectionViewportDefinition,
-			String jsonParserFieldName, Object jsonParserFieldValue) {
+			ListStyleDefinition listStyleDefinition, String jsonParserFieldName,
+			Object jsonParserFieldValue) {
 
 			if (Objects.equals(jsonParserFieldName, "align")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setAlign(
-						CollectionViewportDefinition.Align.create(
+					listStyleDefinition.setAlign(
+						ListStyleDefinition.Align.create(
 							(String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "flexWrap")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setFlexWrap(
-						CollectionViewportDefinition.FlexWrap.create(
+					listStyleDefinition.setFlexWrap(
+						ListStyleDefinition.FlexWrap.create(
 							(String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "hidden")) {
+			else if (Objects.equals(jsonParserFieldName, "gutters")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setHidden(
+					listStyleDefinition.setGutters(
 						(Boolean)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "justify")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setJustify(
-						CollectionViewportDefinition.Justify.create(
+					listStyleDefinition.setJustify(
+						ListStyleDefinition.Justify.create(
 							(String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "numberOfColumns")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setNumberOfColumns(
+					listStyleDefinition.setNumberOfColumns(
 						Integer.valueOf((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "verticalAlignment")) {
+				if (jsonParserFieldValue != null) {
+					listStyleDefinition.setVerticalAlignment(
+						ListStyleDefinition.VerticalAlignment.create(
+							(String)jsonParserFieldValue));
 				}
 			}
 		}
