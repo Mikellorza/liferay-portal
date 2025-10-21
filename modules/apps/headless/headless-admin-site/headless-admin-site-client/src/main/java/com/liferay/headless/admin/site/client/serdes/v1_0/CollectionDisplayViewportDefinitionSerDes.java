@@ -5,7 +5,7 @@
 
 package com.liferay.headless.admin.site.client.serdes.v1_0;
 
-import com.liferay.headless.admin.site.client.dto.v1_0.CollectionViewportDefinition;
+import com.liferay.headless.admin.site.client.dto.v1_0.CollectionDisplayViewportDefinition;
 import com.liferay.headless.admin.site.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -21,28 +21,29 @@ import java.util.TreeMap;
  * @generated
  */
 @Generated("")
-public class CollectionViewportDefinitionSerDes {
+public class CollectionDisplayViewportDefinitionSerDes {
 
-	public static CollectionViewportDefinition toDTO(String json) {
-		CollectionViewportDefinitionJSONParser
-			collectionViewportDefinitionJSONParser =
-				new CollectionViewportDefinitionJSONParser();
+	public static CollectionDisplayViewportDefinition toDTO(String json) {
+		CollectionDisplayViewportDefinitionJSONParser
+			collectionDisplayViewportDefinitionJSONParser =
+				new CollectionDisplayViewportDefinitionJSONParser();
 
-		return collectionViewportDefinitionJSONParser.parseToDTO(json);
+		return collectionDisplayViewportDefinitionJSONParser.parseToDTO(json);
 	}
 
-	public static CollectionViewportDefinition[] toDTOs(String json) {
-		CollectionViewportDefinitionJSONParser
-			collectionViewportDefinitionJSONParser =
-				new CollectionViewportDefinitionJSONParser();
+	public static CollectionDisplayViewportDefinition[] toDTOs(String json) {
+		CollectionDisplayViewportDefinitionJSONParser
+			collectionDisplayViewportDefinitionJSONParser =
+				new CollectionDisplayViewportDefinitionJSONParser();
 
-		return collectionViewportDefinitionJSONParser.parseToDTOs(json);
+		return collectionDisplayViewportDefinitionJSONParser.parseToDTOs(json);
 	}
 
 	public static String toJSON(
-		CollectionViewportDefinition collectionViewportDefinition) {
+		CollectionDisplayViewportDefinition
+			collectionDisplayViewportDefinition) {
 
-		if (collectionViewportDefinition == null) {
+		if (collectionDisplayViewportDefinition == null) {
 			return "null";
 		}
 
@@ -50,7 +51,7 @@ public class CollectionViewportDefinitionSerDes {
 
 		sb.append("{");
 
-		if (collectionViewportDefinition.getAlign() != null) {
+		if (collectionDisplayViewportDefinition.getAlign() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -59,12 +60,12 @@ public class CollectionViewportDefinitionSerDes {
 
 			sb.append("\"");
 
-			sb.append(collectionViewportDefinition.getAlign());
+			sb.append(collectionDisplayViewportDefinition.getAlign());
 
 			sb.append("\"");
 		}
 
-		if (collectionViewportDefinition.getFlexWrap() != null) {
+		if (collectionDisplayViewportDefinition.getFlexWrap() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -73,22 +74,22 @@ public class CollectionViewportDefinitionSerDes {
 
 			sb.append("\"");
 
-			sb.append(collectionViewportDefinition.getFlexWrap());
+			sb.append(collectionDisplayViewportDefinition.getFlexWrap());
 
 			sb.append("\"");
 		}
 
-		if (collectionViewportDefinition.getHidden() != null) {
+		if (collectionDisplayViewportDefinition.getHidden() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"hidden\": ");
 
-			sb.append(collectionViewportDefinition.getHidden());
+			sb.append(collectionDisplayViewportDefinition.getHidden());
 		}
 
-		if (collectionViewportDefinition.getJustify() != null) {
+		if (collectionDisplayViewportDefinition.getJustify() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -97,19 +98,19 @@ public class CollectionViewportDefinitionSerDes {
 
 			sb.append("\"");
 
-			sb.append(collectionViewportDefinition.getJustify());
+			sb.append(collectionDisplayViewportDefinition.getJustify());
 
 			sb.append("\"");
 		}
 
-		if (collectionViewportDefinition.getNumberOfColumns() != null) {
+		if (collectionDisplayViewportDefinition.getNumberOfColumns() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"numberOfColumns\": ");
 
-			sb.append(collectionViewportDefinition.getNumberOfColumns());
+			sb.append(collectionDisplayViewportDefinition.getNumberOfColumns());
 		}
 
 		sb.append("}");
@@ -118,82 +119,88 @@ public class CollectionViewportDefinitionSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		CollectionViewportDefinitionJSONParser
-			collectionViewportDefinitionJSONParser =
-				new CollectionViewportDefinitionJSONParser();
+		CollectionDisplayViewportDefinitionJSONParser
+			collectionDisplayViewportDefinitionJSONParser =
+				new CollectionDisplayViewportDefinitionJSONParser();
 
-		return collectionViewportDefinitionJSONParser.parseToMap(json);
+		return collectionDisplayViewportDefinitionJSONParser.parseToMap(json);
 	}
 
 	public static Map<String, String> toMap(
-		CollectionViewportDefinition collectionViewportDefinition) {
+		CollectionDisplayViewportDefinition
+			collectionDisplayViewportDefinition) {
 
-		if (collectionViewportDefinition == null) {
+		if (collectionDisplayViewportDefinition == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (collectionViewportDefinition.getAlign() == null) {
+		if (collectionDisplayViewportDefinition.getAlign() == null) {
 			map.put("align", null);
 		}
 		else {
 			map.put(
 				"align",
-				String.valueOf(collectionViewportDefinition.getAlign()));
+				String.valueOf(collectionDisplayViewportDefinition.getAlign()));
 		}
 
-		if (collectionViewportDefinition.getFlexWrap() == null) {
+		if (collectionDisplayViewportDefinition.getFlexWrap() == null) {
 			map.put("flexWrap", null);
 		}
 		else {
 			map.put(
 				"flexWrap",
-				String.valueOf(collectionViewportDefinition.getFlexWrap()));
+				String.valueOf(
+					collectionDisplayViewportDefinition.getFlexWrap()));
 		}
 
-		if (collectionViewportDefinition.getHidden() == null) {
+		if (collectionDisplayViewportDefinition.getHidden() == null) {
 			map.put("hidden", null);
 		}
 		else {
 			map.put(
 				"hidden",
-				String.valueOf(collectionViewportDefinition.getHidden()));
+				String.valueOf(
+					collectionDisplayViewportDefinition.getHidden()));
 		}
 
-		if (collectionViewportDefinition.getJustify() == null) {
+		if (collectionDisplayViewportDefinition.getJustify() == null) {
 			map.put("justify", null);
 		}
 		else {
 			map.put(
 				"justify",
-				String.valueOf(collectionViewportDefinition.getJustify()));
+				String.valueOf(
+					collectionDisplayViewportDefinition.getJustify()));
 		}
 
-		if (collectionViewportDefinition.getNumberOfColumns() == null) {
+		if (collectionDisplayViewportDefinition.getNumberOfColumns() == null) {
 			map.put("numberOfColumns", null);
 		}
 		else {
 			map.put(
 				"numberOfColumns",
 				String.valueOf(
-					collectionViewportDefinition.getNumberOfColumns()));
+					collectionDisplayViewportDefinition.getNumberOfColumns()));
 		}
 
 		return map;
 	}
 
-	public static class CollectionViewportDefinitionJSONParser
-		extends BaseJSONParser<CollectionViewportDefinition> {
+	public static class CollectionDisplayViewportDefinitionJSONParser
+		extends BaseJSONParser<CollectionDisplayViewportDefinition> {
 
 		@Override
-		protected CollectionViewportDefinition createDTO() {
-			return new CollectionViewportDefinition();
+		protected CollectionDisplayViewportDefinition createDTO() {
+			return new CollectionDisplayViewportDefinition();
 		}
 
 		@Override
-		protected CollectionViewportDefinition[] createDTOArray(int size) {
-			return new CollectionViewportDefinition[size];
+		protected CollectionDisplayViewportDefinition[] createDTOArray(
+			int size) {
+
+			return new CollectionDisplayViewportDefinition[size];
 		}
 
 		@Override
@@ -219,39 +226,40 @@ public class CollectionViewportDefinitionSerDes {
 
 		@Override
 		protected void setField(
-			CollectionViewportDefinition collectionViewportDefinition,
+			CollectionDisplayViewportDefinition
+				collectionDisplayViewportDefinition,
 			String jsonParserFieldName, Object jsonParserFieldValue) {
 
 			if (Objects.equals(jsonParserFieldName, "align")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setAlign(
-						CollectionViewportDefinition.Align.create(
+					collectionDisplayViewportDefinition.setAlign(
+						CollectionDisplayViewportDefinition.Align.create(
 							(String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "flexWrap")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setFlexWrap(
-						CollectionViewportDefinition.FlexWrap.create(
+					collectionDisplayViewportDefinition.setFlexWrap(
+						CollectionDisplayViewportDefinition.FlexWrap.create(
 							(String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "hidden")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setHidden(
+					collectionDisplayViewportDefinition.setHidden(
 						(Boolean)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "justify")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setJustify(
-						CollectionViewportDefinition.Justify.create(
+					collectionDisplayViewportDefinition.setJustify(
+						CollectionDisplayViewportDefinition.Justify.create(
 							(String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "numberOfColumns")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewportDefinition.setNumberOfColumns(
+					collectionDisplayViewportDefinition.setNumberOfColumns(
 						Integer.valueOf((String)jsonParserFieldValue));
 				}
 			}

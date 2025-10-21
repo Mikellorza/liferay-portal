@@ -88,16 +88,16 @@ public class TemplateListStyleSerDes {
 			sb.append("\"");
 		}
 
-		if (templateListStyle.getCollectionListStyleType() != null) {
+		if (templateListStyle.getCollectionDisplayListStyleType() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"collectionListStyleType\": ");
+			sb.append("\"collectionDisplayListStyleType\": ");
 
 			sb.append("\"");
 
-			sb.append(templateListStyle.getCollectionListStyleType());
+			sb.append(templateListStyle.getCollectionDisplayListStyleType());
 
 			sb.append("\"");
 		}
@@ -150,13 +150,14 @@ public class TemplateListStyleSerDes {
 				String.valueOf(templateListStyle.getTemplateKey()));
 		}
 
-		if (templateListStyle.getCollectionListStyleType() == null) {
-			map.put("collectionListStyleType", null);
+		if (templateListStyle.getCollectionDisplayListStyleType() == null) {
+			map.put("collectionDisplayListStyleType", null);
 		}
 		else {
 			map.put(
-				"collectionListStyleType",
-				String.valueOf(templateListStyle.getCollectionListStyleType()));
+				"collectionDisplayListStyleType",
+				String.valueOf(
+					templateListStyle.getCollectionDisplayListStyleType()));
 		}
 
 		return map;
@@ -189,7 +190,8 @@ public class TemplateListStyleSerDes {
 				return false;
 			}
 			else if (Objects.equals(
-						jsonParserFieldName, "collectionListStyleType")) {
+						jsonParserFieldName,
+						"collectionDisplayListStyleType")) {
 
 				return false;
 			}
@@ -223,11 +225,12 @@ public class TemplateListStyleSerDes {
 				}
 			}
 			else if (Objects.equals(
-						jsonParserFieldName, "collectionListStyleType")) {
+						jsonParserFieldName,
+						"collectionDisplayListStyleType")) {
 
 				if (jsonParserFieldValue != null) {
-					templateListStyle.setCollectionListStyleType(
-						TemplateListStyle.CollectionListStyleType.create(
+					templateListStyle.setCollectionDisplayListStyleType(
+						TemplateListStyle.CollectionDisplayListStyleType.create(
 							(String)jsonParserFieldValue));
 				}
 			}

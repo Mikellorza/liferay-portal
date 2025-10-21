@@ -6,7 +6,7 @@
 package com.liferay.headless.admin.site.client.dto.v1_0;
 
 import com.liferay.headless.admin.site.client.function.UnsafeSupplier;
-import com.liferay.headless.admin.site.client.serdes.v1_0.CollectionPageElementDefinitionSerDes;
+import com.liferay.headless.admin.site.client.serdes.v1_0.CollectionDisplayPageElementDefinitionSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,36 +19,62 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class CollectionPageElementDefinition
+public class CollectionDisplayPageElementDefinition
 	extends PageElementDefinition implements Cloneable, Serializable {
 
-	public static CollectionPageElementDefinition toDTO(String json) {
-		return CollectionPageElementDefinitionSerDes.toDTO(json);
+	public static CollectionDisplayPageElementDefinition toDTO(String json) {
+		return CollectionDisplayPageElementDefinitionSerDes.toDTO(json);
 	}
 
-	public CollectionListStyle getCollectionListStyle() {
-		return collectionListStyle;
+	public CollectionDisplayListStyle getCollectionDisplayListStyle() {
+		return collectionDisplayListStyle;
 	}
 
-	public void setCollectionListStyle(
-		CollectionListStyle collectionListStyle) {
+	public void setCollectionDisplayListStyle(
+		CollectionDisplayListStyle collectionDisplayListStyle) {
 
-		this.collectionListStyle = collectionListStyle;
+		this.collectionDisplayListStyle = collectionDisplayListStyle;
 	}
 
-	public void setCollectionListStyle(
-		UnsafeSupplier<CollectionListStyle, Exception>
-			collectionListStyleUnsafeSupplier) {
+	public void setCollectionDisplayListStyle(
+		UnsafeSupplier<CollectionDisplayListStyle, Exception>
+			collectionDisplayListStyleUnsafeSupplier) {
 
 		try {
-			collectionListStyle = collectionListStyleUnsafeSupplier.get();
+			collectionDisplayListStyle =
+				collectionDisplayListStyleUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected CollectionListStyle collectionListStyle;
+	protected CollectionDisplayListStyle collectionDisplayListStyle;
+
+	public CollectionDisplayViewport[] getCollectionDisplayViewports() {
+		return collectionDisplayViewports;
+	}
+
+	public void setCollectionDisplayViewports(
+		CollectionDisplayViewport[] collectionDisplayViewports) {
+
+		this.collectionDisplayViewports = collectionDisplayViewports;
+	}
+
+	public void setCollectionDisplayViewports(
+		UnsafeSupplier<CollectionDisplayViewport[], Exception>
+			collectionDisplayViewportsUnsafeSupplier) {
+
+		try {
+			collectionDisplayViewports =
+				collectionDisplayViewportsUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected CollectionDisplayViewport[] collectionDisplayViewports;
 
 	public CollectionReference getCollectionReference() {
 		return collectionReference;
@@ -73,30 +99,6 @@ public class CollectionPageElementDefinition
 	}
 
 	protected CollectionReference collectionReference;
-
-	public CollectionViewport[] getCollectionViewports() {
-		return collectionViewports;
-	}
-
-	public void setCollectionViewports(
-		CollectionViewport[] collectionViewports) {
-
-		this.collectionViewports = collectionViewports;
-	}
-
-	public void setCollectionViewports(
-		UnsafeSupplier<CollectionViewport[], Exception>
-			collectionViewportsUnsafeSupplier) {
-
-		try {
-			collectionViewports = collectionViewportsUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected CollectionViewport[] collectionViewports;
 
 	public Boolean getDisplayAllItems() {
 		return displayAllItems;
@@ -298,10 +300,10 @@ public class CollectionPageElementDefinition
 	protected PaginationType paginationType;
 
 	@Override
-	public CollectionPageElementDefinition clone()
+	public CollectionDisplayPageElementDefinition clone()
 		throws CloneNotSupportedException {
 
-		return (CollectionPageElementDefinition)super.clone();
+		return (CollectionDisplayPageElementDefinition)super.clone();
 	}
 
 	@Override
@@ -310,15 +312,16 @@ public class CollectionPageElementDefinition
 			return true;
 		}
 
-		if (!(object instanceof CollectionPageElementDefinition)) {
+		if (!(object instanceof CollectionDisplayPageElementDefinition)) {
 			return false;
 		}
 
-		CollectionPageElementDefinition collectionPageElementDefinition =
-			(CollectionPageElementDefinition)object;
+		CollectionDisplayPageElementDefinition
+			collectionDisplayPageElementDefinition =
+				(CollectionDisplayPageElementDefinition)object;
 
 		return Objects.equals(
-			toString(), collectionPageElementDefinition.toString());
+			toString(), collectionDisplayPageElementDefinition.toString());
 	}
 
 	@Override
@@ -329,7 +332,7 @@ public class CollectionPageElementDefinition
 	}
 
 	public String toString() {
-		return CollectionPageElementDefinitionSerDes.toJSON(this);
+		return CollectionDisplayPageElementDefinitionSerDes.toJSON(this);
 	}
 
 	public static enum PaginationType {

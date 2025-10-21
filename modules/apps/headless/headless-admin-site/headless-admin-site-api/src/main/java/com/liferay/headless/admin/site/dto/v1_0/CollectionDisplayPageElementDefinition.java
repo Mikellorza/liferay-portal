@@ -40,51 +40,54 @@ import java.util.function.Supplier;
 @Generated("")
 @GraphQLName(
 	description = "The page element definition of a Collection.",
-	value = "CollectionPageElementDefinition"
+	value = "CollectionDisplayPageElementDefinition"
 )
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "CollectionPageElementDefinition")
-public class CollectionPageElementDefinition
+@XmlRootElement(name = "CollectionDisplayPageElementDefinition")
+public class CollectionDisplayPageElementDefinition
 	extends PageElementDefinition implements Serializable {
 
-	public static CollectionPageElementDefinition toDTO(String json) {
+	public static CollectionDisplayPageElementDefinition toDTO(String json) {
 		return ObjectMapperUtil.readValue(
-			CollectionPageElementDefinition.class, json);
+			CollectionDisplayPageElementDefinition.class, json);
 	}
 
-	public static CollectionPageElementDefinition unsafeToDTO(String json) {
+	public static CollectionDisplayPageElementDefinition unsafeToDTO(
+		String json) {
+
 		return ObjectMapperUtil.unsafeReadValue(
-			CollectionPageElementDefinition.class, json);
+			CollectionDisplayPageElementDefinition.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema
 	@Valid
-	public CollectionListStyle getCollectionListStyle() {
-		if (_collectionListStyleSupplier != null) {
-			collectionListStyle = _collectionListStyleSupplier.get();
+	public CollectionDisplayListStyle getCollectionDisplayListStyle() {
+		if (_collectionDisplayListStyleSupplier != null) {
+			collectionDisplayListStyle =
+				_collectionDisplayListStyleSupplier.get();
 
-			_collectionListStyleSupplier = null;
+			_collectionDisplayListStyleSupplier = null;
 		}
 
-		return collectionListStyle;
+		return collectionDisplayListStyle;
 	}
 
-	public void setCollectionListStyle(
-		CollectionListStyle collectionListStyle) {
+	public void setCollectionDisplayListStyle(
+		CollectionDisplayListStyle collectionDisplayListStyle) {
 
-		this.collectionListStyle = collectionListStyle;
+		this.collectionDisplayListStyle = collectionDisplayListStyle;
 
-		_collectionListStyleSupplier = null;
+		_collectionDisplayListStyleSupplier = null;
 	}
 
 	@JsonIgnore
-	public void setCollectionListStyle(
-		UnsafeSupplier<CollectionListStyle, Exception>
-			collectionListStyleUnsafeSupplier) {
+	public void setCollectionDisplayListStyle(
+		UnsafeSupplier<CollectionDisplayListStyle, Exception>
+			collectionDisplayListStyleUnsafeSupplier) {
 
-		_collectionListStyleSupplier = () -> {
+		_collectionDisplayListStyleSupplier = () -> {
 			try {
-				return collectionListStyleUnsafeSupplier.get();
+				return collectionDisplayListStyleUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -97,10 +100,62 @@ public class CollectionPageElementDefinition
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected CollectionListStyle collectionListStyle;
+	protected CollectionDisplayListStyle collectionDisplayListStyle;
 
 	@JsonIgnore
-	private Supplier<CollectionListStyle> _collectionListStyleSupplier;
+	private Supplier<CollectionDisplayListStyle>
+		_collectionDisplayListStyleSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "A list of viewports of the collection display page element."
+	)
+	@Valid
+	public CollectionDisplayViewport[] getCollectionDisplayViewports() {
+		if (_collectionDisplayViewportsSupplier != null) {
+			collectionDisplayViewports =
+				_collectionDisplayViewportsSupplier.get();
+
+			_collectionDisplayViewportsSupplier = null;
+		}
+
+		return collectionDisplayViewports;
+	}
+
+	public void setCollectionDisplayViewports(
+		CollectionDisplayViewport[] collectionDisplayViewports) {
+
+		this.collectionDisplayViewports = collectionDisplayViewports;
+
+		_collectionDisplayViewportsSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setCollectionDisplayViewports(
+		UnsafeSupplier<CollectionDisplayViewport[], Exception>
+			collectionDisplayViewportsUnsafeSupplier) {
+
+		_collectionDisplayViewportsSupplier = () -> {
+			try {
+				return collectionDisplayViewportsUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "A list of viewports of the collection display page element."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected CollectionDisplayViewport[] collectionDisplayViewports;
+
+	@JsonIgnore
+	private Supplier<CollectionDisplayViewport[]>
+		_collectionDisplayViewportsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema
 	@Valid
@@ -146,55 +201,6 @@ public class CollectionPageElementDefinition
 
 	@JsonIgnore
 	private Supplier<CollectionReference> _collectionReferenceSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "A list of viewports of the collection page element."
-	)
-	@Valid
-	public CollectionViewport[] getCollectionViewports() {
-		if (_collectionViewportsSupplier != null) {
-			collectionViewports = _collectionViewportsSupplier.get();
-
-			_collectionViewportsSupplier = null;
-		}
-
-		return collectionViewports;
-	}
-
-	public void setCollectionViewports(
-		CollectionViewport[] collectionViewports) {
-
-		this.collectionViewports = collectionViewports;
-
-		_collectionViewportsSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setCollectionViewports(
-		UnsafeSupplier<CollectionViewport[], Exception>
-			collectionViewportsUnsafeSupplier) {
-
-		_collectionViewportsSupplier = () -> {
-			try {
-				return collectionViewportsUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(
-		description = "A list of viewports of the collection page element."
-	)
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected CollectionViewport[] collectionViewports;
-
-	@JsonIgnore
-	private Supplier<CollectionViewport[]> _collectionViewportsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "Whether to show all items when pagination is disabled."
@@ -377,7 +383,7 @@ public class CollectionPageElementDefinition
 	private Supplier<Boolean> _hiddenSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The custom name of a collection page element."
+		description = "The custom name of a collection display page element."
 	)
 	public String getName() {
 		if (_nameSupplier != null) {
@@ -410,7 +416,9 @@ public class CollectionPageElementDefinition
 		};
 	}
 
-	@GraphQLField(description = "The custom name of a collection page element.")
+	@GraphQLField(
+		description = "The custom name of a collection display page element."
+	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected String name;
 
@@ -418,7 +426,7 @@ public class CollectionPageElementDefinition
 	private Supplier<String> _nameSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The maximum number of items to display in the collection page element when pagination is disabled."
+		description = "The maximum number of items to display in the collection display page element when pagination is disabled."
 	)
 	public Integer getNumberOfItems() {
 		if (_numberOfItemsSupplier != null) {
@@ -454,7 +462,7 @@ public class CollectionPageElementDefinition
 	}
 
 	@GraphQLField(
-		description = "The maximum number of items to display in the collection page element when pagination is disabled."
+		description = "The maximum number of items to display in the collection display page element when pagination is disabled."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Integer numberOfItems;
@@ -463,7 +471,7 @@ public class CollectionPageElementDefinition
 	private Supplier<Integer> _numberOfItemsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The maximum number of items per page to display in the collection page element when pagination is enabled."
+		description = "The maximum number of items per page to display in the collection display page element when pagination is enabled."
 	)
 	public Integer getNumberOfItemsPerPage() {
 		if (_numberOfItemsPerPageSupplier != null) {
@@ -499,7 +507,7 @@ public class CollectionPageElementDefinition
 	}
 
 	@GraphQLField(
-		description = "The maximum number of items per page to display in the collection page element when pagination is enabled."
+		description = "The maximum number of items per page to display in the collection display page element when pagination is enabled."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Integer numberOfItemsPerPage;
@@ -508,7 +516,7 @@ public class CollectionPageElementDefinition
 	private Supplier<Integer> _numberOfItemsPerPageSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The maximum number of pages to display in the collection page element when pagination is enabled."
+		description = "The maximum number of pages to display in the collection display page element when pagination is enabled."
 	)
 	public Integer getNumberOfPages() {
 		if (_numberOfPagesSupplier != null) {
@@ -544,7 +552,7 @@ public class CollectionPageElementDefinition
 	}
 
 	@GraphQLField(
-		description = "The maximum number of pages to display in the collection page element when pagination is enabled."
+		description = "The maximum number of pages to display in the collection display page element when pagination is enabled."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Integer numberOfPages;
@@ -615,15 +623,16 @@ public class CollectionPageElementDefinition
 			return true;
 		}
 
-		if (!(object instanceof CollectionPageElementDefinition)) {
+		if (!(object instanceof CollectionDisplayPageElementDefinition)) {
 			return false;
 		}
 
-		CollectionPageElementDefinition collectionPageElementDefinition =
-			(CollectionPageElementDefinition)object;
+		CollectionDisplayPageElementDefinition
+			collectionDisplayPageElementDefinition =
+				(CollectionDisplayPageElementDefinition)object;
 
 		return Objects.equals(
-			toString(), collectionPageElementDefinition.toString());
+			toString(), collectionDisplayPageElementDefinition.toString());
 	}
 
 	@Override
@@ -638,16 +647,40 @@ public class CollectionPageElementDefinition
 
 		sb.append("{");
 
-		CollectionListStyle collectionListStyle = getCollectionListStyle();
+		CollectionDisplayListStyle collectionDisplayListStyle =
+			getCollectionDisplayListStyle();
 
-		if (collectionListStyle != null) {
+		if (collectionDisplayListStyle != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"collectionListStyle\": ");
+			sb.append("\"collectionDisplayListStyle\": ");
 
-			sb.append(String.valueOf(collectionListStyle));
+			sb.append(String.valueOf(collectionDisplayListStyle));
+		}
+
+		CollectionDisplayViewport[] collectionDisplayViewports =
+			getCollectionDisplayViewports();
+
+		if (collectionDisplayViewports != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"collectionDisplayViewports\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < collectionDisplayViewports.length; i++) {
+				sb.append(String.valueOf(collectionDisplayViewports[i]));
+
+				if ((i + 1) < collectionDisplayViewports.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
 		CollectionReference collectionReference = getCollectionReference();
@@ -660,28 +693,6 @@ public class CollectionPageElementDefinition
 			sb.append("\"collectionReference\": ");
 
 			sb.append(String.valueOf(collectionReference));
-		}
-
-		CollectionViewport[] collectionViewports = getCollectionViewports();
-
-		if (collectionViewports != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"collectionViewports\": ");
-
-			sb.append("[");
-
-			for (int i = 0; i < collectionViewports.length; i++) {
-				sb.append(String.valueOf(collectionViewports[i]));
-
-				if ((i + 1) < collectionViewports.length) {
-					sb.append(", ");
-				}
-			}
-
-			sb.append("]");
 		}
 
 		Boolean displayAllItems = getDisplayAllItems();
@@ -824,7 +835,7 @@ public class CollectionPageElementDefinition
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.CollectionPageElementDefinition",
+		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.CollectionDisplayPageElementDefinition",
 		name = "x-class-name"
 	)
 	public String xClassName;

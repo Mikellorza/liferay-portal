@@ -39,21 +39,21 @@ import java.util.function.Supplier;
  */
 @Generated("")
 @GraphQLName(
-	description = "The definition of the collection viewport.",
-	value = "CollectionViewportDefinition"
+	description = "The definition of the collection display viewport.",
+	value = "CollectionDisplayViewportDefinition"
 )
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "CollectionViewportDefinition")
-public class CollectionViewportDefinition implements Serializable {
+@XmlRootElement(name = "CollectionDisplayViewportDefinition")
+public class CollectionDisplayViewportDefinition implements Serializable {
 
-	public static CollectionViewportDefinition toDTO(String json) {
+	public static CollectionDisplayViewportDefinition toDTO(String json) {
 		return ObjectMapperUtil.readValue(
-			CollectionViewportDefinition.class, json);
+			CollectionDisplayViewportDefinition.class, json);
 	}
 
-	public static CollectionViewportDefinition unsafeToDTO(String json) {
+	public static CollectionDisplayViewportDefinition unsafeToDTO(String json) {
 		return ObjectMapperUtil.unsafeReadValue(
-			CollectionViewportDefinition.class, json);
+			CollectionDisplayViewportDefinition.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema
@@ -163,7 +163,7 @@ public class CollectionViewportDefinition implements Serializable {
 	private Supplier<FlexWrap> _flexWrapSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "Specifies if the collection is hidden to the user for the viewport."
+		description = "Specifies if the collection display is hidden to the user for the viewport."
 	)
 	public Boolean getHidden() {
 		if (_hiddenSupplier != null) {
@@ -199,7 +199,7 @@ public class CollectionViewportDefinition implements Serializable {
 	}
 
 	@GraphQLField(
-		description = "Specifies if the collection is hidden to the user for the viewport."
+		description = "Specifies if the collection display is hidden to the user for the viewport."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Boolean hidden;
@@ -312,15 +312,16 @@ public class CollectionViewportDefinition implements Serializable {
 			return true;
 		}
 
-		if (!(object instanceof CollectionViewportDefinition)) {
+		if (!(object instanceof CollectionDisplayViewportDefinition)) {
 			return false;
 		}
 
-		CollectionViewportDefinition collectionViewportDefinition =
-			(CollectionViewportDefinition)object;
+		CollectionDisplayViewportDefinition
+			collectionDisplayViewportDefinition =
+				(CollectionDisplayViewportDefinition)object;
 
 		return Objects.equals(
-			toString(), collectionViewportDefinition.toString());
+			toString(), collectionDisplayViewportDefinition.toString());
 	}
 
 	@Override
@@ -414,7 +415,7 @@ public class CollectionViewportDefinition implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.CollectionViewportDefinition",
+		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.CollectionDisplayViewportDefinition",
 		name = "x-class-name"
 	)
 	public String xClassName;

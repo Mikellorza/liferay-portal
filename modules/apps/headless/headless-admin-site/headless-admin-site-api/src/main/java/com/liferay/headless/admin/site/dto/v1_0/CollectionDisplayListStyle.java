@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: (c) 2024 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.liferay.petra.function.UnsafeSupplier;
@@ -22,7 +24,6 @@ import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 import jakarta.annotation.Generated;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -40,109 +41,78 @@ import java.util.function.Supplier;
  */
 @Generated("")
 @GraphQLName(
-	description = "A collection viewport.", value = "CollectionViewport"
-)
-@io.swagger.v3.oas.annotations.media.Schema(
-	description = "A collection viewport.",
-	requiredProperties = {"id", "collectionViewportDefinition"}
+	description = "The collection display's list style.",
+	value = "CollectionDisplayListStyle"
 )
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "CollectionViewport")
-public class CollectionViewport implements Serializable {
+@JsonSubTypes(
+	{
+		@JsonSubTypes.Type(name = "ListStyle", value = ListStyle.class),
+		@JsonSubTypes.Type(name = "Template", value = TemplateListStyle.class)
+	}
+)
+@JsonTypeInfo(
+	include = JsonTypeInfo.As.PROPERTY,
+	property = "collectionDisplayListStyleType", use = JsonTypeInfo.Id.NAME,
+	visible = true
+)
+@XmlRootElement(name = "CollectionDisplayListStyle")
+public abstract class CollectionDisplayListStyle implements Serializable {
 
-	public static CollectionViewport toDTO(String json) {
-		return ObjectMapperUtil.readValue(CollectionViewport.class, json);
+	public static CollectionDisplayListStyle toDTO(String json) {
+		return ObjectMapperUtil.readValue(
+			CollectionDisplayListStyle.class, json);
 	}
 
-	public static CollectionViewport unsafeToDTO(String json) {
-		return ObjectMapperUtil.unsafeReadValue(CollectionViewport.class, json);
+	public static CollectionDisplayListStyle unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(
+			CollectionDisplayListStyle.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The definition of the collection viewport."
+		description = "The collection display's list style type (ListStyle, Template)."
 	)
+	@JsonGetter("collectionDisplayListStyleType")
 	@Valid
-	public CollectionViewportDefinition getCollectionViewportDefinition() {
-		if (_collectionViewportDefinitionSupplier != null) {
-			collectionViewportDefinition =
-				_collectionViewportDefinitionSupplier.get();
+	public CollectionDisplayListStyleType getCollectionDisplayListStyleType() {
+		if (_collectionDisplayListStyleTypeSupplier != null) {
+			collectionDisplayListStyleType =
+				_collectionDisplayListStyleTypeSupplier.get();
 
-			_collectionViewportDefinitionSupplier = null;
+			_collectionDisplayListStyleTypeSupplier = null;
 		}
 
-		return collectionViewportDefinition;
-	}
-
-	public void setCollectionViewportDefinition(
-		CollectionViewportDefinition collectionViewportDefinition) {
-
-		this.collectionViewportDefinition = collectionViewportDefinition;
-
-		_collectionViewportDefinitionSupplier = null;
+		return collectionDisplayListStyleType;
 	}
 
 	@JsonIgnore
-	public void setCollectionViewportDefinition(
-		UnsafeSupplier<CollectionViewportDefinition, Exception>
-			collectionViewportDefinitionUnsafeSupplier) {
+	public String getCollectionDisplayListStyleTypeAsString() {
+		CollectionDisplayListStyleType collectionDisplayListStyleType =
+			getCollectionDisplayListStyleType();
 
-		_collectionViewportDefinitionSupplier = () -> {
-			try {
-				return collectionViewportDefinitionUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(description = "The definition of the collection viewport.")
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	@NotNull
-	protected CollectionViewportDefinition collectionViewportDefinition;
-
-	@JsonIgnore
-	private Supplier<CollectionViewportDefinition>
-		_collectionViewportDefinitionSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema
-	@JsonGetter("id")
-	@Valid
-	public Id getId() {
-		if (_idSupplier != null) {
-			id = _idSupplier.get();
-
-			_idSupplier = null;
-		}
-
-		return id;
-	}
-
-	@JsonIgnore
-	public String getIdAsString() {
-		Id id = getId();
-
-		if (id == null) {
+		if (collectionDisplayListStyleType == null) {
 			return null;
 		}
 
-		return id.toString();
+		return collectionDisplayListStyleType.toString();
 	}
 
-	public void setId(Id id) {
-		this.id = id;
+	public void setCollectionDisplayListStyleType(
+		CollectionDisplayListStyleType collectionDisplayListStyleType) {
 
-		_idSupplier = null;
+		this.collectionDisplayListStyleType = collectionDisplayListStyleType;
+
+		_collectionDisplayListStyleTypeSupplier = null;
 	}
 
 	@JsonIgnore
-	public void setId(UnsafeSupplier<Id, Exception> idUnsafeSupplier) {
-		_idSupplier = () -> {
+	public void setCollectionDisplayListStyleType(
+		UnsafeSupplier<CollectionDisplayListStyleType, Exception>
+			collectionDisplayListStyleTypeUnsafeSupplier) {
+
+		_collectionDisplayListStyleTypeSupplier = () -> {
 			try {
-				return idUnsafeSupplier.get();
+				return collectionDisplayListStyleTypeUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -153,13 +123,15 @@ public class CollectionViewport implements Serializable {
 		};
 	}
 
-	@GraphQLField
+	@GraphQLField(
+		description = "The collection display's list style type (ListStyle, Template)."
+	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	@NotNull
-	protected Id id;
+	protected CollectionDisplayListStyleType collectionDisplayListStyleType;
 
 	@JsonIgnore
-	private Supplier<Id> _idSupplier;
+	private Supplier<CollectionDisplayListStyleType>
+		_collectionDisplayListStyleTypeSupplier;
 
 	@Override
 	public boolean equals(Object object) {
@@ -167,13 +139,15 @@ public class CollectionViewport implements Serializable {
 			return true;
 		}
 
-		if (!(object instanceof CollectionViewport)) {
+		if (!(object instanceof CollectionDisplayListStyle)) {
 			return false;
 		}
 
-		CollectionViewport collectionViewport = (CollectionViewport)object;
+		CollectionDisplayListStyle collectionDisplayListStyle =
+			(CollectionDisplayListStyle)object;
 
-		return Objects.equals(toString(), collectionViewport.toString());
+		return Objects.equals(
+			toString(), collectionDisplayListStyle.toString());
 	}
 
 	@Override
@@ -188,31 +162,19 @@ public class CollectionViewport implements Serializable {
 
 		sb.append("{");
 
-		CollectionViewportDefinition collectionViewportDefinition =
-			getCollectionViewportDefinition();
+		CollectionDisplayListStyleType collectionDisplayListStyleType =
+			getCollectionDisplayListStyleType();
 
-		if (collectionViewportDefinition != null) {
+		if (collectionDisplayListStyleType != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"collectionViewportDefinition\": ");
-
-			sb.append(String.valueOf(collectionViewportDefinition));
-		}
-
-		Id id = getId();
-
-		if (id != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"id\": ");
+			sb.append("\"collectionDisplayListStyleType\": ");
 
 			sb.append("\"");
 
-			sb.append(id);
+			sb.append(collectionDisplayListStyleType);
 
 			sb.append("\"");
 		}
@@ -224,26 +186,29 @@ public class CollectionViewport implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.CollectionViewport",
+		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.CollectionDisplayListStyle",
 		name = "x-class-name"
 	)
 	public String xClassName;
 
-	@GraphQLName("Id")
-	public static enum Id {
+	@GraphQLName("CollectionDisplayListStyleType")
+	public static enum CollectionDisplayListStyleType {
 
-		LANDSCAPE_MOBILE("LandscapeMobile"), PORTRAIT_MOBILE("PortraitMobile"),
-		TABLET("Tablet");
+		LIST_STYLE("ListStyle"), TEMPLATE("Template");
 
 		@JsonCreator
-		public static Id create(String value) {
+		public static CollectionDisplayListStyleType create(String value) {
 			if ((value == null) || value.equals("")) {
 				return null;
 			}
 
-			for (Id id : values()) {
-				if (Objects.equals(id.getValue(), value)) {
-					return id;
+			for (CollectionDisplayListStyleType collectionDisplayListStyleType :
+					values()) {
+
+				if (Objects.equals(
+						collectionDisplayListStyleType.getValue(), value)) {
+
+					return collectionDisplayListStyleType;
 				}
 			}
 
@@ -260,7 +225,7 @@ public class CollectionViewport implements Serializable {
 			return _value;
 		}
 
-		private Id(String value) {
+		private CollectionDisplayListStyleType(String value) {
 			_value = value;
 		}
 

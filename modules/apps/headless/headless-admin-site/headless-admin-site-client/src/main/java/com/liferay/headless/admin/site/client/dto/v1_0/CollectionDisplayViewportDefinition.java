@@ -6,7 +6,7 @@
 package com.liferay.headless.admin.site.client.dto.v1_0;
 
 import com.liferay.headless.admin.site.client.function.UnsafeSupplier;
-import com.liferay.headless.admin.site.client.serdes.v1_0.CollectionViewportDefinitionSerDes;
+import com.liferay.headless.admin.site.client.serdes.v1_0.CollectionDisplayViewportDefinitionSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,10 +19,11 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class CollectionViewportDefinition implements Cloneable, Serializable {
+public class CollectionDisplayViewportDefinition
+	implements Cloneable, Serializable {
 
-	public static CollectionViewportDefinition toDTO(String json) {
-		return CollectionViewportDefinitionSerDes.toDTO(json);
+	public static CollectionDisplayViewportDefinition toDTO(String json) {
+		return CollectionDisplayViewportDefinitionSerDes.toDTO(json);
 	}
 
 	public Align getAlign() {
@@ -153,10 +154,10 @@ public class CollectionViewportDefinition implements Cloneable, Serializable {
 	protected Integer numberOfColumns;
 
 	@Override
-	public CollectionViewportDefinition clone()
+	public CollectionDisplayViewportDefinition clone()
 		throws CloneNotSupportedException {
 
-		return (CollectionViewportDefinition)super.clone();
+		return (CollectionDisplayViewportDefinition)super.clone();
 	}
 
 	@Override
@@ -165,15 +166,16 @@ public class CollectionViewportDefinition implements Cloneable, Serializable {
 			return true;
 		}
 
-		if (!(object instanceof CollectionViewportDefinition)) {
+		if (!(object instanceof CollectionDisplayViewportDefinition)) {
 			return false;
 		}
 
-		CollectionViewportDefinition collectionViewportDefinition =
-			(CollectionViewportDefinition)object;
+		CollectionDisplayViewportDefinition
+			collectionDisplayViewportDefinition =
+				(CollectionDisplayViewportDefinition)object;
 
 		return Objects.equals(
-			toString(), collectionViewportDefinition.toString());
+			toString(), collectionDisplayViewportDefinition.toString());
 	}
 
 	@Override
@@ -184,7 +186,7 @@ public class CollectionViewportDefinition implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return CollectionViewportDefinitionSerDes.toJSON(this);
+		return CollectionDisplayViewportDefinitionSerDes.toJSON(this);
 	}
 
 	public static enum Align {

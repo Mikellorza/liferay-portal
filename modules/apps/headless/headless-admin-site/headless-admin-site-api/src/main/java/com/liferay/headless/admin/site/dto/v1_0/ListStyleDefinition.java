@@ -159,7 +159,7 @@ public class ListStyleDefinition implements Serializable {
 	private Supplier<FlexWrap> _flexWrapSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "A flag that indicates whether the collection page element has gutters if a grid list style is selected."
+		description = "A flag that indicates whether the collection display page element has gutters if a grid list style is selected."
 	)
 	public Boolean getGutters() {
 		if (_guttersSupplier != null) {
@@ -195,7 +195,7 @@ public class ListStyleDefinition implements Serializable {
 	}
 
 	@GraphQLField(
-		description = "A flag that indicates whether the collection page element has gutters if a grid list style is selected."
+		description = "A flag that indicates whether the collection display page element has gutters if a grid list style is selected."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Boolean gutters;
@@ -258,7 +258,7 @@ public class ListStyleDefinition implements Serializable {
 	private Supplier<Justify> _justifySupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The number of columns in the collection page element."
+		description = "The number of columns in the collection display page element."
 	)
 	public Integer getNumberOfColumns() {
 		if (_numberOfColumnsSupplier != null) {
@@ -294,7 +294,7 @@ public class ListStyleDefinition implements Serializable {
 	}
 
 	@GraphQLField(
-		description = "The number of columns in the collection page element."
+		description = "The number of columns in the collection display page element."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Integer numberOfColumns;
@@ -303,7 +303,7 @@ public class ListStyleDefinition implements Serializable {
 	private Supplier<Integer> _numberOfColumnsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The vertical alignment property of the collection page element if a grid list style is selected.."
+		description = "The vertical alignment property of the collection display page element if a grid list style is selected.."
 	)
 	@JsonGetter("verticalAlignment")
 	@Valid
@@ -353,7 +353,7 @@ public class ListStyleDefinition implements Serializable {
 	}
 
 	@GraphQLField(
-		description = "The vertical alignment property of the collection page element if a grid list style is selected.."
+		description = "The vertical alignment property of the collection display page element if a grid list style is selected.."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected VerticalAlignment verticalAlignment;

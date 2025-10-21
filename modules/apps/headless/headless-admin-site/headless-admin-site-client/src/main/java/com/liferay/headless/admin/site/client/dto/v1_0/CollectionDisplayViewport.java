@@ -1,12 +1,12 @@
 /**
- * SPDX-FileCopyrightText: (c) 2024 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package com.liferay.headless.admin.site.client.dto.v1_0;
 
 import com.liferay.headless.admin.site.client.function.UnsafeSupplier;
-import com.liferay.headless.admin.site.client.serdes.v1_0.CollectionViewportSerDes;
+import com.liferay.headless.admin.site.client.serdes.v1_0.CollectionDisplayViewportSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,36 +19,41 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class CollectionViewport implements Cloneable, Serializable {
+public class CollectionDisplayViewport implements Cloneable, Serializable {
 
-	public static CollectionViewport toDTO(String json) {
-		return CollectionViewportSerDes.toDTO(json);
+	public static CollectionDisplayViewport toDTO(String json) {
+		return CollectionDisplayViewportSerDes.toDTO(json);
 	}
 
-	public CollectionViewportDefinition getCollectionViewportDefinition() {
-		return collectionViewportDefinition;
+	public CollectionDisplayViewportDefinition
+		getCollectionDisplayViewportDefinition() {
+
+		return collectionDisplayViewportDefinition;
 	}
 
-	public void setCollectionViewportDefinition(
-		CollectionViewportDefinition collectionViewportDefinition) {
+	public void setCollectionDisplayViewportDefinition(
+		CollectionDisplayViewportDefinition
+			collectionDisplayViewportDefinition) {
 
-		this.collectionViewportDefinition = collectionViewportDefinition;
+		this.collectionDisplayViewportDefinition =
+			collectionDisplayViewportDefinition;
 	}
 
-	public void setCollectionViewportDefinition(
-		UnsafeSupplier<CollectionViewportDefinition, Exception>
-			collectionViewportDefinitionUnsafeSupplier) {
+	public void setCollectionDisplayViewportDefinition(
+		UnsafeSupplier<CollectionDisplayViewportDefinition, Exception>
+			collectionDisplayViewportDefinitionUnsafeSupplier) {
 
 		try {
-			collectionViewportDefinition =
-				collectionViewportDefinitionUnsafeSupplier.get();
+			collectionDisplayViewportDefinition =
+				collectionDisplayViewportDefinitionUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected CollectionViewportDefinition collectionViewportDefinition;
+	protected CollectionDisplayViewportDefinition
+		collectionDisplayViewportDefinition;
 
 	public Id getId() {
 		return id;
@@ -78,8 +83,8 @@ public class CollectionViewport implements Cloneable, Serializable {
 	protected Id id;
 
 	@Override
-	public CollectionViewport clone() throws CloneNotSupportedException {
-		return (CollectionViewport)super.clone();
+	public CollectionDisplayViewport clone() throws CloneNotSupportedException {
+		return (CollectionDisplayViewport)super.clone();
 	}
 
 	@Override
@@ -88,13 +93,14 @@ public class CollectionViewport implements Cloneable, Serializable {
 			return true;
 		}
 
-		if (!(object instanceof CollectionViewport)) {
+		if (!(object instanceof CollectionDisplayViewport)) {
 			return false;
 		}
 
-		CollectionViewport collectionViewport = (CollectionViewport)object;
+		CollectionDisplayViewport collectionDisplayViewport =
+			(CollectionDisplayViewport)object;
 
-		return Objects.equals(toString(), collectionViewport.toString());
+		return Objects.equals(toString(), collectionDisplayViewport.toString());
 	}
 
 	@Override
@@ -105,7 +111,7 @@ public class CollectionViewport implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return CollectionViewportSerDes.toJSON(this);
+		return CollectionDisplayViewportSerDes.toJSON(this);
 	}
 
 	public static enum Id {

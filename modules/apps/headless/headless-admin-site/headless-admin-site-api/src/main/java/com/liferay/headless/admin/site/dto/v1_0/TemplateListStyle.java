@@ -40,7 +40,7 @@ import java.util.function.Supplier;
 @JsonFilter("Liferay.Vulcan")
 @XmlRootElement(name = "TemplateListStyle")
 public class TemplateListStyle
-	extends CollectionListStyle implements Serializable {
+	extends CollectionDisplayListStyle implements Serializable {
 
 	public static TemplateListStyle toDTO(String json) {
 		return ObjectMapperUtil.readValue(TemplateListStyle.class, json);
@@ -51,7 +51,7 @@ public class TemplateListStyle
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The style className of a list of items in the collection page element."
+		description = "The style className of a list of items in the collection display page element."
 	)
 	public String getListItemStyleClassName() {
 		if (_listItemStyleClassNameSupplier != null) {
@@ -88,7 +88,7 @@ public class TemplateListStyle
 	}
 
 	@GraphQLField(
-		description = "The style className of a list of items in the collection page element."
+		description = "The style className of a list of items in the collection display page element."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected String listItemStyleClassName;
@@ -97,7 +97,7 @@ public class TemplateListStyle
 	private Supplier<String> _listItemStyleClassNameSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The style className of a list in the collection page element."
+		description = "The style className of a list in the collection display page element."
 	)
 	public String getListStyleClassName() {
 		if (_listStyleClassNameSupplier != null) {
@@ -133,7 +133,7 @@ public class TemplateListStyle
 	}
 
 	@GraphQLField(
-		description = "The style className of a list in the collection page element."
+		description = "The style className of a list in the collection display page element."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected String listStyleClassName;
@@ -142,7 +142,7 @@ public class TemplateListStyle
 	private Supplier<String> _listStyleClassNameSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The collection page element's template key."
+		description = "The collection display page element's template key."
 	)
 	public String getTemplateKey() {
 		if (_templateKeySupplier != null) {
@@ -177,7 +177,9 @@ public class TemplateListStyle
 		};
 	}
 
-	@GraphQLField(description = "The collection page element's template key.")
+	@GraphQLField(
+		description = "The collection display page element's template key."
+	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected String templateKey;
 
@@ -259,19 +261,19 @@ public class TemplateListStyle
 			sb.append("\"");
 		}
 
-		CollectionListStyleType collectionListStyleType =
-			getCollectionListStyleType();
+		CollectionDisplayListStyleType collectionDisplayListStyleType =
+			getCollectionDisplayListStyleType();
 
-		if (collectionListStyleType != null) {
+		if (collectionDisplayListStyleType != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"collectionListStyleType\": ");
+			sb.append("\"collectionDisplayListStyleType\": ");
 
 			sb.append("\"");
 
-			sb.append(collectionListStyleType);
+			sb.append(collectionDisplayListStyleType);
 
 			sb.append("\"");
 		}

@@ -39,11 +39,12 @@ import java.util.function.Supplier;
  */
 @Generated("")
 @GraphQLName(
-	description = "The page collection's list style.", value = "ListStyle"
+	description = "The collection display's list style.", value = "ListStyle"
 )
 @JsonFilter("Liferay.Vulcan")
 @XmlRootElement(name = "ListStyle")
-public class ListStyle extends CollectionListStyle implements Serializable {
+public class ListStyle
+	extends CollectionDisplayListStyle implements Serializable {
 
 	public static ListStyle toDTO(String json) {
 		return ObjectMapperUtil.readValue(ListStyle.class, json);
@@ -207,19 +208,19 @@ public class ListStyle extends CollectionListStyle implements Serializable {
 			sb.append("\"");
 		}
 
-		CollectionListStyleType collectionListStyleType =
-			getCollectionListStyleType();
+		CollectionDisplayListStyleType collectionDisplayListStyleType =
+			getCollectionDisplayListStyleType();
 
-		if (collectionListStyleType != null) {
+		if (collectionDisplayListStyleType != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"collectionListStyleType\": ");
+			sb.append("\"collectionDisplayListStyleType\": ");
 
 			sb.append("\"");
 
-			sb.append(collectionListStyleType);
+			sb.append(collectionDisplayListStyleType);
 
 			sb.append("\"");
 		}

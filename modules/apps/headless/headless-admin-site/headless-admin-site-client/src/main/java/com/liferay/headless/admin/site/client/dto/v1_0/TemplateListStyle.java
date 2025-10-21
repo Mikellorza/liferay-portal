@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 @Generated("")
 public class TemplateListStyle
-	extends CollectionListStyle implements Cloneable, Serializable {
+	extends CollectionDisplayListStyle implements Cloneable, Serializable {
 
 	public static TemplateListStyle toDTO(String json) {
 		return TemplateListStyleSerDes.toDTO(json);
