@@ -38,22 +38,18 @@ import java.util.function.Supplier;
  * @generated
  */
 @Generated("")
-@GraphQLName(
-	description = "The definition of the collection viewport.",
-	value = "CollectionViewportDefinition"
-)
+@GraphQLName("ListStyleDefinition")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "CollectionViewportDefinition")
-public class CollectionViewportDefinition implements Serializable {
+@XmlRootElement(name = "ListStyleDefinition")
+public class ListStyleDefinition implements Serializable {
 
-	public static CollectionViewportDefinition toDTO(String json) {
-		return ObjectMapperUtil.readValue(
-			CollectionViewportDefinition.class, json);
+	public static ListStyleDefinition toDTO(String json) {
+		return ObjectMapperUtil.readValue(ListStyleDefinition.class, json);
 	}
 
-	public static CollectionViewportDefinition unsafeToDTO(String json) {
+	public static ListStyleDefinition unsafeToDTO(String json) {
 		return ObjectMapperUtil.unsafeReadValue(
-			CollectionViewportDefinition.class, json);
+			ListStyleDefinition.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema
@@ -163,31 +159,31 @@ public class CollectionViewportDefinition implements Serializable {
 	private Supplier<FlexWrap> _flexWrapSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "Specifies if the collection is hidden to the user for the viewport."
+		description = "A flag that indicates whether the collection page element has gutters if a grid list style is selected."
 	)
-	public Boolean getHidden() {
-		if (_hiddenSupplier != null) {
-			hidden = _hiddenSupplier.get();
+	public Boolean getGutters() {
+		if (_guttersSupplier != null) {
+			gutters = _guttersSupplier.get();
 
-			_hiddenSupplier = null;
+			_guttersSupplier = null;
 		}
 
-		return hidden;
+		return gutters;
 	}
 
-	public void setHidden(Boolean hidden) {
-		this.hidden = hidden;
+	public void setGutters(Boolean gutters) {
+		this.gutters = gutters;
 
-		_hiddenSupplier = null;
+		_guttersSupplier = null;
 	}
 
 	@JsonIgnore
-	public void setHidden(
-		UnsafeSupplier<Boolean, Exception> hiddenUnsafeSupplier) {
+	public void setGutters(
+		UnsafeSupplier<Boolean, Exception> guttersUnsafeSupplier) {
 
-		_hiddenSupplier = () -> {
+		_guttersSupplier = () -> {
 			try {
-				return hiddenUnsafeSupplier.get();
+				return guttersUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -199,13 +195,13 @@ public class CollectionViewportDefinition implements Serializable {
 	}
 
 	@GraphQLField(
-		description = "Specifies if the collection is hidden to the user for the viewport."
+		description = "A flag that indicates whether the collection page element has gutters if a grid list style is selected."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Boolean hidden;
+	protected Boolean gutters;
 
 	@JsonIgnore
-	private Supplier<Boolean> _hiddenSupplier;
+	private Supplier<Boolean> _guttersSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema
 	@JsonGetter("justify")
@@ -262,7 +258,7 @@ public class CollectionViewportDefinition implements Serializable {
 	private Supplier<Justify> _justifySupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The number of columns of the collection viewport."
+		description = "The number of columns in the collection page element."
 	)
 	public Integer getNumberOfColumns() {
 		if (_numberOfColumnsSupplier != null) {
@@ -298,7 +294,7 @@ public class CollectionViewportDefinition implements Serializable {
 	}
 
 	@GraphQLField(
-		description = "The number of columns of the collection viewport."
+		description = "The number of columns in the collection page element."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Integer numberOfColumns;
@@ -306,21 +302,78 @@ public class CollectionViewportDefinition implements Serializable {
 	@JsonIgnore
 	private Supplier<Integer> _numberOfColumnsSupplier;
 
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "The vertical alignment property of the collection page element if a grid list style is selected.."
+	)
+	@JsonGetter("verticalAlignment")
+	@Valid
+	public VerticalAlignment getVerticalAlignment() {
+		if (_verticalAlignmentSupplier != null) {
+			verticalAlignment = _verticalAlignmentSupplier.get();
+
+			_verticalAlignmentSupplier = null;
+		}
+
+		return verticalAlignment;
+	}
+
+	@JsonIgnore
+	public String getVerticalAlignmentAsString() {
+		VerticalAlignment verticalAlignment = getVerticalAlignment();
+
+		if (verticalAlignment == null) {
+			return null;
+		}
+
+		return verticalAlignment.toString();
+	}
+
+	public void setVerticalAlignment(VerticalAlignment verticalAlignment) {
+		this.verticalAlignment = verticalAlignment;
+
+		_verticalAlignmentSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setVerticalAlignment(
+		UnsafeSupplier<VerticalAlignment, Exception>
+			verticalAlignmentUnsafeSupplier) {
+
+		_verticalAlignmentSupplier = () -> {
+			try {
+				return verticalAlignmentUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "The vertical alignment property of the collection page element if a grid list style is selected.."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected VerticalAlignment verticalAlignment;
+
+	@JsonIgnore
+	private Supplier<VerticalAlignment> _verticalAlignmentSupplier;
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
 		}
 
-		if (!(object instanceof CollectionViewportDefinition)) {
+		if (!(object instanceof ListStyleDefinition)) {
 			return false;
 		}
 
-		CollectionViewportDefinition collectionViewportDefinition =
-			(CollectionViewportDefinition)object;
+		ListStyleDefinition listStyleDefinition = (ListStyleDefinition)object;
 
-		return Objects.equals(
-			toString(), collectionViewportDefinition.toString());
+		return Objects.equals(toString(), listStyleDefinition.toString());
 	}
 
 	@Override
@@ -367,16 +420,16 @@ public class CollectionViewportDefinition implements Serializable {
 			sb.append("\"");
 		}
 
-		Boolean hidden = getHidden();
+		Boolean gutters = getGutters();
 
-		if (hidden != null) {
+		if (gutters != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"hidden\": ");
+			sb.append("\"gutters\": ");
 
-			sb.append(hidden);
+			sb.append(gutters);
 		}
 
 		Justify justify = getJustify();
@@ -407,6 +460,22 @@ public class CollectionViewportDefinition implements Serializable {
 			sb.append(numberOfColumns);
 		}
 
+		VerticalAlignment verticalAlignment = getVerticalAlignment();
+
+		if (verticalAlignment != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"verticalAlignment\": ");
+
+			sb.append("\"");
+
+			sb.append(verticalAlignment);
+
+			sb.append("\"");
+		}
+
 		sb.append("}");
 
 		return sb.toString();
@@ -414,7 +483,7 @@ public class CollectionViewportDefinition implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.CollectionViewportDefinition",
+		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.ListStyleDefinition",
 		name = "x-class-name"
 	)
 	public String xClassName;
@@ -528,6 +597,44 @@ public class CollectionViewportDefinition implements Serializable {
 		}
 
 		private Justify(String value) {
+			_value = value;
+		}
+
+		private final String _value;
+
+	}
+
+	@GraphQLName("VerticalAlignment")
+	public static enum VerticalAlignment {
+
+		BOTTOM("Bottom"), MIDDLE("Middle"), TOP("Top");
+
+		@JsonCreator
+		public static VerticalAlignment create(String value) {
+			if ((value == null) || value.equals("")) {
+				return null;
+			}
+
+			for (VerticalAlignment verticalAlignment : values()) {
+				if (Objects.equals(verticalAlignment.getValue(), value)) {
+					return verticalAlignment;
+				}
+			}
+
+			throw new IllegalArgumentException("Invalid enum value: " + value);
+		}
+
+		@JsonValue
+		public String getValue() {
+			return _value;
+		}
+
+		@Override
+		public String toString() {
+			return _value;
+		}
+
+		private VerticalAlignment(String value) {
 			_value = value;
 		}
 

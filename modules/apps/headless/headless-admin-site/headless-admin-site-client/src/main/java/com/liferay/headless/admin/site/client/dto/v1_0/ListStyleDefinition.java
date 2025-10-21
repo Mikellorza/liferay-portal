@@ -6,7 +6,7 @@
 package com.liferay.headless.admin.site.client.dto.v1_0;
 
 import com.liferay.headless.admin.site.client.function.UnsafeSupplier;
-import com.liferay.headless.admin.site.client.serdes.v1_0.CollectionViewportDefinitionSerDes;
+import com.liferay.headless.admin.site.client.serdes.v1_0.ListStyleDefinitionSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,10 +19,10 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class CollectionViewportDefinition implements Cloneable, Serializable {
+public class ListStyleDefinition implements Cloneable, Serializable {
 
-	public static CollectionViewportDefinition toDTO(String json) {
-		return CollectionViewportDefinitionSerDes.toDTO(json);
+	public static ListStyleDefinition toDTO(String json) {
+		return ListStyleDefinitionSerDes.toDTO(json);
 	}
 
 	public Align getAlign() {
@@ -81,26 +81,26 @@ public class CollectionViewportDefinition implements Cloneable, Serializable {
 
 	protected FlexWrap flexWrap;
 
-	public Boolean getHidden() {
-		return hidden;
+	public Boolean getGutters() {
+		return gutters;
 	}
 
-	public void setHidden(Boolean hidden) {
-		this.hidden = hidden;
+	public void setGutters(Boolean gutters) {
+		this.gutters = gutters;
 	}
 
-	public void setHidden(
-		UnsafeSupplier<Boolean, Exception> hiddenUnsafeSupplier) {
+	public void setGutters(
+		UnsafeSupplier<Boolean, Exception> guttersUnsafeSupplier) {
 
 		try {
-			hidden = hiddenUnsafeSupplier.get();
+			gutters = guttersUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected Boolean hidden;
+	protected Boolean gutters;
 
 	public Justify getJustify() {
 		return justify;
@@ -152,11 +152,39 @@ public class CollectionViewportDefinition implements Cloneable, Serializable {
 
 	protected Integer numberOfColumns;
 
-	@Override
-	public CollectionViewportDefinition clone()
-		throws CloneNotSupportedException {
+	public VerticalAlignment getVerticalAlignment() {
+		return verticalAlignment;
+	}
 
-		return (CollectionViewportDefinition)super.clone();
+	public String getVerticalAlignmentAsString() {
+		if (verticalAlignment == null) {
+			return null;
+		}
+
+		return verticalAlignment.toString();
+	}
+
+	public void setVerticalAlignment(VerticalAlignment verticalAlignment) {
+		this.verticalAlignment = verticalAlignment;
+	}
+
+	public void setVerticalAlignment(
+		UnsafeSupplier<VerticalAlignment, Exception>
+			verticalAlignmentUnsafeSupplier) {
+
+		try {
+			verticalAlignment = verticalAlignmentUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected VerticalAlignment verticalAlignment;
+
+	@Override
+	public ListStyleDefinition clone() throws CloneNotSupportedException {
+		return (ListStyleDefinition)super.clone();
 	}
 
 	@Override
@@ -165,15 +193,13 @@ public class CollectionViewportDefinition implements Cloneable, Serializable {
 			return true;
 		}
 
-		if (!(object instanceof CollectionViewportDefinition)) {
+		if (!(object instanceof ListStyleDefinition)) {
 			return false;
 		}
 
-		CollectionViewportDefinition collectionViewportDefinition =
-			(CollectionViewportDefinition)object;
+		ListStyleDefinition listStyleDefinition = (ListStyleDefinition)object;
 
-		return Objects.equals(
-			toString(), collectionViewportDefinition.toString());
+		return Objects.equals(toString(), listStyleDefinition.toString());
 	}
 
 	@Override
@@ -184,7 +210,7 @@ public class CollectionViewportDefinition implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return CollectionViewportDefinitionSerDes.toJSON(this);
+		return ListStyleDefinitionSerDes.toJSON(this);
 	}
 
 	public static enum Align {
@@ -281,6 +307,39 @@ public class CollectionViewportDefinition implements Cloneable, Serializable {
 		}
 
 		private Justify(String value) {
+			_value = value;
+		}
+
+		private final String _value;
+
+	}
+
+	public static enum VerticalAlignment {
+
+		BOTTOM("Bottom"), MIDDLE("Middle"), TOP("Top");
+
+		public static VerticalAlignment create(String value) {
+			for (VerticalAlignment verticalAlignment : values()) {
+				if (Objects.equals(verticalAlignment.getValue(), value) ||
+					Objects.equals(verticalAlignment.name(), value)) {
+
+					return verticalAlignment;
+				}
+			}
+
+			return null;
+		}
+
+		public String getValue() {
+			return _value;
+		}
+
+		@Override
+		public String toString() {
+			return _value;
+		}
+
+		private VerticalAlignment(String value) {
 			_value = value;
 		}
 

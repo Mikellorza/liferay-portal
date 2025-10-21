@@ -59,6 +59,51 @@ public class CollectionPageElementDefinition
 
 	@io.swagger.v3.oas.annotations.media.Schema
 	@Valid
+	public CollectionListStyle getCollectionListStyle() {
+		if (_collectionListStyleSupplier != null) {
+			collectionListStyle = _collectionListStyleSupplier.get();
+
+			_collectionListStyleSupplier = null;
+		}
+
+		return collectionListStyle;
+	}
+
+	public void setCollectionListStyle(
+		CollectionListStyle collectionListStyle) {
+
+		this.collectionListStyle = collectionListStyle;
+
+		_collectionListStyleSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setCollectionListStyle(
+		UnsafeSupplier<CollectionListStyle, Exception>
+			collectionListStyleUnsafeSupplier) {
+
+		_collectionListStyleSupplier = () -> {
+			try {
+				return collectionListStyleUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected CollectionListStyle collectionListStyle;
+
+	@JsonIgnore
+	private Supplier<CollectionListStyle> _collectionListStyleSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema
+	@Valid
 	public CollectionReference getCollectionReference() {
 		if (_collectionReferenceSupplier != null) {
 			collectionReference = _collectionReferenceSupplier.get();
@@ -287,32 +332,31 @@ public class CollectionPageElementDefinition
 	private Supplier<EmptyCollectionConfig> _emptyCollectionConfigSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The fragment style of the collection page element."
+		description = "Specifies if the collection is hidden to the user."
 	)
-	@Valid
-	public FragmentStyle getFragmentStyle() {
-		if (_fragmentStyleSupplier != null) {
-			fragmentStyle = _fragmentStyleSupplier.get();
+	public Boolean getHidden() {
+		if (_hiddenSupplier != null) {
+			hidden = _hiddenSupplier.get();
 
-			_fragmentStyleSupplier = null;
+			_hiddenSupplier = null;
 		}
 
-		return fragmentStyle;
+		return hidden;
 	}
 
-	public void setFragmentStyle(FragmentStyle fragmentStyle) {
-		this.fragmentStyle = fragmentStyle;
+	public void setHidden(Boolean hidden) {
+		this.hidden = hidden;
 
-		_fragmentStyleSupplier = null;
+		_hiddenSupplier = null;
 	}
 
 	@JsonIgnore
-	public void setFragmentStyle(
-		UnsafeSupplier<FragmentStyle, Exception> fragmentStyleUnsafeSupplier) {
+	public void setHidden(
+		UnsafeSupplier<Boolean, Exception> hiddenUnsafeSupplier) {
 
-		_fragmentStyleSupplier = () -> {
+		_hiddenSupplier = () -> {
 			try {
-				return fragmentStyleUnsafeSupplier.get();
+				return hiddenUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -324,194 +368,13 @@ public class CollectionPageElementDefinition
 	}
 
 	@GraphQLField(
-		description = "The fragment style of the collection page element."
+		description = "Specifies if the collection is hidden to the user."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected FragmentStyle fragmentStyle;
+	protected Boolean hidden;
 
 	@JsonIgnore
-	private Supplier<FragmentStyle> _fragmentStyleSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The fragment viewports of the collection page element."
-	)
-	@Valid
-	public FragmentViewport[] getFragmentViewports() {
-		if (_fragmentViewportsSupplier != null) {
-			fragmentViewports = _fragmentViewportsSupplier.get();
-
-			_fragmentViewportsSupplier = null;
-		}
-
-		return fragmentViewports;
-	}
-
-	public void setFragmentViewports(FragmentViewport[] fragmentViewports) {
-		this.fragmentViewports = fragmentViewports;
-
-		_fragmentViewportsSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setFragmentViewports(
-		UnsafeSupplier<FragmentViewport[], Exception>
-			fragmentViewportsUnsafeSupplier) {
-
-		_fragmentViewportsSupplier = () -> {
-			try {
-				return fragmentViewportsUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(
-		description = "The fragment viewports of the collection page element."
-	)
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected FragmentViewport[] fragmentViewports;
-
-	@JsonIgnore
-	private Supplier<FragmentViewport[]> _fragmentViewportsSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "the collection page element's layout."
-	)
-	@Valid
-	public BasicLayout getLayout() {
-		if (_layoutSupplier != null) {
-			layout = _layoutSupplier.get();
-
-			_layoutSupplier = null;
-		}
-
-		return layout;
-	}
-
-	public void setLayout(BasicLayout layout) {
-		this.layout = layout;
-
-		_layoutSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setLayout(
-		UnsafeSupplier<BasicLayout, Exception> layoutUnsafeSupplier) {
-
-		_layoutSupplier = () -> {
-			try {
-				return layoutUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(description = "the collection page element's layout.")
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected BasicLayout layout;
-
-	@JsonIgnore
-	private Supplier<BasicLayout> _layoutSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The style of a list of items in the collection page element."
-	)
-	public String getListItemStyle() {
-		if (_listItemStyleSupplier != null) {
-			listItemStyle = _listItemStyleSupplier.get();
-
-			_listItemStyleSupplier = null;
-		}
-
-		return listItemStyle;
-	}
-
-	public void setListItemStyle(String listItemStyle) {
-		this.listItemStyle = listItemStyle;
-
-		_listItemStyleSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setListItemStyle(
-		UnsafeSupplier<String, Exception> listItemStyleUnsafeSupplier) {
-
-		_listItemStyleSupplier = () -> {
-			try {
-				return listItemStyleUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(
-		description = "The style of a list of items in the collection page element."
-	)
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected String listItemStyle;
-
-	@JsonIgnore
-	private Supplier<String> _listItemStyleSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The style of a list in the collection page element."
-	)
-	public String getListStyle() {
-		if (_listStyleSupplier != null) {
-			listStyle = _listStyleSupplier.get();
-
-			_listStyleSupplier = null;
-		}
-
-		return listStyle;
-	}
-
-	public void setListStyle(String listStyle) {
-		this.listStyle = listStyle;
-
-		_listStyleSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setListStyle(
-		UnsafeSupplier<String, Exception> listStyleUnsafeSupplier) {
-
-		_listStyleSupplier = () -> {
-			try {
-				return listStyleUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(
-		description = "The style of a list in the collection page element."
-	)
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected String listStyle;
-
-	@JsonIgnore
-	private Supplier<String> _listStyleSupplier;
+	private Supplier<Boolean> _hiddenSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "The custom name of a collection page element."
@@ -553,51 +416,6 @@ public class CollectionPageElementDefinition
 
 	@JsonIgnore
 	private Supplier<String> _nameSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The number of columns in the collection page element."
-	)
-	public Integer getNumberOfColumns() {
-		if (_numberOfColumnsSupplier != null) {
-			numberOfColumns = _numberOfColumnsSupplier.get();
-
-			_numberOfColumnsSupplier = null;
-		}
-
-		return numberOfColumns;
-	}
-
-	public void setNumberOfColumns(Integer numberOfColumns) {
-		this.numberOfColumns = numberOfColumns;
-
-		_numberOfColumnsSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setNumberOfColumns(
-		UnsafeSupplier<Integer, Exception> numberOfColumnsUnsafeSupplier) {
-
-		_numberOfColumnsSupplier = () -> {
-			try {
-				return numberOfColumnsUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(
-		description = "The number of columns in the collection page element."
-	)
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Integer numberOfColumns;
-
-	@JsonIgnore
-	private Supplier<Integer> _numberOfColumnsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "The maximum number of items to display in the collection page element when pagination is disabled."
@@ -645,7 +463,7 @@ public class CollectionPageElementDefinition
 	private Supplier<Integer> _numberOfItemsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The number of items per page in the collection page element."
+		description = "The maximum number of items per page to display in the collection page element when pagination is enabled."
 	)
 	public Integer getNumberOfItemsPerPage() {
 		if (_numberOfItemsPerPageSupplier != null) {
@@ -681,7 +499,7 @@ public class CollectionPageElementDefinition
 	}
 
 	@GraphQLField(
-		description = "The number of items per page in the collection page element."
+		description = "The maximum number of items per page to display in the collection page element when pagination is enabled."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Integer numberOfItemsPerPage;
@@ -690,7 +508,7 @@ public class CollectionPageElementDefinition
 	private Supplier<Integer> _numberOfItemsPerPageSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The maximum number of pages to show when pagination is enabled."
+		description = "The maximum number of pages to display in the collection page element when pagination is enabled."
 	)
 	public Integer getNumberOfPages() {
 		if (_numberOfPagesSupplier != null) {
@@ -726,7 +544,7 @@ public class CollectionPageElementDefinition
 	}
 
 	@GraphQLField(
-		description = "The maximum number of pages to show when pagination is enabled."
+		description = "The maximum number of pages to display in the collection page element when pagination is enabled."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Integer numberOfPages;
@@ -791,49 +609,6 @@ public class CollectionPageElementDefinition
 	@JsonIgnore
 	private Supplier<PaginationType> _paginationTypeSupplier;
 
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The collection page element's template key."
-	)
-	public String getTemplateKey() {
-		if (_templateKeySupplier != null) {
-			templateKey = _templateKeySupplier.get();
-
-			_templateKeySupplier = null;
-		}
-
-		return templateKey;
-	}
-
-	public void setTemplateKey(String templateKey) {
-		this.templateKey = templateKey;
-
-		_templateKeySupplier = null;
-	}
-
-	@JsonIgnore
-	public void setTemplateKey(
-		UnsafeSupplier<String, Exception> templateKeyUnsafeSupplier) {
-
-		_templateKeySupplier = () -> {
-			try {
-				return templateKeyUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(description = "The collection page element's template key.")
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected String templateKey;
-
-	@JsonIgnore
-	private Supplier<String> _templateKeySupplier;
-
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -862,6 +637,18 @@ public class CollectionPageElementDefinition
 		StringBundler sb = new StringBundler();
 
 		sb.append("{");
+
+		CollectionListStyle collectionListStyle = getCollectionListStyle();
+
+		if (collectionListStyle != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"collectionListStyle\": ");
+
+			sb.append(String.valueOf(collectionListStyle));
+		}
 
 		CollectionReference collectionReference = getCollectionReference();
 
@@ -934,82 +721,16 @@ public class CollectionPageElementDefinition
 			sb.append(String.valueOf(emptyCollectionConfig));
 		}
 
-		FragmentStyle fragmentStyle = getFragmentStyle();
+		Boolean hidden = getHidden();
 
-		if (fragmentStyle != null) {
+		if (hidden != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"fragmentStyle\": ");
+			sb.append("\"hidden\": ");
 
-			sb.append(String.valueOf(fragmentStyle));
-		}
-
-		FragmentViewport[] fragmentViewports = getFragmentViewports();
-
-		if (fragmentViewports != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"fragmentViewports\": ");
-
-			sb.append("[");
-
-			for (int i = 0; i < fragmentViewports.length; i++) {
-				sb.append(String.valueOf(fragmentViewports[i]));
-
-				if ((i + 1) < fragmentViewports.length) {
-					sb.append(", ");
-				}
-			}
-
-			sb.append("]");
-		}
-
-		BasicLayout layout = getLayout();
-
-		if (layout != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"layout\": ");
-
-			sb.append(String.valueOf(layout));
-		}
-
-		String listItemStyle = getListItemStyle();
-
-		if (listItemStyle != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"listItemStyle\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(listItemStyle));
-
-			sb.append("\"");
-		}
-
-		String listStyle = getListStyle();
-
-		if (listStyle != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"listStyle\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(listStyle));
-
-			sb.append("\"");
+			sb.append(hidden);
 		}
 
 		String name = getName();
@@ -1026,18 +747,6 @@ public class CollectionPageElementDefinition
 			sb.append(_escape(name));
 
 			sb.append("\"");
-		}
-
-		Integer numberOfColumns = getNumberOfColumns();
-
-		if (numberOfColumns != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"numberOfColumns\": ");
-
-			sb.append(numberOfColumns);
 		}
 
 		Integer numberOfItems = getNumberOfItems();
@@ -1092,22 +801,6 @@ public class CollectionPageElementDefinition
 			sb.append("\"");
 		}
 
-		String templateKey = getTemplateKey();
-
-		if (templateKey != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"templateKey\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(templateKey));
-
-			sb.append("\"");
-		}
-
 		Type type = getType();
 
 		if (type != null) {
@@ -1139,7 +832,7 @@ public class CollectionPageElementDefinition
 	@GraphQLName("PaginationType")
 	public static enum PaginationType {
 
-		NONE("None"), NUMERIC("Numeric"), REGULAR("Regular"), SIMPLE("Simple");
+		NONE("None"), NUMERIC("Numeric"), SIMPLE("Simple");
 
 		@JsonCreator
 		public static PaginationType create(String value) {

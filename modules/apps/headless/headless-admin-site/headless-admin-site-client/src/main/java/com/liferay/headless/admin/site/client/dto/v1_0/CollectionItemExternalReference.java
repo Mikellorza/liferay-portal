@@ -12,6 +12,7 @@ import jakarta.annotation.Generated;
 
 import java.io.Serializable;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,6 +47,31 @@ public class CollectionItemExternalReference
 	}
 
 	protected String className;
+
+	public Map<String, String> getCollectionConfiguration() {
+		return collectionConfiguration;
+	}
+
+	public void setCollectionConfiguration(
+		Map<String, String> collectionConfiguration) {
+
+		this.collectionConfiguration = collectionConfiguration;
+	}
+
+	public void setCollectionConfiguration(
+		UnsafeSupplier<Map<String, String>, Exception>
+			collectionConfigurationUnsafeSupplier) {
+
+		try {
+			collectionConfiguration =
+				collectionConfigurationUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Map<String, String> collectionConfiguration;
 
 	public String getExternalReferenceCode() {
 		return externalReferenceCode;

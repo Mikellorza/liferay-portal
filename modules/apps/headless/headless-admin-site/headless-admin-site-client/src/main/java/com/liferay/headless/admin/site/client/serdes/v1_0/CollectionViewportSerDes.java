@@ -67,7 +67,7 @@ public class CollectionViewportSerDes {
 
 			sb.append("\"");
 
-			sb.append(_escape(collectionViewport.getId()));
+			sb.append(collectionViewport.getId());
 
 			sb.append("\"");
 		}
@@ -156,7 +156,9 @@ public class CollectionViewportSerDes {
 			}
 			else if (Objects.equals(jsonParserFieldName, "id")) {
 				if (jsonParserFieldValue != null) {
-					collectionViewport.setId((String)jsonParserFieldValue);
+					collectionViewport.setId(
+						CollectionViewport.Id.create(
+							(String)jsonParserFieldValue));
 				}
 			}
 		}

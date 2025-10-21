@@ -5,9 +5,14 @@
 
 package com.liferay.headless.admin.site.dto.v1_0;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringBundler;
@@ -18,7 +23,7 @@ import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 
 import jakarta.annotation.Generated;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -36,50 +41,75 @@ import java.util.function.Supplier;
  */
 @Generated("")
 @GraphQLName(
-	description = "A reference specifying the class name.",
-	value = "ClassNameReference"
-)
-@io.swagger.v3.oas.annotations.media.Schema(
-	description = "A reference specifying the class name.",
-	requiredProperties = {"className"}
+	description = "The page collection's list style.",
+	value = "CollectionListStyle"
 )
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "ClassNameReference")
-public class ClassNameReference
-	extends CollectionReference implements Serializable {
+@JsonSubTypes(
+	{
+		@JsonSubTypes.Type(name = "ListStyle", value = ListStyle.class),
+		@JsonSubTypes.Type(name = "Template", value = TemplateListStyle.class)
+	}
+)
+@JsonTypeInfo(
+	include = JsonTypeInfo.As.PROPERTY, property = "collectionListStyleType",
+	use = JsonTypeInfo.Id.NAME, visible = true
+)
+@XmlRootElement(name = "CollectionListStyle")
+public abstract class CollectionListStyle implements Serializable {
 
-	public static ClassNameReference toDTO(String json) {
-		return ObjectMapperUtil.readValue(ClassNameReference.class, json);
+	public static CollectionListStyle toDTO(String json) {
+		return ObjectMapperUtil.readValue(CollectionListStyle.class, json);
 	}
 
-	public static ClassNameReference unsafeToDTO(String json) {
-		return ObjectMapperUtil.unsafeReadValue(ClassNameReference.class, json);
+	public static CollectionListStyle unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(
+			CollectionListStyle.class, json);
 	}
 
-	@io.swagger.v3.oas.annotations.media.Schema
-	public String getClassName() {
-		if (_classNameSupplier != null) {
-			className = _classNameSupplier.get();
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "The collection's list style (ListStyle, Template)."
+	)
+	@JsonGetter("collectionListStyleType")
+	@Valid
+	public CollectionListStyleType getCollectionListStyleType() {
+		if (_collectionListStyleTypeSupplier != null) {
+			collectionListStyleType = _collectionListStyleTypeSupplier.get();
 
-			_classNameSupplier = null;
+			_collectionListStyleTypeSupplier = null;
 		}
 
-		return className;
-	}
-
-	public void setClassName(String className) {
-		this.className = className;
-
-		_classNameSupplier = null;
+		return collectionListStyleType;
 	}
 
 	@JsonIgnore
-	public void setClassName(
-		UnsafeSupplier<String, Exception> classNameUnsafeSupplier) {
+	public String getCollectionListStyleTypeAsString() {
+		CollectionListStyleType collectionListStyleType =
+			getCollectionListStyleType();
 
-		_classNameSupplier = () -> {
+		if (collectionListStyleType == null) {
+			return null;
+		}
+
+		return collectionListStyleType.toString();
+	}
+
+	public void setCollectionListStyleType(
+		CollectionListStyleType collectionListStyleType) {
+
+		this.collectionListStyleType = collectionListStyleType;
+
+		_collectionListStyleTypeSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setCollectionListStyleType(
+		UnsafeSupplier<CollectionListStyleType, Exception>
+			collectionListStyleTypeUnsafeSupplier) {
+
+		_collectionListStyleTypeSupplier = () -> {
 			try {
-				return classNameUnsafeSupplier.get();
+				return collectionListStyleTypeUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -90,13 +120,14 @@ public class ClassNameReference
 		};
 	}
 
-	@GraphQLField
+	@GraphQLField(
+		description = "The collection's list style (ListStyle, Template)."
+	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	@NotEmpty
-	protected String className;
+	protected CollectionListStyleType collectionListStyleType;
 
 	@JsonIgnore
-	private Supplier<String> _classNameSupplier;
+	private Supplier<CollectionListStyleType> _collectionListStyleTypeSupplier;
 
 	@Override
 	public boolean equals(Object object) {
@@ -104,13 +135,13 @@ public class ClassNameReference
 			return true;
 		}
 
-		if (!(object instanceof ClassNameReference)) {
+		if (!(object instanceof CollectionListStyle)) {
 			return false;
 		}
 
-		ClassNameReference classNameReference = (ClassNameReference)object;
+		CollectionListStyle collectionListStyle = (CollectionListStyle)object;
 
-		return Objects.equals(toString(), classNameReference.toString());
+		return Objects.equals(toString(), collectionListStyle.toString());
 	}
 
 	@Override
@@ -125,34 +156,19 @@ public class ClassNameReference
 
 		sb.append("{");
 
-		String className = getClassName();
+		CollectionListStyleType collectionListStyleType =
+			getCollectionListStyleType();
 
-		if (className != null) {
+		if (collectionListStyleType != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"className\": ");
+			sb.append("\"collectionListStyleType\": ");
 
 			sb.append("\"");
 
-			sb.append(_escape(className));
-
-			sb.append("\"");
-		}
-
-		CollectionType collectionType = getCollectionType();
-
-		if (collectionType != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"collectionType\": ");
-
-			sb.append("\"");
-
-			sb.append(collectionType);
+			sb.append(collectionListStyleType);
 
 			sb.append("\"");
 		}
@@ -164,10 +180,48 @@ public class ClassNameReference
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.ClassNameReference",
+		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.CollectionListStyle",
 		name = "x-class-name"
 	)
 	public String xClassName;
+
+	@GraphQLName("CollectionListStyleType")
+	public static enum CollectionListStyleType {
+
+		LIST_STYLE("ListStyle"), TEMPLATE("Template");
+
+		@JsonCreator
+		public static CollectionListStyleType create(String value) {
+			if ((value == null) || value.equals("")) {
+				return null;
+			}
+
+			for (CollectionListStyleType collectionListStyleType : values()) {
+				if (Objects.equals(collectionListStyleType.getValue(), value)) {
+					return collectionListStyleType;
+				}
+			}
+
+			throw new IllegalArgumentException("Invalid enum value: " + value);
+		}
+
+		@JsonValue
+		public String getValue() {
+			return _value;
+		}
+
+		@Override
+		public String toString() {
+			return _value;
+		}
+
+		private CollectionListStyleType(String value) {
+			_value = value;
+		}
+
+		private final String _value;
+
+	}
 
 	private static String _escape(Object object) {
 		return StringUtil.replace(
