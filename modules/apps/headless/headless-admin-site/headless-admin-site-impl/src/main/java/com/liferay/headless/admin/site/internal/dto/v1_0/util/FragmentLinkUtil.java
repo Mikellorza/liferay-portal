@@ -30,7 +30,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -188,22 +187,6 @@ public class FragmentLinkUtil {
 
 			throw new UnsupportedOperationException();
 		}
-	}
-
-	private static Long _getCompanyId(long scopeGroupId) {
-		Group group = GroupLocalServiceUtil.fetchGroup(scopeGroupId);
-
-		if (group != null) {
-			return group.getCompanyId();
-		}
-
-		Long companyId = CompanyThreadLocal.getCompanyId();
-
-		if (companyId != null) {
-			return companyId;
-		}
-
-		return null;
 	}
 
 	private static String _getFieldKey(JSONObject jsonObject) {
@@ -388,7 +371,7 @@ public class FragmentLinkUtil {
 			return scopeGroupId;
 		}
 
-		Long companyId = _getCompanyId(scopeGroupId);
+		Long companyId = CompanyUtil.getCompanyId(scopeGroupId);
 
 		if (companyId == null) {
 			return null;
