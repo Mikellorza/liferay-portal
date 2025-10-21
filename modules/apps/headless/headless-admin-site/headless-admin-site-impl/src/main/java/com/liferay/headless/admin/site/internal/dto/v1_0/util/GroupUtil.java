@@ -5,6 +5,7 @@
 
 package com.liferay.headless.admin.site.internal.dto.v1_0.util;
 
+import com.liferay.headless.admin.site.dto.v1_0.Scope;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
@@ -26,6 +27,27 @@ public class GroupUtil {
 		Group group = GroupLocalServiceUtil.getGroup(scopeGroupId);
 
 		return group.getExternalReferenceCode();
+	}
+
+	public static Long getGroupId(Scope scope, long scopeGroupId) {
+		if ((scope == null) || (scope.getExternalReferenceCode() == null)) {
+			return scopeGroupId;
+		}
+
+		Long companyId = CompanyUtil.getCompanyId(scopeGroupId);
+
+		if (companyId == null) {
+			return null;
+		}
+
+		Group group = GroupLocalServiceUtil.fetchGroupByExternalReferenceCode(
+			scope.getExternalReferenceCode(), companyId);
+
+		if (group == null) {
+			return null;
+		}
+
+		return group.getGroupId();
 	}
 
 }
