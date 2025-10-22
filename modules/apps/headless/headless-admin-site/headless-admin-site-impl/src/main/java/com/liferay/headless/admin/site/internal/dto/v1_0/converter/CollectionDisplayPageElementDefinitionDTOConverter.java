@@ -83,43 +83,42 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 			throw new UnsupportedOperationException();
 		}
 
-		return new CollectionDisplayPageElementDefinition() {
-			{
-				setCollectionDisplayListStyle(
-					() -> _toCollectionDisplayListStyle(
-						collectionStyledLayoutStructureItem));
-				setCollectionDisplayViewports(
-					() -> _toCollectionDisplayViewports(
-						collectionStyledLayoutStructureItem));
-				setCollectionReference(
-					() -> _toCollectionReference(
-						collectionStyledLayoutStructureItem, scopeGroupId));
-				setDisplayAllItems(
-					collectionStyledLayoutStructureItem::isDisplayAllItems);
-				setDisplayAllPages(
-					collectionStyledLayoutStructureItem::isDisplayAllPages);
-				setEmptyCollectionConfig(
-					() -> _toEmptyCollectionOption(
-						collectionStyledLayoutStructureItem));
-				setHidden(
-					() -> _toHidden(
-						collectionStyledLayoutStructureItem.
-							getStylesJSONObject()));
-				setName(collectionStyledLayoutStructureItem::getName);
-				setNumberOfItems(
-					collectionStyledLayoutStructureItem::getNumberOfItems);
-				setNumberOfItemsPerPage(
-					collectionStyledLayoutStructureItem::
-						getNumberOfItemsPerPage);
-				setNumberOfPages(
-					collectionStyledLayoutStructureItem::getNumberOfPages);
-				setPaginationType(
-					() -> _internalToExternalValuesMap.get(
-						collectionStyledLayoutStructureItem.
-							getPaginationType()));
-				setType(PageElementDefinition.Type.COLLECTION_DISPLAY);
-			}
-		};
+		CollectionDisplayPageElementDefinition
+			collectionDisplayPageElementDefinition =
+				new CollectionDisplayPageElementDefinition();
+
+		collectionDisplayPageElementDefinition.setCollectionDisplayListStyle(
+			() -> _toCollectionDisplayListStyle(
+				collectionStyledLayoutStructureItem));
+		collectionDisplayPageElementDefinition.setCollectionDisplayViewports(
+			() -> _toCollectionDisplayViewports(
+				collectionStyledLayoutStructureItem));
+		collectionDisplayPageElementDefinition.setCollectionReference(
+			() -> _toCollectionReference(
+				collectionStyledLayoutStructureItem, scopeGroupId));
+		collectionDisplayPageElementDefinition.setDisplayAllItems(
+			collectionStyledLayoutStructureItem::isDisplayAllItems);
+		collectionDisplayPageElementDefinition.setDisplayAllPages(
+			collectionStyledLayoutStructureItem::isDisplayAllPages);
+		collectionDisplayPageElementDefinition.setEmptyCollectionConfig(
+			() -> _toEmptyCollectionOption(
+				collectionStyledLayoutStructureItem));
+		collectionDisplayPageElementDefinition.setHidden(
+			() -> _toHidden(
+				collectionStyledLayoutStructureItem.getStylesJSONObject()));
+		collectionDisplayPageElementDefinition.setName(
+			collectionStyledLayoutStructureItem::getName);
+		collectionDisplayPageElementDefinition.setNumberOfItems(
+			collectionStyledLayoutStructureItem::getNumberOfItems);
+		collectionDisplayPageElementDefinition.setNumberOfItemsPerPage(
+			collectionStyledLayoutStructureItem::getNumberOfItemsPerPage);
+		collectionDisplayPageElementDefinition.setNumberOfPages(
+			collectionStyledLayoutStructureItem::getNumberOfPages);
+		collectionDisplayPageElementDefinition.setPaginationType(
+			() -> _internalToExternalValuesMap.get(
+				collectionStyledLayoutStructureItem.getPaginationType()));
+
+		return collectionDisplayPageElementDefinition;
 	}
 
 	private Scope _getItemScope(
@@ -409,12 +408,11 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 			return null;
 		}
 
-		return new ClassNameReference() {
-			{
-				setClassName(() -> key);
-				setCollectionType(CollectionType.COLLECTION_PROVIDER);
-			}
-		};
+		ClassNameReference classNameReference = new ClassNameReference();
+
+		classNameReference.setClassName(() -> key);
+
+		return classNameReference;
 	}
 
 	private EmptyCollectionConfig _toEmptyCollectionOption(
