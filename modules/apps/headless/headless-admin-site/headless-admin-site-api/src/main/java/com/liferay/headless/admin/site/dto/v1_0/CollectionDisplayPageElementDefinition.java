@@ -159,32 +159,30 @@ public class CollectionDisplayPageElementDefinition
 
 	@io.swagger.v3.oas.annotations.media.Schema
 	@Valid
-	public CollectionReference getCollectionReference() {
-		if (_collectionReferenceSupplier != null) {
-			collectionReference = _collectionReferenceSupplier.get();
+	public CollectionSettings getCollectionSettings() {
+		if (_collectionSettingsSupplier != null) {
+			collectionSettings = _collectionSettingsSupplier.get();
 
-			_collectionReferenceSupplier = null;
+			_collectionSettingsSupplier = null;
 		}
 
-		return collectionReference;
+		return collectionSettings;
 	}
 
-	public void setCollectionReference(
-		CollectionReference collectionReference) {
+	public void setCollectionSettings(CollectionSettings collectionSettings) {
+		this.collectionSettings = collectionSettings;
 
-		this.collectionReference = collectionReference;
-
-		_collectionReferenceSupplier = null;
+		_collectionSettingsSupplier = null;
 	}
 
 	@JsonIgnore
-	public void setCollectionReference(
-		UnsafeSupplier<CollectionReference, Exception>
-			collectionReferenceUnsafeSupplier) {
+	public void setCollectionSettings(
+		UnsafeSupplier<CollectionSettings, Exception>
+			collectionSettingsUnsafeSupplier) {
 
-		_collectionReferenceSupplier = () -> {
+		_collectionSettingsSupplier = () -> {
 			try {
-				return collectionReferenceUnsafeSupplier.get();
+				return collectionSettingsUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -197,10 +195,10 @@ public class CollectionDisplayPageElementDefinition
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected CollectionReference collectionReference;
+	protected CollectionSettings collectionSettings;
 
 	@JsonIgnore
-	private Supplier<CollectionReference> _collectionReferenceSupplier;
+	private Supplier<CollectionSettings> _collectionSettingsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "Whether to show all items when pagination is disabled."
@@ -683,16 +681,16 @@ public class CollectionDisplayPageElementDefinition
 			sb.append("]");
 		}
 
-		CollectionReference collectionReference = getCollectionReference();
+		CollectionSettings collectionSettings = getCollectionSettings();
 
-		if (collectionReference != null) {
+		if (collectionSettings != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"collectionReference\": ");
+			sb.append("\"collectionSettings\": ");
 
-			sb.append(String.valueOf(collectionReference));
+			sb.append(String.valueOf(collectionSettings));
 		}
 
 		Boolean displayAllItems = getDisplayAllItems();

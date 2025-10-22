@@ -100,19 +100,19 @@ public class CollectionDisplayPageElementDefinitionSerDes {
 			sb.append("]");
 		}
 
-		if (collectionDisplayPageElementDefinition.getCollectionReference() !=
+		if (collectionDisplayPageElementDefinition.getCollectionSettings() !=
 				null) {
 
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"collectionReference\": ");
+			sb.append("\"collectionSettings\": ");
 
 			sb.append(
 				String.valueOf(
 					collectionDisplayPageElementDefinition.
-						getCollectionReference()));
+						getCollectionSettings()));
 		}
 
 		if (collectionDisplayPageElementDefinition.getDisplayAllItems() !=
@@ -298,17 +298,17 @@ public class CollectionDisplayPageElementDefinitionSerDes {
 						getCollectionDisplayViewports()));
 		}
 
-		if (collectionDisplayPageElementDefinition.getCollectionReference() ==
+		if (collectionDisplayPageElementDefinition.getCollectionSettings() ==
 				null) {
 
-			map.put("collectionReference", null);
+			map.put("collectionSettings", null);
 		}
 		else {
 			map.put(
-				"collectionReference",
+				"collectionSettings",
 				String.valueOf(
 					collectionDisplayPageElementDefinition.
-						getCollectionReference()));
+						getCollectionSettings()));
 		}
 
 		if (collectionDisplayPageElementDefinition.getDisplayAllItems() ==
@@ -457,7 +457,7 @@ public class CollectionDisplayPageElementDefinitionSerDes {
 				return false;
 			}
 			else if (Objects.equals(
-						jsonParserFieldName, "collectionReference")) {
+						jsonParserFieldName, "collectionSettings")) {
 
 				return false;
 			}
@@ -541,12 +541,12 @@ public class CollectionDisplayPageElementDefinitionSerDes {
 				}
 			}
 			else if (Objects.equals(
-						jsonParserFieldName, "collectionReference")) {
+						jsonParserFieldName, "collectionSettings")) {
 
 				if (jsonParserFieldValue != null) {
 					collectionDisplayPageElementDefinition.
-						setCollectionReference(
-							CollectionReferenceSerDes.toDTO(
+						setCollectionSettings(
+							CollectionSettingsSerDes.toDTO(
 								(String)jsonParserFieldValue));
 				}
 			}

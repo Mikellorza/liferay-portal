@@ -76,29 +76,27 @@ public class CollectionDisplayPageElementDefinition
 
 	protected CollectionDisplayViewport[] collectionDisplayViewports;
 
-	public CollectionReference getCollectionReference() {
-		return collectionReference;
+	public CollectionSettings getCollectionSettings() {
+		return collectionSettings;
 	}
 
-	public void setCollectionReference(
-		CollectionReference collectionReference) {
-
-		this.collectionReference = collectionReference;
+	public void setCollectionSettings(CollectionSettings collectionSettings) {
+		this.collectionSettings = collectionSettings;
 	}
 
-	public void setCollectionReference(
-		UnsafeSupplier<CollectionReference, Exception>
-			collectionReferenceUnsafeSupplier) {
+	public void setCollectionSettings(
+		UnsafeSupplier<CollectionSettings, Exception>
+			collectionSettingsUnsafeSupplier) {
 
 		try {
-			collectionReference = collectionReferenceUnsafeSupplier.get();
+			collectionSettings = collectionSettingsUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected CollectionReference collectionReference;
+	protected CollectionSettings collectionSettings;
 
 	public Boolean getDisplayAllItems() {
 		return displayAllItems;
