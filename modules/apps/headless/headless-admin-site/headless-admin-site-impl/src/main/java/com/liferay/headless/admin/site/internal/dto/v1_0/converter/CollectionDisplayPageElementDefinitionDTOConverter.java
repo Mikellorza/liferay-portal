@@ -117,8 +117,24 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 		collectionDisplayPageElementDefinition.setNumberOfPages(
 			collectionStyledLayoutStructureItem::getNumberOfPages);
 		collectionDisplayPageElementDefinition.setPaginationType(
-			() -> _internalToExternalValuesMap.get(
-				collectionStyledLayoutStructureItem.getPaginationType()));
+			() -> {
+				String paginationType =
+					collectionStyledLayoutStructureItem.getPaginationType();
+
+				if (Validator.isNull(paginationType)) {
+					return null;
+				}
+
+				if (StringUtil.equalsIgnoreCase(
+						paginationType,
+						CollectionPaginationUtil.PAGINATION_TYPE_REGULAR)) {
+
+					paginationType =
+						CollectionPaginationUtil.PAGINATION_TYPE_NUMERIC;
+				}
+
+				return _internalToExternalValuesMap.get(paginationType);
+			});
 
 		return collectionDisplayPageElementDefinition;
 	}
