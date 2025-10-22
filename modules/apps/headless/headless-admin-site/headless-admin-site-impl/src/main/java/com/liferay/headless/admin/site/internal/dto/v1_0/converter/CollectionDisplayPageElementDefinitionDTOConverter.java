@@ -17,7 +17,6 @@ import com.liferay.headless.admin.site.dto.v1_0.CollectionReference;
 import com.liferay.headless.admin.site.dto.v1_0.EmptyCollectionConfig;
 import com.liferay.headless.admin.site.dto.v1_0.ListStyle;
 import com.liferay.headless.admin.site.dto.v1_0.ListStyleDefinition;
-import com.liferay.headless.admin.site.dto.v1_0.PageElementDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.Scope;
 import com.liferay.headless.admin.site.dto.v1_0.TemplateListStyle;
 import com.liferay.headless.admin.site.internal.dto.v1_0.util.CollectionDisplayListStyleUtil;
@@ -350,9 +349,6 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 		CollectionItemExternalReference collectionItemExternalReference =
 			new CollectionItemExternalReference();
 
-		collectionItemExternalReference.setCollectionType(
-			CollectionReference.CollectionType.COLLECTION);
-
 		if (assetListEntry != null) {
 			collectionItemExternalReference.setExternalReferenceCode(
 				assetListEntry::getExternalReferenceCode);
@@ -460,9 +456,6 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 
 		ListStyle listStyle = new ListStyle();
 
-		listStyle.setCollectionDisplayListStyleType(
-			CollectionDisplayListStyle.CollectionDisplayListStyleType.
-				LIST_STYLE);
 		listStyle.setListStyleDefinition(
 			() -> _toListStyleDefinition(collectionStyledLayoutStructureItem));
 		listStyle.setListStyleType(
@@ -542,8 +535,6 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 
 		TemplateListStyle templateListStyle = new TemplateListStyle();
 
-		templateListStyle.setCollectionDisplayListStyleType(
-			CollectionDisplayListStyle.CollectionDisplayListStyleType.TEMPLATE);
 		templateListStyle.setListItemStyleClassName(
 			collectionStyledLayoutStructureItem::getListItemStyle);
 		templateListStyle.setListStyleClassName(
