@@ -465,7 +465,7 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 		return true;
 	}
 
-	private CollectionDisplayListStyle _toListStyle(
+	private ListStyle _toListStyle(
 		CollectionStyledLayoutStructureItem
 			collectionStyledLayoutStructureItem) {
 
@@ -547,7 +547,7 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 		};
 	}
 
-	private CollectionDisplayListStyle _toTemplateListStyle(
+	private TemplateListStyle _toTemplateListStyle(
 		CollectionStyledLayoutStructureItem
 			collectionStyledLayoutStructureItem) {
 
