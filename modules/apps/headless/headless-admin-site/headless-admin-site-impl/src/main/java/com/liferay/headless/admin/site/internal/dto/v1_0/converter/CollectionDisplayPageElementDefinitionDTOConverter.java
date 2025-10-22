@@ -8,19 +8,19 @@ package com.liferay.headless.admin.site.internal.dto.v1_0.converter;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.headless.admin.site.dto.v1_0.ClassNameReference;
+import com.liferay.headless.admin.site.dto.v1_0.CollectionDisplayListStyle;
+import com.liferay.headless.admin.site.dto.v1_0.CollectionDisplayPageElementDefinition;
+import com.liferay.headless.admin.site.dto.v1_0.CollectionDisplayViewport;
+import com.liferay.headless.admin.site.dto.v1_0.CollectionDisplayViewportDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.CollectionItemExternalReference;
-import com.liferay.headless.admin.site.dto.v1_0.CollectionListStyle;
-import com.liferay.headless.admin.site.dto.v1_0.CollectionPageElementDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.CollectionReference;
-import com.liferay.headless.admin.site.dto.v1_0.CollectionViewport;
-import com.liferay.headless.admin.site.dto.v1_0.CollectionViewportDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.EmptyCollectionConfig;
 import com.liferay.headless.admin.site.dto.v1_0.ListStyle;
 import com.liferay.headless.admin.site.dto.v1_0.ListStyleDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.PageElementDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.Scope;
 import com.liferay.headless.admin.site.dto.v1_0.TemplateListStyle;
-import com.liferay.headless.admin.site.internal.dto.v1_0.util.CollectionListStyleUtil;
+import com.liferay.headless.admin.site.internal.dto.v1_0.util.CollectionDisplayListStyleUtil;
 import com.liferay.headless.admin.site.internal.dto.v1_0.util.CompanyUtil;
 import com.liferay.headless.admin.site.internal.dto.v1_0.util.ScopeUtil;
 import com.liferay.headless.admin.site.internal.dto.v1_0.util.ViewportIdUtil;
@@ -60,17 +60,18 @@ import org.osgi.service.component.annotations.Reference;
 	property = "dto.class.name=com.liferay.layout.util.structure.CollectionStyledLayoutStructureItem",
 	service = DTOConverter.class
 )
-public class CollectionPageElementDefinitionDTOConverter
+public class CollectionDisplayPageElementDefinitionDTOConverter
 	implements DTOConverter
-		<CollectionStyledLayoutStructureItem, CollectionPageElementDefinition> {
+		<CollectionStyledLayoutStructureItem,
+		 CollectionDisplayPageElementDefinition> {
 
 	@Override
 	public String getContentType() {
-		return CollectionPageElementDefinition.class.getSimpleName();
+		return CollectionDisplayPageElementDefinition.class.getSimpleName();
 	}
 
 	@Override
-	public CollectionPageElementDefinition toDTO(
+	public CollectionDisplayPageElementDefinition toDTO(
 			DTOConverterContext dtoConverterContext,
 			CollectionStyledLayoutStructureItem
 				collectionStyledLayoutStructureItem)
@@ -83,17 +84,17 @@ public class CollectionPageElementDefinitionDTOConverter
 			throw new UnsupportedOperationException();
 		}
 
-		return new CollectionPageElementDefinition() {
+		return new CollectionDisplayPageElementDefinition() {
 			{
-				setCollectionListStyle(
-					() -> _toCollectionListStyle(
+				setCollectionDisplayListStyle(
+					() -> _toCollectionDisplayListStyle(
+						collectionStyledLayoutStructureItem));
+				setCollectionDisplayViewports(
+					() -> _toCollectionDisplayViewports(
 						collectionStyledLayoutStructureItem));
 				setCollectionReference(
 					() -> _toCollectionReference(
 						collectionStyledLayoutStructureItem, scopeGroupId));
-				setCollectionViewports(
-					() -> _toCollectionViewports(
-						collectionStyledLayoutStructureItem));
 				setDisplayAllItems(
 					collectionStyledLayoutStructureItem::isDisplayAllItems);
 				setDisplayAllPages(
@@ -117,7 +118,7 @@ public class CollectionPageElementDefinitionDTOConverter
 					() -> _internalToExternalValuesMap.get(
 						collectionStyledLayoutStructureItem.
 							getPaginationType()));
-				setType(PageElementDefinition.Type.COLLECTION);
+				setType(PageElementDefinition.Type.COLLECTION_DISPLAY);
 			}
 		};
 	}
@@ -152,6 +153,194 @@ public class CollectionPageElementDefinitionDTOConverter
 					});
 			}
 		};
+	}
+
+	private CollectionDisplayListStyle _toCollectionDisplayListStyle(
+		CollectionStyledLayoutStructureItem
+			collectionStyledLayoutStructureItem) {
+
+		if (Validator.isNull(
+				collectionStyledLayoutStructureItem.getListStyle())) {
+
+			return null;
+		}
+
+		String listStyle = CollectionDisplayListStyleUtil.toExternalValue(
+			collectionStyledLayoutStructureItem.getListStyle());
+
+		if (Validator.isNull(listStyle)) {
+			return _toTemplateListStyle(collectionStyledLayoutStructureItem);
+		}
+
+		return _toListStyle(collectionStyledLayoutStructureItem);
+	}
+
+	private CollectionDisplayViewport _toCollectionDisplayViewport(
+		CollectionDisplayViewport.Id collectionDisplayViewportId,
+		Map<String, JSONObject>
+			collectionDisplayViewportConfigurationJSONObjects) {
+
+		String viewportId = ViewportIdUtil.toInternalValue(
+			collectionDisplayViewportId.getValue());
+
+		if (!collectionDisplayViewportConfigurationJSONObjects.containsKey(
+				viewportId)) {
+
+			return null;
+		}
+
+		JSONObject collectionDisplayViewportConfigurationJSONObject =
+			collectionDisplayViewportConfigurationJSONObjects.get(viewportId);
+
+		if (JSONUtil.isEmpty(
+				collectionDisplayViewportConfigurationJSONObject)) {
+
+			return null;
+		}
+
+		CollectionDisplayViewportDefinition
+			collectionDisplayViewportDefinition =
+				_toCollectionDisplayViewportDefinition(
+					collectionDisplayViewportConfigurationJSONObject);
+
+		if (collectionDisplayViewportDefinition == null) {
+			return null;
+		}
+
+		CollectionDisplayViewport collectionDisplayViewport =
+			new CollectionDisplayViewport();
+
+		collectionDisplayViewport.setCollectionDisplayViewportDefinition(
+			() -> collectionDisplayViewportDefinition);
+		collectionDisplayViewport.setId(() -> collectionDisplayViewportId);
+
+		return collectionDisplayViewport;
+	}
+
+	private CollectionDisplayViewportDefinition
+		_toCollectionDisplayViewportDefinition(
+			JSONObject collectionDisplayViewportConfigurationJSONObject) {
+
+		String align =
+			collectionDisplayViewportConfigurationJSONObject.getString(
+				"align", null);
+		String flexWrap =
+			collectionDisplayViewportConfigurationJSONObject.getString(
+				"flexWrap", null);
+		String numberOfColumns =
+			collectionDisplayViewportConfigurationJSONObject.getString(
+				"numberOfColumns", null);
+
+		if ((align == null) && (flexWrap == null) &&
+			(numberOfColumns == null) &&
+			JSONUtil.isEmpty(
+				collectionDisplayViewportConfigurationJSONObject.getJSONObject(
+					"styles"))) {
+
+			return null;
+		}
+
+		CollectionDisplayViewportDefinition
+			collectionDisplayViewportDefinition =
+				new CollectionDisplayViewportDefinition();
+
+		collectionDisplayViewportDefinition.setAlign(
+			() -> {
+				if (Validator.isNull(align)) {
+					return null;
+				}
+
+				return CollectionDisplayViewportDefinition.Align.create(
+					AlignConverter.convertToExternalValue(align));
+			});
+		collectionDisplayViewportDefinition.setFlexWrap(
+			() -> {
+				if (Validator.isNull(flexWrap)) {
+					return null;
+				}
+
+				return CollectionDisplayViewportDefinition.FlexWrap.create(
+					FlexWrapConverter.convertToExternalValue(flexWrap));
+			});
+		collectionDisplayViewportDefinition.setHidden(
+			() -> _toHidden(
+				collectionDisplayViewportConfigurationJSONObject.getJSONObject(
+					"styles")));
+		collectionDisplayViewportDefinition.setJustify(
+			() -> {
+				String justify =
+					collectionDisplayViewportConfigurationJSONObject.getString(
+						"justify", null);
+
+				if (Validator.isNull(justify)) {
+					return null;
+				}
+
+				return CollectionDisplayViewportDefinition.Justify.create(
+					JustifyConverter.convertToExternalValue(justify));
+			});
+		collectionDisplayViewportDefinition.setNumberOfColumns(
+			() -> {
+				if (!collectionDisplayViewportConfigurationJSONObject.has(
+						"numberOfColumns")) {
+
+					return null;
+				}
+
+				return collectionDisplayViewportConfigurationJSONObject.getInt(
+					"numberOfColumns");
+			});
+
+		return collectionDisplayViewportDefinition;
+	}
+
+	private CollectionDisplayViewport[] _toCollectionDisplayViewports(
+		CollectionStyledLayoutStructureItem
+			collectionStyledLayoutStructureItem) {
+
+		Map<String, JSONObject>
+			collectionDisplayViewportConfigurationJSONObjects =
+				collectionStyledLayoutStructureItem.
+					getViewportConfigurationJSONObjects();
+
+		if (MapUtil.isEmpty(
+				collectionDisplayViewportConfigurationJSONObjects)) {
+
+			return null;
+		}
+
+		List<CollectionDisplayViewport> collectionDisplayViewports =
+			new ArrayList<>() {
+				{
+					CollectionDisplayViewport collectionDisplayViewport =
+						_toCollectionDisplayViewport(
+							CollectionDisplayViewport.Id.LANDSCAPE_MOBILE,
+							collectionDisplayViewportConfigurationJSONObjects);
+
+					if (collectionDisplayViewport != null) {
+						add(collectionDisplayViewport);
+					}
+
+					collectionDisplayViewport = _toCollectionDisplayViewport(
+						CollectionDisplayViewport.Id.PORTRAIT_MOBILE,
+						collectionDisplayViewportConfigurationJSONObjects);
+
+					if (collectionDisplayViewport != null) {
+						add(collectionDisplayViewport);
+					}
+
+					collectionDisplayViewport = _toCollectionDisplayViewport(
+						CollectionDisplayViewport.Id.TABLET,
+						collectionDisplayViewportConfigurationJSONObjects);
+
+					if (collectionDisplayViewport != null) {
+						add(collectionDisplayViewport);
+					}
+				}
+			};
+
+		return collectionDisplayViewports.toArray(
+			new CollectionDisplayViewport[0]);
 	}
 
 	private CollectionItemExternalReference _toCollectionItemExternalReference(
@@ -203,26 +392,6 @@ public class CollectionPageElementDefinitionDTOConverter
 		return collectionItemExternalReference;
 	}
 
-	private CollectionListStyle _toCollectionListStyle(
-		CollectionStyledLayoutStructureItem
-			collectionStyledLayoutStructureItem) {
-
-		if (Validator.isNull(
-				collectionStyledLayoutStructureItem.getListStyle())) {
-
-			return null;
-		}
-
-		String listStyle = CollectionListStyleUtil.toExternalValue(
-			collectionStyledLayoutStructureItem.getListStyle());
-
-		if (Validator.isNull(listStyle)) {
-			return _toTemplateListStyle(collectionStyledLayoutStructureItem);
-		}
-
-		return _toListStyle(collectionStyledLayoutStructureItem);
-	}
-
 	private CollectionReference _toCollectionReference(
 		CollectionStyledLayoutStructureItem collectionStyledLayoutStructureItem,
 		long scopeGroupId) {
@@ -263,159 +432,6 @@ public class CollectionPageElementDefinitionDTOConverter
 		};
 	}
 
-	private CollectionViewport _toCollectionViewport(
-		CollectionViewport.Id collectionViewportId,
-		Map<String, JSONObject> collectionViewportConfigurationJSONObjects) {
-
-		String viewportId = ViewportIdUtil.toInternalValue(
-			collectionViewportId.getValue());
-
-		if (!collectionViewportConfigurationJSONObjects.containsKey(
-				viewportId)) {
-
-			return null;
-		}
-
-		JSONObject collectionViewportConfigurationJSONObject =
-			collectionViewportConfigurationJSONObjects.get(viewportId);
-
-		if (JSONUtil.isEmpty(collectionViewportConfigurationJSONObject)) {
-			return null;
-		}
-
-		CollectionViewportDefinition collectionViewportDefinition =
-			_toCollectionViewportDefinition(
-				collectionViewportConfigurationJSONObject);
-
-		if (collectionViewportDefinition == null) {
-			return null;
-		}
-
-		CollectionViewport collectionViewport = new CollectionViewport();
-
-		collectionViewport.setCollectionViewportDefinition(
-			() -> collectionViewportDefinition);
-		collectionViewport.setId(() -> collectionViewportId);
-
-		return collectionViewport;
-	}
-
-	private CollectionViewportDefinition _toCollectionViewportDefinition(
-		JSONObject collectionViewportConfigurationJSONObject) {
-
-		String align = collectionViewportConfigurationJSONObject.getString(
-			"align", null);
-		String flexWrap = collectionViewportConfigurationJSONObject.getString(
-			"flexWrap", null);
-		String numberOfColumns =
-			collectionViewportConfigurationJSONObject.getString(
-				"numberOfColumns", null);
-
-		if ((align == null) && (flexWrap == null) &&
-			(numberOfColumns == null) &&
-			JSONUtil.isEmpty(
-				collectionViewportConfigurationJSONObject.getJSONObject(
-					"styles"))) {
-
-			return null;
-		}
-
-		CollectionViewportDefinition collectionViewportDefinition =
-			new CollectionViewportDefinition();
-
-		collectionViewportDefinition.setAlign(
-			() -> {
-				if (Validator.isNull(align)) {
-					return null;
-				}
-
-				return CollectionViewportDefinition.Align.create(
-					AlignConverter.convertToExternalValue(align));
-			});
-		collectionViewportDefinition.setFlexWrap(
-			() -> {
-				if (Validator.isNull(flexWrap)) {
-					return null;
-				}
-
-				return CollectionViewportDefinition.FlexWrap.create(
-					FlexWrapConverter.convertToExternalValue(flexWrap));
-			});
-		collectionViewportDefinition.setHidden(
-			() -> _toHidden(
-				collectionViewportConfigurationJSONObject.getJSONObject(
-					"styles")));
-		collectionViewportDefinition.setJustify(
-			() -> {
-				String justify =
-					collectionViewportConfigurationJSONObject.getString(
-						"justify", null);
-
-				if (Validator.isNull(justify)) {
-					return null;
-				}
-
-				return CollectionViewportDefinition.Justify.create(
-					JustifyConverter.convertToExternalValue(justify));
-			});
-		collectionViewportDefinition.setNumberOfColumns(
-			() -> {
-				if (!collectionViewportConfigurationJSONObject.has(
-						"numberOfColumns")) {
-
-					return null;
-				}
-
-				return collectionViewportConfigurationJSONObject.getInt(
-					"numberOfColumns");
-			});
-
-		return collectionViewportDefinition;
-	}
-
-	private CollectionViewport[] _toCollectionViewports(
-		CollectionStyledLayoutStructureItem
-			collectionStyledLayoutStructureItem) {
-
-		Map<String, JSONObject> collectionViewportConfigurationJSONObjects =
-			collectionStyledLayoutStructureItem.
-				getViewportConfigurationJSONObjects();
-
-		if (MapUtil.isEmpty(collectionViewportConfigurationJSONObjects)) {
-			return null;
-		}
-
-		List<CollectionViewport> collectionViewports = new ArrayList<>() {
-			{
-				CollectionViewport collectionViewport = _toCollectionViewport(
-					CollectionViewport.Id.LANDSCAPE_MOBILE,
-					collectionViewportConfigurationJSONObjects);
-
-				if (collectionViewport != null) {
-					add(collectionViewport);
-				}
-
-				collectionViewport = _toCollectionViewport(
-					CollectionViewport.Id.PORTRAIT_MOBILE,
-					collectionViewportConfigurationJSONObjects);
-
-				if (collectionViewport != null) {
-					add(collectionViewport);
-				}
-
-				collectionViewport = _toCollectionViewport(
-					CollectionViewport.Id.TABLET,
-					collectionViewportConfigurationJSONObjects);
-
-				if (collectionViewport != null) {
-					add(collectionViewport);
-				}
-			}
-		};
-
-		return collectionViewports.toArray(new CollectionViewport[0]);
-	}
-
 	private EmptyCollectionConfig _toEmptyCollectionOption(
 		CollectionStyledLayoutStructureItem
 			collectionStyledLayoutStructureItem) {
@@ -449,19 +465,20 @@ public class CollectionPageElementDefinitionDTOConverter
 		return true;
 	}
 
-	private CollectionListStyle _toListStyle(
+	private CollectionDisplayListStyle _toListStyle(
 		CollectionStyledLayoutStructureItem
 			collectionStyledLayoutStructureItem) {
 
 		ListStyle listStyle = new ListStyle();
 
-		listStyle.setCollectionListStyleType(
-			CollectionListStyle.CollectionListStyleType.LIST_STYLE);
+		listStyle.setCollectionDisplayListStyleType(
+			CollectionDisplayListStyle.CollectionDisplayListStyleType.
+				LIST_STYLE);
 		listStyle.setListStyleDefinition(
 			() -> _toListStyleDefinition(collectionStyledLayoutStructureItem));
 		listStyle.setListStyleType(
 			() -> ListStyle.ListStyleType.create(
-				CollectionListStyleUtil.toExternalValue(
+				CollectionDisplayListStyleUtil.toExternalValue(
 					collectionStyledLayoutStructureItem.getListStyle())));
 
 		return listStyle;
@@ -530,14 +547,14 @@ public class CollectionPageElementDefinitionDTOConverter
 		};
 	}
 
-	private CollectionListStyle _toTemplateListStyle(
+	private CollectionDisplayListStyle _toTemplateListStyle(
 		CollectionStyledLayoutStructureItem
 			collectionStyledLayoutStructureItem) {
 
 		TemplateListStyle templateListStyle = new TemplateListStyle();
 
-		templateListStyle.setCollectionListStyleType(
-			CollectionListStyle.CollectionListStyleType.TEMPLATE);
+		templateListStyle.setCollectionDisplayListStyleType(
+			CollectionDisplayListStyle.CollectionDisplayListStyleType.TEMPLATE);
 		templateListStyle.setListItemStyleClassName(
 			collectionStyledLayoutStructureItem::getListItemStyle);
 		templateListStyle.setListStyleClassName(
@@ -549,16 +566,16 @@ public class CollectionPageElementDefinitionDTOConverter
 	}
 
 	private static final Map
-		<String, CollectionPageElementDefinition.PaginationType>
+		<String, CollectionDisplayPageElementDefinition.PaginationType>
 			_internalToExternalValuesMap = HashMapBuilder.put(
 				CollectionPaginationUtil.PAGINATION_TYPE_NONE,
-				CollectionPageElementDefinition.PaginationType.NONE
+				CollectionDisplayPageElementDefinition.PaginationType.NONE
 			).put(
 				CollectionPaginationUtil.PAGINATION_TYPE_NUMERIC,
-				CollectionPageElementDefinition.PaginationType.NUMERIC
+				CollectionDisplayPageElementDefinition.PaginationType.NUMERIC
 			).put(
 				CollectionPaginationUtil.PAGINATION_TYPE_SIMPLE,
-				CollectionPageElementDefinition.PaginationType.SIMPLE
+				CollectionDisplayPageElementDefinition.PaginationType.SIMPLE
 			).build();
 
 	@Reference
