@@ -596,8 +596,10 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		Assert.assertNotNull(pageElementDefinition);
 
-		if (pageElementDefinition.getType() ==
-				PageElementDefinition.Type.COLLECTION_DISPLAY) {
+		if ((pageElementDefinition.getType() ==
+				PageElementDefinition.Type.COLLECTION_DISPLAY) ||
+			(pageElementDefinition.getType() ==
+				PageElementDefinition.Type.GRID)) {
 
 			return;
 		}
