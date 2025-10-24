@@ -72,6 +72,7 @@ import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -552,6 +553,40 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				_getModulePageElements(externalReferenceCode, 12)));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getGridPageElementDefaultValues(externalReferenceCode));
+	}
+
+	@Override
+	protected void assertValid(PageElement pageElement) throws Exception {
+		super.assertValid(pageElement);
+
+		PageElementDefinition pageElementDefinition =
+			pageElement.getPageElementDefinition();
+
+		Assert.assertNotNull(pageElementDefinition);
+
+		if (pageElementDefinition.getType() !=
+				PageElementDefinition.Type.COLLECTION_DISPLAY) {
+
+			return;
+		}
+
+		PageElement[] collectionDisplayChildPageElements =
+			pageElement.getPageElements();
+
+		Assert.assertEquals(
+			Arrays.toString(collectionDisplayChildPageElements), 1,
+			collectionDisplayChildPageElements.length);
+		Assert.assertNotNull(
+			collectionDisplayChildPageElements[0].getExternalReferenceCode());
+
+		PageElementDefinition collectionItemPageElementDefinition =
+			collectionDisplayChildPageElements[0].getPageElementDefinition();
+
+		Assert.assertNotNull(collectionItemPageElementDefinition);
+
+		Assert.assertEquals(
+			PageElementDefinition.Type.COLLECTION_ITEM,
+			collectionItemPageElementDefinition.getType());
 	}
 
 	@Override
