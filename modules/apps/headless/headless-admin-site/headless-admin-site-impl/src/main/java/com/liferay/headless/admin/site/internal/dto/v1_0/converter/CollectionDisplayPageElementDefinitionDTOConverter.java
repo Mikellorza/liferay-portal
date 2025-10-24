@@ -372,18 +372,6 @@ public class CollectionDisplayPageElementDefinitionDTOConverter
 		CollectionItemExternalReference collectionItemExternalReference =
 			new CollectionItemExternalReference();
 
-		collectionItemExternalReference.setCollectionConfiguration(
-			() -> {
-				JSONObject configJSONObject = jsonObject.getJSONObject(
-					"config");
-
-				if (JSONUtil.isEmpty(configJSONObject)) {
-					return null;
-				}
-
-				return JSONUtil.toStringMap(configJSONObject);
-			});
-
 		if (assetListEntry != null) {
 			collectionItemExternalReference.setExternalReferenceCode(
 				assetListEntry::getExternalReferenceCode);
