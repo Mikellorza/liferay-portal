@@ -64,21 +64,6 @@ public class CollectionItemExternalReferenceSerDes {
 			sb.append("\"");
 		}
 
-		if (collectionItemExternalReference.getCollectionConfiguration() !=
-				null) {
-
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"collectionConfiguration\": ");
-
-			sb.append(
-				_toJSON(
-					collectionItemExternalReference.
-						getCollectionConfiguration()));
-		}
-
 		if (collectionItemExternalReference.getExternalReferenceCode() !=
 				null) {
 
@@ -154,19 +139,6 @@ public class CollectionItemExternalReferenceSerDes {
 				String.valueOf(collectionItemExternalReference.getClassName()));
 		}
 
-		if (collectionItemExternalReference.getCollectionConfiguration() ==
-				null) {
-
-			map.put("collectionConfiguration", null);
-		}
-		else {
-			map.put(
-				"collectionConfiguration",
-				String.valueOf(
-					collectionItemExternalReference.
-						getCollectionConfiguration()));
-		}
-
 		if (collectionItemExternalReference.getExternalReferenceCode() ==
 				null) {
 
@@ -221,11 +193,6 @@ public class CollectionItemExternalReferenceSerDes {
 				return false;
 			}
 			else if (Objects.equals(
-						jsonParserFieldName, "collectionConfiguration")) {
-
-				return true;
-			}
-			else if (Objects.equals(
 						jsonParserFieldName, "externalReferenceCode")) {
 
 				return false;
@@ -249,14 +216,6 @@ public class CollectionItemExternalReferenceSerDes {
 				if (jsonParserFieldValue != null) {
 					collectionItemExternalReference.setClassName(
 						(String)jsonParserFieldValue);
-				}
-			}
-			else if (Objects.equals(
-						jsonParserFieldName, "collectionConfiguration")) {
-
-				if (jsonParserFieldValue != null) {
-					collectionItemExternalReference.setCollectionConfiguration(
-						(Map<String, String>)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(

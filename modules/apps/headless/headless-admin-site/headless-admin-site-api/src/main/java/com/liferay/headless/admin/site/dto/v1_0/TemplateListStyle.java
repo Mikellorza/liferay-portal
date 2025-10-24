@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  */
 @Generated("")
 @GraphQLName(
-	description = "The page collection's template list style.",
+	description = "The collection display's template list style.",
 	value = "TemplateListStyle"
 )
 @JsonFilter("Liferay.Vulcan")

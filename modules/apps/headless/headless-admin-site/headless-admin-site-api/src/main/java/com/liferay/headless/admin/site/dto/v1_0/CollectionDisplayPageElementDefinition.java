@@ -336,7 +336,7 @@ public class CollectionDisplayPageElementDefinition
 	private Supplier<EmptyCollectionConfig> _emptyCollectionConfigSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "Specifies if the collection is hidden to the user."
+		description = "Specifies if the collection display is hidden to the user."
 	)
 	public Boolean getHidden() {
 		if (_hiddenSupplier != null) {
@@ -372,7 +372,7 @@ public class CollectionDisplayPageElementDefinition
 	}
 
 	@GraphQLField(
-		description = "Specifies if the collection is hidden to the user."
+		description = "Specifies if the collection display is hidden to the user."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Boolean hidden;

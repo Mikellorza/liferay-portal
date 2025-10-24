@@ -95,55 +95,6 @@ public class CollectionItemExternalReference
 	@JsonIgnore
 	private Supplier<String> _classNameSupplier;
 
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The configuration keys and values of the collection."
-	)
-	@Valid
-	public Map<String, String> getCollectionConfiguration() {
-		if (_collectionConfigurationSupplier != null) {
-			collectionConfiguration = _collectionConfigurationSupplier.get();
-
-			_collectionConfigurationSupplier = null;
-		}
-
-		return collectionConfiguration;
-	}
-
-	public void setCollectionConfiguration(
-		Map<String, String> collectionConfiguration) {
-
-		this.collectionConfiguration = collectionConfiguration;
-
-		_collectionConfigurationSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setCollectionConfiguration(
-		UnsafeSupplier<Map<String, String>, Exception>
-			collectionConfigurationUnsafeSupplier) {
-
-		_collectionConfigurationSupplier = () -> {
-			try {
-				return collectionConfigurationUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(
-		description = "The configuration keys and values of the collection."
-	)
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Map<String, String> collectionConfiguration;
-
-	@JsonIgnore
-	private Supplier<Map<String, String>> _collectionConfigurationSupplier;
-
 	@io.swagger.v3.oas.annotations.media.Schema
 	public String getExternalReferenceCode() {
 		if (_externalReferenceCodeSupplier != null) {
@@ -268,19 +219,6 @@ public class CollectionItemExternalReference
 			sb.append(_escape(className));
 
 			sb.append("\"");
-		}
-
-		Map<String, String> collectionConfiguration =
-			getCollectionConfiguration();
-
-		if (collectionConfiguration != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"collectionConfiguration\": ");
-
-			sb.append(_toJSON(collectionConfiguration));
 		}
 
 		String externalReferenceCode = getExternalReferenceCode();
