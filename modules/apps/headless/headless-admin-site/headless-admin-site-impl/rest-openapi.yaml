@@ -130,7 +130,7 @@ components:
                         hidden:
                             # @review
                             description:
-                                Specifies if the collection is hidden to the user.
+                                Specifies if the collection display is hidden to the user.
                             type: boolean
                         name:
                             # @review
@@ -2990,7 +2990,7 @@ components:
                                 The collection display page element's template key.
                             type: string
             description:
-                The page collection's template list style.
+                The collection display's template list style.
             type: object
         URLActionExecutionResult:
             # @review
