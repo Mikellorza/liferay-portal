@@ -505,13 +505,25 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				CollectionDisplayPageElementDefinition.PaginationType.SIMPLE,
 				externalReferenceCode));
 
+		PageElement collectionDisplayPageElement =
+			_testPutSitePageSpecificationPageExperiencePageElement(
+				_getCollectionDisplayPageElement(
+					null, null, null, true, true, null, true,
+					RandomTestUtil.randomString(), RandomTestUtil.randomInt(),
+					RandomTestUtil.randomInt(), RandomTestUtil.randomInt(),
+					CollectionDisplayPageElementDefinition.PaginationType.
+						SIMPLE,
+					externalReferenceCode));
+
+		PageElement[] collectionDisplayChildPageElements =
+			collectionDisplayPageElement.getPageElements();
+
 		_testPutSitePageSpecificationPageExperiencePageElement(
-			_getCollectionDisplayPageElement(
-				null, null, null, true, true, null, true,
-				RandomTestUtil.randomString(), RandomTestUtil.randomInt(),
-				RandomTestUtil.randomInt(), RandomTestUtil.randomInt(),
-				CollectionDisplayPageElementDefinition.PaginationType.SIMPLE,
-				externalReferenceCode));
+			_getCollectionItemPageElement(
+				collectionDisplayChildPageElements[0].
+					getExternalReferenceCode(),
+				collectionDisplayPageElement.getExternalReferenceCode(),
+				new PageElement[0]));
 
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
@@ -624,6 +636,29 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				widgetInstanceExternalReferenceCode, widgetInstanceId,
 				AssetPublisherPortletKeys.ASSET_PUBLISHER,
 				new WidgetPermission[0]));
+	}
+
+	@Override
+	protected void assertEquals(
+		PageElement pageElement1, PageElement pageElement2) {
+
+		super.assertEquals(pageElement1, pageElement2);
+
+		PageElementDefinition pageElementDefinition =
+			pageElement1.getPageElementDefinition();
+
+		Assert.assertNotNull(pageElementDefinition);
+
+		if (pageElementDefinition.getType() ==
+				PageElementDefinition.Type.COLLECTION_DISPLAY) {
+
+			return;
+		}
+
+		Assert.assertTrue(
+			Objects.deepEquals(
+				pageElement1.getPageElements(),
+				pageElement2.getPageElements()));
 	}
 
 	@Override
