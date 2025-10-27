@@ -21,7 +21,8 @@ import com.liferay.headless.admin.site.dto.v1_0.PageElementDefinition;
 import com.liferay.headless.admin.site.dto.v1_0.Scope;
 import com.liferay.headless.admin.site.dto.v1_0.TemplateListStyle;
 import com.liferay.headless.admin.site.internal.dto.v1_0.util.CollectionListStyleUtil;
-import com.liferay.headless.admin.site.internal.dto.v1_0.util.ScopeUtil;
+import com.liferay.headless.admin.site.internal.dto.v1_0.util.CompanyUtil;
+import com.liferay.headless.admin.site.internal.dto.v1_0.util.ItemScopeUtil;
 import com.liferay.headless.admin.site.internal.dto.v1_0.util.ViewportIdUtil;
 import com.liferay.item.selector.criteria.InfoListItemSelectorReturnType;
 import com.liferay.layout.converter.AlignConverter;
@@ -36,7 +37,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -122,22 +122,6 @@ public class CollectionPageElementDefinitionDTOConverter
 		};
 	}
 
-	private Long _getCompanyId(long scopeGroupId) {
-		Group group = _groupLocalService.fetchGroup(scopeGroupId);
-
-		if (group != null) {
-			return group.getCompanyId();
-		}
-
-		Long companyId = CompanyThreadLocal.getCompanyId();
-
-		if (companyId != null) {
-			return companyId;
-		}
-
-		return null;
-	}
-
 	private Scope _getItemScope(
 			Long companyId, String itemExternalReferenceCode, long scopeGroupId)
 		throws PortalException {
@@ -184,7 +168,7 @@ public class CollectionPageElementDefinitionDTOConverter
 			collectionItemExternalReference.setExternalReferenceCode(
 				assetListEntry::getExternalReferenceCode);
 			collectionItemExternalReference.setScope(
-				() -> ScopeUtil.getScope(
+				() -> ItemScopeUtil.getItemScope(
 					assetListEntry.getGroupId(), scopeGroupId));
 
 			return collectionItemExternalReference;
@@ -201,7 +185,7 @@ public class CollectionPageElementDefinitionDTOConverter
 			() -> externalReferenceCode);
 		collectionItemExternalReference.setScope(
 			() -> _getItemScope(
-				_getCompanyId(scopeGroupId),
+				CompanyUtil.getCompanyId(scopeGroupId),
 				jsonObject.getString("scopeExternalReferenceCode"),
 				scopeGroupId));
 
