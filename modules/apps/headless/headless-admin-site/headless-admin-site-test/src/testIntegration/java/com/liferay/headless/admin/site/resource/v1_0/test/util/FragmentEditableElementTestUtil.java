@@ -118,6 +118,7 @@ public class FragmentEditableElementTestUtil {
 	private static TextInlineFragmentValue _getTextInlineFragmentValue() {
 		return new TextInlineFragmentValue() {
 			{
+				setDefaultValue(RandomTestUtil::randomString);
 				setFragmentInlineValue(
 					() -> {
 						FragmentInlineValue fragmentInlineValue =
@@ -144,6 +145,7 @@ public class FragmentEditableElementTestUtil {
 
 		return new TextMappedFragmentValue() {
 			{
+				setDefaultValue(RandomTestUtil::randomString);
 				setFragmentMappedValue(
 					() -> new FragmentMappedValue() {
 						{
