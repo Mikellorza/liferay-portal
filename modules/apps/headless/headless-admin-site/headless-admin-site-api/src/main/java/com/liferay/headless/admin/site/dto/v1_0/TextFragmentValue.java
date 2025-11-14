@@ -71,6 +71,49 @@ public abstract class TextFragmentValue implements Serializable {
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "The default value of a text fragment value."
+	)
+	public String getDefaultValue() {
+		if (_defaultValueSupplier != null) {
+			defaultValue = _defaultValueSupplier.get();
+
+			_defaultValueSupplier = null;
+		}
+
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+
+		_defaultValueSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setDefaultValue(
+		UnsafeSupplier<String, Exception> defaultValueUnsafeSupplier) {
+
+		_defaultValueSupplier = () -> {
+			try {
+				return defaultValueUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(description = "The default value of a text fragment value.")
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String defaultValue;
+
+	@JsonIgnore
+	private Supplier<String> _defaultValueSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "Whether the value is set inline or mapped."
 	)
 	@JsonGetter("type")
@@ -150,6 +193,22 @@ public abstract class TextFragmentValue implements Serializable {
 		StringBundler sb = new StringBundler();
 
 		sb.append("{");
+
+		String defaultValue = getDefaultValue();
+
+		if (defaultValue != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"defaultValue\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(defaultValue));
+
+			sb.append("\"");
+		}
 
 		Type type = getType();
 

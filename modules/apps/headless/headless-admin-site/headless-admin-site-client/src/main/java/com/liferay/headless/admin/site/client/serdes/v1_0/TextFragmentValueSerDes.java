@@ -82,6 +82,15 @@ public class TextFragmentValueSerDes {
 
 		Map<String, String> map = new TreeMap<>();
 
+		if (textFragmentValue.getDefaultValue() == null) {
+			map.put("defaultValue", null);
+		}
+		else {
+			map.put(
+				"defaultValue",
+				String.valueOf(textFragmentValue.getDefaultValue()));
+		}
+
 		if (textFragmentValue.getType() == null) {
 			map.put("type", null);
 		}
@@ -107,7 +116,10 @@ public class TextFragmentValueSerDes {
 
 		@Override
 		protected boolean parseMaps(String jsonParserFieldName) {
-			if (Objects.equals(jsonParserFieldName, "type")) {
+			if (Objects.equals(jsonParserFieldName, "defaultValue")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "type")) {
 				return false;
 			}
 
@@ -144,7 +156,13 @@ public class TextFragmentValueSerDes {
 			TextFragmentValue textFragmentValue, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "type")) {
+			if (Objects.equals(jsonParserFieldName, "defaultValue")) {
+				if (jsonParserFieldValue != null) {
+					textFragmentValue.setDefaultValue(
+						(String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "type")) {
 				if (jsonParserFieldValue != null) {
 					textFragmentValue.setType(
 						TextFragmentValue.Type.create(
