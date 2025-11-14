@@ -252,10 +252,13 @@ public class FragmentEditableElementUtil {
 			return null;
 		}
 
+		String defaultValue = jsonObject.getString("defaultValue");
+
 		if (FragmentMappingUtil.isMappedValue(jsonObject)) {
 			TextMappedFragmentValue textMappedFragmentValue =
 				new TextMappedFragmentValue();
 
+			textMappedFragmentValue.setDefaultValue(defaultValue);
 			textMappedFragmentValue.setFragmentMappedValue(
 				() -> FragmentMappingUtil.toFragmentMappedValue(
 					companyId, infoItemServiceRegistry, jsonObject,
@@ -276,6 +279,7 @@ public class FragmentEditableElementUtil {
 		TextInlineFragmentValue textInlineFragmentValue =
 			new TextInlineFragmentValue();
 
+		textInlineFragmentValue.setDefaultValue(defaultValue);
 		textInlineFragmentValue.setFragmentInlineValue(
 			() -> {
 				FragmentInlineValue fragmentInlineValue =
