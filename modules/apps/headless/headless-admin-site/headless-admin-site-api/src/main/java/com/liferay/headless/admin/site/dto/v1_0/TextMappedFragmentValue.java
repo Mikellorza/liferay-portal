@@ -140,6 +140,22 @@ public class TextMappedFragmentValue
 			sb.append(String.valueOf(fragmentMappedValue));
 		}
 
+		String defaultValue = getDefaultValue();
+
+		if (defaultValue != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"defaultValue\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(defaultValue));
+
+			sb.append("\"");
+		}
+
 		Type type = getType();
 
 		if (type != null) {

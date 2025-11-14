@@ -60,6 +60,20 @@ public class TextInlineFragmentValueSerDes {
 					textInlineFragmentValue.getFragmentInlineValue()));
 		}
 
+		if (textInlineFragmentValue.getDefaultValue() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"defaultValue\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(textInlineFragmentValue.getDefaultValue()));
+
+			sb.append("\"");
+		}
+
 		if (textInlineFragmentValue.getType() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -103,6 +117,15 @@ public class TextInlineFragmentValueSerDes {
 					textInlineFragmentValue.getFragmentInlineValue()));
 		}
 
+		if (textInlineFragmentValue.getDefaultValue() == null) {
+			map.put("defaultValue", null);
+		}
+		else {
+			map.put(
+				"defaultValue",
+				String.valueOf(textInlineFragmentValue.getDefaultValue()));
+		}
+
 		if (textInlineFragmentValue.getType() == null) {
 			map.put("type", null);
 		}
@@ -131,6 +154,9 @@ public class TextInlineFragmentValueSerDes {
 			if (Objects.equals(jsonParserFieldName, "fragmentInlineValue")) {
 				return false;
 			}
+			else if (Objects.equals(jsonParserFieldName, "defaultValue")) {
+				return false;
+			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {
 				return false;
 			}
@@ -148,6 +174,12 @@ public class TextInlineFragmentValueSerDes {
 					textInlineFragmentValue.setFragmentInlineValue(
 						FragmentInlineValueSerDes.toDTO(
 							(String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "defaultValue")) {
+				if (jsonParserFieldValue != null) {
+					textInlineFragmentValue.setDefaultValue(
+						(String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {
