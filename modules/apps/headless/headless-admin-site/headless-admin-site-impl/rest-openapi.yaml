@@ -3637,6 +3637,11 @@ components:
                     Mapped: "#/components/schemas/TextMappedFragmentValue"
                 propertyName: type
             properties:
+                defaultValue:
+                    # @review
+                    description:
+                        The default value of a text fragment value.
+                    type: string
                 type:
                     # @review
                     description:
