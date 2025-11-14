@@ -155,6 +155,8 @@ public class FragmentEditableElementUtil {
 			return jsonObject;
 		}
 
+		jsonObject.put("defaultValue", textFragmentValue.getDefaultValue());
+
 		if (textFragmentValue instanceof TextInlineFragmentValue) {
 			TextInlineFragmentValue textInlineFragmentValue =
 				(TextInlineFragmentValue)textFragmentValue;
@@ -192,9 +194,11 @@ public class FragmentEditableElementUtil {
 			return jsonObject;
 		}
 
-		return FragmentMappingUtil.getFragmentMappedValueJSONObject(
-			companyId, infoItemServiceRegistry,
-			fragmentMappedValue.getMapping(), scopeGroupId);
+		return JSONUtil.merge(
+			jsonObject,
+			FragmentMappingUtil.getFragmentMappedValueJSONObject(
+				companyId, infoItemServiceRegistry,
+				fragmentMappedValue.getMapping(), scopeGroupId));
 	}
 
 	private static List<FragmentEditableElement>
