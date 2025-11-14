@@ -151,7 +151,23 @@ public class FragmentEditableElementUtil {
 			return jsonObject;
 		}
 
-		jsonObject.put("defaultValue", textFragmentValue.getDefaultValue());
+		jsonObject.put(
+			"config",
+			() -> {
+				JSONObject configJSONObject = FragmentLinkUtil.toJSONObject(
+					companyId,
+					textFragmentEditableElementValue.getFragmentLink(),
+					infoItemServiceRegistry, scopeGroupId);
+
+				if (JSONUtil.isEmpty(configJSONObject)) {
+					return null;
+				}
+
+				return configJSONObject.put("mapperType", "link");
+			}
+		).put(
+			"defaultValue", textFragmentValue.getDefaultValue()
+		);
 
 		if (textFragmentValue instanceof TextInlineFragmentValue) {
 			TextInlineFragmentValue textInlineFragmentValue =
