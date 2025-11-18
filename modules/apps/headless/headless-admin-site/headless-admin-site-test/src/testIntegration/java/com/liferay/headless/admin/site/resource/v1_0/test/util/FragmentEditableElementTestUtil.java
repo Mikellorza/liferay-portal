@@ -30,11 +30,11 @@ public class FragmentEditableElementTestUtil {
 
 	public static FragmentEditableElement[] getFragmentEditableElements(
 		FragmentEditableElementValueFragmentLink.Prefix prefix,
+		FragmentEditableValue.Type fragmentEditableValueType,
 		FragmentLink fragmentLink,
 		FragmentMappedValueItemContextReference.ContextSource contextSource,
 		FragmentMappedValueItemReference.Type
-			fragmentMappedValueItemReferenceType,
-		FragmentEditableValue.Type fragmentEditableValueType) {
+			fragmentMappedValueItemReferenceType) {
 
 		return new FragmentEditableElement[] {
 			new FragmentEditableElement() {

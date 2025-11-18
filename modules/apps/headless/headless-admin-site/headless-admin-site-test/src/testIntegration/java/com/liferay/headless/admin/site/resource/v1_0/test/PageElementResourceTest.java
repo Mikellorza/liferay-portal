@@ -2642,36 +2642,36 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.getFragmentEditableElements(
 				FragmentEditableElementValueFragmentLink.Prefix.EMAIL,
+				FragmentEditableValue.Type.INLINE,
 				_getFragmentLink(
 					JournalArticle.class.getName(),
 					journalArticle.getExternalReferenceCode(),
 					"JournalArticle_title", null),
-				null, null, FragmentEditableValue.Type.INLINE));
+				null, null));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.getFragmentEditableElements(
-				null, null,
+				null, FragmentEditableValue.Type.MAPPED, null,
 				FragmentMappedValueItemContextReference.ContextSource.
 					COLLECTION_ITEM,
-				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
-				FragmentEditableValue.Type.MAPPED));
+				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE));
 
 		Layout layout = LayoutTestUtil.addTypeContentLayout(testGroup);
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.getFragmentEditableElements(
 				FragmentEditableElementValueFragmentLink.Prefix.PHONE,
+				FragmentEditableValue.Type.MAPPED,
 				_getFragmentLink(
 					Layout.class.getName(), layout.getExternalReferenceCode(),
 					null, null),
 				FragmentMappedValueItemContextReference.ContextSource.
 					DISPLAY_PAGE_ITEM,
-				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
-				FragmentEditableValue.Type.MAPPED));
+				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.getFragmentEditableElements(
-				null,
+				null, FragmentEditableValue.Type.MAPPED,
 				_getFragmentLink(
 					null, null, null,
 					HashMapBuilder.put(
@@ -2680,8 +2680,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 						LocaleUtil.US.toString(), "https://www.liferay.com"
 					).build()),
 				null,
-				FragmentMappedValueItemReference.Type.ITEM_EXTERNAL_REFERENCE,
-				FragmentEditableValue.Type.MAPPED));
+				FragmentMappedValueItemReference.Type.ITEM_EXTERNAL_REFERENCE));
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.getFragmentEditableElements(
 				null, null, null, null, null));
