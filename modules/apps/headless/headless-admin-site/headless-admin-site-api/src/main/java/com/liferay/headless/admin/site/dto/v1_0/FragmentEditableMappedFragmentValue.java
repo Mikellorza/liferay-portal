@@ -36,21 +36,22 @@ import java.util.function.Supplier;
  */
 @Generated("")
 @GraphQLName(
-	description = "A mapped value of a fragment text element.",
-	value = "TextMappedFragmentValue"
+	description = "A mapped value of a fragment editable element.",
+	value = "FragmentEditableMappedFragmentValue"
 )
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "TextMappedFragmentValue")
-public class TextMappedFragmentValue
-	extends TextFragmentValue implements Serializable {
+@XmlRootElement(name = "FragmentEditableMappedFragmentValue")
+public class FragmentEditableMappedFragmentValue
+	extends FragmentEditableValue implements Serializable {
 
-	public static TextMappedFragmentValue toDTO(String json) {
-		return ObjectMapperUtil.readValue(TextMappedFragmentValue.class, json);
+	public static FragmentEditableMappedFragmentValue toDTO(String json) {
+		return ObjectMapperUtil.readValue(
+			FragmentEditableMappedFragmentValue.class, json);
 	}
 
-	public static TextMappedFragmentValue unsafeToDTO(String json) {
+	public static FragmentEditableMappedFragmentValue unsafeToDTO(String json) {
 		return ObjectMapperUtil.unsafeReadValue(
-			TextMappedFragmentValue.class, json);
+			FragmentEditableMappedFragmentValue.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema(
@@ -106,14 +107,16 @@ public class TextMappedFragmentValue
 			return true;
 		}
 
-		if (!(object instanceof TextMappedFragmentValue)) {
+		if (!(object instanceof FragmentEditableMappedFragmentValue)) {
 			return false;
 		}
 
-		TextMappedFragmentValue textMappedFragmentValue =
-			(TextMappedFragmentValue)object;
+		FragmentEditableMappedFragmentValue
+			fragmentEditableMappedFragmentValue =
+				(FragmentEditableMappedFragmentValue)object;
 
-		return Objects.equals(toString(), textMappedFragmentValue.toString());
+		return Objects.equals(
+			toString(), fragmentEditableMappedFragmentValue.toString());
 	}
 
 	@Override
@@ -140,22 +143,6 @@ public class TextMappedFragmentValue
 			sb.append(String.valueOf(fragmentMappedValue));
 		}
 
-		String defaultValue = getDefaultValue();
-
-		if (defaultValue != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"defaultValue\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(defaultValue));
-
-			sb.append("\"");
-		}
-
 		Type type = getType();
 
 		if (type != null) {
@@ -177,7 +164,7 @@ public class TextMappedFragmentValue
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.TextMappedFragmentValue",
+		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.FragmentEditableMappedFragmentValue",
 		name = "x-class-name"
 	)
 	public String xClassName;

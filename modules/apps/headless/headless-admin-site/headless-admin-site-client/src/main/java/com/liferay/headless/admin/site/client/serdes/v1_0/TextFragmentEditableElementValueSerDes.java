@@ -65,16 +65,19 @@ public class TextFragmentEditableElementValueSerDes {
 						getFragmentEditableElementValueFragmentLink()));
 		}
 
-		if (textFragmentEditableElementValue.getTextFragmentValue() != null) {
+		if (textFragmentEditableElementValue.getTextFragmentEditableValue() !=
+				null) {
+
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"textFragmentValue\": ");
+			sb.append("\"textFragmentEditableValue\": ");
 
 			sb.append(
 				String.valueOf(
-					textFragmentEditableElementValue.getTextFragmentValue()));
+					textFragmentEditableElementValue.
+						getTextFragmentEditableValue()));
 		}
 
 		if (textFragmentEditableElementValue.getType() != null) {
@@ -124,14 +127,17 @@ public class TextFragmentEditableElementValueSerDes {
 						getFragmentEditableElementValueFragmentLink()));
 		}
 
-		if (textFragmentEditableElementValue.getTextFragmentValue() == null) {
-			map.put("textFragmentValue", null);
+		if (textFragmentEditableElementValue.getTextFragmentEditableValue() ==
+				null) {
+
+			map.put("textFragmentEditableValue", null);
 		}
 		else {
 			map.put(
-				"textFragmentValue",
+				"textFragmentEditableValue",
 				String.valueOf(
-					textFragmentEditableElementValue.getTextFragmentValue()));
+					textFragmentEditableElementValue.
+						getTextFragmentEditableValue()));
 		}
 
 		if (textFragmentEditableElementValue.getType() == null) {
@@ -167,7 +173,9 @@ public class TextFragmentEditableElementValueSerDes {
 
 				return false;
 			}
-			else if (Objects.equals(jsonParserFieldName, "textFragmentValue")) {
+			else if (Objects.equals(
+						jsonParserFieldName, "textFragmentEditableValue")) {
+
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {
@@ -193,11 +201,14 @@ public class TextFragmentEditableElementValueSerDes {
 								toDTO((String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "textFragmentValue")) {
+			else if (Objects.equals(
+						jsonParserFieldName, "textFragmentEditableValue")) {
+
 				if (jsonParserFieldValue != null) {
-					textFragmentEditableElementValue.setTextFragmentValue(
-						TextFragmentValueSerDes.toDTO(
-							(String)jsonParserFieldValue));
+					textFragmentEditableElementValue.
+						setTextFragmentEditableValue(
+							TextFragmentEditableValueSerDes.toDTO(
+								(String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {

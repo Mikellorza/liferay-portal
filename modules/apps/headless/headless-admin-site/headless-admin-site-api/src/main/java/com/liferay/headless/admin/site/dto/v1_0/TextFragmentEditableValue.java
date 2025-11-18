@@ -10,8 +10,6 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.liferay.petra.function.UnsafeSupplier;
@@ -42,32 +40,20 @@ import java.util.function.Supplier;
 @Generated("")
 @GraphQLName(
 	description = "The value of a fragment text element.",
-	value = "TextFragmentValue"
+	value = "TextFragmentEditableValue"
 )
 @JsonFilter("Liferay.Vulcan")
-@JsonSubTypes(
-	{
-		@JsonSubTypes.Type(
-			name = "Inline", value = TextInlineFragmentValue.class
-		),
-		@JsonSubTypes.Type(
-			name = "Mapped", value = TextMappedFragmentValue.class
-		)
-	}
-)
-@JsonTypeInfo(
-	include = JsonTypeInfo.As.PROPERTY, property = "type",
-	use = JsonTypeInfo.Id.NAME, visible = true
-)
-@XmlRootElement(name = "TextFragmentValue")
-public abstract class TextFragmentValue implements Serializable {
+@XmlRootElement(name = "TextFragmentEditableValue")
+public class TextFragmentEditableValue implements Serializable {
 
-	public static TextFragmentValue toDTO(String json) {
-		return ObjectMapperUtil.readValue(TextFragmentValue.class, json);
+	public static TextFragmentEditableValue toDTO(String json) {
+		return ObjectMapperUtil.readValue(
+			TextFragmentEditableValue.class, json);
 	}
 
-	public static TextFragmentValue unsafeToDTO(String json) {
-		return ObjectMapperUtil.unsafeReadValue(TextFragmentValue.class, json);
+	public static TextFragmentEditableValue unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(
+			TextFragmentEditableValue.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema(
@@ -112,6 +98,51 @@ public abstract class TextFragmentValue implements Serializable {
 
 	@JsonIgnore
 	private Supplier<String> _defaultValueSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema
+	@Valid
+	public FragmentEditableValue getFragmentEditableValue() {
+		if (_fragmentEditableValueSupplier != null) {
+			fragmentEditableValue = _fragmentEditableValueSupplier.get();
+
+			_fragmentEditableValueSupplier = null;
+		}
+
+		return fragmentEditableValue;
+	}
+
+	public void setFragmentEditableValue(
+		FragmentEditableValue fragmentEditableValue) {
+
+		this.fragmentEditableValue = fragmentEditableValue;
+
+		_fragmentEditableValueSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setFragmentEditableValue(
+		UnsafeSupplier<FragmentEditableValue, Exception>
+			fragmentEditableValueUnsafeSupplier) {
+
+		_fragmentEditableValueSupplier = () -> {
+			try {
+				return fragmentEditableValueUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected FragmentEditableValue fragmentEditableValue;
+
+	@JsonIgnore
+	private Supplier<FragmentEditableValue> _fragmentEditableValueSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "Whether the value is set inline or mapped."
@@ -173,13 +204,14 @@ public abstract class TextFragmentValue implements Serializable {
 			return true;
 		}
 
-		if (!(object instanceof TextFragmentValue)) {
+		if (!(object instanceof TextFragmentEditableValue)) {
 			return false;
 		}
 
-		TextFragmentValue textFragmentValue = (TextFragmentValue)object;
+		TextFragmentEditableValue textFragmentEditableValue =
+			(TextFragmentEditableValue)object;
 
-		return Objects.equals(toString(), textFragmentValue.toString());
+		return Objects.equals(toString(), textFragmentEditableValue.toString());
 	}
 
 	@Override
@@ -210,6 +242,19 @@ public abstract class TextFragmentValue implements Serializable {
 			sb.append("\"");
 		}
 
+		FragmentEditableValue fragmentEditableValue =
+			getFragmentEditableValue();
+
+		if (fragmentEditableValue != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"fragmentEditableValue\": ");
+
+			sb.append(String.valueOf(fragmentEditableValue));
+		}
+
 		Type type = getType();
 
 		if (type != null) {
@@ -231,7 +276,7 @@ public abstract class TextFragmentValue implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.TextFragmentValue",
+		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.TextFragmentEditableValue",
 		name = "x-class-name"
 	)
 	public String xClassName;

@@ -6,7 +6,7 @@
 package com.liferay.headless.admin.site.client.dto.v1_0;
 
 import com.liferay.headless.admin.site.client.function.UnsafeSupplier;
-import com.liferay.headless.admin.site.client.serdes.v1_0.TextFragmentValueSerDes;
+import com.liferay.headless.admin.site.client.serdes.v1_0.TextFragmentEditableValueSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,10 +19,10 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public abstract class TextFragmentValue implements Cloneable, Serializable {
+public class TextFragmentEditableValue implements Cloneable, Serializable {
 
-	public static TextFragmentValue toDTO(String json) {
-		return TextFragmentValueSerDes.toDTO(json);
+	public static TextFragmentEditableValue toDTO(String json) {
+		return TextFragmentEditableValueSerDes.toDTO(json);
 	}
 
 	public String getDefaultValue() {
@@ -45,6 +45,30 @@ public abstract class TextFragmentValue implements Cloneable, Serializable {
 	}
 
 	protected String defaultValue;
+
+	public FragmentEditableValue getFragmentEditableValue() {
+		return fragmentEditableValue;
+	}
+
+	public void setFragmentEditableValue(
+		FragmentEditableValue fragmentEditableValue) {
+
+		this.fragmentEditableValue = fragmentEditableValue;
+	}
+
+	public void setFragmentEditableValue(
+		UnsafeSupplier<FragmentEditableValue, Exception>
+			fragmentEditableValueUnsafeSupplier) {
+
+		try {
+			fragmentEditableValue = fragmentEditableValueUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected FragmentEditableValue fragmentEditableValue;
 
 	public Type getType() {
 		return type;
@@ -74,8 +98,8 @@ public abstract class TextFragmentValue implements Cloneable, Serializable {
 	protected Type type;
 
 	@Override
-	public TextFragmentValue clone() throws CloneNotSupportedException {
-		return (TextFragmentValue)super.clone();
+	public TextFragmentEditableValue clone() throws CloneNotSupportedException {
+		return (TextFragmentEditableValue)super.clone();
 	}
 
 	@Override
@@ -84,13 +108,14 @@ public abstract class TextFragmentValue implements Cloneable, Serializable {
 			return true;
 		}
 
-		if (!(object instanceof TextFragmentValue)) {
+		if (!(object instanceof TextFragmentEditableValue)) {
 			return false;
 		}
 
-		TextFragmentValue textFragmentValue = (TextFragmentValue)object;
+		TextFragmentEditableValue textFragmentEditableValue =
+			(TextFragmentEditableValue)object;
 
-		return Objects.equals(toString(), textFragmentValue.toString());
+		return Objects.equals(toString(), textFragmentEditableValue.toString());
 	}
 
 	@Override
@@ -101,7 +126,7 @@ public abstract class TextFragmentValue implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return TextFragmentValueSerDes.toJSON(this);
+		return TextFragmentEditableValueSerDes.toJSON(this);
 	}
 
 	public static enum Type {

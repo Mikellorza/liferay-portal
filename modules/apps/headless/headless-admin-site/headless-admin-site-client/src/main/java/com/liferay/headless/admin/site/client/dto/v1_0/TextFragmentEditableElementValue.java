@@ -56,27 +56,30 @@ public class TextFragmentEditableElementValue
 	protected FragmentEditableElementValueFragmentLink
 		fragmentEditableElementValueFragmentLink;
 
-	public TextFragmentValue getTextFragmentValue() {
-		return textFragmentValue;
+	public TextFragmentEditableValue getTextFragmentEditableValue() {
+		return textFragmentEditableValue;
 	}
 
-	public void setTextFragmentValue(TextFragmentValue textFragmentValue) {
-		this.textFragmentValue = textFragmentValue;
+	public void setTextFragmentEditableValue(
+		TextFragmentEditableValue textFragmentEditableValue) {
+
+		this.textFragmentEditableValue = textFragmentEditableValue;
 	}
 
-	public void setTextFragmentValue(
-		UnsafeSupplier<TextFragmentValue, Exception>
-			textFragmentValueUnsafeSupplier) {
+	public void setTextFragmentEditableValue(
+		UnsafeSupplier<TextFragmentEditableValue, Exception>
+			textFragmentEditableValueUnsafeSupplier) {
 
 		try {
-			textFragmentValue = textFragmentValueUnsafeSupplier.get();
+			textFragmentEditableValue =
+				textFragmentEditableValueUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected TextFragmentValue textFragmentValue;
+	protected TextFragmentEditableValue textFragmentEditableValue;
 
 	@Override
 	public TextFragmentEditableElementValue clone()

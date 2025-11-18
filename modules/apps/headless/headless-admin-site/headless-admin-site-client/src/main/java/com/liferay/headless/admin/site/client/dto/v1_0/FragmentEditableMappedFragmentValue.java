@@ -6,7 +6,7 @@
 package com.liferay.headless.admin.site.client.dto.v1_0;
 
 import com.liferay.headless.admin.site.client.function.UnsafeSupplier;
-import com.liferay.headless.admin.site.client.serdes.v1_0.TextMappedFragmentValueSerDes;
+import com.liferay.headless.admin.site.client.serdes.v1_0.FragmentEditableMappedFragmentValueSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,11 +19,11 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class TextMappedFragmentValue
-	extends TextFragmentValue implements Cloneable, Serializable {
+public class FragmentEditableMappedFragmentValue
+	extends FragmentEditableValue implements Cloneable, Serializable {
 
-	public static TextMappedFragmentValue toDTO(String json) {
-		return TextMappedFragmentValueSerDes.toDTO(json);
+	public static FragmentEditableMappedFragmentValue toDTO(String json) {
+		return FragmentEditableMappedFragmentValueSerDes.toDTO(json);
 	}
 
 	public FragmentMappedValue getFragmentMappedValue() {
@@ -51,8 +51,10 @@ public class TextMappedFragmentValue
 	protected FragmentMappedValue fragmentMappedValue;
 
 	@Override
-	public TextMappedFragmentValue clone() throws CloneNotSupportedException {
-		return (TextMappedFragmentValue)super.clone();
+	public FragmentEditableMappedFragmentValue clone()
+		throws CloneNotSupportedException {
+
+		return (FragmentEditableMappedFragmentValue)super.clone();
 	}
 
 	@Override
@@ -61,14 +63,16 @@ public class TextMappedFragmentValue
 			return true;
 		}
 
-		if (!(object instanceof TextMappedFragmentValue)) {
+		if (!(object instanceof FragmentEditableMappedFragmentValue)) {
 			return false;
 		}
 
-		TextMappedFragmentValue textMappedFragmentValue =
-			(TextMappedFragmentValue)object;
+		FragmentEditableMappedFragmentValue
+			fragmentEditableMappedFragmentValue =
+				(FragmentEditableMappedFragmentValue)object;
 
-		return Objects.equals(toString(), textMappedFragmentValue.toString());
+		return Objects.equals(
+			toString(), fragmentEditableMappedFragmentValue.toString());
 	}
 
 	@Override
@@ -79,7 +83,7 @@ public class TextMappedFragmentValue
 	}
 
 	public String toString() {
-		return TextMappedFragmentValueSerDes.toJSON(this);
+		return FragmentEditableMappedFragmentValueSerDes.toJSON(this);
 	}
 
 }

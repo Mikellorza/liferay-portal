@@ -6,7 +6,7 @@
 package com.liferay.headless.admin.site.client.dto.v1_0;
 
 import com.liferay.headless.admin.site.client.function.UnsafeSupplier;
-import com.liferay.headless.admin.site.client.serdes.v1_0.TextInlineFragmentValueSerDes;
+import com.liferay.headless.admin.site.client.serdes.v1_0.FragmentEditableInlineFragmentValueSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,11 +19,11 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class TextInlineFragmentValue
-	extends TextFragmentValue implements Cloneable, Serializable {
+public class FragmentEditableInlineFragmentValue
+	extends FragmentEditableValue implements Cloneable, Serializable {
 
-	public static TextInlineFragmentValue toDTO(String json) {
-		return TextInlineFragmentValueSerDes.toDTO(json);
+	public static FragmentEditableInlineFragmentValue toDTO(String json) {
+		return FragmentEditableInlineFragmentValueSerDes.toDTO(json);
 	}
 
 	public FragmentInlineValue getFragmentInlineValue() {
@@ -51,8 +51,10 @@ public class TextInlineFragmentValue
 	protected FragmentInlineValue fragmentInlineValue;
 
 	@Override
-	public TextInlineFragmentValue clone() throws CloneNotSupportedException {
-		return (TextInlineFragmentValue)super.clone();
+	public FragmentEditableInlineFragmentValue clone()
+		throws CloneNotSupportedException {
+
+		return (FragmentEditableInlineFragmentValue)super.clone();
 	}
 
 	@Override
@@ -61,14 +63,16 @@ public class TextInlineFragmentValue
 			return true;
 		}
 
-		if (!(object instanceof TextInlineFragmentValue)) {
+		if (!(object instanceof FragmentEditableInlineFragmentValue)) {
 			return false;
 		}
 
-		TextInlineFragmentValue textInlineFragmentValue =
-			(TextInlineFragmentValue)object;
+		FragmentEditableInlineFragmentValue
+			fragmentEditableInlineFragmentValue =
+				(FragmentEditableInlineFragmentValue)object;
 
-		return Objects.equals(toString(), textInlineFragmentValue.toString());
+		return Objects.equals(
+			toString(), fragmentEditableInlineFragmentValue.toString());
 	}
 
 	@Override
@@ -79,7 +83,7 @@ public class TextInlineFragmentValue
 	}
 
 	public String toString() {
-		return TextInlineFragmentValueSerDes.toJSON(this);
+		return FragmentEditableInlineFragmentValueSerDes.toJSON(this);
 	}
 
 }

@@ -5,7 +5,7 @@
 
 package com.liferay.headless.admin.site.client.serdes.v1_0;
 
-import com.liferay.headless.admin.site.client.dto.v1_0.TextInlineFragmentValue;
+import com.liferay.headless.admin.site.client.dto.v1_0.FragmentEditableMappedFragmentValue;
 import com.liferay.headless.admin.site.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -21,26 +21,29 @@ import java.util.TreeMap;
  * @generated
  */
 @Generated("")
-public class TextInlineFragmentValueSerDes {
+public class FragmentEditableMappedFragmentValueSerDes {
 
-	public static TextInlineFragmentValue toDTO(String json) {
-		TextInlineFragmentValueJSONParser textInlineFragmentValueJSONParser =
-			new TextInlineFragmentValueJSONParser();
+	public static FragmentEditableMappedFragmentValue toDTO(String json) {
+		FragmentEditableMappedFragmentValueJSONParser
+			fragmentEditableMappedFragmentValueJSONParser =
+				new FragmentEditableMappedFragmentValueJSONParser();
 
-		return textInlineFragmentValueJSONParser.parseToDTO(json);
+		return fragmentEditableMappedFragmentValueJSONParser.parseToDTO(json);
 	}
 
-	public static TextInlineFragmentValue[] toDTOs(String json) {
-		TextInlineFragmentValueJSONParser textInlineFragmentValueJSONParser =
-			new TextInlineFragmentValueJSONParser();
+	public static FragmentEditableMappedFragmentValue[] toDTOs(String json) {
+		FragmentEditableMappedFragmentValueJSONParser
+			fragmentEditableMappedFragmentValueJSONParser =
+				new FragmentEditableMappedFragmentValueJSONParser();
 
-		return textInlineFragmentValueJSONParser.parseToDTOs(json);
+		return fragmentEditableMappedFragmentValueJSONParser.parseToDTOs(json);
 	}
 
 	public static String toJSON(
-		TextInlineFragmentValue textInlineFragmentValue) {
+		FragmentEditableMappedFragmentValue
+			fragmentEditableMappedFragmentValue) {
 
-		if (textInlineFragmentValue == null) {
+		if (fragmentEditableMappedFragmentValue == null) {
 			return "null";
 		}
 
@@ -48,33 +51,22 @@ public class TextInlineFragmentValueSerDes {
 
 		sb.append("{");
 
-		if (textInlineFragmentValue.getFragmentInlineValue() != null) {
+		if (fragmentEditableMappedFragmentValue.getFragmentMappedValue() !=
+				null) {
+
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"fragmentInlineValue\": ");
+			sb.append("\"fragmentMappedValue\": ");
 
 			sb.append(
 				String.valueOf(
-					textInlineFragmentValue.getFragmentInlineValue()));
+					fragmentEditableMappedFragmentValue.
+						getFragmentMappedValue()));
 		}
 
-		if (textInlineFragmentValue.getDefaultValue() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"defaultValue\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(textInlineFragmentValue.getDefaultValue()));
-
-			sb.append("\"");
-		}
-
-		if (textInlineFragmentValue.getType() != null) {
+		if (fragmentEditableMappedFragmentValue.getType() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -82,7 +74,7 @@ public class TextInlineFragmentValueSerDes {
 			sb.append("\"type\": ");
 
 			sb.append("\"");
-			sb.append(textInlineFragmentValue.getType());
+			sb.append(fragmentEditableMappedFragmentValue.getType());
 			sb.append("\"");
 		}
 
@@ -92,69 +84,66 @@ public class TextInlineFragmentValueSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		TextInlineFragmentValueJSONParser textInlineFragmentValueJSONParser =
-			new TextInlineFragmentValueJSONParser();
+		FragmentEditableMappedFragmentValueJSONParser
+			fragmentEditableMappedFragmentValueJSONParser =
+				new FragmentEditableMappedFragmentValueJSONParser();
 
-		return textInlineFragmentValueJSONParser.parseToMap(json);
+		return fragmentEditableMappedFragmentValueJSONParser.parseToMap(json);
 	}
 
 	public static Map<String, String> toMap(
-		TextInlineFragmentValue textInlineFragmentValue) {
+		FragmentEditableMappedFragmentValue
+			fragmentEditableMappedFragmentValue) {
 
-		if (textInlineFragmentValue == null) {
+		if (fragmentEditableMappedFragmentValue == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (textInlineFragmentValue.getFragmentInlineValue() == null) {
-			map.put("fragmentInlineValue", null);
+		if (fragmentEditableMappedFragmentValue.getFragmentMappedValue() ==
+				null) {
+
+			map.put("fragmentMappedValue", null);
 		}
 		else {
 			map.put(
-				"fragmentInlineValue",
+				"fragmentMappedValue",
 				String.valueOf(
-					textInlineFragmentValue.getFragmentInlineValue()));
+					fragmentEditableMappedFragmentValue.
+						getFragmentMappedValue()));
 		}
 
-		if (textInlineFragmentValue.getDefaultValue() == null) {
-			map.put("defaultValue", null);
-		}
-		else {
-			map.put(
-				"defaultValue",
-				String.valueOf(textInlineFragmentValue.getDefaultValue()));
-		}
-
-		if (textInlineFragmentValue.getType() == null) {
+		if (fragmentEditableMappedFragmentValue.getType() == null) {
 			map.put("type", null);
 		}
 		else {
-			map.put("type", String.valueOf(textInlineFragmentValue.getType()));
+			map.put(
+				"type",
+				String.valueOf(fragmentEditableMappedFragmentValue.getType()));
 		}
 
 		return map;
 	}
 
-	public static class TextInlineFragmentValueJSONParser
-		extends BaseJSONParser<TextInlineFragmentValue> {
+	public static class FragmentEditableMappedFragmentValueJSONParser
+		extends BaseJSONParser<FragmentEditableMappedFragmentValue> {
 
 		@Override
-		protected TextInlineFragmentValue createDTO() {
-			return new TextInlineFragmentValue();
+		protected FragmentEditableMappedFragmentValue createDTO() {
+			return new FragmentEditableMappedFragmentValue();
 		}
 
 		@Override
-		protected TextInlineFragmentValue[] createDTOArray(int size) {
-			return new TextInlineFragmentValue[size];
+		protected FragmentEditableMappedFragmentValue[] createDTOArray(
+			int size) {
+
+			return new FragmentEditableMappedFragmentValue[size];
 		}
 
 		@Override
 		protected boolean parseMaps(String jsonParserFieldName) {
-			if (Objects.equals(jsonParserFieldName, "fragmentInlineValue")) {
-				return false;
-			}
-			else if (Objects.equals(jsonParserFieldName, "defaultValue")) {
+			if (Objects.equals(jsonParserFieldName, "fragmentMappedValue")) {
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {
@@ -166,26 +155,21 @@ public class TextInlineFragmentValueSerDes {
 
 		@Override
 		protected void setField(
-			TextInlineFragmentValue textInlineFragmentValue,
+			FragmentEditableMappedFragmentValue
+				fragmentEditableMappedFragmentValue,
 			String jsonParserFieldName, Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "fragmentInlineValue")) {
+			if (Objects.equals(jsonParserFieldName, "fragmentMappedValue")) {
 				if (jsonParserFieldValue != null) {
-					textInlineFragmentValue.setFragmentInlineValue(
-						FragmentInlineValueSerDes.toDTO(
+					fragmentEditableMappedFragmentValue.setFragmentMappedValue(
+						FragmentMappedValueSerDes.toDTO(
 							(String)jsonParserFieldValue));
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "defaultValue")) {
-				if (jsonParserFieldValue != null) {
-					textInlineFragmentValue.setDefaultValue(
-						(String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "type")) {
 				if (jsonParserFieldValue != null) {
-					textInlineFragmentValue.setType(
-						TextInlineFragmentValue.Type.create(
+					fragmentEditableMappedFragmentValue.setType(
+						FragmentEditableMappedFragmentValue.Type.create(
 							(String)jsonParserFieldValue));
 				}
 			}

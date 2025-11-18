@@ -28,30 +28,30 @@ public class BackgroundImageFragmentEditableElementValue
 		return BackgroundImageFragmentEditableElementValueSerDes.toDTO(json);
 	}
 
-	public FragmentImage getBackgroundFragmentImage() {
-		return backgroundFragmentImage;
+	public FragmentEditableValue getBackgroundFragmentEditableValue() {
+		return backgroundFragmentEditableValue;
 	}
 
-	public void setBackgroundFragmentImage(
-		FragmentImage backgroundFragmentImage) {
+	public void setBackgroundFragmentEditableValue(
+		FragmentEditableValue backgroundFragmentEditableValue) {
 
-		this.backgroundFragmentImage = backgroundFragmentImage;
+		this.backgroundFragmentEditableValue = backgroundFragmentEditableValue;
 	}
 
-	public void setBackgroundFragmentImage(
-		UnsafeSupplier<FragmentImage, Exception>
-			backgroundFragmentImageUnsafeSupplier) {
+	public void setBackgroundFragmentEditableValue(
+		UnsafeSupplier<FragmentEditableValue, Exception>
+			backgroundFragmentEditableValueUnsafeSupplier) {
 
 		try {
-			backgroundFragmentImage =
-				backgroundFragmentImageUnsafeSupplier.get();
+			backgroundFragmentEditableValue =
+				backgroundFragmentEditableValueUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected FragmentImage backgroundFragmentImage;
+	protected FragmentEditableValue backgroundFragmentEditableValue;
 
 	@Override
 	public BackgroundImageFragmentEditableElementValue clone()

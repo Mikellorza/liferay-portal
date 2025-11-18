@@ -5,9 +5,14 @@
 
 package com.liferay.headless.admin.site.dto.v1_0;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringBundler;
@@ -36,53 +41,73 @@ import java.util.function.Supplier;
  */
 @Generated("")
 @GraphQLName(
-	description = "An inline value of a fragment text element.",
-	value = "TextInlineFragmentValue"
+	description = "The value of a fragment editable element.",
+	value = "FragmentEditableValue"
 )
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "TextInlineFragmentValue")
-public class TextInlineFragmentValue
-	extends TextFragmentValue implements Serializable {
+@JsonSubTypes(
+	{
+		@JsonSubTypes.Type(
+			name = "Inline", value = FragmentEditableInlineFragmentValue.class
+		),
+		@JsonSubTypes.Type(
+			name = "Mapped", value = FragmentEditableMappedFragmentValue.class
+		)
+	}
+)
+@JsonTypeInfo(
+	include = JsonTypeInfo.As.PROPERTY, property = "type",
+	use = JsonTypeInfo.Id.NAME, visible = true
+)
+@XmlRootElement(name = "FragmentEditableValue")
+public abstract class FragmentEditableValue implements Serializable {
 
-	public static TextInlineFragmentValue toDTO(String json) {
-		return ObjectMapperUtil.readValue(TextInlineFragmentValue.class, json);
+	public static FragmentEditableValue toDTO(String json) {
+		return ObjectMapperUtil.readValue(FragmentEditableValue.class, json);
 	}
 
-	public static TextInlineFragmentValue unsafeToDTO(String json) {
+	public static FragmentEditableValue unsafeToDTO(String json) {
 		return ObjectMapperUtil.unsafeReadValue(
-			TextInlineFragmentValue.class, json);
+			FragmentEditableValue.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The fragment inline value."
+		description = "Whether the value is set inline or mapped."
 	)
+	@JsonGetter("type")
 	@Valid
-	public FragmentInlineValue getFragmentInlineValue() {
-		if (_fragmentInlineValueSupplier != null) {
-			fragmentInlineValue = _fragmentInlineValueSupplier.get();
+	public Type getType() {
+		if (_typeSupplier != null) {
+			type = _typeSupplier.get();
 
-			_fragmentInlineValueSupplier = null;
+			_typeSupplier = null;
 		}
 
-		return fragmentInlineValue;
-	}
-
-	public void setFragmentInlineValue(
-		FragmentInlineValue fragmentInlineValue) {
-
-		this.fragmentInlineValue = fragmentInlineValue;
-
-		_fragmentInlineValueSupplier = null;
+		return type;
 	}
 
 	@JsonIgnore
-	public void setFragmentInlineValue(
-		UnsafeSupplier<FragmentInlineValue, Exception>
-			fragmentInlineValueUnsafeSupplier) {
+	public String getTypeAsString() {
+		Type type = getType();
 
-		_fragmentInlineValueSupplier = () -> {
+		if (type == null) {
+			return null;
+		}
+
+		return type.toString();
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+
+		_typeSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setType(UnsafeSupplier<Type, Exception> typeUnsafeSupplier) {
+		_typeSupplier = () -> {
 			try {
-				return fragmentInlineValueUnsafeSupplier.get();
+				return typeUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -93,12 +118,12 @@ public class TextInlineFragmentValue
 		};
 	}
 
-	@GraphQLField(description = "The fragment inline value.")
+	@GraphQLField(description = "Whether the value is set inline or mapped.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected FragmentInlineValue fragmentInlineValue;
+	protected Type type;
 
 	@JsonIgnore
-	private Supplier<FragmentInlineValue> _fragmentInlineValueSupplier;
+	private Supplier<Type> _typeSupplier;
 
 	@Override
 	public boolean equals(Object object) {
@@ -106,14 +131,14 @@ public class TextInlineFragmentValue
 			return true;
 		}
 
-		if (!(object instanceof TextInlineFragmentValue)) {
+		if (!(object instanceof FragmentEditableValue)) {
 			return false;
 		}
 
-		TextInlineFragmentValue textInlineFragmentValue =
-			(TextInlineFragmentValue)object;
+		FragmentEditableValue fragmentEditableValue =
+			(FragmentEditableValue)object;
 
-		return Objects.equals(toString(), textInlineFragmentValue.toString());
+		return Objects.equals(toString(), fragmentEditableValue.toString());
 	}
 
 	@Override
@@ -127,34 +152,6 @@ public class TextInlineFragmentValue
 		StringBundler sb = new StringBundler();
 
 		sb.append("{");
-
-		FragmentInlineValue fragmentInlineValue = getFragmentInlineValue();
-
-		if (fragmentInlineValue != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"fragmentInlineValue\": ");
-
-			sb.append(String.valueOf(fragmentInlineValue));
-		}
-
-		String defaultValue = getDefaultValue();
-
-		if (defaultValue != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"defaultValue\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(defaultValue));
-
-			sb.append("\"");
-		}
 
 		Type type = getType();
 
@@ -177,10 +174,48 @@ public class TextInlineFragmentValue
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.TextInlineFragmentValue",
+		defaultValue = "com.liferay.headless.admin.site.dto.v1_0.FragmentEditableValue",
 		name = "x-class-name"
 	)
 	public String xClassName;
+
+	@GraphQLName("Type")
+	public static enum Type {
+
+		INLINE("Inline"), MAPPED("Mapped");
+
+		@JsonCreator
+		public static Type create(String value) {
+			if ((value == null) || value.equals("")) {
+				return null;
+			}
+
+			for (Type type : values()) {
+				if (Objects.equals(type.getValue(), value)) {
+					return type;
+				}
+			}
+
+			throw new IllegalArgumentException("Invalid enum value: " + value);
+		}
+
+		@JsonValue
+		public String getValue() {
+			return _value;
+		}
+
+		@Override
+		public String toString() {
+			return _value;
+		}
+
+		private Type(String value) {
+			_value = value;
+		}
+
+		private final String _value;
+
+	}
 
 	private static String _escape(Object object) {
 		return StringUtil.replace(
