@@ -47,6 +47,7 @@ import com.liferay.headless.admin.site.client.dto.v1_0.FormContainerPageElementD
 import com.liferay.headless.admin.site.client.dto.v1_0.FormContainerReference;
 import com.liferay.headless.admin.site.client.dto.v1_0.FragmentEditableElement;
 import com.liferay.headless.admin.site.client.dto.v1_0.FragmentEditableElementValueFragmentLink;
+import com.liferay.headless.admin.site.client.dto.v1_0.FragmentEditableValue;
 import com.liferay.headless.admin.site.client.dto.v1_0.FragmentInlineValue;
 import com.liferay.headless.admin.site.client.dto.v1_0.FragmentInstancePageElementDefinition;
 import com.liferay.headless.admin.site.client.dto.v1_0.FragmentLink;
@@ -76,7 +77,6 @@ import com.liferay.headless.admin.site.client.dto.v1_0.StayInPageFormContainerSu
 import com.liferay.headless.admin.site.client.dto.v1_0.SuccessFormContainerSubmissionResult;
 import com.liferay.headless.admin.site.client.dto.v1_0.SuccessNotificationMessage;
 import com.liferay.headless.admin.site.client.dto.v1_0.TemplateListStyle;
-import com.liferay.headless.admin.site.client.dto.v1_0.TextFragmentValue;
 import com.liferay.headless.admin.site.client.dto.v1_0.URLFormContainerSubmissionResult;
 import com.liferay.headless.admin.site.client.dto.v1_0.WidgetInstance;
 import com.liferay.headless.admin.site.client.dto.v1_0.WidgetInstancePageElementDefinition;
@@ -2646,7 +2646,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					JournalArticle.class.getName(),
 					journalArticle.getExternalReferenceCode(),
 					"JournalArticle_title", null),
-				null, null, TextFragmentValue.Type.INLINE));
+				null, null, FragmentEditableValue.Type.INLINE));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.getFragmentEditableElements(
@@ -2654,7 +2654,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				FragmentMappedValueItemContextReference.ContextSource.
 					COLLECTION_ITEM,
 				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
-				TextFragmentValue.Type.MAPPED));
+				FragmentEditableValue.Type.MAPPED));
 
 		Layout layout = LayoutTestUtil.addTypeContentLayout(testGroup);
 
@@ -2667,7 +2667,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				FragmentMappedValueItemContextReference.ContextSource.
 					DISPLAY_PAGE_ITEM,
 				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
-				TextFragmentValue.Type.MAPPED));
+				FragmentEditableValue.Type.MAPPED));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.getFragmentEditableElements(
@@ -2681,7 +2681,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					).build()),
 				null,
 				FragmentMappedValueItemReference.Type.ITEM_EXTERNAL_REFERENCE,
-				TextFragmentValue.Type.MAPPED));
+				FragmentEditableValue.Type.MAPPED));
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.getFragmentEditableElements(
 				null, null, null, null, null));

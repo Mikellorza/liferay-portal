@@ -11,13 +11,14 @@ import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.headless.admin.site.dto.v1_0.FragmentEditableElement;
 import com.liferay.headless.admin.site.dto.v1_0.FragmentEditableElementValue;
 import com.liferay.headless.admin.site.dto.v1_0.FragmentEditableElementValueFragmentLink;
+import com.liferay.headless.admin.site.dto.v1_0.FragmentEditableInlineFragmentValue;
+import com.liferay.headless.admin.site.dto.v1_0.FragmentEditableMappedFragmentValue;
+import com.liferay.headless.admin.site.dto.v1_0.FragmentEditableValue;
 import com.liferay.headless.admin.site.dto.v1_0.FragmentInlineValue;
 import com.liferay.headless.admin.site.dto.v1_0.FragmentLink;
 import com.liferay.headless.admin.site.dto.v1_0.FragmentMappedValue;
 import com.liferay.headless.admin.site.dto.v1_0.TextFragmentEditableElementValue;
-import com.liferay.headless.admin.site.dto.v1_0.TextFragmentValue;
-import com.liferay.headless.admin.site.dto.v1_0.TextInlineFragmentValue;
-import com.liferay.headless.admin.site.dto.v1_0.TextMappedFragmentValue;
+import com.liferay.headless.admin.site.dto.v1_0.TextFragmentEditableValue;
 import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -147,10 +148,10 @@ public class FragmentEditableElementUtil {
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
-		TextFragmentValue textFragmentValue =
-			textFragmentEditableElementValue.getTextFragmentValue();
+		TextFragmentEditableValue textFragmentEditableValue =
+			textFragmentEditableElementValue.getTextFragmentEditableValue();
 
-		if (textFragmentValue == null) {
+		if (textFragmentEditableValue == null) {
 			return jsonObject;
 		}
 
@@ -199,15 +200,25 @@ public class FragmentEditableElementUtil {
 				return configJSONObject.put("prefix", "tel:");
 			}
 		).put(
-			"defaultValue", textFragmentValue.getDefaultValue()
+			"defaultValue", textFragmentEditableValue.getDefaultValue()
 		);
 
-		if (textFragmentValue instanceof TextInlineFragmentValue) {
-			TextInlineFragmentValue textInlineFragmentValue =
-				(TextInlineFragmentValue)textFragmentValue;
+		FragmentEditableValue fragmentEditableValue =
+			textFragmentEditableValue.getFragmentEditableValue();
+
+		if (fragmentEditableValue == null) {
+			return jsonObject;
+		}
+
+		if (fragmentEditableValue instanceof
+				FragmentEditableInlineFragmentValue) {
+
+			FragmentEditableInlineFragmentValue
+				fragmentEditableInlineFragmentValue =
+					(FragmentEditableInlineFragmentValue)fragmentEditableValue;
 
 			FragmentInlineValue fragmentInlineValue =
-				textInlineFragmentValue.getFragmentInlineValue();
+				fragmentEditableInlineFragmentValue.getFragmentInlineValue();
 
 			if (fragmentInlineValue == null) {
 				return jsonObject;
@@ -225,15 +236,18 @@ public class FragmentEditableElementUtil {
 			return jsonObject;
 		}
 
-		if (!(textFragmentValue instanceof TextMappedFragmentValue)) {
+		if (!(fragmentEditableValue instanceof
+				FragmentEditableMappedFragmentValue)) {
+
 			return jsonObject;
 		}
 
-		TextMappedFragmentValue textMappedFragmentValue =
-			(TextMappedFragmentValue)textFragmentValue;
+		FragmentEditableMappedFragmentValue
+			fragmentEditableMappedFragmentValue =
+				(FragmentEditableMappedFragmentValue)fragmentEditableValue;
 
 		FragmentMappedValue fragmentMappedValue =
-			textMappedFragmentValue.getFragmentMappedValue();
+			fragmentEditableMappedFragmentValue.getFragmentMappedValue();
 
 		if (fragmentMappedValue == null) {
 			return jsonObject;
@@ -244,6 +258,49 @@ public class FragmentEditableElementUtil {
 			FragmentMappingUtil.getFragmentMappedValueJSONObject(
 				companyId, infoItemServiceRegistry,
 				fragmentMappedValue.getMapping(), scopeGroupId));
+	}
+
+	private static FragmentEditableValue _getFragmentEditableValue(
+		long companyId, InfoItemServiceRegistry infoItemServiceRegistry,
+		JSONObject jsonObject, long scopeGroupId) {
+
+		if (FragmentMappingUtil.isMappedValue(jsonObject)) {
+			FragmentEditableMappedFragmentValue
+				fragmentEditableMappedFragmentValue =
+					new FragmentEditableMappedFragmentValue();
+
+			fragmentEditableMappedFragmentValue.setFragmentMappedValue(
+				() -> FragmentMappingUtil.toFragmentMappedValue(
+					companyId, infoItemServiceRegistry, jsonObject,
+					scopeGroupId));
+
+			return fragmentEditableMappedFragmentValue;
+		}
+
+		Map<String, String> i18nMap = LocalizedMapUtil.getI18nMap(
+			true,
+			LocalizedMapUtil.populateLocalizedMap(
+				JSONUtil.toStringMap(jsonObject)));
+
+		if (MapUtil.isEmpty(i18nMap)) {
+			return null;
+		}
+
+		FragmentEditableInlineFragmentValue
+			fragmentEditableInlineFragmentValue =
+				new FragmentEditableInlineFragmentValue();
+
+		fragmentEditableInlineFragmentValue.setFragmentInlineValue(
+			() -> {
+				FragmentInlineValue fragmentInlineValue =
+					new FragmentInlineValue();
+
+				fragmentInlineValue.setValue_i18n(() -> i18nMap);
+
+				return fragmentInlineValue;
+			});
+
+		return fragmentEditableInlineFragmentValue;
 	}
 
 	private static List<FragmentEditableElement>
@@ -337,14 +394,14 @@ public class FragmentEditableElementUtil {
 				() -> _toFragmentEditableElementValueFragmentLink(
 					companyId, infoItemServiceRegistry,
 					jsonObject.getJSONObject("config"), scopeGroupId));
-		textFragmentEditableElementValue.setTextFragmentValue(
-			() -> _toTextFragmentValue(
+		textFragmentEditableElementValue.setTextFragmentEditableValue(
+			() -> _toTextFragmentEditableValue(
 				companyId, infoItemServiceRegistry, jsonObject, scopeGroupId));
 
 		return textFragmentEditableElementValue;
 	}
 
-	private static TextFragmentValue _toTextFragmentValue(
+	private static TextFragmentEditableValue _toTextFragmentEditableValue(
 		long companyId, InfoItemServiceRegistry infoItemServiceRegistry,
 		JSONObject jsonObject, long scopeGroupId) {
 
@@ -352,45 +409,17 @@ public class FragmentEditableElementUtil {
 			return null;
 		}
 
-		String defaultValue = jsonObject.getString("defaultValue");
+		TextFragmentEditableValue textFragmentEditableValue =
+			new TextFragmentEditableValue();
 
-		if (FragmentMappingUtil.isMappedValue(jsonObject)) {
-			TextMappedFragmentValue textMappedFragmentValue =
-				new TextMappedFragmentValue();
+		textFragmentEditableValue.setDefaultValue(
+			() -> jsonObject.getString("defaultValue"));
 
-			textMappedFragmentValue.setDefaultValue(defaultValue);
-			textMappedFragmentValue.setFragmentMappedValue(
-				() -> FragmentMappingUtil.toFragmentMappedValue(
-					companyId, infoItemServiceRegistry, jsonObject,
-					scopeGroupId));
+		textFragmentEditableValue.setFragmentEditableValue(
+			() -> _getFragmentEditableValue(
+				companyId, infoItemServiceRegistry, jsonObject, scopeGroupId));
 
-			return textMappedFragmentValue;
-		}
-
-		Map<String, String> i18nMap = LocalizedMapUtil.getI18nMap(
-			true,
-			LocalizedMapUtil.populateLocalizedMap(
-				JSONUtil.toStringMap(jsonObject)));
-
-		if (MapUtil.isEmpty(i18nMap)) {
-			return null;
-		}
-
-		TextInlineFragmentValue textInlineFragmentValue =
-			new TextInlineFragmentValue();
-
-		textInlineFragmentValue.setDefaultValue(defaultValue);
-		textInlineFragmentValue.setFragmentInlineValue(
-			() -> {
-				FragmentInlineValue fragmentInlineValue =
-					new FragmentInlineValue();
-
-				fragmentInlineValue.setValue_i18n(() -> i18nMap);
-
-				return fragmentInlineValue;
-			});
-
-		return textInlineFragmentValue;
+		return textFragmentEditableValue;
 	}
 
 }
