@@ -1273,14 +1273,42 @@ components:
                     enum: [None,Email, Phone]
                     type: string
             type: object
+        FragmentEditableInlineFragmentValue:
+            # @review
+            allOf:
+                -   properties:
+                        fragmentInlineValue:
+                            $ref: "#/components/schemas/FragmentInlineValue"
+                            # @review
+                            description:
+                                The fragment inline value.
+                -   $ref: "#/components/schemas/FragmentEditableValue"
+            # @review
+            description:
+                An inline value of a fragment editable element.
+            type: object
+        FragmentEditableMappedFragmentValue:
+            # @review
+            allOf:
+                -   properties:
+                        fragmentMappedValue:
+                            $ref: "#/components/schemas/FragmentMappedValue"
+                            # @review
+                            description:
+                                The fragment mapped value.
+                -   $ref: "#/components/schemas/FragmentEditableValue"
+            # @review
+            description:
+                A mapped value of a fragment editable element.
+            type: object
         FragmentEditableValue:
             # @review
             description:
                 The value of a fragment editable element.
             discriminator:
                 mapping:
-                    Inline: "#/components/schemas/TextInlineFragmentValue"
-                    Mapped: "#/components/schemas/TextMappedFragmentValue"
+                    Inline: "#/components/schemas/FragmentEditableInlineFragmentValue"
+                    Mapped: "#/components/schemas/FragmentEditableMappedFragmentValue"
                 propertyName: type
             properties:
                 type:
@@ -3664,51 +3692,20 @@ components:
             # @review
             description:
                 The value of a fragment text element.
-            discriminator:
-                mapping:
-                    Inline: "#/components/schemas/TextInlineFragmentValue"
-                    Mapped: "#/components/schemas/TextMappedFragmentValue"
-                propertyName: type
             properties:
                 defaultValue:
                     # @review
                     description:
                         The default value of a text fragment value.
                     type: string
+                fragmentEditableValue:
+                    $ref: "#/components/schemas/FragmentEditableValue"
                 type:
                     # @review
                     description:
                         Whether the value is set inline or mapped.
                     enum: [Inline, Mapped]
                     type: string
-            type: object
-        TextInlineFragmentValue:
-            # @review
-            allOf:
-                -   properties:
-                        fragmentInlineValue:
-                            $ref: "#/components/schemas/FragmentInlineValue"
-                            # @review
-                            description:
-                                The fragment inline value.
-                -   $ref: "#/components/schemas/TextFragmentValue"
-            # @review
-            description:
-                An inline value of a fragment text element.
-            type: object
-        TextMappedFragmentValue:
-            # @review
-            allOf:
-                -   properties:
-                        fragmentMappedValue:
-                            $ref: "#/components/schemas/FragmentMappedValue"
-                            # @review
-                            description:
-                                The fragment mapped value.
-                -   $ref: "#/components/schemas/TextFragmentValue"
-            # @review
-            description:
-                A mapped value of a fragment text element.
             type: object
         URLActionExecutionResult:
             # @review
