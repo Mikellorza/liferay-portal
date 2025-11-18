@@ -1273,6 +1273,23 @@ components:
                     enum: [None,Email, Phone]
                     type: string
             type: object
+        FragmentEditableValue:
+            # @review
+            description:
+                The value of a fragment editable element.
+            discriminator:
+                mapping:
+                    Inline: "#/components/schemas/TextInlineFragmentValue"
+                    Mapped: "#/components/schemas/TextMappedFragmentValue"
+                propertyName: type
+            properties:
+                type:
+                    # @review
+                    description:
+                        Whether the value is set inline or mapped.
+                    enum: [Inline, Mapped]
+                    type: string
+            type: object
         FragmentImage:
             # @review
             description:
