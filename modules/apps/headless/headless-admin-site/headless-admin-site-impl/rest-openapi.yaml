@@ -3679,8 +3679,8 @@ components:
                             # @review
                             description:
                                 The fragment link of a text fragment editable element value.
-                        textFragmentValue:
-                            $ref: "#/components/schemas/TextFragmentValue"
+                        textFragmentEditableValue:
+                            $ref: "#/components/schemas/TextFragmentEditableValue"
                             # @review
                             description:
                                 The fragment editable element's text.
@@ -3688,7 +3688,7 @@ components:
             description:
                 A fragment editable element of type text.
             type: object
-        TextFragmentValue:
+        TextFragmentEditableValue:
             # @review
             description:
                 The value of a fragment text element.
