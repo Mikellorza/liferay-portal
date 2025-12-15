@@ -22,10 +22,13 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.segments.SegmentsEntryRetriever;
 import com.liferay.segments.configuration.provider.SegmentsConfigurationProvider;
+import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.segments.constants.SegmentsWebKeys;
 import com.liferay.segments.context.RequestContextMapper;
+import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.processor.SegmentsExperienceRequestProcessorRegistry;
+import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -85,14 +88,33 @@ public class SegmentsServicePreAction extends Action {
 					_segmentsExperienceLocalService.fetchSegmentsExperience(
 						segmentsExperienceId);
 
-				if (segmentsExperience != null) {
-					segmentsExperienceIdsSegmentsEntryIds.add(
-						segmentsExperience.getSegmentsEntryId());
+				if ((segmentsExperience == null) ||
+					segmentsExperience.isDefault()) {
+
+					if (_log.isDebugEnabled()) {
+						_log.debug(
+							"Unable to get segments experience " +
+								segmentsExperienceId);
+					}
+
+					continue;
 				}
-				else if (_log.isDebugEnabled()) {
-					_log.debug(
-						"Unable to get segments experience " +
-							segmentsExperienceId);
+
+				if (segmentsExperience.isDefault()) {
+					segmentsExperienceIdsSegmentsEntryIds.add(
+						SegmentsExperienceConstants.ID_DEFAULT);
+				}
+				else {
+					SegmentsEntry segmentsEntry =
+						_segmentsEntryLocalService.
+							fetchSegmentsEntryByExternalReferenceCode(
+								segmentsExperience.getSegmentsEntryERC(),
+								segmentsExperience.getSegmentsEntryGroupId());
+
+					if (segmentsEntry != null) {
+						segmentsExperienceIdsSegmentsEntryIds.add(
+							segmentsEntry.getSegmentsEntryId());
+					}
 				}
 			}
 
@@ -100,7 +122,7 @@ public class SegmentsServicePreAction extends Action {
 				(long[])httpServletRequest.getAttribute(
 					SegmentsWebKeys.SEGMENTS_ENTRY_IDS);
 
-			long[] segmentsEntryIds = null;
+			long[] segmentsEntryIds;
 
 			if (cachedSegmentsEntryIds != null) {
 				segmentsEntryIds = cachedSegmentsEntryIds;
@@ -198,6 +220,9 @@ public class SegmentsServicePreAction extends Action {
 
 	@Reference
 	private SegmentsConfigurationProvider _segmentsConfigurationProvider;
+
+	@Reference
+	private SegmentsEntryLocalService _segmentsEntryLocalService;
 
 	@Reference
 	private volatile SegmentsEntryRetriever _segmentsEntryRetriever;

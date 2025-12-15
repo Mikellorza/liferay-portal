@@ -32,6 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Eduardo García
@@ -140,8 +141,10 @@ public class SegmentsSimulationDisplayContext {
 				"segmentsEntryName",
 				() -> {
 					SegmentsEntry segmentsEntry =
-						_segmentsEntryLocalService.fetchSegmentsEntry(
-							segmentsExperience.getSegmentsEntryId());
+						_segmentsEntryLocalService.
+							fetchSegmentsEntryByExternalReferenceCode(
+								segmentsExperience.getSegmentsEntryERC(),
+								segmentsExperience.getSegmentsEntryGroupId());
 
 					if (segmentsEntry != null) {
 						return segmentsEntry.getName(_themeDisplay.getLocale());
@@ -191,10 +194,12 @@ public class SegmentsSimulationDisplayContext {
 		List<SegmentsExperience> segmentsExperiences) {
 
 		for (SegmentsExperience curSegmentsExperience : segmentsExperiences) {
-			if ((curSegmentsExperience.getSegmentsEntryId() ==
-					segmentsExperience.getSegmentsEntryId()) ||
-				(curSegmentsExperience.getSegmentsEntryId() ==
-					SegmentsEntryConstants.ID_DEFAULT)) {
+			if ((Objects.equals(
+					curSegmentsExperience.getSegmentsEntryERC(),
+					segmentsExperience.getSegmentsEntryERC()) &&
+				 (curSegmentsExperience.getSegmentsEntryGroupId() ==
+					 segmentsExperience.getSegmentsEntryGroupId())) ||
+				curSegmentsExperience.isDefault()) {
 
 				if (curSegmentsExperience.getSegmentsExperienceId() ==
 						segmentsExperience.getSegmentsExperienceId()) {

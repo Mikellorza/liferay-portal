@@ -11,6 +11,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.segments.constants.SegmentsEntryConstants;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
@@ -73,15 +74,15 @@ public class SegmentsExperimentImpl extends SegmentsExperimentBaseImpl {
 			SegmentsExperienceLocalServiceUtil.getSegmentsExperience(
 				getSegmentsExperienceId());
 
-		if (segmentsExperience.getSegmentsEntryId() ==
-				SegmentsEntryConstants.ID_DEFAULT) {
-
+		if (Validator.isNull(segmentsExperience.getSegmentsEntryERC())) {
 			return SegmentsEntryConstants.getDefaultSegmentsEntryName(locale);
 		}
 
 		SegmentsEntry segmentsEntry =
-			SegmentsEntryLocalServiceUtil.getSegmentsEntry(
-				segmentsExperience.getSegmentsEntryId());
+			SegmentsEntryLocalServiceUtil.
+				getSegmentsEntryByExternalReferenceCode(
+					segmentsExperience.getSegmentsEntryERC(),
+					segmentsExperience.getSegmentsEntryGroupId());
 
 		return segmentsEntry.getName(locale);
 	}

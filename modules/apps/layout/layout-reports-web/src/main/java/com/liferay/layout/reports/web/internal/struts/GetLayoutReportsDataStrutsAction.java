@@ -37,6 +37,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -214,17 +215,28 @@ public class GetLayoutReportsDataStrutsAction implements StrutsAction {
 		boolean segmentsExperienceIsActive = _isActive(
 			segmentsExperience, segmentsExperiences);
 
+		SegmentsEntry segmentsEntry =
+			_segmentsEntryLocalService.
+				fetchSegmentsEntryByExternalReferenceCode(
+					segmentsExperience.getSegmentsEntryERC(),
+					segmentsExperience.getSegmentsEntryGroupId());
+
 		return JSONUtil.put(
 			"active", segmentsExperienceIsActive
 		).put(
-			"segmentsEntryId", segmentsExperience.getSegmentsEntryId()
+			"segmentsEntryERC", segmentsExperience.getSegmentsEntryERC()
+		).put(
+			"segmentsEntryId",
+			() -> {
+				if (segmentsEntry != null) {
+					return segmentsEntry.getSegmentsEntryId();
+				}
+
+				return SegmentsEntryConstants.ID_DEFAULT;
+			}
 		).put(
 			"segmentsEntryName",
 			() -> {
-				SegmentsEntry segmentsEntry =
-					_segmentsEntryLocalService.fetchSegmentsEntry(
-						segmentsExperience.getSegmentsEntryId());
-
 				if (segmentsEntry != null) {
 					return segmentsEntry.getName(themeDisplay.getLocale());
 				}
@@ -232,6 +244,9 @@ public class GetLayoutReportsDataStrutsAction implements StrutsAction {
 				return SegmentsEntryConstants.getDefaultSegmentsEntryName(
 					themeDisplay.getLocale());
 			}
+		).put(
+			"segmentsEntryScopeERC",
+			segmentsExperience.getSegmentsEntryScopeERC()
 		).put(
 			"segmentsExperienceId", segmentsExperience.getSegmentsExperienceId()
 		).put(
@@ -341,10 +356,12 @@ public class GetLayoutReportsDataStrutsAction implements StrutsAction {
 		List<SegmentsExperience> segmentsExperiences) {
 
 		for (SegmentsExperience curSegmentsExperience : segmentsExperiences) {
-			if ((curSegmentsExperience.getSegmentsEntryId() ==
-					segmentsExperience.getSegmentsEntryId()) ||
-				(curSegmentsExperience.getSegmentsEntryId() ==
-					SegmentsEntryConstants.ID_DEFAULT)) {
+			if ((Objects.equals(
+					curSegmentsExperience.getSegmentsEntryERC(),
+					segmentsExperience.getSegmentsEntryERC()) &&
+				 (curSegmentsExperience.getSegmentsEntryGroupId() ==
+					 segmentsExperience.getSegmentsEntryGroupId())) ||
+				curSegmentsExperience.isDefault()) {
 
 				if (curSegmentsExperience.getSegmentsExperienceId() ==
 						segmentsExperience.getSegmentsExperienceId()) {

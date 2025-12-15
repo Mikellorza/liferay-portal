@@ -68,7 +68,7 @@ public class SegmentsExperienceLocalServiceImpl
 
 		return addSegmentsExperience(
 			externalReferenceCode, userId, layout.getGroupId(),
-			SegmentsEntryConstants.ID_DEFAULT,
+			SegmentsEntryConstants.KEY_DEFAULT, null,
 			SegmentsExperienceConstants.KEY_DEFAULT, layout.getPlid(),
 			Collections.singletonMap(
 				LocaleUtil.getSiteDefault(),

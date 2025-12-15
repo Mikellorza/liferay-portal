@@ -110,6 +110,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsValues;
+import com.liferay.portal.kernel.util.ScopeUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
@@ -1247,7 +1248,9 @@ public class ContentPageEditorDisplayContext {
 		return availableLanguages;
 	}
 
-	private Map<String, Object> _getAvailableSegmentsEntries() {
+	private Map<String, Object> _getAvailableSegmentsEntries()
+		throws Exception {
+
 		Map<String, Object> availableSegmentsEntries = new HashMap<>();
 
 		List<SegmentsEntry> segmentsEntries =
@@ -1256,25 +1259,24 @@ public class ContentPageEditorDisplayContext {
 					getGroupId(), SegmentsPortletKeys.SEGMENTS));
 
 		for (SegmentsEntry segmentsEntry : segmentsEntries) {
-			availableSegmentsEntries.put(
-				String.valueOf(segmentsEntry.getSegmentsEntryId()),
-				HashMapBuilder.<String, Object>put(
-					"name", segmentsEntry.getName(themeDisplay.getLocale())
-				).put(
-					"segmentsEntryId",
-					String.valueOf(segmentsEntry.getSegmentsEntryId())
-				).build());
+			String segmentsEntryScopeERC =
+				ScopeUtil.getItemScopeExternalReferenceCode(
+					segmentsEntry.getGroupId(), getGroupId());
+
+			_putAvailableSegmentsEntry(
+				availableSegmentsEntries,
+				segmentsEntry.getName(themeDisplay.getLocale()),
+				segmentsEntry.getExternalReferenceCode(),
+				segmentsEntry.getGroupId(), segmentsEntry.getSegmentsEntryId(),
+				segmentsEntryScopeERC);
 		}
 
-		availableSegmentsEntries.put(
-			String.valueOf(SegmentsEntryConstants.ID_DEFAULT),
-			HashMapBuilder.<String, Object>put(
-				"name",
-				SegmentsEntryConstants.getDefaultSegmentsEntryName(
-					themeDisplay.getLocale())
-			).put(
-				"segmentsEntryId", SegmentsEntryConstants.ID_DEFAULT
-			).build());
+		_putAvailableSegmentsEntry(
+			availableSegmentsEntries,
+			SegmentsEntryConstants.getDefaultSegmentsEntryName(
+				themeDisplay.getLocale()),
+			SegmentsEntryConstants.KEY_DEFAULT, getGroupId(),
+			SegmentsEntryConstants.ID_DEFAULT, null);
 
 		return availableSegmentsEntries;
 	}
@@ -2165,6 +2167,32 @@ public class ContentPageEditorDisplayContext {
 		}
 
 		return false;
+	}
+
+	private void _putAvailableSegmentsEntry(
+		Map<String, Object> availableSegmentsEntries, String name,
+		String segmentsEntryERC, long segmentsEntryGroupId,
+		long segmentsEntryId, String segmentsEntryScopeERC) {
+
+		String segmentsEntryScopeERCKeySuffix = StringPool.BLANK;
+
+		if (Validator.isNotNull(segmentsEntryScopeERC)) {
+			segmentsEntryScopeERCKeySuffix = segmentsEntryScopeERC;
+		}
+
+		availableSegmentsEntries.put(
+			segmentsEntryERC + segmentsEntryScopeERCKeySuffix,
+			HashMapBuilder.<String, Object>put(
+				"name", name
+			).put(
+				"segmentsEntryERC", segmentsEntryERC
+			).put(
+				"segmentsEntryGroupId", String.valueOf(segmentsEntryGroupId)
+			).put(
+				"segmentsEntryId", String.valueOf(segmentsEntryId)
+			).put(
+				"segmentsEntryScopeERC", segmentsEntryScopeERC
+			).build());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
