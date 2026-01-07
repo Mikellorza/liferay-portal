@@ -2175,6 +2175,26 @@ components:
             description:
                 The value of a fragment configuration field of type length.
             type: object
+        LinkToURLPageSettings:
+            allOf:
+                -   $ref: "#/components/schemas/PageSettings"
+                -   properties:
+                        pageURL:
+                            # @review
+                            description:
+                                The URL of the page to redirect to.
+                            type: string
+            # @review
+            description:
+                The settings of a link to URL page.
+            type: object
+        LinkToURLPageSpecification:
+            allOf:
+                -   $ref: "#/components/schemas/PageSpecification"
+            # @review
+            description:
+                A page specification of a link to URL page.
+            type: object
         ListStyle:
             # @review
             allOf:
@@ -2902,6 +2922,7 @@ components:
             discriminator:
                 mapping:
                     ContentPageSettings: "#/components/schemas/ContentPageSettings"
+                    LinkToURLPageSettings: "#/components/schemas/LinkToURLPageSettings"
                     PageSetPageSettings: "#/components/schemas/PageSetPageSettings"
                     WidgetPageSettings: "#/components/schemas/WidgetPageSettings"
                 propertyName: type
@@ -2928,6 +2949,7 @@ components:
                 type:
                     enum:
                         -   ContentPageSettings
+                        -   LinkToURLPageSettings
                         -   PageSetPageSettings
                         -   WidgetPageSettings
                     type: string
@@ -2941,6 +2963,7 @@ components:
             discriminator:
                 mapping:
                     ContentPageSpecification: "#/components/schemas/ContentPageSpecification"
+                    LinkToURLPageSpecification: "#/components/schemas/LinkToURLPageSpecification"
                     PageSetPageSpecification: "#/components/schemas/PageSetPageSpecification"
                     WidgetPageSpecification: "#/components/schemas/WidgetPageSpecification"
                 propertyName: type
@@ -2971,6 +2994,7 @@ components:
                         The type of the page specification.
                     enum:
                         -   ContentPageSpecification
+                        -   LinkToURLPageSpecification
                         -   PageSetPageSpecification
                         -   WidgetPageSpecification
                     type: string
@@ -3560,6 +3584,7 @@ components:
                 type:
                     enum:
                         -   ContentPage
+                        -   LinkToURLPage
                         -   PageSetPage
                         -   WidgetPage
                     type: string
