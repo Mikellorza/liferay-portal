@@ -45,9 +45,19 @@ const ExperienceItem = ({
 			experience.priority
 		);
 	const handleExperienceEdit = () => {
-		const {name, segmentsEntryId, segmentsExperienceId} = experience;
+		const {
+			name,
+			segmentsEntryERC,
+			segmentsEntryScopeERC,
+			segmentsExperienceId,
+		} = experience;
 
-		onEditExperience({name, segmentsEntryId, segmentsExperienceId});
+		onEditExperience({
+			name,
+			segmentsEntryERC,
+			segmentsEntryScopeERC,
+			segmentsExperienceId,
+		});
 	};
 	const handleExperienceDelete = () => {
 		const experienceHasRunningExperiment =

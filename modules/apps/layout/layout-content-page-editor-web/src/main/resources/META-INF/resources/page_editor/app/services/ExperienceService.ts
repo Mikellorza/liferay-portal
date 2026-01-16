@@ -13,7 +13,8 @@ export interface SegmentsExperience {
 	hasLockedSegmentsExperiment?: boolean;
 	name: string;
 	priority: number;
-	segmentsEntryId: string;
+	segmentsEntryERC: string;
+	segmentsEntryScopeERC: string;
 	segmentsExperienceId: string;
 	segmentsExperimentURL?: string;
 }
@@ -21,7 +22,15 @@ export interface SegmentsExperience {
 export type SegmentsExperienceMap = Record<string, SegmentsExperience>;
 
 export default {
-	createExperience({body}: {body: {name: string; segmentsEntryId: string}}) {
+	createExperience({
+		body,
+	}: {
+		body: {
+			name: string;
+			segmentsEntryERC: string;
+			segmentsEntryScopeERC: string;
+		};
+	}) {
 		return serviceFetch<{
 			fragmentEntryLinks: FragmentEntryLinkMap;
 			layoutData: LayoutData;
@@ -66,7 +75,8 @@ export default {
 		body: {
 			active: boolean;
 			name: string;
-			segmentsEntryId: string;
+			segmentsEntryERC: string;
+			segmentsEntryScopeERC: string;
 			segmentsExperienceId: string;
 		};
 	}) {

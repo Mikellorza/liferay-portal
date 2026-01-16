@@ -33,7 +33,10 @@ export interface Config {
 	availableSegmentsEntries: {
 		[key: string]: {
 			name: string;
+			segmentsEntryERC: string;
+			segmentsEntryGroupId: string;
 			segmentsEntryId: string;
+			segmentsEntryScopeERC: string | null;
 		};
 	};
 
@@ -212,7 +215,8 @@ export interface Config {
 		};
 	};
 
-	selectedSegmentsEntryId: string;
+	selectedSegmentsEntryERC: string;
+	selectedSegmentsEntryScopeERC: string;
 
 	sidebarPanels: SidebarPanel[];
 	sidebarPanelsMap: Record<string, SidebarPanel>;

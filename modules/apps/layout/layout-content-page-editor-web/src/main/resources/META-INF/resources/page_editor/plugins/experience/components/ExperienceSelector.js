@@ -162,9 +162,12 @@ const ExperienceSelector = ({experiences, segments, selectedExperience}) => {
 				setOpenModal(true);
 				setEditingExperience({
 					name: modalExperienceState.experienceName,
-					segmentsEntryId:
-						config.selectedSegmentsEntryId ||
-						modalExperienceState.segmentId,
+					segmentsEntryERC:
+						config.selectedSegmentsEntryERC ||
+						modalExperienceState.segmentsEntryERC,
+					segmentsEntryScopeERC:
+						config.selectedSegmentsEntryScopeERC ||
+						modalExperienceState.segmentsEntryScopeERC,
 					segmentsExperienceId: modalExperienceState.experienceId,
 				});
 			}
@@ -231,12 +234,18 @@ const ExperienceSelector = ({experiences, segments, selectedExperience}) => {
 
 	const onExperienceCreation = ({
 		name,
-		segmentsEntryId,
+		segmentsEntryERC,
+		segmentsEntryScopeERC,
 		segmentsExperienceId,
 	}) => {
 		if (segmentsExperienceId) {
 			return dispatch(
-				updateExperience({name, segmentsEntryId, segmentsExperienceId})
+				updateExperience({
+					name,
+					segmentsEntryERC,
+					segmentsEntryScopeERC,
+					segmentsExperienceId,
+				})
 			)
 				.then(() => {
 					if (isMounted()) {
@@ -256,7 +265,8 @@ const ExperienceSelector = ({experiences, segments, selectedExperience}) => {
 								'an-unexpected-error-occurred-while-updating-the-experience'
 							),
 							name,
-							segmentsEntryId,
+							segmentsEntryERC,
+							segmentsEntryScopeERC,
 							segmentsExperienceId,
 						});
 					}
@@ -266,7 +276,8 @@ const ExperienceSelector = ({experiences, segments, selectedExperience}) => {
 			return dispatch(
 				createExperience({
 					name,
-					segmentsEntryId,
+					segmentsEntryERC,
+					segmentsEntryScopeERC,
 				})
 			)
 				.then(() => {
@@ -287,7 +298,8 @@ const ExperienceSelector = ({experiences, segments, selectedExperience}) => {
 								'an-unexpected-error-occurred-while-creating-the-experience'
 							),
 							name,
-							segmentsEntryId,
+							segmentsEntryERC,
+							segmentsEntryScopeERC,
 							segmentsExperienceId,
 						});
 					}
@@ -301,14 +313,20 @@ const ExperienceSelector = ({experiences, segments, selectedExperience}) => {
 	};
 
 	const onEditExperience = (experienceData) => {
-		const {name, segmentsEntryId, segmentsExperienceId} = experienceData;
+		const {
+			name,
+			segmentsEntryERC,
+			segmentsEntryScopeERC,
+			segmentsExperienceId,
+		} = experienceData;
 
 		setOpenModal(true);
 		debouncedSetOpen(false);
 
 		setEditingExperience({
 			name,
-			segmentsEntryId,
+			segmentsEntryERC,
+			segmentsEntryScopeERC,
 			segmentsExperienceId,
 		});
 	};
@@ -509,8 +527,11 @@ const ExperienceSelector = ({experiences, segments, selectedExperience}) => {
 					onErrorDismiss={() => setEditingExperience({error: null})}
 					onNewSegmentClick={onNewSegmentClick}
 					onSubmit={onExperienceCreation}
-					segmentId={editingExperience.segmentsEntryId}
 					segments={segments}
+					segmentsEntryERC={editingExperience.segmentsEntryERC}
+					segmentsEntryScopeERC={
+						editingExperience.segmentsEntryScopeERC
+					}
 				/>
 			)}
 		</>

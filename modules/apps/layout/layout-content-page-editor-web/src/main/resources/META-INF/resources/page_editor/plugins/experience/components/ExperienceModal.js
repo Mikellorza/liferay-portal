@@ -11,10 +11,11 @@ import ClayModal from '@clayui/modal';
 import {useIsMounted} from '@liferay/frontend-js-react-web';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {config} from '../../../app/config/index';
 import Button from '../../../common/components/Button';
+import {SegmentType} from '../types';
 
 const ExperienceModal = ({
 	canUpdateSegments,
@@ -26,20 +27,62 @@ const ExperienceModal = ({
 	onErrorDismiss,
 	onNewSegmentClick,
 	onSubmit,
-	segmentId,
 	segments = [],
+	segmentsEntryERC = '',
+	segmentsEntryScopeERC = '',
 }) => {
-	const [selectedSegmentId, setSelectedSegmentId] = useState(
-		segmentId !== undefined
-			? segmentId
-			: segments[0] && segments[0].segmentsEntryId
-	);
+	const findSegmentIdByERCs = (
+		segments,
+		segmentsEntryERC,
+		segmentsEntryScopeERC
+	) => {
+		if (!segmentsEntryERC) {
+			return null;
+		}
+
+		const matchSegment = segments.find((segment) => {
+			if (segment.segmentsEntryERC !== segmentsEntryERC) {
+				return false;
+			}
+
+			const segScope = segment.segmentsEntryScopeERC || '';
+			const targetScope = segmentsEntryScopeERC || '';
+
+			return segScope === targetScope;
+		});
+
+		return matchSegment ? String(matchSegment.segmentsEntryId) : null;
+	};
+
+	const [selectedSegmentId, setSelectedSegmentId] = useState(() => {
+		const matchedSelectedSegmentId = findSegmentIdByERCs(
+			segments,
+			segmentsEntryERC,
+			segmentsEntryScopeERC
+		);
+
+		const defaultSegmentId =
+			segments[0] && String(segments[0].segmentsEntryId);
+
+		return matchedSelectedSegmentId || defaultSegmentId;
+	});
 
 	const isMounted = useIsMounted();
 
 	const [name, setName] = useState(initialName);
 	const [requiredNameError, setRequiredNameError] = useState(false);
 	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		const matchedSelectedSegmentId = findSegmentIdByERCs(
+			segments,
+			segmentsEntryERC,
+			segmentsEntryScopeERC
+		);
+		if (matchedSelectedSegmentId) {
+			setSelectedSegmentId(matchedSelectedSegmentId);
+		}
+	}, [segmentsEntryERC, segmentsEntryScopeERC, segments]);
 
 	const handleFormSubmit = (event) => {
 		event.preventDefault();
@@ -52,9 +95,31 @@ const ExperienceModal = ({
 		else {
 			setLoading(true);
 
+			const selectedSegment = segments.find(
+				(segment) =>
+					String(segment.segmentsEntryId) ===
+					String(selectedSegmentId)
+			);
+
+			let segmentsEntryERC = '';
+			let segmentsEntryScopeERC = '';
+
+			if (selectedSegment) {
+				segmentsEntryERC = selectedSegment.segmentsEntryERC;
+
+				if (
+					String(selectedSegment.segmentsEntryGroupId) !==
+					String(themeDisplay.getScopeGroupId())
+				) {
+					segmentsEntryScopeERC =
+						selectedSegment.segmentsEntryScopeERC || '';
+				}
+			}
+
 			onSubmit({
 				name,
-				segmentsEntryId: selectedSegmentId,
+				segmentsEntryERC,
+				segmentsEntryScopeERC,
 				segmentsExperienceId: experienceId,
 			}).finally(() => {
 				if (isMounted()) {
@@ -189,7 +254,9 @@ const ExperienceModal = ({
 											<ClaySelect.Option
 												key={segment.segmentsEntryId}
 												label={segment.name}
-												value={segment.segmentsEntryId}
+												value={String(
+													segment.segmentsEntryId
+												)}
 											/>
 										);
 									})
@@ -255,8 +322,9 @@ ExperienceModal.propTypes = {
 	onErrorDismiss: PropTypes.func.isRequired,
 	onNewSegmentClick: PropTypes.func.isRequired,
 	onSubmit: PropTypes.func.isRequired,
-	segmentId: PropTypes.string,
-	segments: PropTypes.array.isRequired,
+	segments: PropTypes.arrayOf(PropTypes.shape(SegmentType)).isRequired,
+	segmentsEntryERC: PropTypes.string,
+	segmentsEntryScopeERC: PropTypes.string,
 };
 
 function _getValidValue(value) {

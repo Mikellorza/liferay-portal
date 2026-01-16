@@ -7,13 +7,15 @@ import {UPDATE_SEGMENTS_EXPERIENCE} from '../actions';
 
 export default function updateExperience({
 	name,
-	segmentsEntryId,
+	segmentsEntryERC,
+	segmentsEntryScopeERC,
 	segmentsExperienceId,
 }) {
 	return {
 		payload: {
 			name,
-			segmentsEntryId,
+			segmentsEntryERC,
+			segmentsEntryScopeERC,
 			segmentsExperienceId,
 		},
 		type: UPDATE_SEGMENTS_EXPERIENCE,

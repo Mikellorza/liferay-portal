@@ -27,7 +27,8 @@ function ExperienceToolbarSection() {
 				.map((experience, _, experiences) => {
 					const segmentsEntryName =
 						config.availableSegmentsEntries[
-							experience.segmentsEntryId
+							experience.segmentsEntryERC +
+								experience.segmentsEntryScopeERC
 						].name;
 
 					const firstExperience = experiences.find(
