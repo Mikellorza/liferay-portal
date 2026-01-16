@@ -65,7 +65,9 @@ const mockState = {
 			hasLockedSegmentsExperiment: false,
 			name: 'Default Experience',
 			priority: -1,
+			segmentsEntryERC: 'default-segment-erc',
 			segmentsEntryId: 'test-segment-id-00',
+			segmentsEntryScopeERC: '',
 			segmentsExperienceId: '0',
 			segmentsExperimentStatus: undefined,
 			segmentsExperimentURL: 'https//:default-experience.com',
@@ -75,7 +77,9 @@ const mockState = {
 			languageIds: ['en_US', 'es_ES'],
 			name: 'Experience #1',
 			priority: 3,
+			segmentsEntryERC: 'segment-erc-00',
 			segmentsEntryId: 'test-segment-id-00',
+			segmentsEntryScopeERC: '',
 			segmentsExperienceId: 'test-experience-id-01',
 			segmentsExperimentStatus: undefined,
 			segmentsExperimentURL: 'https//:experience-1.com',
@@ -85,7 +89,9 @@ const mockState = {
 			languageIds: ['en_US', 'es_ES', 'ar_SA'],
 			name: 'Experience #2',
 			priority: 1,
+			segmentsEntryERC: 'segment-erc-01',
 			segmentsEntryId: 'test-segment-id-01',
+			segmentsEntryScopeERC: 'GLOBAL-SCOPE',
 			segmentsExperienceId: 'test-experience-id-02',
 			segmentsExperimentStatus: undefined,
 			segmentsExperimentURL: 'https//:experience-2.com',
@@ -125,16 +131,27 @@ const mockConfig = {
 		},
 	},
 	availableSegmentsEntries: {
-		'test-segment-id-00': {
-			name: 'A segment 0',
-			segmentsEntryId: 'test-segment-id-00',
+		'default-segment-erc': {
+			name: 'Default Segment Name',
+			segmentsEntryERC: 'default-segment-erc',
+			segmentsEntryId: 'test-segment-id-default',
+			segmentsEntryScopeERC: '',
 		},
-		'test-segment-id-01': {
+		'segment-erc-00': {
+			name: 'A segment 0',
+			segmentsEntryERC: 'segment-erc-00',
+			segmentsEntryId: 'test-segment-id-00',
+			segmentsEntryScopeERC: '',
+		},
+		'segment-erc-01GLOBAL-SCOPE': {
 			name: 'A segment 1',
+			segmentsEntryERC: 'segment-erc-01',
 			segmentsEntryId: 'test-segment-id-01',
+			segmentsEntryScopeERC: 'GLOBAL-SCOPE',
 		},
 	},
 	classPK: 'test-classPK',
+	defaultSegmentsEntryId: '0',
 	defaultSegmentsExperienceId: '0',
 	deleteSegmentsExperienceURL: MOCK_DELETE_URL,
 	duplicateSegmentsExperienceURL: MOCK_DUPLICATE_URL,
@@ -296,7 +313,9 @@ describe('ExperienceToolbarSection', () => {
 					hasLockedSegmentsExperiment: true,
 					name: 'Experience #3',
 					priority: 5,
+					segmentsEntryERC: 'segment-erc-00',
 					segmentsEntryId: 'test-segment-id-00',
+					segmentsEntryScopeERC: '',
 					segmentsExperienceId: 'test-experience-id-03',
 					segmentsExperimentStatus: {
 						label: 'running',
@@ -571,7 +590,8 @@ describe('ExperienceToolbarSection', () => {
 				expect.objectContaining({
 					body: expect.objectContaining({
 						name: 'New Experience #1',
-						segmentsEntryId: 'test-segment-id-00',
+						segmentsEntryERC: 'segment-erc-00',
+						segmentsEntryScopeERC: '',
 					}),
 				})
 			)
@@ -667,7 +687,8 @@ describe('ExperienceToolbarSection', () => {
 			expect.objectContaining({
 				body: expect.objectContaining({
 					name: 'New Experience #1',
-					segmentsEntryId: 'test-segment-id-00',
+					segmentsEntryERC: 'segment-erc-00',
+					segmentsEntryScopeERC: '',
 					segmentsExperienceId: 'test-experience-id-01',
 				}),
 			})
