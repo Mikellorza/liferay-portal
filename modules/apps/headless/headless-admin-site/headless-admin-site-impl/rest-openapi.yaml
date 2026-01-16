@@ -2175,6 +2175,26 @@ components:
             description:
                 The value of a fragment configuration field of type length.
             type: object
+        LinkToPagePageSettings:
+            allOf:
+                -   $ref: "#/components/schemas/PageSettings"
+                -   properties:
+                        linkToPageExternalReferenceCode:
+                            # @review
+                            description:
+                                The external reference code of the link to page within the same site to redirect to.
+                            type: string
+            # @review
+            description:
+                The settings of a link to page page.
+            type: object
+        LinkToPagePageSpecification:
+            allOf:
+                -   $ref: "#/components/schemas/PageSpecification"
+            # @review
+            description:
+                A page specification of a link to page page.
+            type: object
         LinkToURLPageSettings:
             allOf:
                 -   $ref: "#/components/schemas/PageSettings"
@@ -2922,6 +2942,7 @@ components:
             discriminator:
                 mapping:
                     ContentPageSettings: "#/components/schemas/ContentPageSettings"
+                    LinkToPagePageSettings: "#/components/schemas/LinkToPagePageSettings"
                     LinkToURLPageSettings: "#/components/schemas/LinkToURLPageSettings"
                     PageSetPageSettings: "#/components/schemas/PageSetPageSettings"
                     WidgetPageSettings: "#/components/schemas/WidgetPageSettings"
@@ -2949,6 +2970,7 @@ components:
                 type:
                     enum:
                         -   ContentPageSettings
+                        -   LinkToPagePageSettings
                         -   LinkToURLPageSettings
                         -   PageSetPageSettings
                         -   WidgetPageSettings
@@ -2963,6 +2985,7 @@ components:
             discriminator:
                 mapping:
                     ContentPageSpecification: "#/components/schemas/ContentPageSpecification"
+                    LinkToPagePageSpecification: "#/components/schemas/LinkToPagePageSpecification"
                     LinkToURLPageSpecification: "#/components/schemas/LinkToURLPageSpecification"
                     PageSetPageSpecification: "#/components/schemas/PageSetPageSpecification"
                     WidgetPageSpecification: "#/components/schemas/WidgetPageSpecification"
@@ -2994,6 +3017,7 @@ components:
                         The type of the page specification.
                     enum:
                         -   ContentPageSpecification
+                        -   LinkToPagePageSpecification
                         -   LinkToURLPageSpecification
                         -   PageSetPageSpecification
                         -   WidgetPageSpecification
@@ -3584,6 +3608,7 @@ components:
                 type:
                     enum:
                         -   ContentPage
+                        -   LinkToPagePage
                         -   LinkToURLPage
                         -   PageSetPage
                         -   WidgetPage
