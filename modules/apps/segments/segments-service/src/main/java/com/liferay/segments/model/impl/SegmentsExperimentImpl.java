@@ -74,7 +74,7 @@ public class SegmentsExperimentImpl extends SegmentsExperimentBaseImpl {
 			SegmentsExperienceLocalServiceUtil.getSegmentsExperience(
 				getSegmentsExperienceId());
 
-		if (Validator.isNull(segmentsExperience.getSegmentsEntryERC())) {
+		if (segmentsExperience.isDefault()) {
 			return SegmentsEntryConstants.getDefaultSegmentsEntryName(locale);
 		}
 

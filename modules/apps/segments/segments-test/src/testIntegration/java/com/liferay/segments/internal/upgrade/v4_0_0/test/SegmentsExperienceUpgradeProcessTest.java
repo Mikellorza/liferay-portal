@@ -141,18 +141,24 @@ public class SegmentsExperienceUpgradeProcessTest
 			_segmentsExperienceLocalService.fetchSegmentsExperience(
 				segmentsExperience2.getSegmentsExperienceId());
 
+		Assert.assertTrue(
+			segmentsExperience0.isDefault());
 		Assert.assertEquals(
-			SegmentsExperienceConstants.KEY_DEFAULT,
+			SegmentsEntryConstants.KEY_DEFAULT,
 			segmentsExperience0.getSegmentsEntryERC());
 		Assert.assertTrue(
 			Validator.isNull(segmentsExperience0.getSegmentsEntryScopeERC()));
 
+		Assert.assertFalse(
+			segmentsExperience1.isDefault());
 		Assert.assertEquals(
 			segmentsEntry1.getExternalReferenceCode(),
 			segmentsExperience1.getSegmentsEntryERC());
 		Assert.assertTrue(
 			Validator.isNull(segmentsExperience1.getSegmentsEntryScopeERC()));
 
+		Assert.assertFalse(
+			segmentsExperience2.isDefault());
 		Assert.assertEquals(
 			segmentsEntry2.getExternalReferenceCode(),
 			segmentsExperience2.getSegmentsEntryERC());

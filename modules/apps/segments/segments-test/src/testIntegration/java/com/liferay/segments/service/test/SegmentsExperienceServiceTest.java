@@ -43,6 +43,8 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.segments.constants.SegmentsActionKeys;
+import com.liferay.segments.constants.SegmentsEntryConstants;
+import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.segments.exception.DuplicateSegmentsExperienceExternalReferenceCodeException;
 import com.liferay.segments.exception.NoSuchExperienceException;
 import com.liferay.segments.model.SegmentsEntry;
@@ -52,6 +54,7 @@ import com.liferay.segments.service.SegmentsExperienceService;
 import com.liferay.segments.test.util.SegmentsTestUtil;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -887,6 +890,17 @@ public class SegmentsExperienceServiceTest {
 
 		Assert.assertEquals(
 			segmentsEntryERC, segmentsExperience.getSegmentsEntryERC());
+
+		if ((Validator.isNull(segmentsExperience.getSegmentsEntryERC()) ||
+			 Objects.equals(
+				 segmentsExperience.getSegmentsEntryERC(), SegmentsEntryConstants.KEY_DEFAULT)) &&
+			Objects.equals(
+				segmentsExperience.getSegmentsExperienceKey(),
+				SegmentsExperienceConstants.KEY_DEFAULT)) {
+			Assert.assertTrue(segmentsExperience.isDefault());
+		} else {
+			Assert.assertFalse(segmentsExperience.isDefault());
+		}
 
 		if (Validator.isNull(segmentsEntryScopeERC)) {
 			Assert.assertTrue(
