@@ -335,9 +335,9 @@ public class LayoutUtil {
 			serviceContext);
 	}
 
-	public static Layout addNodeLayout(
+	public static Layout addLayout(
 			String externalReferenceCode, long groupId, long parentLayoutId,
-			Map<Locale, String> nameMap,
+			Map<Locale, String> nameMap, String type,
 			UnicodeProperties typeSettingsUnicodeProperties,
 			boolean hiddenFromNavigation, Map<Locale, String> friendlyURLMap,
 			PageSpecification pageSpecification, ServiceContext serviceContext)
@@ -353,8 +353,8 @@ public class LayoutUtil {
 
 		return LayoutServiceUtil.addLayout(
 			externalReferenceCode, groupId, false, parentLayoutId, nameMap,
-			null, null, null, null, LayoutConstants.TYPE_NODE, typeSettings,
-			hiddenFromNavigation, friendlyURLMap, null, serviceContext);
+			null, null, null, null, type, typeSettings, hiddenFromNavigation,
+			friendlyURLMap, null, serviceContext);
 	}
 
 	public static Layout addPortletLayout(
@@ -588,7 +588,7 @@ public class LayoutUtil {
 			serviceContext);
 	}
 
-	public static Layout updateNodeLayout(
+	public static Layout updateLayout(
 			Layout layout, Map<Locale, String> nameMap,
 			Map<Locale, String> friendlyURLMap,
 			PageSpecification pageSpecification,
