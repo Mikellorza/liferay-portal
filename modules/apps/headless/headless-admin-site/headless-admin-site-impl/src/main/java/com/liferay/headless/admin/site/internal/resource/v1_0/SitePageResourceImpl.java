@@ -523,7 +523,9 @@ public class SitePageResourceImpl
 				WorkflowConstants.STATUS_APPROVED, serviceContext);
 		}
 		else if (Objects.equals(
-					sitePage.getType(), SitePage.Type.LINK_TO_URL_PAGE) ||
+					sitePage.getType(), SitePage.Type.LINK_TO_PAGE_PAGE) ||
+				 Objects.equals(
+					 sitePage.getType(), SitePage.Type.LINK_TO_URL_PAGE) ||
 				 Objects.equals(
 					 sitePage.getType(), SitePage.Type.PAGE_SET_PAGE)) {
 
@@ -940,7 +942,9 @@ public class SitePageResourceImpl
 				sitePage.getPageSpecifications(), serviceContext);
 		}
 		else if (Objects.equals(
-					sitePage.getType(), SitePage.Type.LINK_TO_URL_PAGE) ||
+					sitePage.getType(), SitePage.Type.LINK_TO_PAGE_PAGE) ||
+				 Objects.equals(
+					 sitePage.getType(), SitePage.Type.LINK_TO_URL_PAGE) ||
 				 Objects.equals(
 					 sitePage.getType(), SitePage.Type.PAGE_SET_PAGE)) {
 
