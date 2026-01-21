@@ -893,12 +893,15 @@ public class SegmentsExperienceServiceTest {
 
 		if ((Validator.isNull(segmentsExperience.getSegmentsEntryERC()) ||
 			 Objects.equals(
-				 segmentsExperience.getSegmentsEntryERC(), SegmentsEntryConstants.KEY_DEFAULT)) &&
+				 segmentsExperience.getSegmentsEntryERC(),
+				 SegmentsEntryConstants.KEY_DEFAULT)) &&
 			Objects.equals(
 				segmentsExperience.getSegmentsExperienceKey(),
 				SegmentsExperienceConstants.KEY_DEFAULT)) {
+
 			Assert.assertTrue(segmentsExperience.isDefault());
-		} else {
+		}
+		else {
 			Assert.assertFalse(segmentsExperience.isDefault());
 		}
 

@@ -412,7 +412,7 @@ public class AddSegmentsExperienceMVCActionCommandTest {
 				segmentsExperienceId);
 
 		Assert.assertTrue(segmentsExperience.isActive());
-		Assert.assertTrue(segmentsExperience.isDefault());
+		Assert.assertFalse(segmentsExperience.isDefault());
 		Assert.assertEquals(
 			name, segmentsExperience.getName(LocaleUtil.getDefault()));
 		Assert.assertEquals(

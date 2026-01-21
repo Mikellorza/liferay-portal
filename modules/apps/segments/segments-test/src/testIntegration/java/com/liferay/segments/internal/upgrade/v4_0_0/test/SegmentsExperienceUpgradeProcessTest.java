@@ -39,7 +39,6 @@ import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 import com.liferay.portal.upgrade.test.util.UpgradeTestUtil;
 import com.liferay.segments.constants.SegmentsEntryConstants;
-import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.service.SegmentsEntryLocalService;
@@ -141,24 +140,21 @@ public class SegmentsExperienceUpgradeProcessTest
 			_segmentsExperienceLocalService.fetchSegmentsExperience(
 				segmentsExperience2.getSegmentsExperienceId());
 
-		Assert.assertTrue(
-			segmentsExperience0.isDefault());
+		Assert.assertTrue(segmentsExperience0.isDefault());
 		Assert.assertEquals(
 			SegmentsEntryConstants.KEY_DEFAULT,
 			segmentsExperience0.getSegmentsEntryERC());
 		Assert.assertTrue(
 			Validator.isNull(segmentsExperience0.getSegmentsEntryScopeERC()));
 
-		Assert.assertFalse(
-			segmentsExperience1.isDefault());
+		Assert.assertFalse(segmentsExperience1.isDefault());
 		Assert.assertEquals(
 			segmentsEntry1.getExternalReferenceCode(),
 			segmentsExperience1.getSegmentsEntryERC());
 		Assert.assertTrue(
 			Validator.isNull(segmentsExperience1.getSegmentsEntryScopeERC()));
 
-		Assert.assertFalse(
-			segmentsExperience2.isDefault());
+		Assert.assertFalse(segmentsExperience2.isDefault());
 		Assert.assertEquals(
 			segmentsEntry2.getExternalReferenceCode(),
 			segmentsExperience2.getSegmentsEntryERC());

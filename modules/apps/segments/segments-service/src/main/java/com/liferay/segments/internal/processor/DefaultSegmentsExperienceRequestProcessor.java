@@ -8,6 +8,7 @@ package com.liferay.segments.internal.processor;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ScopeUtil;
+import com.liferay.segments.constants.SegmentsEntryConstants;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.processor.SegmentsExperienceRequestProcessor;
@@ -61,9 +62,22 @@ public class DefaultSegmentsExperienceRequestProcessor
 			long[] segmentsEntryIds, long[] segmentsExperienceIds)
 		throws PortalException {
 
-		Map<String, List<String>> scopeToEntriesMap = new HashMap<>();
+		Map<String, List<String>> segmentsEntryScopeERCToEntriesMap =
+			new HashMap<>();
 
 		for (long segmentsEntryId : segmentsEntryIds) {
+			if (segmentsEntryId == SegmentsEntryConstants.ID_DEFAULT) {
+				segmentsEntryScopeERCToEntriesMap.computeIfAbsent(
+					ScopeUtil.getItemScopeExternalReferenceCode(
+						groupId, groupId),
+					k -> new ArrayList<>()
+				).add(
+					SegmentsEntryConstants.KEY_DEFAULT
+				);
+
+				continue;
+			}
+
 			SegmentsEntry segmentsEntry =
 				_segmentsEntryLocalService.fetchSegmentsEntry(segmentsEntryId);
 
@@ -71,7 +85,7 @@ public class DefaultSegmentsExperienceRequestProcessor
 				continue;
 			}
 
-			scopeToEntriesMap.computeIfAbsent(
+			segmentsEntryScopeERCToEntriesMap.computeIfAbsent(
 				ScopeUtil.getItemScopeExternalReferenceCode(
 					segmentsEntry.getGroupId(), groupId),
 				k -> new ArrayList<>()
@@ -83,7 +97,7 @@ public class DefaultSegmentsExperienceRequestProcessor
 		List<SegmentsExperience> segmentsExperiences = new ArrayList<>();
 
 		for (Map.Entry<String, List<String>> mapEntry :
-				scopeToEntriesMap.entrySet()) {
+				segmentsEntryScopeERCToEntriesMap.entrySet()) {
 
 			String segmentsEntryScopeERC = mapEntry.getKey();
 

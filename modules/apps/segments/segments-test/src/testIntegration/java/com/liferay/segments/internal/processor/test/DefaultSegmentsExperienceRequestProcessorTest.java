@@ -111,7 +111,7 @@ public class DefaultSegmentsExperienceRequestProcessorTest {
 		long[] segmentsExperienceIds =
 			_segmentsExperienceRequestProcessor.getSegmentsExperienceIds(
 				new MockHttpServletRequest(), new MockHttpServletResponse(),
-				_group.getGroupId(), layout.getPlid(), new long[0],
+				_group.getGroupId(), layout.getPlid(), new long[] {0},
 				new long[0]);
 
 		Assert.assertEquals(
@@ -141,8 +141,9 @@ public class DefaultSegmentsExperienceRequestProcessorTest {
 		long[] segmentsExperienceIds =
 			_segmentsExperienceRequestProcessor.getSegmentsExperienceIds(
 				new MockHttpServletRequest(), new MockHttpServletResponse(),
-				_group.getGroupId(), layout.getPlid(), new long[0],
-				new long[] {segmentsEntry.getSegmentsEntryId()});
+				_group.getGroupId(), layout.getPlid(),
+				new long[] {0, segmentsEntry.getSegmentsEntryId()},
+				new long[0]);
 
 		Assert.assertEquals(
 			Arrays.toString(segmentsExperienceIds), 2,

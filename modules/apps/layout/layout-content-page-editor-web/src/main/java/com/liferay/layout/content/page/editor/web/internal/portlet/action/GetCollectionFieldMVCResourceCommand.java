@@ -77,6 +77,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.segments.constants.SegmentsEntryConstants;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.service.SegmentsEntryLocalService;
@@ -179,10 +180,19 @@ public class GetCollectionFieldMVCResourceCommand
 			_segmentsExperienceLocalService.fetchSegmentsExperience(
 				segmentsExperienceId);
 
+		if (segmentsExperience.isDefault()) {
+			return new long[] {SegmentsEntryConstants.ID_DEFAULT};
+		}
+
 		SegmentsEntry segmentsEntry =
-			_segmentsEntryLocalService.getSegmentsEntryByExternalReferenceCode(
-				segmentsExperience.getSegmentsEntryERC(),
-				segmentsExperience.getSegmentsEntryGroupId());
+			_segmentsEntryLocalService.
+				fetchSegmentsEntryByExternalReferenceCode(
+					segmentsExperience.getSegmentsEntryERC(),
+					segmentsExperience.getSegmentsEntryGroupId());
+
+		if (segmentsEntry == null) {
+			return new long[0];
+		}
 
 		if (!(layoutListRetriever instanceof
 				SegmentsEntryLayoutListRetriever)) {

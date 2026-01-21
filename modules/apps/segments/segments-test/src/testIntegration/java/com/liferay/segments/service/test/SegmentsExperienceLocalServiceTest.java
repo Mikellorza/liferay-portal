@@ -691,10 +691,10 @@ public class SegmentsExperienceLocalServiceTest {
 
 		Assert.assertEquals(
 			segmentsEntry.getExternalReferenceCode(),
-			segmentsExperience.getSegmentsEntryERC());
+			updatedSegmentsExperience.getSegmentsEntryERC());
 		Assert.assertEquals(
 			segmentsEntry.getGroupId(),
-			segmentsExperience.getSegmentsEntryGroupId());
+			updatedSegmentsExperience.getSegmentsEntryGroupId());
 		Assert.assertEquals(nameMap, updatedSegmentsExperience.getNameMap());
 		Assert.assertEquals(active, updatedSegmentsExperience.isActive());
 

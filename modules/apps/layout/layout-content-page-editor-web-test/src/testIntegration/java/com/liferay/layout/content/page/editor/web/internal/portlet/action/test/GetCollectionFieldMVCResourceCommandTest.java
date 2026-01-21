@@ -77,7 +77,7 @@ import com.liferay.portal.search.test.rule.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
-import com.liferay.segments.constants.SegmentsExperienceConstants;
+import com.liferay.segments.constants.SegmentsEntryConstants;
 import com.liferay.segments.criteria.Criteria;
 import com.liferay.segments.criteria.CriteriaSerializer;
 import com.liferay.segments.criteria.contributor.SegmentsCriteriaContributor;
@@ -497,20 +497,10 @@ public class GetCollectionFieldMVCResourceCommandTest {
 			_segmentsExperienceLocalService.fetchDefaultSegmentsExperienceId(
 				layout.getPlid());
 
-		SegmentsExperience defaultSegmentsExperience =
-			_segmentsExperienceLocalService.fetchSegmentsExperience(
-				_group.getGroupId(), SegmentsExperienceConstants.KEY_DEFAULT,
-				layout.getPlid());
-
-		SegmentsEntry segmentsEntry3 =
-			_segmentsEntryLocalService.getSegmentsEntryByExternalReferenceCode(
-				defaultSegmentsExperience.getSegmentsEntryERC(),
-				defaultSegmentsExperience.getSegmentsEntryGroupId());
-
 		_assetListEntryLocalService.addAssetEntrySelections(
 			assetListEntry.getAssetListEntryId(),
 			new long[] {assetEntry1.getEntryId()},
-			segmentsEntry3.getSegmentsEntryId(), _serviceContext);
+			SegmentsEntryConstants.ID_DEFAULT, _serviceContext);
 
 		_assetListEntryLocalService.addAssetEntrySelections(
 			assetListEntry.getAssetListEntryId(),
