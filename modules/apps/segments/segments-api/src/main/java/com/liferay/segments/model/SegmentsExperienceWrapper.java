@@ -516,6 +516,11 @@ public class SegmentsExperienceWrapper
 	}
 
 	@Override
+	public boolean isDefault() {
+		return model.isDefault();
+	}
+
+	@Override
 	public void persist() {
 		model.persist();
 	}

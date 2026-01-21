@@ -58,6 +58,8 @@ public interface SegmentsExperience
 
 	public boolean hasSegmentsExperiment();
 
+	public boolean isDefault();
+
 	public void setTypeSettingsUnicodeProperties(
 		com.liferay.portal.kernel.util.UnicodeProperties
 			typeSettingsUnicodeProperties);
