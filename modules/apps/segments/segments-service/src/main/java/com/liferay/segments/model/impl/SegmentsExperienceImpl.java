@@ -12,6 +12,9 @@ import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ScopeUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.segments.constants.SegmentsEntryConstants;
+import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.segments.constants.SegmentsExperimentConstants;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.model.SegmentsExperiment;
@@ -19,6 +22,8 @@ import com.liferay.segments.service.SegmentsExperienceLocalServiceUtil;
 import com.liferay.segments.service.SegmentsExperimentLocalServiceUtil;
 
 import java.io.IOException;
+
+import java.util.Objects;
 
 /**
  * @author Eduardo García
@@ -73,6 +78,21 @@ public class SegmentsExperienceImpl extends SegmentsExperienceBaseImpl {
 		}
 
 		return true;
+	}
+
+	@Override
+	public boolean isDefault() {
+		if ((Validator.isNull(getSegmentsEntryERC()) ||
+			 Objects.equals(
+				 getSegmentsEntryERC(), SegmentsEntryConstants.KEY_DEFAULT)) &&
+			Objects.equals(
+				getSegmentsExperienceKey(),
+				SegmentsExperienceConstants.KEY_DEFAULT)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
