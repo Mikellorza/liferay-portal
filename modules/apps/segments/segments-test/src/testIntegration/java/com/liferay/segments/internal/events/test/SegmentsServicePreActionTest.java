@@ -252,10 +252,6 @@ public class SegmentsServicePreActionTest {
 				_segmentsConfigurationProvider.
 					clearSegmentsCompanyConfigurations();
 
-				ServiceContext serviceContext =
-					ServiceContextTestUtil.getServiceContext(
-						_group.getGroupId(), TestPropsValues.getUserId());
-
 				Layout layout = _layoutLocalService.addLayout(
 					null, TestPropsValues.getUserId(), _group.getGroupId(),
 					false, LayoutConstants.DEFAULT_PARENT_LAYOUT_ID, 0, 0,
@@ -266,7 +262,9 @@ public class SegmentsServicePreActionTest {
 					UnicodePropertiesBuilder.put(
 						LayoutTypeSettingsConstants.KEY_PUBLISHED, "true"
 					).buildString(),
-					false, false, Collections.emptyMap(), null, serviceContext);
+					false, false, Collections.emptyMap(), null,
+					ServiceContextTestUtil.getServiceContext(
+						_group.getGroupId(), TestPropsValues.getUserId()));
 
 				User user = _userLocalService.getUser(
 					TestPropsValues.getUserId());
@@ -312,10 +310,9 @@ public class SegmentsServicePreActionTest {
 				mockHttpServletRequest.setAttribute(
 					WebKeys.THEME_DISPLAY, _getThemeDisplay(layout));
 
-				LifecycleEvent lifecycleEvent = new LifecycleEvent(
-					mockHttpServletRequest, new MockHttpServletResponse());
-
-				lifecycleAction.processLifecycleEvent(lifecycleEvent);
+				lifecycleAction.processLifecycleEvent(
+					new LifecycleEvent(
+						mockHttpServletRequest, new MockHttpServletResponse()));
 
 				Assert.assertArrayEquals(
 					new long[] {
