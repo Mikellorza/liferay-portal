@@ -184,7 +184,6 @@ public class ReferencesTestUtil {
 
 		itemExternalReference.setClassName(className);
 		itemExternalReference.setExternalReferenceCode(externalReferenceCode);
-
 		itemExternalReference.setScope(
 			() -> new Scope() {
 				{
