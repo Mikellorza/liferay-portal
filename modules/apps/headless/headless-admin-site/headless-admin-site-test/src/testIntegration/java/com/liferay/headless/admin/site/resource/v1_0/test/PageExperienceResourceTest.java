@@ -8,7 +8,6 @@ package com.liferay.headless.admin.site.resource.v1_0.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageExperience;
 import com.liferay.headless.admin.site.client.problem.Problem;
-import com.liferay.headless.admin.site.client.scope.Scope;
 import com.liferay.headless.admin.site.resource.v1_0.test.util.PageElementsTestUtil;
 import com.liferay.headless.admin.site.resource.v1_0.test.util.PageExperiencesTestUtil;
 import com.liferay.headless.admin.site.resource.v1_0.test.util.ReferencesTestUtil;
@@ -192,20 +191,13 @@ public class PageExperienceResourceTest
 					testGroup.getGroupId(), RandomTestUtil.randomString(),
 					companyGroup.getExternalReferenceCode())));
 
-		PageExperience missingSegmentEntryPageExperience =
-			PageExperiencesTestUtil.getPageExperience(
-				_draftLayout.getExternalReferenceCode(), 5,
-				testGroup.getGroupId(), RandomTestUtil.randomString(), null);
-
-		missingSegmentEntryPageExperience.getSegmentItemExternalReference(
-		).setScope(
-			(Scope)null
-		);
-
 		_testMissingOptionalReference(
 			1,
 			() -> _testPostSitePageSpecificationPageExperience(
-				missingSegmentEntryPageExperience));
+				PageExperiencesTestUtil.getPageExperience(
+					_draftLayout.getExternalReferenceCode(), 5,
+					testGroup.getGroupId(), RandomTestUtil.randomString(),
+					null)));
 	}
 
 	@Override
