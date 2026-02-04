@@ -444,12 +444,13 @@ public class PageExperienceResourceTest
 	}
 
 	private Layout _draftLayout;
+
+	@Inject
+	private GroupLocalService _groupLocalService;
+
 	private Layout _layout;
 
 	@Inject
 	private SegmentsExperienceLocalService _segmentsExperienceLocalService;
-
-	@Inject
-	private GroupLocalService _groupLocalService;
 
 }
