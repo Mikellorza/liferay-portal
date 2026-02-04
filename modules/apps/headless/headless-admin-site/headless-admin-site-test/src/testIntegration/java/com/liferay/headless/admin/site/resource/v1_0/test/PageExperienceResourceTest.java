@@ -17,7 +17,7 @@ import com.liferay.petra.function.UnsafeRunnable;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.test.log.LogCapture;
 import com.liferay.portal.test.log.LogEntry;
@@ -181,7 +181,7 @@ public class PageExperienceResourceTest
 				testGroup.getGroupId(),
 				SegmentsTestUtil.addSegmentsEntry(testCompany.getGroupId())));
 
-		Group companyGroup = GroupLocalServiceUtil.getGroup(
+		Group companyGroup = _groupLocalService.getGroup(
 			testCompany.getGroupId());
 
 		_testMissingOptionalReference(
@@ -448,5 +448,8 @@ public class PageExperienceResourceTest
 
 	@Inject
 	private SegmentsExperienceLocalService _segmentsExperienceLocalService;
+
+	@Inject
+	private GroupLocalService _groupLocalService;
 
 }
