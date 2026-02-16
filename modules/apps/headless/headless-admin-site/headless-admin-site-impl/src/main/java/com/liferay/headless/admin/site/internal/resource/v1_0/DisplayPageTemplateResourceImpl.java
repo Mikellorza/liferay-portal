@@ -417,7 +417,9 @@ public class DisplayPageTemplateResourceImpl
 		ClassSubtypeReference contentTypeReference =
 			displayPageTemplate.getContentTypeReference();
 
-		if (contentTypeReference == null) {
+		if ((contentTypeReference == null) ||
+			Validator.isNull(contentTypeReference.getClassName())) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -564,7 +566,9 @@ public class DisplayPageTemplateResourceImpl
 		ClassSubtypeReference contentTypeReference =
 			displayPageTemplate.getContentTypeReference();
 
-		if (contentTypeReference == null) {
+		if ((contentTypeReference == null) ||
+			Validator.isNull(contentTypeReference.getClassName())) {
+
 			throw new UnsupportedOperationException();
 		}
 
