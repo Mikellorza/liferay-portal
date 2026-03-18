@@ -284,7 +284,7 @@ export default function AssetsFDSPropsTransformer({
 					additionalProps.assetLibraries,
 					itemData,
 					loadData,
-					additionalProps.objectEntryFolderExternalReferenceCode,
+					'',
 					additionalProps.rootObjectEntryFolderExternalReferenceCode ||
 						additionalProps.parentObjectEntryFolderExternalReferenceCode
 				);
