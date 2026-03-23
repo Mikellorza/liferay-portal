@@ -15,6 +15,7 @@ import com.liferay.exportimport.attachment.ExportImportAttachmentManager;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.object.action.engine.ObjectActionEngine;
 import com.liferay.object.comment.ObjectEntryComment;
+import com.liferay.object.constants.ObjectActionKeys;
 import com.liferay.object.constants.ObjectActionTriggerConstants;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
@@ -3453,7 +3454,7 @@ public class DefaultObjectEntryManagerImpl
 			).put(
 				"versions",
 				_addAction(
-					ActionKeys.UPDATE,
+					ObjectActionKeys.OBJECT_ENTRY_HISTORY,
 					new String[] {
 						"getByExternalReferenceCodeVersionsPage",
 						"getScopeScopeKeyByExternalReferenceCodeVersionsPage"
