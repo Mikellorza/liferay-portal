@@ -25,6 +25,7 @@ import com.liferay.portal.configuration.test.util.ConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lazy.referencing.LazyReferencingThreadLocal;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
@@ -40,6 +41,7 @@ import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.FeatureFlagTestUtil;
+import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -56,10 +58,14 @@ import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.StringEntityField;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
+import com.liferay.portal.vulcan.batch.engine.VulcanBatchEngineTaskItemDelegate;
 import com.liferay.subscription.service.SubscriptionLocalService;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.AfterClass;
@@ -97,6 +103,27 @@ public class ObjectEntryFolderResourceTest
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+
+		_objectEntryFolderResource.setContextAcceptLanguage(
+			new AcceptLanguage() {
+
+				@Override
+				public List<Locale> getLocales() {
+					return Arrays.asList(LocaleUtil.getDefault());
+				}
+
+				@Override
+				public String getPreferredLanguageId() {
+					return LocaleUtil.toLanguageId(LocaleUtil.getDefault());
+				}
+
+				@Override
+				public Locale getPreferredLocale() {
+					return LocaleUtil.getDefault();
+				}
+
+			});
+		_objectEntryFolderResource.setContextUser(TestPropsValues.getUser());
 
 		_testDepotEntry = _depotEntryLocalService.addDepotEntry(
 			Collections.singletonMap(
@@ -387,6 +414,53 @@ public class ObjectEntryFolderResourceTest
 		_testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeWithMissingParentObjectEntryFolderReference();
 		_testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeWithNonexistentParentObjectEntryFolderByExternalReferenceCode();
 		_testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCodeWithNonexistentParentObjectEntryFolderByObjectEntryFolderId();
+	}
+
+	@Test
+	public void testRead() throws Exception {
+		Group originalTestGroup = testGroup;
+
+		testGroup = GroupTestUtil.addGroup(
+			TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+			GroupConstants.DEFAULT_PARENT_GROUP_ID, GroupConstants.CMS);
+
+		DepotEntry depotEntry = _depotEntryLocalService.addDepotEntry(
+			Collections.singletonMap(
+				LocaleUtil.getDefault(), RandomTestUtil.randomString()),
+			null, DepotConstants.TYPE_SPACE,
+			ServiceContextTestUtil.getServiceContext(
+				testGroup.getGroupId(), TestPropsValues.getUserId()));
+
+		Assert.assertEquals(
+			2,
+			_objectEntryFolderLocalService.getObjectEntryFoldersCount(
+				depotEntry.getGroupId(), depotEntry.getCompanyId(),
+				GroupConstants.DEFAULT_PARENT_GROUP_ID));
+
+		testGetScopeScopeKeyObjectEntryFoldersPage_addObjectEntryFolder(
+			String.valueOf(depotEntry.getGroupId()), randomObjectEntryFolder());
+
+		Assert.assertEquals(
+			3,
+			_objectEntryFolderLocalService.getObjectEntryFoldersCount(
+				depotEntry.getGroupId(), depotEntry.getCompanyId(),
+				GroupConstants.DEFAULT_PARENT_GROUP_ID));
+
+		VulcanBatchEngineTaskItemDelegate vulcanBatchEngineTaskItemDelegate =
+			(VulcanBatchEngineTaskItemDelegate)_objectEntryFolderResource;
+
+		com.liferay.portal.vulcan.pagination.Page<ObjectEntryFolder> page =
+			vulcanBatchEngineTaskItemDelegate.read(
+				null, com.liferay.portal.vulcan.pagination.Pagination.of(1, 2),
+				null,
+				HashMapBuilder.put(
+					"siteId", depotEntry.getGroupId()
+				).build(),
+				null);
+
+		Assert.assertEquals(1, page.getTotalCount());
+
+		testGroup = originalTestGroup;
 	}
 
 	@Override
@@ -1440,6 +1514,10 @@ public class ObjectEntryFolderResourceTest
 
 	@Inject
 	private ObjectEntryFolderLocalService _objectEntryFolderLocalService;
+
+	@Inject
+	private com.liferay.headless.object.resource.v1_0.ObjectEntryFolderResource
+		_objectEntryFolderResource;
 
 	@Inject
 	private ResourcePermissionLocalService _resourcePermissionLocalService;
