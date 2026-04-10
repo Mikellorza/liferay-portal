@@ -11,7 +11,7 @@ if (inputElement) {
 		inputElement.setAttribute('disabled', true);
 	}
 	else {
-		const defaultLanguageId = themeDisplay.getDefaultLanguageId();
+			const defaultLanguageId = themeDisplay.getDefaultLanguageId();
 
 		import('@liferay/fragment-impl/api').then(
 			({registerLocalizedInput, registerUnlocalizedInput}) => {
