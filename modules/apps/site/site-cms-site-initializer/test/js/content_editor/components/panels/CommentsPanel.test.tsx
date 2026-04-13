@@ -12,8 +12,23 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import CommentsPanel from '../../../../../src/main/resources/META-INF/resources/js/content_editor/components/panels/CommentsPanel';
-import {Comment} from '../../../../../src/main/resources/META-INF/resources/js/content_editor/services/CommentService';
+import CommentService, {
+	Comment,
+} from '../../../../../src/main/resources/META-INF/resources/js/content_editor/services/CommentService';
 import {mockFetch} from '../../../__mocks__/frontend-js-web';
+
+jest.mock(
+	'../../../../../src/main/resources/META-INF/resources/js/content_editor/services/CommentService',
+	() => ({
+		__esModule: true,
+		default: {
+			addComment: jest.fn(),
+			deleteComment: jest.fn(),
+			editComment: jest.fn(),
+			getComments: jest.fn(),
+		},
+	})
+);
 
 jest.mock('@ckeditor/ckeditor5-react', () => ({
 	CKEditor: ({onReady}: any) => {
@@ -91,6 +106,10 @@ describe('CommentsPanel', () => {
 	});
 
 	it('deletes the child comment', async () => {
+		(CommentService.deleteComment as jest.Mock).mockResolvedValue({
+			data: {},
+		});
+
 		renderComponent();
 
 		expect(screen.getByText('Parent comment')).toBeInTheDocument;
@@ -99,13 +118,10 @@ describe('CommentsPanel', () => {
 		await userEvent.click(screen.getAllByText('delete')[1]);
 
 		await waitFor(() => {
-			expect(mockFetch).toBeCalledWith(
-				'deleteCommentURL',
+			expect(CommentService.deleteComment).toBeCalledWith(
 				expect.objectContaining({
-					body: {
-						commentId: '2',
-					},
-					method: 'POST',
+					commentId: '2',
+					url: 'deleteCommentURL',
 				})
 			);
 
@@ -121,6 +137,10 @@ describe('CommentsPanel', () => {
 	});
 
 	it('deletes the parent comment', async () => {
+		(CommentService.deleteComment as jest.Mock).mockResolvedValue({
+			data: {},
+		});
+
 		renderComponent();
 
 		expect(screen.getByText('Parent comment')).toBeInTheDocument;
@@ -129,13 +149,10 @@ describe('CommentsPanel', () => {
 		await userEvent.click(screen.getAllByText('delete')[0]);
 
 		await waitFor(() => {
-			expect(mockFetch).toBeCalledWith(
-				'deleteCommentURL',
+			expect(CommentService.deleteComment).toBeCalledWith(
 				expect.objectContaining({
-					body: {
-						commentId: '1',
-					},
-					method: 'POST',
+					commentId: '1',
+					url: 'deleteCommentURL',
 				})
 			);
 
@@ -153,20 +170,19 @@ describe('CommentsPanel', () => {
 	it('shows a toast with the error when the request to delete a comment fails', async () => {
 		const error = 'Unexpected error deleting a comment';
 
-		(mockFetch as jest.Mock).mockRejectedValueOnce(new Error(error));
+		(CommentService.deleteComment as jest.Mock).mockResolvedValue({
+			error,
+		});
 
 		renderComponent();
 
 		await userEvent.click(screen.getAllByText('delete')[0]);
 
 		await waitFor(() => {
-			expect(mockFetch).toBeCalledWith(
-				'deleteCommentURL',
+			expect(CommentService.deleteComment).toBeCalledWith(
 				expect.objectContaining({
-					body: {
-						commentId: '1',
-					},
-					method: 'POST',
+					commentId: '1',
+					url: 'deleteCommentURL',
 				})
 			);
 
@@ -200,5 +216,30 @@ describe('CommentsPanel', () => {
 			body: expect.objectContaining({score: 0}),
 			method: 'POST',
 		});
+	});
+
+	it('fetches comments if they are not provided as props', async () => {
+		(CommentService.getComments as jest.Mock).mockResolvedValue({
+			data: initialComments,
+		});
+
+		render(
+			<CommentsPanel
+				addCommentURL="addCommentURL"
+				deleteCommentURL="deleteCommentURL"
+				editCommentURL="editCommentURL"
+				editorConfig={{}}
+				getCommentsURL="getCommentsURL"
+			/>
+		);
+
+		await waitFor(() => {
+			expect(CommentService.getComments).toHaveBeenCalledWith({
+				url: 'getCommentsURL',
+			});
+		});
+
+		expect(screen.getByText('Parent comment')).toBeInTheDocument();
+		expect(screen.getByText('Child comment')).toBeInTheDocument();
 	});
 });
