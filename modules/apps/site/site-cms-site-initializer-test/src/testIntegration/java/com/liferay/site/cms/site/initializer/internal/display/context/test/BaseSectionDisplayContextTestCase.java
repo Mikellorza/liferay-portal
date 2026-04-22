@@ -41,6 +41,7 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
@@ -157,6 +158,31 @@ public abstract class BaseSectionDisplayContextTestCase
 				GroupConstants.CMS_FRIENDLY_URL, "/e/view-folder/",
 				_portal.getClassNameId(ObjectEntryFolder.class),
 				StringPool.SLASH)
+		).put(
+			"breadcrumbProps",
+			() -> {
+				Layout layout = themeDisplay.getLayout();
+
+				String label = null;
+
+				if (layout != null) {
+					label = layout.getName(themeDisplay.getLocale(), true);
+				}
+
+				return HashMapBuilder.<String, Object>put(
+					"breadcrumbItems",
+					JSONUtil.putAll(
+						JSONUtil.put(
+							"active", false
+						).put(
+							"href", (String)null
+						).put(
+							"label", label
+						))
+				).put(
+					"hideSpace", true
+				).build();
+			}
 		).put(
 			"brokenLinksCheckerEnabled",
 			GetterUtil.getBoolean(
