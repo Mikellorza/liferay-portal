@@ -31,6 +31,7 @@ import com.liferay.object.rest.test.util.ObjectEntryTestUtil;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeletableSystemGroup;
 import com.liferay.portal.kernel.test.rule.DeletableSystemGroupTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -43,6 +44,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.FeatureFlags;
 import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.site.cms.site.initializer.test.util.CMSTestUtil;
 
@@ -73,14 +75,11 @@ public class InventoryAnalysisResourceTest
 
 	@ClassRule
 	@Rule
-	public static final DeletableSystemGroupTestRule
-		deletableSystemGroupTestRule = DeletableSystemGroupTestRule.INSTANCE;
-
-	@ClassRule
-	@Rule
-	public static final PermissionCheckerMethodTestRule
-		permissionCheckerMethodTestRule =
-			PermissionCheckerMethodTestRule.INSTANCE;
+	public static final AggregateTestRule aggregateTestRule =
+		new AggregateTestRule(
+			new DeletableSystemGroupTestRule(),
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
 
 	@Override
 	@Test
