@@ -6,7 +6,6 @@
 package com.liferay.site.cms.site.initializer.internal.display.context;
 
 import com.liferay.depot.constants.DepotConstants;
-import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.document.library.configuration.DLConfiguration;
 import com.liferay.frontend.data.set.SystemFDSEntry;
@@ -276,12 +275,12 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	private Map<String, Integer> _getQuickFilterCounts() {
-		Long[] groupIds = TransformUtil.transformToArray(
-			depotEntryLocalService.getDepotEntries(
-				themeDisplay.getCompanyId(), DepotConstants.TYPE_SPACE),
-			DepotEntry::getGroupId, Long.class);
+		List<Long> depotEntryGroupIds =
+			depotEntryLocalService.getDepotEntryGroupIds(
+				themeDisplay.getCompanyId(), themeDisplay.getUserId(),
+				DepotConstants.TYPE_SPACE);
 
-		if (ArrayUtil.isEmpty(groupIds)) {
+		if (depotEntryGroupIds.isEmpty()) {
 			_log.error("CMS quickFilterCounts: no CMS space depots found");
 
 			return Collections.emptyMap();
@@ -294,10 +293,13 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 			ObjectDefinition::getObjectDefinitionId, Long.class);
 
 		if (ArrayUtil.isEmpty(objectDefinitionIds)) {
-			_log.error("CMS quickFilterCounts: no CMS object definitions found");
+			_log.error(
+				"CMS quickFilterCounts: no CMS object definitions found");
 
 			return Collections.emptyMap();
 		}
+
+		Long[] groupIds = depotEntryGroupIds.toArray(new Long[0]);
 
 		Date now = new Date();
 
