@@ -1867,6 +1867,19 @@ public class ObjectEntryLocalServiceImpl
 				predicate, preferApproved, search));
 	}
 
+	public int getValuesListCount(
+			Long[] groupIds, long companyId, long userId,
+			Long[] objectDefinitionIds, Predicate predicate)
+		throws PortalException {
+
+		return objectEntryPersistence.dslQueryCount(
+			_getObjectEntriesGroupByStepWithoutDefinition(
+				groupIds, companyId,
+				DSLQueryFactoryUtil.countDistinct(
+					ObjectEntryTable.INSTANCE.objectEntryId),
+				objectDefinitionIds, predicate));
+	}
+
 	@Override
 	public void insertIntoOrUpdateExtensionTable(
 			long userId, long objectDefinitionId, long primaryKey,
@@ -4723,6 +4736,53 @@ public class ObjectEntryLocalServiceImpl
 		);
 	}
 
+	private GroupByStep _getObjectEntriesGroupByStepWithoutDefinition(
+			Long[] groupIds, long companyId, FromStep fromStep,
+			Long[] objectDefinitionIds, Predicate predicate)
+		throws PortalException {
+
+		return fromStep.from(
+			ObjectEntryTable.INSTANCE
+		).where(
+			ObjectEntryTable.INSTANCE.companyId.eq(
+				companyId
+			).and(
+				ObjectEntryTable.INSTANCE.rootObjectEntryId.eq(
+					ObjectEntryTable.INSTANCE.objectEntryId
+				).or(
+					ObjectEntryTable.INSTANCE.rootObjectEntryId.eq(0L)
+				).withParentheses()
+			).and(
+				ObjectEntryTable.INSTANCE.status.neq(
+					WorkflowConstants.STATUS_IN_TRASH)
+			).and(
+				() -> {
+					if (ArrayUtil.isEmpty(groupIds)) {
+						return null;
+					}
+
+					return ObjectEntryTable.INSTANCE.groupId.in(groupIds);
+				}
+			).and(
+				() -> {
+					if (ArrayUtil.isEmpty(objectDefinitionIds)) {
+						return null;
+					}
+
+					return ObjectEntryTable.INSTANCE.objectDefinitionId.in(
+						objectDefinitionIds);
+				}
+			).and(
+				predicate
+			).and(
+				_getHeadObjectEntryPredicate(false)
+			).and(
+				_getPermissionWherePredicateForDefinitions(
+					groupIds, objectDefinitionIds)
+			)
+		);
+	}
+
 	private long _getObjectEntryCheckInterval(long companyId) {
 		try {
 			ObjectEntryScheduleConfiguration objectEntryScheduleConfiguration =
@@ -4933,6 +4993,52 @@ public class ObjectEntryLocalServiceImpl
 		}
 
 		return permissionWherePredicate;
+	}
+
+	private Predicate _getPermissionWherePredicateForDefinitions(
+			Long[] groupIds, Long[] objectDefinitionIds)
+		throws PortalException {
+
+		if ((PermissionThreadLocal.getPermissionChecker() == null) ||
+			ArrayUtil.isEmpty(groupIds) ||
+			ArrayUtil.isEmpty(objectDefinitionIds)) {
+
+			return null;
+		}
+
+		Predicate permissionWherePredicate = null;
+
+		for (Long objectDefinitionId : objectDefinitionIds) {
+			ObjectDefinition objectDefinition =
+				_objectDefinitionPersistence.findByPrimaryKey(
+					objectDefinitionId);
+
+			Predicate definitionPermissionPredicate =
+				_getPermissionWherePredicate(
+					DynamicObjectDefinitionTableUtil.
+						getDynamicObjectDefinitionTable(
+							false, objectDefinition, _objectFieldLocalService),
+					groupIds);
+
+			Predicate scopedPredicate =
+				ObjectEntryTable.INSTANCE.objectDefinitionId.eq(
+					objectDefinitionId);
+
+			if (definitionPermissionPredicate != null) {
+				scopedPredicate = scopedPredicate.and(
+					Predicate.withParentheses(definitionPermissionPredicate));
+			}
+
+			if (permissionWherePredicate == null) {
+				permissionWherePredicate = scopedPredicate;
+			}
+			else {
+				permissionWherePredicate = permissionWherePredicate.or(
+					scopedPredicate);
+			}
+		}
+
+		return Predicate.withParentheses(permissionWherePredicate);
 	}
 
 	private Column<?, Long> _getPrimaryKeyColumn(
