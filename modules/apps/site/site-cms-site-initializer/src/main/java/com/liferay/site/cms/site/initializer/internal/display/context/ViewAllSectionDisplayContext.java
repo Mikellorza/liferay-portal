@@ -5,6 +5,8 @@
 
 package com.liferay.site.cms.site.initializer.internal.display.context;
 
+import com.liferay.depot.constants.DepotConstants;
+import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.document.library.configuration.DLConfiguration;
 import com.liferay.frontend.data.set.SystemFDSEntry;
@@ -14,9 +16,14 @@ import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItemBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntryFolder;
+import com.liferay.object.model.ObjectEntryTable;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
+import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
@@ -25,12 +32,17 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.translation.exporter.TranslationInfoItemFieldValuesExporterRegistry;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +57,7 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 		HttpServletRequest httpServletRequest, Language language,
 		ObjectDefinitionService objectDefinitionService,
 		ObjectDefinitionSettingLocalService objectDefinitionSettingLocalService,
+		ObjectEntryLocalService objectEntryLocalService,
 		ModelResourcePermission<ObjectEntryFolder>
 			objectEntryFolderModelResourcePermission,
 		Portal portal, FDSCreationMenu viewAllSectionFDSCreationMenu,
@@ -61,7 +74,8 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 			translationInfoItemFieldValuesExporterRegistry);
 
 		_httpServletRequest = httpServletRequest;
-
+		_objectDefinitionService = objectDefinitionService;
+		_objectEntryLocalService = objectEntryLocalService;
 		_viewAllSectionFDSCreationMenu = viewAllSectionFDSCreationMenu;
 		_viewAllSectionFDSItemsActions = viewAllSectionFDSItemsActions;
 		_viewAllSectionSystemFDSEntry = viewAllSectionSystemFDSEntry;
@@ -85,6 +99,8 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 				_log.debug(portalException);
 			}
 		}
+
+		additionalProps.put("quickFilterCounts", _getQuickFilterCounts());
 
 		return additionalProps;
 	}
@@ -242,10 +258,85 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 		return true;
 	}
 
+	private int _getCount(
+		Long[] groupIds, Long[] objectDefinitionIds, Predicate predicate) {
+
+		try {
+			return _objectEntryLocalService.getValuesListCount(
+				groupIds, themeDisplay.getCompanyId(), themeDisplay.getUserId(),
+				objectDefinitionIds, predicate);
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+
+			return 0;
+		}
+	}
+
+	private Map<String, Integer> _getQuickFilterCounts() {
+		Long[] groupIds = TransformUtil.transformToArray(
+			depotEntryLocalService.getDepotEntries(
+				themeDisplay.getCompanyId(), DepotConstants.TYPE_SPACE),
+			DepotEntry::getGroupId, Long.class);
+
+		if (ArrayUtil.isEmpty(groupIds)) {
+			return Collections.emptyMap();
+		}
+
+		Long[] objectDefinitionIds = TransformUtil.transformToArray(
+			_objectDefinitionService.getCMSObjectDefinitions(
+				themeDisplay.getCompanyId(),
+				getObjectFolderExternalReferenceCodes()),
+			ObjectDefinition::getObjectDefinitionId, Long.class);
+
+		if (ArrayUtil.isEmpty(objectDefinitionIds)) {
+			return Collections.emptyMap();
+		}
+
+		Date now = new Date();
+
+		Date expiringSoonThreshold = new Date(
+			now.getTime() + (Time.DAY * _EXPIRING_SOON_DAYS));
+
+		return HashMapBuilder.put(
+			"expired",
+			_getCount(
+				groupIds, objectDefinitionIds,
+				ObjectEntryTable.INSTANCE.expirationDate.lt(now))
+		).put(
+			"expiringSoon",
+			_getCount(
+				groupIds, objectDefinitionIds,
+				ObjectEntryTable.INSTANCE.expirationDate.gt(
+					now
+				).and(
+					ObjectEntryTable.INSTANCE.expirationDate.lte(
+						expiringSoonThreshold)
+				))
+		).put(
+			"inDraft",
+			_getCount(
+				groupIds, objectDefinitionIds,
+				ObjectEntryTable.INSTANCE.status.eq(
+					WorkflowConstants.STATUS_DRAFT))
+		).put(
+			"reviewDateOverdue",
+			_getCount(
+				groupIds, objectDefinitionIds,
+				ObjectEntryTable.INSTANCE.reviewDate.lt(now))
+		).build();
+	}
+
+	private static final int _EXPIRING_SOON_DAYS = 7;
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		ViewAllSectionDisplayContext.class);
 
 	private final HttpServletRequest _httpServletRequest;
+	private final ObjectDefinitionService _objectDefinitionService;
+	private final ObjectEntryLocalService _objectEntryLocalService;
 	private final FDSCreationMenu _viewAllSectionFDSCreationMenu;
 	private final FDSItemsActions _viewAllSectionFDSItemsActions;
 	private final SystemFDSEntry _viewAllSectionSystemFDSEntry;

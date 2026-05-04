@@ -14,6 +14,7 @@ import com.liferay.frontend.data.set.action.FDSItemsActions;
 import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
+import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.Portal;
@@ -63,7 +64,7 @@ public class ViewAllJSPSectionFragmentRenderer
 		return new ViewAllSectionDisplayContext(
 			_depotEntryLocalService, _dlConfiguration, groupLocalService,
 			httpServletRequest, language, _objectDefinitionService,
-			_objectDefinitionSettingLocalService,
+			_objectDefinitionSettingLocalService, _objectEntryLocalService,
 			_objectEntryFolderModelResourcePermission, _portal,
 			_viewAllSectionFDSCreationMenu, _viewAllSectionFDSItemsActions,
 			_viewAllSectionSystemFDSEntry,
@@ -92,6 +93,9 @@ public class ViewAllJSPSectionFragmentRenderer
 	)
 	private ModelResourcePermission<ObjectEntryFolder>
 		_objectEntryFolderModelResourcePermission;
+
+	@Reference
+	private ObjectEntryLocalService _objectEntryLocalService;
 
 	@Reference
 	private Portal _portal;
