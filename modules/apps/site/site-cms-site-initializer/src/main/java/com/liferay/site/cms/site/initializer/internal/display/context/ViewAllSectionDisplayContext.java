@@ -99,7 +99,7 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 			}
 		}
 
-		additionalProps.put("quickFilterCounts", _getQuickFilterCounts());
+		additionalProps.put("quickFilterCounts", getQuickFilterCounts());
 
 		return additionalProps;
 	}
@@ -246,35 +246,7 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 			httpServletRequest);
 	}
 
-	@Override
-	protected String getCMSSectionFilterString() {
-		throw new UnsupportedOperationException(
-			"ViewAllSectionSystemFDSEntry must calculate this");
-	}
-
-	@Override
-	protected boolean isFolderSearchEnabled() {
-		return true;
-	}
-
-	private int _getCount(
-		Long[] groupIds, Long[] objectDefinitionIds, Predicate predicate) {
-
-		try {
-			return _objectEntryLocalService.getValuesListCount(
-				groupIds, themeDisplay.getCompanyId(), themeDisplay.getUserId(),
-				objectDefinitionIds, predicate);
-		}
-		catch (PortalException portalException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(portalException);
-			}
-
-			return 0;
-		}
-	}
-
-	private Map<String, Integer> _getQuickFilterCounts() {
+	public Map<String, Integer> getQuickFilterCounts() {
 		List<Long> depotEntryGroupIds =
 			depotEntryLocalService.getDepotEntryGroupIds(
 				themeDisplay.getCompanyId(), themeDisplay.getUserId(),
@@ -310,13 +282,16 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 			"expired",
 			_getCount(
 				groupIds, objectDefinitionIds,
-				ObjectEntryTable.INSTANCE.expirationDate.lt(now))
+				ObjectEntryTable.INSTANCE.status.eq(
+					WorkflowConstants.STATUS_EXPIRED))
 		).put(
 			"expiringSoon",
 			_getCount(
 				groupIds, objectDefinitionIds,
-				ObjectEntryTable.INSTANCE.expirationDate.gt(
-					now
+				ObjectEntryTable.INSTANCE.status.eq(
+					WorkflowConstants.STATUS_APPROVED
+				).and(
+					ObjectEntryTable.INSTANCE.expirationDate.gt(now)
 				).and(
 					ObjectEntryTable.INSTANCE.expirationDate.lte(
 						expiringSoonThreshold)
@@ -337,6 +312,40 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 		_log.error("CMS quickFilterCounts: " + quickFilterCounts);
 
 		return quickFilterCounts;
+	}
+
+	public Map<String, Object> getQuickFiltersProperties() {
+		return HashMapBuilder.<String, Object>put(
+			"quickFilterCounts", getQuickFilterCounts()
+		).build();
+	}
+
+	@Override
+	protected String getCMSSectionFilterString() {
+		throw new UnsupportedOperationException(
+			"ViewAllSectionSystemFDSEntry must calculate this");
+	}
+
+	@Override
+	protected boolean isFolderSearchEnabled() {
+		return true;
+	}
+
+	private int _getCount(
+		Long[] groupIds, Long[] objectDefinitionIds, Predicate predicate) {
+
+		try {
+			return _objectEntryLocalService.getValuesListCount(
+				groupIds, themeDisplay.getCompanyId(), themeDisplay.getUserId(),
+				objectDefinitionIds, predicate);
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+
+			return 0;
+		}
 	}
 
 	private static final int _EXPIRING_SOON_DAYS = 7;

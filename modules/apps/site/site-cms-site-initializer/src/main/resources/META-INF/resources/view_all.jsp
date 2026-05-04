@@ -19,6 +19,13 @@ ViewAllSectionDisplayContext viewAllSectionDisplayContext = (ViewAllSectionDispl
 		/>
 	</div>
 
+	<div>
+		<react:component
+			module="{CMSAllQuickFilters} from site-cms-site-initializer"
+			props="<%= viewAllSectionDisplayContext.getQuickFiltersProperties() %>"
+		/>
+	</div>
+
 	<div class="cms-section custom-empty-state">
 		<frontend-data-set:headless-display
 			additionalProps="<%= viewAllSectionDisplayContext.getAdditionalProps() %>"
