@@ -706,6 +706,16 @@ public class ObjectEntryLocalServiceUtil {
 			preferApproved, search);
 	}
 
+	public static int getValuesListCount(
+			Long[] groupIds, long companyId, long userId,
+			Long[] objectDefinitionIds,
+			com.liferay.petra.sql.dsl.expression.Predicate predicate)
+		throws PortalException {
+
+		return getService().getValuesListCount(
+			groupIds, companyId, userId, objectDefinitionIds, predicate);
+	}
+
 	public static void insertIntoOrUpdateExtensionTable(
 			long userId, long objectDefinitionId, long primaryKey,
 			Map<String, Serializable> values)
@@ -894,4 +904,4 @@ public class ObjectEntryLocalServiceUtil {
 			ObjectEntryLocalServiceUtil.class, ObjectEntryLocalService.class);
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:233544416
+// LIFERAY-SERVICE-BUILDER-HASH:1051894178

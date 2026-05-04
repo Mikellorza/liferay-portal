@@ -518,6 +518,12 @@ public interface ObjectEntryLocalService
 			boolean preferApproved, String search)
 		throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getValuesListCount(
+			Long[] groupIds, long companyId, long userId,
+			Long[] objectDefinitionIds, Predicate predicate)
+		throws PortalException;
+
 	public void insertIntoOrUpdateExtensionTable(
 			long userId, long objectDefinitionId, long primaryKey,
 			Map<String, Serializable> values)
@@ -620,4 +626,4 @@ public interface ObjectEntryLocalService
 		throws PortalException;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:709473226
+// LIFERAY-SERVICE-BUILDER-HASH:-650601051

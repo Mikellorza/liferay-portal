@@ -809,6 +809,17 @@ public class ObjectEntryLocalServiceWrapper
 	}
 
 	@Override
+	public int getValuesListCount(
+			Long[] groupIds, long companyId, long userId,
+			Long[] objectDefinitionIds,
+			com.liferay.petra.sql.dsl.expression.Predicate predicate)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _objectEntryLocalService.getValuesListCount(
+			groupIds, companyId, userId, objectDefinitionIds, predicate);
+	}
+
+	@Override
 	public void insertIntoOrUpdateExtensionTable(
 			long userId, long objectDefinitionId, long primaryKey,
 			java.util.Map<String, java.io.Serializable> values)
@@ -1032,4 +1043,4 @@ public class ObjectEntryLocalServiceWrapper
 	private ObjectEntryLocalService _objectEntryLocalService;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:-1537866868
+// LIFERAY-SERVICE-BUILDER-HASH:678270351
