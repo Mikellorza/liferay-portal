@@ -282,6 +282,8 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 			DepotEntry::getGroupId, Long.class);
 
 		if (ArrayUtil.isEmpty(groupIds)) {
+			_log.error("CMS quickFilterCounts: no CMS space depots found");
+
 			return Collections.emptyMap();
 		}
 
@@ -292,6 +294,8 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 			ObjectDefinition::getObjectDefinitionId, Long.class);
 
 		if (ArrayUtil.isEmpty(objectDefinitionIds)) {
+			_log.error("CMS quickFilterCounts: no CMS object definitions found");
+
 			return Collections.emptyMap();
 		}
 
@@ -300,7 +304,7 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 		Date expiringSoonThreshold = new Date(
 			now.getTime() + (Time.DAY * _EXPIRING_SOON_DAYS));
 
-		return HashMapBuilder.put(
+		Map<String, Integer> quickFilterCounts = HashMapBuilder.put(
 			"expired",
 			_getCount(
 				groupIds, objectDefinitionIds,
@@ -327,6 +331,10 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 				groupIds, objectDefinitionIds,
 				ObjectEntryTable.INSTANCE.reviewDate.lt(now))
 		).build();
+
+		_log.error("CMS quickFilterCounts: " + quickFilterCounts);
+
+		return quickFilterCounts;
 	}
 
 	private static final int _EXPIRING_SOON_DAYS = 7;
