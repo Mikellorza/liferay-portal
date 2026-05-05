@@ -98,6 +98,7 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectDefinitionSetting;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectEntryFolder;
+import com.liferay.object.model.ObjectEntryTable;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.ObjectFieldSetting;
 import com.liferay.object.model.ObjectFolder;
@@ -5575,6 +5576,225 @@ public class ObjectEntryLocalServiceTest {
 			24, values2, valuesList.get(1), selectedObjectFieldNames);
 		_assertObjectEntryValues(
 			24, values3, valuesList.get(2), selectedObjectFieldNames);
+	}
+
+	@Test
+	public void testGetValuesListCountByObjectDefinitionIds() throws Exception {
+		ObjectDefinition objectDefinition1 =
+			ObjectDefinitionTestUtil.publishObjectDefinition(
+				Collections.singletonList(
+					ObjectFieldUtil.createObjectField(
+						ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+						ObjectFieldConstants.DB_TYPE_STRING,
+						RandomTestUtil.randomString(), "name")),
+				ObjectDefinitionConstants.SCOPE_SITE);
+
+		ObjectDefinition objectDefinition2 =
+			ObjectDefinitionTestUtil.publishObjectDefinition(
+				Collections.singletonList(
+					ObjectFieldUtil.createObjectField(
+						ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+						ObjectFieldConstants.DB_TYPE_STRING,
+						RandomTestUtil.randomString(), "name")),
+				ObjectDefinitionConstants.SCOPE_SITE);
+
+		ObjectDefinition irrelevantObjectDefinition =
+			ObjectDefinitionTestUtil.publishObjectDefinition(
+				Collections.singletonList(
+					ObjectFieldUtil.createObjectField(
+						ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+						ObjectFieldConstants.DB_TYPE_STRING,
+						RandomTestUtil.randomString(), "name")),
+				ObjectDefinitionConstants.SCOPE_SITE);
+
+		Group irrelevantGroup = null;
+
+		try {
+			ObjectEntry objectEntry1 = _addObjectEntry(
+				TestPropsValues.getGroupId(),
+				objectDefinition1.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			Date now = new Date();
+
+			objectEntry1.setExpirationDate(
+				new Date(now.getTime() + (3 * Time.DAY)));
+
+			_objectEntryLocalService.updateObjectEntry(objectEntry1);
+
+			ObjectEntry objectEntry2 = _addObjectEntry(
+				TestPropsValues.getGroupId(),
+				objectDefinition1.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			objectEntry2.setExpirationDate(
+				new Date(now.getTime() + (10 * Time.DAY)));
+
+			_objectEntryLocalService.updateObjectEntry(objectEntry2);
+
+			ObjectEntry objectEntry3 = _addObjectEntry(
+				TestPropsValues.getGroupId(),
+				objectDefinition1.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			objectEntry3.setExpirationDate(new Date(now.getTime() - Time.DAY));
+
+			_objectEntryLocalService.updateObjectEntry(objectEntry3);
+
+			ObjectEntry objectEntry4 = _addObjectEntry(
+				TestPropsValues.getGroupId(),
+				objectDefinition2.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			ServiceContext serviceContext =
+				ServiceContextTestUtil.getServiceContext();
+
+			_objectEntryLocalService.updateStatus(
+				TestPropsValues.getUserId(), objectEntry4.getObjectEntryId(),
+				WorkflowConstants.STATUS_DRAFT, serviceContext);
+
+			ObjectEntry objectEntry5 = _addObjectEntry(
+				TestPropsValues.getGroupId(),
+				objectDefinition2.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			_objectEntryLocalService.updateStatus(
+				TestPropsValues.getUserId(), objectEntry5.getObjectEntryId(),
+				WorkflowConstants.STATUS_EXPIRED, serviceContext);
+
+			ObjectEntry objectEntry6 = _addObjectEntry(
+				TestPropsValues.getGroupId(),
+				objectDefinition2.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			objectEntry6.setReviewDate(
+				new Date(now.getTime() - (2 * Time.DAY)));
+
+			_objectEntryLocalService.updateObjectEntry(objectEntry6);
+
+			ObjectEntry objectEntry7 = _addObjectEntry(
+				TestPropsValues.getGroupId(),
+				objectDefinition2.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			objectEntry7.setReviewDate(
+				new Date(now.getTime() + (5 * Time.DAY)));
+
+			_objectEntryLocalService.updateObjectEntry(objectEntry7);
+
+			ObjectEntry objectEntry8 = _addObjectEntry(
+				TestPropsValues.getGroupId(),
+				irrelevantObjectDefinition.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			_objectEntryLocalService.updateStatus(
+				TestPropsValues.getUserId(), objectEntry8.getObjectEntryId(),
+				WorkflowConstants.STATUS_DRAFT, serviceContext);
+
+			irrelevantGroup = GroupTestUtil.addGroup();
+
+			ObjectEntry objectEntry9 = _addObjectEntry(
+				irrelevantGroup.getGroupId(),
+				objectDefinition1.getObjectDefinitionId(),
+				HashMapBuilder.<String, Serializable>put(
+					"name", RandomTestUtil.randomString()
+				).build());
+
+			_objectEntryLocalService.updateStatus(
+				TestPropsValues.getUserId(), objectEntry9.getObjectEntryId(),
+				WorkflowConstants.STATUS_DRAFT, serviceContext);
+
+			Long[] groupIds = {TestPropsValues.getGroupId()};
+			Long[] objectDefinitionIds = {
+				objectDefinition1.getObjectDefinitionId(),
+				objectDefinition2.getObjectDefinitionId()
+			};
+
+			Assert.assertEquals(
+				1,
+				_objectEntryLocalService.getValuesListCount(
+					groupIds, TestPropsValues.getCompanyId(),
+					TestPropsValues.getUserId(), objectDefinitionIds,
+					ObjectEntryTable.INSTANCE.status.eq(
+						WorkflowConstants.STATUS_DRAFT)));
+
+			Assert.assertEquals(
+				1,
+				_objectEntryLocalService.getValuesListCount(
+					groupIds, TestPropsValues.getCompanyId(),
+					TestPropsValues.getUserId(), objectDefinitionIds,
+					ObjectEntryTable.INSTANCE.status.eq(
+						WorkflowConstants.STATUS_EXPIRED)));
+
+			Assert.assertEquals(
+				1,
+				_objectEntryLocalService.getValuesListCount(
+					groupIds, TestPropsValues.getCompanyId(),
+					TestPropsValues.getUserId(), objectDefinitionIds,
+					ObjectEntryTable.INSTANCE.status.eq(
+						WorkflowConstants.STATUS_APPROVED
+					).and(
+						ObjectEntryTable.INSTANCE.expirationDate.gt(now)
+					).and(
+						ObjectEntryTable.INSTANCE.expirationDate.lte(
+							new Date(now.getTime() + (7 * Time.DAY)))
+					)));
+
+			Assert.assertEquals(
+				1,
+				_objectEntryLocalService.getValuesListCount(
+					groupIds, TestPropsValues.getCompanyId(),
+					TestPropsValues.getUserId(), objectDefinitionIds,
+					ObjectEntryTable.INSTANCE.reviewDate.lt(now)));
+
+			Assert.assertEquals(
+				1,
+				_objectEntryLocalService.getValuesListCount(
+					groupIds, TestPropsValues.getCompanyId(),
+					TestPropsValues.getUserId(),
+					new Long[] {
+						irrelevantObjectDefinition.getObjectDefinitionId()
+					},
+					ObjectEntryTable.INSTANCE.status.eq(
+						WorkflowConstants.STATUS_DRAFT)));
+
+			Assert.assertEquals(
+				1,
+				_objectEntryLocalService.getValuesListCount(
+					new Long[] {irrelevantGroup.getGroupId()},
+					TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+					objectDefinitionIds,
+					ObjectEntryTable.INSTANCE.status.eq(
+						WorkflowConstants.STATUS_DRAFT)));
+		}
+		finally {
+			_objectDefinitionLocalService.deleteObjectDefinition(
+				objectDefinition1);
+			_objectDefinitionLocalService.deleteObjectDefinition(
+				objectDefinition2);
+			_objectDefinitionLocalService.deleteObjectDefinition(
+				irrelevantObjectDefinition);
+
+			if (irrelevantGroup != null) {
+				GroupTestUtil.deleteGroup(irrelevantGroup);
+			}
+		}
 	}
 
 	@FeatureFlag("LPD-17564")
