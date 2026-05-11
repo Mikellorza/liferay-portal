@@ -7,6 +7,7 @@ package com.liferay.asset.list.item.selector.web.internal;
 
 import com.liferay.asset.list.item.selector.web.internal.display.context.AssetListEntryItemSelectorDisplayContext;
 import com.liferay.asset.list.model.AssetListEntry;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.item.selector.ItemSelectorReturnType;
 import com.liferay.item.selector.ItemSelectorViewDescriptor;
 import com.liferay.item.selector.TableItemView;
@@ -29,6 +30,11 @@ public class AssetListItemSelectorViewDescriptor
 		_assetListEntryItemSelectorDisplayContext =
 			assetListEntryItemSelectorDisplayContext;
 		_httpServletRequest = httpServletRequest;
+	}
+
+	@Override
+	public CreationMenu getCreationMenu() {
+		return _assetListEntryItemSelectorDisplayContext.getCreationMenu();
 	}
 
 	@Override
@@ -57,6 +63,17 @@ public class AssetListItemSelectorViewDescriptor
 	public TableItemView getTableItemView(AssetListEntry assetListEntry) {
 		return new AssetListTableItemView(
 			assetListEntry, _assetListEntryItemSelectorDisplayContext);
+	}
+
+	@Override
+	public String getPropsTransformer() {
+		if (_assetListEntryItemSelectorDisplayContext.getCreationMenu() ==
+				null) {
+
+			return null;
+		}
+
+		return "{ManagementToolbarPropsTransformer} from asset-list-web";
 	}
 
 	@Override

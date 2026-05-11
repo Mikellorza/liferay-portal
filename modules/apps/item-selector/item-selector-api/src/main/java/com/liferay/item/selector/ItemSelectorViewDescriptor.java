@@ -7,6 +7,7 @@ package com.liferay.item.selector;
 
 import com.liferay.frontend.taglib.clay.servlet.taglib.HorizontalCard;
 import com.liferay.frontend.taglib.clay.servlet.taglib.VerticalCard;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItem;
 import com.liferay.petra.string.StringPool;
@@ -27,6 +28,10 @@ import java.util.Locale;
  * @author Alejandro Tardín
  */
 public interface ItemSelectorViewDescriptor<T> {
+
+	public default CreationMenu getCreationMenu() {
+		return null;
+	}
 
 	public default String getDefaultDisplayStyle() {
 		return "icon";
@@ -53,6 +58,10 @@ public interface ItemSelectorViewDescriptor<T> {
 	}
 
 	public default String[] getOrderByKeys() {
+		return null;
+	}
+
+	public default String getPropsTransformer() {
 		return null;
 	}
 

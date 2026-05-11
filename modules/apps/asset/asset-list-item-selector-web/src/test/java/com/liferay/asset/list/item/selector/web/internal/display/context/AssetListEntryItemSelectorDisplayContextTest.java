@@ -5,9 +5,15 @@
 
 package com.liferay.asset.list.item.selector.web.internal.display.context;
 
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.list.model.AssetListEntry;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
+import com.liferay.info.collection.provider.item.selector.InfoCollectionProviderItemSelectorCriterion;
 import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.info.item.provider.InfoItemFormProvider;
 import com.liferay.info.search.InfoSearchClassMapperRegistry;
+import com.liferay.portal.kernel.security.permission.ResourceActions;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -17,7 +23,9 @@ import com.liferay.portal.test.rule.LiferayUnitTestRule;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
+import java.util.Locale;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -34,6 +42,56 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 	@Rule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
+
+	@After
+	public void tearDown() {
+		ReflectionTestUtil.setFieldValue(
+			ResourceActionsUtil.class, "_resourceActions",
+			_originalResourceActions);
+	}
+
+	@Test
+	public void testGetCreationMenuReturnsNullWhenAddAssetListEntryURLIsNull() {
+		InfoCollectionProviderItemSelectorCriterion criterion =
+			new InfoCollectionProviderItemSelectorCriterion();
+
+		criterion.setAddDynamicAssetListEntryURL("http://localhost/add-dynamic");
+
+		AssetListEntryItemSelectorDisplayContext context =
+			new AssetListEntryItemSelectorDisplayContext(
+				Mockito.mock(HttpServletRequest.class), null, null, null, null,
+				criterion);
+
+		Assert.assertNull(context.getCreationMenu());
+	}
+
+	@Test
+	public void testGetCreationMenuReturnsNullWhenAddDynamicAssetListEntryURLIsNull() {
+		InfoCollectionProviderItemSelectorCriterion criterion =
+			new InfoCollectionProviderItemSelectorCriterion();
+
+		criterion.setAddAssetListEntryURL("http://localhost/add");
+
+		AssetListEntryItemSelectorDisplayContext context =
+			new AssetListEntryItemSelectorDisplayContext(
+				Mockito.mock(HttpServletRequest.class), null, null, null, null,
+				criterion);
+
+		Assert.assertNull(context.getCreationMenu());
+	}
+
+	@Test
+	public void testGetCreationMenuReturnsNullWhenBothURLsAreNull() {
+		InfoCollectionProviderItemSelectorCriterion criterion =
+			new InfoCollectionProviderItemSelectorCriterion();
+
+		AssetListEntryItemSelectorDisplayContext context =
+			new AssetListEntryItemSelectorDisplayContext(
+				Mockito.mock(HttpServletRequest.class), null, null, null, null,
+				criterion);
+
+		Assert.assertNull(context.getCreationMenu());
+	}
 
 	@Test
 	public void testGetInfoItemClassNames() {
@@ -91,5 +149,77 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 		Assert.assertTrue(
 			ArrayUtil.contains(infoItemClassNames, "searchClassName1"));
 	}
+
+	@Test
+	public void testGetTypeDefaultsToAssetEntryClassNameWhenAssetEntryTypeIsNull() {
+		ResourceActions resourceActions = Mockito.mock(ResourceActions.class);
+
+		Mockito.when(
+			resourceActions.getModelResource(
+				Locale.US, AssetEntry.class.getName())
+		).thenReturn(
+			"Asset"
+		);
+
+		ReflectionTestUtil.setFieldValue(
+			ResourceActionsUtil.class, "_resourceActions", resourceActions);
+
+		AssetListEntry assetListEntry = Mockito.mock(AssetListEntry.class);
+
+		Mockito.when(
+			assetListEntry.getAssetEntryType()
+		).thenReturn(
+			null
+		);
+
+		AssetListEntryItemSelectorDisplayContext context =
+			new AssetListEntryItemSelectorDisplayContext(
+				Mockito.mock(HttpServletRequest.class), null, null, null, null,
+				null);
+
+		Assert.assertEquals("Asset", context.getType(assetListEntry, Locale.US));
+
+		Mockito.verify(resourceActions).getModelResource(
+			Locale.US, AssetEntry.class.getName());
+	}
+
+	@Test
+	public void testGetTypeUsesAssetEntryTypeWhenNotNull() {
+		String className = "com.liferay.journal.model.JournalArticle";
+
+		ResourceActions resourceActions = Mockito.mock(ResourceActions.class);
+
+		Mockito.when(
+			resourceActions.getModelResource(Locale.US, className)
+		).thenReturn(
+			"Web Content Article"
+		);
+
+		ReflectionTestUtil.setFieldValue(
+			ResourceActionsUtil.class, "_resourceActions", resourceActions);
+
+		AssetListEntry assetListEntry = Mockito.mock(AssetListEntry.class);
+
+		Mockito.when(
+			assetListEntry.getAssetEntryType()
+		).thenReturn(
+			className
+		);
+
+		AssetListEntryItemSelectorDisplayContext context =
+			new AssetListEntryItemSelectorDisplayContext(
+				Mockito.mock(HttpServletRequest.class), null, null, null, null,
+				null);
+
+		Assert.assertEquals(
+			"Web Content Article",
+			context.getType(assetListEntry, Locale.US));
+
+		Mockito.verify(resourceActions).getModelResource(Locale.US, className);
+	}
+
+	private final ResourceActions _originalResourceActions =
+		ReflectionTestUtil.getFieldValue(
+			ResourceActionsUtil.class, "_resourceActions");
 
 }

@@ -6,14 +6,19 @@
 package com.liferay.asset.list.item.selector.web.internal.display.context;
 
 import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.model.ClassType;
 import com.liferay.asset.kernel.model.ClassTypeReader;
+import com.liferay.asset.list.constants.AssetListEntryTypeConstants;
+import com.liferay.asset.list.constants.AssetListPortletKeys;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalServiceUtil;
 import com.liferay.asset.list.service.AssetListEntryServiceUtil;
 import com.liferay.asset.list.service.AssetListEntryUsageLocalServiceUtil;
 import com.liferay.asset.list.util.AssetListPortletUtil;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.info.collection.provider.item.selector.InfoCollectionProviderItemSelectorCriterion;
 import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.info.item.provider.InfoItemFormProvider;
@@ -22,6 +27,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -65,6 +71,65 @@ public class AssetListEntryItemSelectorDisplayContext {
 		_portletURL = portletURL;
 		_infoCollectionProviderItemSelectorCriterion =
 			infoCollectionProviderItemSelectorCriterion;
+	}
+
+	public CreationMenu getCreationMenu() {
+		String addAssetListEntryURL =
+			_infoCollectionProviderItemSelectorCriterion.
+				getAddAssetListEntryURL();
+		String addDynamicAssetListEntryURL =
+			_infoCollectionProviderItemSelectorCriterion.
+				getAddDynamicAssetListEntryURL();
+
+		if (Validator.isNull(addAssetListEntryURL) ||
+			Validator.isNull(addDynamicAssetListEntryURL)) {
+
+			return null;
+		}
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)_httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		return CreationMenuBuilder.addPrimaryDropdownItem(
+			dropdownItem -> {
+				dropdownItem.putData("action", "addAssetListEntry");
+				dropdownItem.putData(
+					"addAssetListEntryURL", addAssetListEntryURL);
+				dropdownItem.putData(
+					"portletNamespace",
+					PortalUtil.getPortletNamespace(
+						AssetListPortletKeys.ASSET_LIST));
+				dropdownItem.putData(
+					"title",
+					LanguageUtil.format(
+						themeDisplay.getLocale(), "add-x-collection",
+						AssetListEntryTypeConstants.TYPE_MANUAL_LABEL, true));
+				dropdownItem.setHref("#");
+				dropdownItem.setLabel(
+					LanguageUtil.get(
+						themeDisplay.getLocale(), "manual-collection"));
+			}
+		).addPrimaryDropdownItem(
+			dropdownItem -> {
+				dropdownItem.putData("action", "addAssetListEntry");
+				dropdownItem.putData(
+					"addAssetListEntryURL", addDynamicAssetListEntryURL);
+				dropdownItem.putData(
+					"portletNamespace",
+					PortalUtil.getPortletNamespace(
+						AssetListPortletKeys.ASSET_LIST));
+				dropdownItem.putData(
+					"title",
+					LanguageUtil.format(
+						themeDisplay.getLocale(), "add-x-collection",
+						AssetListEntryTypeConstants.TYPE_DYNAMIC_LABEL, true));
+				dropdownItem.setHref("#");
+				dropdownItem.setLabel(
+					LanguageUtil.get(
+						themeDisplay.getLocale(), "dynamic-collection"));
+			}
+		).build();
 	}
 
 	public int getAssetListEntrySegmentsEntryRelsCount(
@@ -238,8 +303,13 @@ public class AssetListEntryItemSelectorDisplayContext {
 	}
 
 	public String getType(AssetListEntry assetListEntry, Locale locale) {
-		return ResourceActionsUtil.getModelResource(
-			locale, assetListEntry.getAssetEntryType());
+		String assetEntryType = assetListEntry.getAssetEntryType();
+
+		if (Validator.isNull(assetEntryType)) {
+			assetEntryType = AssetEntry.class.getName();
+		}
+
+		return ResourceActionsUtil.getModelResource(locale, assetEntryType);
 	}
 
 	private String _getAssetEntrySubtypeSubtypeLabel(

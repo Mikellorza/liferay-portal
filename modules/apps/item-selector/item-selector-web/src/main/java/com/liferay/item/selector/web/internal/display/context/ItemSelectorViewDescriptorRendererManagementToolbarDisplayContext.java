@@ -6,6 +6,7 @@
 package com.liferay.item.selector.web.internal.display.context;
 
 import com.liferay.frontend.taglib.clay.servlet.taglib.display.context.SearchContainerManagementToolbarDisplayContext;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItem;
 import com.liferay.item.selector.ItemSelectorViewDescriptor;
@@ -56,6 +57,11 @@ public class ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext
 	}
 
 	@Override
+	public CreationMenu getCreationMenu() {
+		return _itemSelectorViewDescriptor.getCreationMenu();
+	}
+
+	@Override
 	public List<LabelItem> getFilterLabelItems() {
 		return _itemSelectorViewDescriptor.getFilterLabelItems();
 	}
@@ -87,6 +93,10 @@ public class ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext
 		}
 
 		return super.getSortingURL();
+	}
+
+	public String getPropsTransformer() {
+		return _itemSelectorViewDescriptor.getPropsTransformer();
 	}
 
 	@Override

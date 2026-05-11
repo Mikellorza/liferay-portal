@@ -80,9 +80,20 @@ public class AddAssetListEntryMVCActionCommand extends BaseMVCActionCommand {
 					serviceContext);
 			}
 
-			JSONObject jsonObject = JSONUtil.put(
-				"redirectURL",
-				getRedirectURL(actionRequest, actionResponse, assetListEntry));
+			boolean itemSelector = ParamUtil.getBoolean(
+				actionRequest, "itemSelector");
+
+			JSONObject jsonObject;
+
+			if (itemSelector) {
+				jsonObject = JSONUtil.put("success", true);
+			}
+			else {
+				jsonObject = JSONUtil.put(
+					"redirectURL",
+					getRedirectURL(
+						actionRequest, actionResponse, assetListEntry));
+			}
 
 			if (SessionErrors.contains(
 					actionRequest, "assetListEntryNameInvalid")) {

@@ -21,6 +21,7 @@ import com.liferay.asset.kernel.service.AssetEntryServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyServiceUtil;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
 import com.liferay.asset.list.asset.entry.provider.AssetListAssetEntryProvider;
+import com.liferay.asset.list.constants.AssetListEntryTypeConstants;
 import com.liferay.asset.list.constants.AssetListPortletKeys;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalService;
@@ -454,6 +455,10 @@ public class AssetPublisherDisplayContext {
 			infoCollectionProviderItemSelectorCriterion =
 				new InfoCollectionProviderItemSelectorCriterion();
 
+		infoCollectionProviderItemSelectorCriterion.setAddAssetListEntryURL(
+			_getAddAssetListEntryURL());
+		infoCollectionProviderItemSelectorCriterion.
+			setAddDynamicAssetListEntryURL(_getAddDynamicAssetListEntryURL());
 		infoCollectionProviderItemSelectorCriterion.
 			setDesiredItemSelectorReturnTypes(
 				new InfoListItemSelectorReturnType(),
@@ -1368,7 +1373,7 @@ public class AssetPublisherDisplayContext {
 		AssetListEntry assetListEntry = fetchAssetListEntry();
 
 		return HashMapBuilder.<String, Object>put(
-			"addAssetListEntryURL", _getAddAssetListEntryURL()
+			"editAssetListEntryURL", _getEditAssetListEntryURL()
 		).put(
 			"assetListEntryId",
 			() -> {
@@ -2270,7 +2275,41 @@ public class AssetPublisherDisplayContext {
 			PortalUtil.getControlPanelPortletURL(
 				_httpServletRequest, _themeDisplay.getScopeGroup(),
 				AssetListPortletKeys.ASSET_LIST, 0, 0,
+				PortletRequest.ACTION_PHASE)
+		).setActionName(
+			"/asset_list/add_asset_list_entry"
+		).setParameter(
+			"itemSelector", true
+		).setParameter(
+			"type", AssetListEntryTypeConstants.TYPE_MANUAL
+		).buildString();
+	}
+
+	private String _getAddDynamicAssetListEntryURL() {
+		return PortletURLBuilder.create(
+			PortalUtil.getControlPanelPortletURL(
+				_httpServletRequest, _themeDisplay.getScopeGroup(),
+				AssetListPortletKeys.ASSET_LIST, 0, 0,
+				PortletRequest.ACTION_PHASE)
+		).setActionName(
+			"/asset_list/add_asset_list_entry"
+		).setParameter(
+			"itemSelector", true
+		).setParameter(
+			"type", AssetListEntryTypeConstants.TYPE_DYNAMIC
+		).buildString();
+	}
+
+	private String _getEditAssetListEntryURL() {
+		return PortletURLBuilder.create(
+			PortalUtil.getControlPanelPortletURL(
+				_httpServletRequest, _themeDisplay.getScopeGroup(),
+				AssetListPortletKeys.ASSET_LIST, 0, 0,
 				PortletRequest.RENDER_PHASE)
+		).setMVCPath(
+			"/edit_asset_list_entry.jsp"
+		).setParameter(
+			"assetListEntryId", "__ASSET_LIST_ENTRY_ID__"
 		).setWindowState(
 			LiferayWindowState.POP_UP
 		).buildString();

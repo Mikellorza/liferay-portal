@@ -13,6 +13,14 @@ import com.liferay.item.selector.BaseItemSelectorCriterion;
 public class InfoCollectionProviderItemSelectorCriterion
 	extends BaseItemSelectorCriterion {
 
+	public String getAddAssetListEntryURL() {
+		return _addAssetListEntryURL;
+	}
+
+	public String getAddDynamicAssetListEntryURL() {
+		return _addDynamicAssetListEntryURL;
+	}
+
 	public String getItemSubtype() {
 		return _itemSubtype;
 	}
@@ -23,6 +31,16 @@ public class InfoCollectionProviderItemSelectorCriterion
 
 	public Type getType() {
 		return _type;
+	}
+
+	public void setAddAssetListEntryURL(String addAssetListEntryURL) {
+		_addAssetListEntryURL = addAssetListEntryURL;
+	}
+
+	public void setAddDynamicAssetListEntryURL(
+		String addDynamicAssetListEntryURL) {
+
+		_addDynamicAssetListEntryURL = addDynamicAssetListEntryURL;
 	}
 
 	public void setItemSubtype(String itemSubtype) {
@@ -45,6 +63,8 @@ public class InfoCollectionProviderItemSelectorCriterion
 
 	}
 
+	private String _addAssetListEntryURL;
+	private String _addDynamicAssetListEntryURL;
 	private String _itemSubtype;
 	private String _itemType;
 	private Type _type = Type.ALL_COLLECTIONS;

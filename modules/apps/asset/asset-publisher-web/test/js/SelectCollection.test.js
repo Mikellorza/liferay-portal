@@ -5,18 +5,22 @@
 
 import '@testing-library/jest-dom';
 import {fireEvent, render, screen} from '@testing-library/react';
-import {openSelectionModal} from 'frontend-js-components-web';
+import {openModal, openSelectionModal} from 'frontend-js-components-web';
 import React from 'react';
 
 import SelectCollection from '../../src/main/resources/META-INF/resources/js/SelectCollection';
 
-jest.mock('frontend-js-components-web');
+jest.mock('frontend-js-components-web', () => ({
+	openModal: jest.fn(),
+	openSelectionModal: jest.fn(),
+}));
 
 const DEFAULT_PROPS = {
-	addAssetListEntryURL: 'addAssetListEntryURL',
 	assetListEntryId: 0,
 	clearButtonEnabled: false,
 	defaultTitle: 'defaultTitle',
+	editAssetListEntryURL:
+		'http://localhost/edit?assetListEntryId=__ASSET_LIST_ENTRY_ID__',
 	infoListProviderKey: '',
 	portletNamespace: 'portletNamespace',
 	selectEventName: 'selectEventName',
@@ -29,27 +33,64 @@ const renderComponent = (props = {}) =>
 
 describe('SelectCollection', () => {
 	afterEach(() => {
+		openModal.mockReset();
 		openSelectionModal.mockReset();
 	});
 
-	it('renders the add collection button', () => {
+	it('does not render the edit collection button when no collection is selected', () => {
 		renderComponent();
 
 		expect(
-			screen.getByRole('button', {name: 'add-collection'})
+			screen.queryByRole('button', {name: 'edit-collection'})
+		).not.toBeInTheDocument();
+	});
+
+	it('renders the edit collection button when a collection is selected', () => {
+		renderComponent({
+			assetListEntryId: 1,
+			clearButtonEnabled: true,
+			title: 'My Collection',
+		});
+
+		expect(
+			screen.getByRole('button', {name: 'edit-collection'})
 		).toBeInTheDocument();
 	});
 
-	it('opens the selection modal with the addAssetListEntryURL when the add collection button is clicked', () => {
-		renderComponent();
+	it('opens the modal with the resolved editAssetListEntryURL when the edit collection button is clicked', () => {
+		renderComponent({
+			assetListEntryId: 1,
+			clearButtonEnabled: true,
+			title: 'My Collection',
+		});
 
-		fireEvent.click(screen.getByRole('button', {name: 'add-collection'}));
+		fireEvent.click(screen.getByRole('button', {name: 'edit-collection'}));
 
-		expect(openSelectionModal).toHaveBeenCalledWith(
+		expect(openModal).toHaveBeenCalledWith(
 			expect.objectContaining({
-				title: 'add-collection',
-				url: DEFAULT_PROPS.addAssetListEntryURL,
+				title: 'edit-collection',
+				url: 'http://localhost/edit?assetListEntryId=1',
 			})
 		);
+	});
+
+	it('renders the remove collection button when a collection is selected', () => {
+		renderComponent({
+			assetListEntryId: 1,
+			clearButtonEnabled: true,
+			title: 'My Collection',
+		});
+
+		expect(
+			screen.getByRole('button', {name: 'remove-collection'})
+		).toBeInTheDocument();
+	});
+
+	it('does not render the remove collection button when no collection is selected', () => {
+		renderComponent();
+
+		expect(
+			screen.queryByRole('button', {name: 'remove-collection'})
+		).not.toBeInTheDocument();
 	});
 });
