@@ -73,6 +73,42 @@ public class AssetListEntryItemSelectorDisplayContext {
 			infoCollectionProviderItemSelectorCriterion;
 	}
 
+	public int getAssetListEntrySegmentsEntryRelsCount(
+		AssetListEntry assetListEntry) {
+
+		int assetListEntrySegmentsEntryRelsCount =
+			AssetListEntrySegmentsEntryRelLocalServiceUtil.
+				getAssetListEntrySegmentsEntryRelsCount(
+					assetListEntry.getAssetListEntryId());
+
+		if (assetListEntrySegmentsEntryRelsCount < 2) {
+			return 0;
+		}
+
+		return assetListEntrySegmentsEntryRelsCount;
+	}
+
+	public int getAssetListEntryUsageCount(AssetListEntry assetListEntry) {
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)_httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		Group group = themeDisplay.getScopeGroup();
+
+		if (group.getType() == GroupConstants.TYPE_DEPOT) {
+			return AssetListEntryUsageLocalServiceUtil.
+				getCompanyAssetListEntryUsagesCount(
+					themeDisplay.getCompanyId(),
+					PortalUtil.getClassNameId(AssetListEntry.class),
+					String.valueOf(assetListEntry.getAssetListEntryId()));
+		}
+
+		return AssetListEntryUsageLocalServiceUtil.getAssetListEntryUsagesCount(
+			themeDisplay.getScopeGroupId(),
+			PortalUtil.getClassNameId(AssetListEntry.class),
+			String.valueOf(assetListEntry.getAssetListEntryId()));
+	}
+
 	public CreationMenu getCreationMenu() {
 		String addAssetListEntryURL =
 			_infoCollectionProviderItemSelectorCriterion.
@@ -130,42 +166,6 @@ public class AssetListEntryItemSelectorDisplayContext {
 						themeDisplay.getLocale(), "dynamic-collection"));
 			}
 		).build();
-	}
-
-	public int getAssetListEntrySegmentsEntryRelsCount(
-		AssetListEntry assetListEntry) {
-
-		int assetListEntrySegmentsEntryRelsCount =
-			AssetListEntrySegmentsEntryRelLocalServiceUtil.
-				getAssetListEntrySegmentsEntryRelsCount(
-					assetListEntry.getAssetListEntryId());
-
-		if (assetListEntrySegmentsEntryRelsCount < 2) {
-			return 0;
-		}
-
-		return assetListEntrySegmentsEntryRelsCount;
-	}
-
-	public int getAssetListEntryUsageCount(AssetListEntry assetListEntry) {
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)_httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
-
-		Group group = themeDisplay.getScopeGroup();
-
-		if (group.getType() == GroupConstants.TYPE_DEPOT) {
-			return AssetListEntryUsageLocalServiceUtil.
-				getCompanyAssetListEntryUsagesCount(
-					themeDisplay.getCompanyId(),
-					PortalUtil.getClassNameId(AssetListEntry.class),
-					String.valueOf(assetListEntry.getAssetListEntryId()));
-		}
-
-		return AssetListEntryUsageLocalServiceUtil.getAssetListEntryUsagesCount(
-			themeDisplay.getScopeGroupId(),
-			PortalUtil.getClassNameId(AssetListEntry.class),
-			String.valueOf(assetListEntry.getAssetListEntryId()));
 	}
 
 	public SearchContainer<AssetListEntry> getSearchContainer() {

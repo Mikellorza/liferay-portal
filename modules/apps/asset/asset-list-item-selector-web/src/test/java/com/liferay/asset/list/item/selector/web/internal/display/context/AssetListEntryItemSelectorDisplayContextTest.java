@@ -7,7 +7,6 @@ package com.liferay.asset.list.item.selector.web.internal.display.context;
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.list.model.AssetListEntry;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.info.collection.provider.item.selector.InfoCollectionProviderItemSelectorCriterion;
 import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.info.item.provider.InfoItemFormProvider;
@@ -17,13 +16,13 @@ import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -55,7 +54,8 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 		InfoCollectionProviderItemSelectorCriterion criterion =
 			new InfoCollectionProviderItemSelectorCriterion();
 
-		criterion.setAddDynamicAssetListEntryURL("http://localhost/add-dynamic");
+		criterion.setAddDynamicAssetListEntryURL(
+			"http://localhost/add-dynamic");
 
 		AssetListEntryItemSelectorDisplayContext context =
 			new AssetListEntryItemSelectorDisplayContext(
@@ -156,7 +156,7 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 
 		Mockito.when(
 			resourceActions.getModelResource(
-				Locale.US, AssetEntry.class.getName())
+				LocaleUtil.US, AssetEntry.class.getName())
 		).thenReturn(
 			"Asset"
 		);
@@ -177,10 +177,14 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 				Mockito.mock(HttpServletRequest.class), null, null, null, null,
 				null);
 
-		Assert.assertEquals("Asset", context.getType(assetListEntry, Locale.US));
+		Assert.assertEquals(
+			"Asset", context.getType(assetListEntry, LocaleUtil.US));
 
-		Mockito.verify(resourceActions).getModelResource(
-			Locale.US, AssetEntry.class.getName());
+		Mockito.verify(
+			resourceActions
+		).getModelResource(
+			LocaleUtil.US, AssetEntry.class.getName()
+		);
 	}
 
 	@Test
@@ -190,7 +194,7 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 		ResourceActions resourceActions = Mockito.mock(ResourceActions.class);
 
 		Mockito.when(
-			resourceActions.getModelResource(Locale.US, className)
+			resourceActions.getModelResource(LocaleUtil.US, className)
 		).thenReturn(
 			"Web Content Article"
 		);
@@ -213,9 +217,13 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 
 		Assert.assertEquals(
 			"Web Content Article",
-			context.getType(assetListEntry, Locale.US));
+			context.getType(assetListEntry, LocaleUtil.US));
 
-		Mockito.verify(resourceActions).getModelResource(Locale.US, className);
+		Mockito.verify(
+			resourceActions
+		).getModelResource(
+			LocaleUtil.US, className
+		);
 	}
 
 	private final ResourceActions _originalResourceActions =

@@ -55,17 +55,6 @@ public class AssetListItemSelectorViewDescriptor
 	}
 
 	@Override
-	public SearchContainer<AssetListEntry> getSearchContainer() {
-		return _assetListEntryItemSelectorDisplayContext.getSearchContainer();
-	}
-
-	@Override
-	public TableItemView getTableItemView(AssetListEntry assetListEntry) {
-		return new AssetListTableItemView(
-			assetListEntry, _assetListEntryItemSelectorDisplayContext);
-	}
-
-	@Override
 	public String getPropsTransformer() {
 		if (_assetListEntryItemSelectorDisplayContext.getCreationMenu() ==
 				null) {
@@ -74,6 +63,17 @@ public class AssetListItemSelectorViewDescriptor
 		}
 
 		return "{ManagementToolbarPropsTransformer} from asset-list-web";
+	}
+
+	@Override
+	public SearchContainer<AssetListEntry> getSearchContainer() {
+		return _assetListEntryItemSelectorDisplayContext.getSearchContainer();
+	}
+
+	@Override
+	public TableItemView getTableItemView(AssetListEntry assetListEntry) {
+		return new AssetListTableItemView(
+			assetListEntry, _assetListEntryItemSelectorDisplayContext);
 	}
 
 	@Override
