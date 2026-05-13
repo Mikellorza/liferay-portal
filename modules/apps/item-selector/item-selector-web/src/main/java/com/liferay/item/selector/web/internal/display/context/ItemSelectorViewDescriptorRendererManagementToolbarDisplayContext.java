@@ -76,6 +76,10 @@ public class ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext
 		return _itemSelectorViewDescriptor.getOrderByKeys();
 	}
 
+	public String getPropsTransformer() {
+		return _itemSelectorViewDescriptor.getPropsTransformer();
+	}
+
 	@Override
 	public String getSearchActionURL() {
 		return String.valueOf(getPortletURL());
@@ -93,10 +97,6 @@ public class ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext
 		}
 
 		return super.getSortingURL();
-	}
-
-	public String getPropsTransformer() {
-		return _itemSelectorViewDescriptor.getPropsTransformer();
 	}
 
 	@Override

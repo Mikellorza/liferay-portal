@@ -17,6 +17,7 @@ SearchContainer<Object> searchContainer = itemSelectorViewDescriptorRendererDisp
 %>
 
 <c:if test="<%= itemSelectorViewDescriptor.isShowManagementToolbar() %>">
+
 	<%
 	ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext itemSelectorViewDescriptorRendererManagementToolbarDisplayContext = new ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext(itemSelectorViewDescriptorRendererDisplayContext, request, liferayPortletRequest, liferayPortletResponse, searchContainer);
 	%>
