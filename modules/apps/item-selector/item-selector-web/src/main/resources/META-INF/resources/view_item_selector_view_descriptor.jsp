@@ -19,23 +19,12 @@ SearchContainer<Object> searchContainer = itemSelectorViewDescriptorRendererDisp
 <c:if test="<%= itemSelectorViewDescriptor.isShowManagementToolbar() %>">
 	<%
 	ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext itemSelectorViewDescriptorRendererManagementToolbarDisplayContext = new ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext(itemSelectorViewDescriptorRendererDisplayContext, request, liferayPortletRequest, liferayPortletResponse, searchContainer);
-
-	String propsTransformer = itemSelectorViewDescriptorRendererManagementToolbarDisplayContext.getPropsTransformer();
 	%>
 
-	<c:choose>
-		<c:when test="<%= propsTransformer != null %>">
-			<clay:management-toolbar
-				managementToolbarDisplayContext="<%= itemSelectorViewDescriptorRendererManagementToolbarDisplayContext %>"
-				propsTransformer="<%= propsTransformer %>"
-			/>
-		</c:when>
-		<c:otherwise>
-			<clay:management-toolbar
-				managementToolbarDisplayContext="<%= itemSelectorViewDescriptorRendererManagementToolbarDisplayContext %>"
-			/>
-		</c:otherwise>
-	</c:choose>
+	<clay:management-toolbar
+		managementToolbarDisplayContext="<%= itemSelectorViewDescriptorRendererManagementToolbarDisplayContext %>"
+		propsTransformer="<%= itemSelectorViewDescriptorRendererManagementToolbarDisplayContext.getPropsTransformer() %>"
+	/>
 </c:if>
 
 <clay:container-fluid

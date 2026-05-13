@@ -3,37 +3,13 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import React from 'react';
+import {openSimpleInputModal} from 'frontend-js-components-web';
 
 import openDeleteAssetEntryListModal from './openDeleteAssetEntryListModal';
-import NewCollectionDropDown from './components/NewCollectionDropDown';
 
 export default function propsTransformer({portletNamespace, ...otherProps}) {
-	const {creationMenu, ...rest} = otherProps;
-
-	const [manualItem, dynamicItem] =
-		creationMenu?.primaryItems ?? [];
-
-	const addAssetListEntryURL = manualItem?.data?.addAssetListEntryURL;
-	const addDynamicAssetListEntryURL =
-		dynamicItem?.data?.addAssetListEntryURL;
-
-	const contentRight =
-		addAssetListEntryURL && addDynamicAssetListEntryURL
-			? React.createElement(NewCollectionDropDown, {
-					addAssetListEntryURL,
-					addDynamicAssetListEntryURL,
-					dynamicTitle: dynamicItem?.data?.title,
-					manualTitle: manualItem?.data?.title,
-					portletNamespace:
-						manualItem?.data?.portletNamespace || portletNamespace,
-				})
-			: null;
-
 	return {
-		...rest,
-		contentRight,
-		creationMenu: null,
+		...otherProps,
 		onActionButtonClick(event, {item}) {
 			if (item?.data?.action === 'deleteSelectedAssetListEntries') {
 				openDeleteAssetEntryListModal({
@@ -47,6 +23,21 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 							submitForm(form);
 						}
 					},
+				});
+			}
+		},
+		onCreationMenuItemClick(event, {item}) {
+			const data = item?.data;
+
+			if (data?.action === 'addAssetListEntry') {
+				openSimpleInputModal({
+					dialogTitle: data?.title,
+					formSubmitURL: data?.addAssetListEntryURL,
+					mainFieldLabel: Liferay.Language.get('title'),
+					mainFieldName: 'title',
+					mainFieldPlaceholder: Liferay.Language.get('title'),
+					namespace: portletNamespace,
+					onFormSuccess: () => window.location.reload(),
 				});
 			}
 		},

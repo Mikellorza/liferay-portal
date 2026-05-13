@@ -28,7 +28,6 @@ const noop = () => {};
 function ManagementToolbar({
 	clearResultsURL,
 	clearSelectionURL,
-	contentRight,
 	creationMenu,
 	disabled,
 	filterDropdownItems,
@@ -241,12 +240,7 @@ function ManagementToolbar({
 								</FrontendManagementToolbar.Item>
 							)}
 
-							{contentRight ? (
-							<FrontendManagementToolbar.Item>
-								{contentRight}
-							</FrontendManagementToolbar.Item>
-						) : (
-							showCreationMenu && (
+							{showCreationMenu && (
 								<FrontendManagementToolbar.Item>
 									{creationMenu ? (
 										<CreationMenu
@@ -273,8 +267,7 @@ function ManagementToolbar({
 										</LinkOrButton>
 									)}
 								</FrontendManagementToolbar.Item>
-							)
-						)}
+							)}
 						</>
 					)}
 
