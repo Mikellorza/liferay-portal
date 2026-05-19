@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import ClayButton from '@clayui/button';
 import ClayDropDown from '@clayui/drop-down';
 import ClayForm from '@clayui/form';
 import PropTypes from 'prop-types';
@@ -17,6 +16,7 @@ import {
 	// @ts-ignore
 
 } from '../../../../utils/dates';
+import {FilterSubmitButton, getActionType} from '../utils/sharedFilterUI';
 import {EEntityFieldType} from '../utils/types';
 
 import type {
@@ -129,15 +129,7 @@ const DateRangeFilter = ({
 	const [fromDateValid, setFromDateValid] = useState(true);
 	const [toDateValid, setToDateValid] = useState(true);
 
-	let actionType = 'edit';
-
-	if (selectedData && !fromValue && !toValue) {
-		actionType = 'delete';
-	}
-
-	if (!selectedData) {
-		actionType = 'add';
-	}
+	const actionType = getActionType(selectedData, fromValue, toValue);
 
 	const isChanged =
 		actionType === 'delete' ||
@@ -213,7 +205,8 @@ const DateRangeFilter = ({
 			</ClayDropDown.Caption>
 			<ClayDropDown.Divider />
 			<ClayDropDown.Caption>
-				<ClayButton
+				<FilterSubmitButton
+					actionType={actionType}
 					disabled={submitDisabled}
 					onClick={() => {
 						if (actionType === 'delete') {
@@ -235,16 +228,7 @@ const DateRangeFilter = ({
 							});
 						}
 					}}
-					small
-				>
-					{actionType === 'add' && Liferay.Language.get('add-filter')}
-
-					{actionType === 'edit' &&
-						Liferay.Language.get('show-results')}
-
-					{actionType === 'delete' &&
-						Liferay.Language.get('delete-filter')}
-				</ClayButton>
+				/>
 			</ClayDropDown.Caption>
 		</>
 	);
