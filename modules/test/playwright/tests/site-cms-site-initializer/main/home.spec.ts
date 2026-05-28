@@ -893,7 +893,7 @@ test(
 
 test(
 	'Can use Search Bar to search for content',
-	{tag: '@LPD-61220'},
+	{tag: ['@LPD-61220', '@LPD-92446']},
 	async ({apiHelpers, assetsPage, homePage, page}) => {
 		const applicationName = 'cms/basic-web-contents';
 		const spaceName = 'Default';
