@@ -5,6 +5,7 @@
 
 import {ClayButtonWithIcon} from '@clayui/button';
 import {ClayInput} from '@clayui/form';
+import {serializeFDSConfig} from '@liferay/frontend-data-set-web';
 import React, {ChangeEvent, useState} from 'react';
 
 import '../../../css/home/SearchBar.scss';
@@ -25,7 +26,11 @@ export default function SearchBar({
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
-		const encodedState = encodeURIComponent(JSON.stringify({q: term}));
+		const encodedState = encodeURIComponent(serializeFDSConfig({q: term}))
+			.replace(/%28/g, '(')
+			.replace(/%29/g, ')')
+			.replace(/%2C/g, ',')
+			.replace(/%3A/g, ':');
 
 		window.location.href =
 			searchResultsURL +
