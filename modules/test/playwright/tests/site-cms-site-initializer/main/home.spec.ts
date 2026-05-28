@@ -931,7 +931,7 @@ test(
 
 			const row = assetsPage.table.bodyRows.filter({hasText: file1Title});
 
-			await expect(row.getByText(file1Title)).toBeVisible();
+			await expect(row).toBeVisible();
 
 			await test.step('Verify search input contains the search value', async () => {
 				const searchInput = page.getByPlaceholder('Search');
