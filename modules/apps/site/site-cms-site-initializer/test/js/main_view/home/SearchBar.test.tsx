@@ -11,6 +11,22 @@ import React from 'react';
 import SearchBar from '../../../../src/main/resources/META-INF/resources/js/main_view/home/SearchBar';
 
 jest.mock('@liferay/frontend-data-set-web', () => ({
+	decodeFdsConfigParam: (
+		fdsConfigParamName: string,
+		params: URLSearchParams
+	) =>
+		params
+			.toString()
+			.replace(
+				new RegExp(`(${fdsConfigParamName}=)([^&]+)`),
+				(_, key, value) =>
+					key +
+					value
+						.replace(/%28/g, '(')
+						.replace(/%29/g, ')')
+						.replace(/%2C/g, ',')
+						.replace(/%3A/g, ':')
+			),
 	serializeFDSConfig: jest.fn(({q}) => `(q:${q})`),
 }));
 

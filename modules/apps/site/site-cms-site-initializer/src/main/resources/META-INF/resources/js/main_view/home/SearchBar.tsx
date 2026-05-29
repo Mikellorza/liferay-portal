@@ -5,7 +5,10 @@
 
 import {ClayButtonWithIcon} from '@clayui/button';
 import {ClayInput} from '@clayui/form';
-import {serializeFDSConfig} from '@liferay/frontend-data-set-web';
+import {
+	decodeFdsConfigParam,
+	serializeFDSConfig,
+} from '@liferay/frontend-data-set-web';
 import React, {ChangeEvent, useState} from 'react';
 
 import '../../../css/home/SearchBar.scss';
@@ -26,16 +29,17 @@ export default function SearchBar({
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
-		const encodedState = encodeURIComponent(serializeFDSConfig({q: term}))
-			.replace(/%28/g, '(')
-			.replace(/%29/g, ')')
-			.replace(/%2C/g, ',')
-			.replace(/%3A/g, ':');
+		const fdsConfigParamName =
+			'com.liferay.site.cms.site.initializer-allSection_fdsConfig';
 
-		window.location.href =
-			searchResultsURL +
-			'?com.liferay.site.cms.site.initializer-allSection_fdsConfig=' +
-			encodedState;
+		const params = new URLSearchParams({
+			[fdsConfigParamName]: serializeFDSConfig({q: term}),
+		});
+
+		window.location.href = `${searchResultsURL}?${decodeFdsConfigParam(
+			fdsConfigParamName,
+			params
+		)}`;
 	};
 
 	return (
