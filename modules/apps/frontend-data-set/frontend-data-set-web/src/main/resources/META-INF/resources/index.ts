@@ -42,7 +42,11 @@ export {default as findAction} from './utils/actionItems/findAction';
 export {replaceTokens} from './utils/actionItems/formatActionURL';
 export {readConfigFromURL} from './utils/configInURL';
 
-export {getConfigParamName, serializeFDSConfig} from './utils/configInURL';
+export {
+	decodeFdsConfigParam,
+	getConfigParamName,
+	serializeFDSConfig,
+} from './utils/configInURL';
 export {default as FDS_EVENT} from './utils/eventsDefinitions';
 
 export {getFDSAtom} from './utils/getFDSAtom';

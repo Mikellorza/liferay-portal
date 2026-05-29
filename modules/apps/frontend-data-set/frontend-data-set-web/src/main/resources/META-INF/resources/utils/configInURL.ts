@@ -134,7 +134,7 @@ export function contains(
 	return deepContains(a, b);
 }
 
-function decodeFdsConfigParam(
+export function decodeFdsConfigParam(
 	fdsConfigParamName: string,
 	params: URLSearchParams
 ): string {
