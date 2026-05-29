@@ -27,6 +27,7 @@ jest.mock('@liferay/frontend-data-set-web', () => ({
 						.replace(/%2C/g, ',')
 						.replace(/%3A/g, ':')
 			),
+	getConfigParamName: (id: string) => `${id}_fdsConfig`,
 	serializeFDSConfig: jest.fn(({q}) => `(q:${q})`),
 }));
 

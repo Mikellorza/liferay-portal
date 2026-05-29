@@ -7,6 +7,7 @@ import {ClayButtonWithIcon} from '@clayui/button';
 import {ClayInput} from '@clayui/form';
 import {
 	decodeFdsConfigParam,
+	getConfigParamName,
 	serializeFDSConfig,
 } from '@liferay/frontend-data-set-web';
 import React, {ChangeEvent, useState} from 'react';
@@ -29,8 +30,9 @@ export default function SearchBar({
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
-		const fdsConfigParamName =
-			'com.liferay.site.cms.site.initializer-allSection_fdsConfig';
+		const fdsConfigParamName = getConfigParamName(
+			'com.liferay.site.cms.site.initializer-allSection'
+		);
 
 		const params = new URLSearchParams({
 			[fdsConfigParamName]: serializeFDSConfig({q: term}),
