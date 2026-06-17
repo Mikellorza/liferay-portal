@@ -10,43 +10,26 @@ import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.depot.constants.DepotConstants;
-import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.object.constants.ObjectDefinitionConstants;
-import com.liferay.object.constants.ObjectEntryFolderConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
-import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.rest.filter.factory.FilterFactory;
 import com.liferay.object.service.ObjectDefinitionLocalService;
-import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.petra.sql.dsl.expression.Predicate;
-import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.audit.AuditRouter;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ModelListener;
-import com.liferay.portal.kernel.model.ResourceConstants;
-import com.liferay.portal.kernel.model.Role;
-import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
-import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
-import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
-import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.security.audit.event.generators.util.Attribute;
@@ -55,10 +38,8 @@ import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskInstanceTokenLocalService;
 import com.liferay.site.cms.site.initializer.util.CMSDefaultPermissionUtil;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
@@ -77,7 +58,9 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 		try {
 			if (_isCMSObjectEntry(objectEntry)) {
 				_route(objectEntry);
-				_setResourcePermissions(objectEntry);
+
+				CMSDefaultPermissionUtil.setObjectEntryResourcePermissions(
+					objectEntry, _filterFactory);
 			}
 		}
 		catch (Exception exception) {
@@ -114,7 +97,8 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 			if (originalObjectEntry.getObjectEntryFolderId() !=
 					objectEntry.getObjectEntryFolderId()) {
 
-				_setResourcePermissions(objectEntry);
+				CMSDefaultPermissionUtil.setObjectEntryResourcePermissions(
+					objectEntry, _filterFactory);
 			}
 
 			Indexer<KaleoTaskInstanceToken> indexer =
@@ -133,75 +117,6 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 		catch (Exception exception) {
 			throw new ModelListenerException(exception);
 		}
-	}
-
-	private JSONObject _getCMSDefaultPermissionJSONObject(
-			ObjectEntry objectEntry)
-		throws Exception {
-
-		ObjectDefinition cmsDefaultPermissionObjectDefinition =
-			_objectDefinitionLocalService.
-				fetchObjectDefinitionByExternalReferenceCode(
-					"L_CMS_DEFAULT_PERMISSION", objectEntry.getCompanyId());
-
-		if (cmsDefaultPermissionObjectDefinition == null) {
-			return null;
-		}
-
-		if (objectEntry.getObjectEntryFolderId() != 0) {
-			ObjectEntryFolder parentObjectEntryFolder =
-				_objectEntryFolderLocalService.getObjectEntryFolder(
-					objectEntry.getObjectEntryFolderId());
-
-			JSONObject jsonObject = CMSDefaultPermissionUtil.getJSONObject(
-				parentObjectEntryFolder.getCompanyId(),
-				parentObjectEntryFolder.getUserId(),
-				parentObjectEntryFolder.getExternalReferenceCode(),
-				parentObjectEntryFolder.getModelClassName(), _filterFactory);
-
-			if ((jsonObject != null) && !JSONUtil.isEmpty(jsonObject)) {
-				return jsonObject;
-			}
-		}
-
-		Group group = _groupLocalService.getGroup(objectEntry.getGroupId());
-
-		return CMSDefaultPermissionUtil.getJSONObject(
-			group.getCompanyId(), group.getCreatorUserId(),
-			group.getExternalReferenceCode(), DepotEntry.class.getName(),
-			_filterFactory);
-	}
-
-	private ObjectEntryFolder _getRootObjectEntryFolder(
-		ObjectEntry objectEntry) {
-
-		ObjectEntryFolder objectEntryFolder =
-			_objectEntryFolderLocalService.fetchObjectEntryFolder(
-				objectEntry.getObjectEntryFolderId());
-
-		if (objectEntryFolder == null) {
-			return null;
-		}
-
-		if (Objects.equals(
-				objectEntryFolder.getExternalReferenceCode(),
-				ObjectEntryFolderConstants.EXTERNAL_REFERENCE_CODE_CONTENTS) ||
-			Objects.equals(
-				objectEntryFolder.getExternalReferenceCode(),
-				ObjectEntryFolderConstants.EXTERNAL_REFERENCE_CODE_FILES)) {
-
-			return objectEntryFolder;
-		}
-
-		String[] parts = StringUtil.split(
-			objectEntryFolder.getTreePath(), CharPool.SLASH);
-
-		if (parts.length <= 2) {
-			return null;
-		}
-
-		return _objectEntryFolderLocalService.fetchObjectEntryFolder(
-			GetterUtil.getLong(parts[1]));
 	}
 
 	private boolean _isCMSObjectEntry(ObjectEntry objectEntry)
@@ -323,64 +238,6 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 		}
 	}
 
-	private void _setResourcePermissions(ObjectEntry objectEntry)
-		throws Exception {
-
-		JSONObject defaultPermissionsJSONObject =
-			_getCMSDefaultPermissionJSONObject(objectEntry);
-
-		if ((defaultPermissionsJSONObject == null) ||
-			JSONUtil.isEmpty(defaultPermissionsJSONObject)) {
-
-			return;
-		}
-
-		ObjectEntryFolder rootObjectEntryFolder = _getRootObjectEntryFolder(
-			objectEntry);
-
-		if (rootObjectEntryFolder == null) {
-			return;
-		}
-
-		JSONObject objectEntryJSONObject =
-			defaultPermissionsJSONObject.getJSONObject(
-				rootObjectEntryFolder.getExternalReferenceCode());
-
-		if (objectEntryJSONObject == null) {
-			return;
-		}
-
-		List<String> resourceActions = ResourceActionsUtil.getResourceActions(
-			objectEntry.getModelClassName());
-
-		List<Role> roles = _roleLocalService.getGroupRolesAndTeamRoles(
-			objectEntry.getCompanyId(), null,
-			Arrays.asList(
-				RoleConstants.ADMINISTRATOR,
-				DepotRolesConstants.ASSET_LIBRARY_OWNER),
-			null, null,
-			new int[] {RoleConstants.TYPE_REGULAR, RoleConstants.TYPE_DEPOT},
-			null, 0, 0, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-
-		for (Role role : roles) {
-			JSONArray jsonArray = objectEntryJSONObject.getJSONArray(
-				role.getName());
-
-			if ((jsonArray == null) || JSONUtil.isEmpty(jsonArray)) {
-				jsonArray = _jsonFactory.createJSONArray();
-			}
-
-			_resourcePermissionLocalService.setResourcePermissions(
-				objectEntry.getCompanyId(), objectEntry.getModelClassName(),
-				ResourceConstants.SCOPE_INDIVIDUAL,
-				String.valueOf(objectEntry.getObjectEntryId()),
-				role.getRoleId(),
-				ArrayUtil.filter(
-					JSONUtil.toStringArray(jsonArray),
-					action -> resourceActions.contains(action)));
-		}
-	}
-
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
 
@@ -402,22 +259,10 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 	private GroupLocalService _groupLocalService;
 
 	@Reference
-	private JSONFactory _jsonFactory;
-
-	@Reference
 	private KaleoTaskInstanceTokenLocalService
 		_kaleoTaskInstanceTokenLocalService;
 
 	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
-
-	@Reference
-	private ObjectEntryFolderLocalService _objectEntryFolderLocalService;
-
-	@Reference
-	private ResourcePermissionLocalService _resourcePermissionLocalService;
-
-	@Reference
-	private RoleLocalService _roleLocalService;
 
 }
