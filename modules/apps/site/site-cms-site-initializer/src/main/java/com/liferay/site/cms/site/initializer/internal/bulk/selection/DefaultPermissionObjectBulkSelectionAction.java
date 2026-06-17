@@ -8,7 +8,9 @@ package com.liferay.site.cms.site.initializer.internal.bulk.selection;
 import com.liferay.bulk.selection.BulkSelectionAction;
 import com.liferay.object.constants.ObjectEntryFolderConstants;
 import com.liferay.object.model.ObjectEntry;
-import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.object.model.ObjectEntryFolder;
+import com.liferay.object.service.ObjectEntryFolderLocalService;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.User;
@@ -16,6 +18,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.site.cms.site.initializer.bulk.selection.BaseObjectBulkSelectionAction;
+import com.liferay.site.cms.site.initializer.util.CMSDefaultPermissionUtil;
 
 import java.io.Serializable;
 
@@ -37,7 +40,7 @@ public class DefaultPermissionObjectBulkSelectionAction
 	@Override
 	protected void doExecute(
 			User user, Map<String, Serializable> inputMap, Object object)
-		throws PortalException {
+		throws Exception {
 
 		ObjectEntry objectObjectEntry = (ObjectEntry)object;
 
@@ -94,6 +97,9 @@ public class DefaultPermissionObjectBulkSelectionAction
 
 		partialUpdateObjectEntry(
 			user.getUserId(), objectObjectEntry, objectObjectEntryValues);
+
+		_propagateResourcePermissions(
+			objectObjectEntry, objectObjectEntryValues);
 	}
 
 	private JSONObject _getJSONObject(
@@ -112,7 +118,47 @@ public class DefaultPermissionObjectBulkSelectionAction
 		return jsonObject1;
 	}
 
+	private void _propagateResourcePermissions(
+			ObjectEntry objectObjectEntry,
+			Map<String, Serializable> objectObjectEntryValues)
+		throws Exception {
+
+		ObjectEntryFolder objectEntryFolder =
+			_objectEntryFolderLocalService.
+				fetchObjectEntryFolderByExternalReferenceCode(
+					GetterUtil.getString(
+						objectObjectEntryValues.get(
+							"classExternalReferenceCode")),
+					GetterUtil.getLong(
+						objectObjectEntryValues.get("depotGroupId")),
+					objectObjectEntry.getCompanyId());
+
+		if (objectEntryFolder == null) {
+			return;
+		}
+
+		JSONObject defaultPermissionsJSONObject = _jsonFactory.createJSONObject(
+			GetterUtil.getString(
+				objectObjectEntryValues.get("defaultPermissions"), "{}"));
+
+		CMSDefaultPermissionUtil.setObjectEntryFolderResourcePermissions(
+			objectEntryFolder, defaultPermissionsJSONObject);
+
+		for (ObjectEntry objectEntry :
+				objectEntryLocalService.getObjectEntryFolderObjectEntries(
+					objectEntryFolder.getGroupId(),
+					objectEntryFolder.getObjectEntryFolderId(),
+					QueryUtil.ALL_POS, QueryUtil.ALL_POS)) {
+
+			CMSDefaultPermissionUtil.setObjectEntryResourcePermissions(
+				objectEntry, defaultPermissionsJSONObject);
+		}
+	}
+
 	@Reference
 	private JSONFactory _jsonFactory;
+
+	@Reference
+	private ObjectEntryFolderLocalService _objectEntryFolderLocalService;
 
 }
