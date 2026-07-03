@@ -147,7 +147,19 @@ public class ServiceContextUtil {
 			taxonomyCategoryBrief.getParentTaxonomyVocabulary();
 
 		if (parentTaxonomyVocabulary == null) {
-			return null;
+			AssetCategory assetCategory =
+				AssetCategoryLocalServiceUtil.
+					fetchAssetCategoryByExternalReferenceCode(
+						taxonomyCategoryBrief.
+							getTaxonomyCategoryExternalReferenceCode(),
+						groupId);
+
+			if (assetCategory == null) {
+				return null;
+			}
+
+			return AssetVocabularyLocalServiceUtil.fetchAssetVocabulary(
+				assetCategory.getVocabularyId());
 		}
 
 		return AssetVocabularyLocalServiceUtil.
