@@ -20945,6 +20945,54 @@ public class ObjectEntryResourceTest {
 
 		_assetVocabularyLocalService.deleteVocabulary(briefAssetVocabulary);
 
+		// Can add a category by brief without a parent vocabulary whose
+		// vocabulary is shared to all spaces
+
+		AssetVocabulary parentlessBriefAssetVocabulary =
+			_assetVocabularyLocalService.addVocabulary(
+				TestPropsValues.getUserId(), _group.getGroupId(),
+				RandomTestUtil.randomString(), new ServiceContext());
+
+		AssetVocabularyGroupRelLocalServiceUtil.addAssetVocabularyGroupRel(
+			GroupConstants.ANY_PARENT_GROUP_ID,
+			parentlessBriefAssetVocabulary.getVocabularyId(),
+			DepotConstants.TYPE_SPACE);
+
+		TaxonomyCategory parentlessBriefTaxonomyCategory =
+			_postTaxonomyVocabularyTaxonomyCategory(
+				parentlessBriefAssetVocabulary.getGroupId(),
+				parentlessBriefAssetVocabulary.getVocabularyId());
+
+		Assert.assertNotNull(
+			HTTPTestUtil.invokeToJSONObject(
+				JSONUtil.put(
+					_OBJECT_FIELD_NAME_1, RandomTestUtil.randomString()
+				).put(
+					"taxonomyCategoryBriefs",
+					JSONUtil.putAll(
+						JSONUtil.put(
+							"scope",
+							JSONUtil.put(
+								"externalReferenceCode",
+								_group.getExternalReferenceCode()
+							).put(
+								"type", "Site"
+							)
+						).put(
+							"taxonomyCategoryExternalReferenceCode",
+							parentlessBriefTaxonomyCategory.
+								getExternalReferenceCode()
+						))
+				).toString(),
+				_getEndpoint(_siteScopedObjectDefinition1, _testGroupId),
+				Http.Method.POST
+			).get(
+				"id"
+			));
+
+		_assetVocabularyLocalService.deleteVocabulary(
+			parentlessBriefAssetVocabulary);
+
 		// Cannot add a category to a company-scoped entry
 
 		Assert.assertEquals(
