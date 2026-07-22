@@ -64,6 +64,78 @@ components:
         ResetAssetPermissionAction:
             allOf:
                 -   $ref: "#/components/schemas/AssetPermissionAction"
+        SimilarityCluster:
+            description:
+                A group of CMS content assets detected as near-duplicates of one another for a given similarity dimension.
+            properties:
+                similarityClusterAssets:
+                    description:
+                        The cluster's assets that fall inside the requested page. A cluster split across pages repeats in the next page with the remaining assets.
+                    items:
+                        $ref: "#/components/schemas/SimilarityClusterAsset"
+                    readOnly: true
+                    type: array
+                size:
+                    description:
+                        The total number of assets in the cluster, independent of the requested page.
+                    readOnly: true
+                    type: integer
+                title:
+                    description:
+                        A name derived from the titles of the cluster's assets, for the group heading.
+                    readOnly: true
+                    type: string
+        SimilarityClusterAsset:
+            description:
+                A CMS content asset that belongs to a similarity cluster.
+            properties:
+                contentType:
+                    description:
+                        The localized label of the asset's content type (object definition), for display and iconography.
+                    readOnly: true
+                    type: string
+                dateModified:
+                    format: date-time
+                    readOnly: true
+                    type: string
+                id:
+                    format: int64
+                    readOnly: true
+                    type: integer
+                itemURL:
+                    description:
+                        The URL of the asset's edit form, the same one the CMS listings link their edit action to. Absent when the user cannot update the asset, so that the listing hides the action. Append your own redirect parameter.
+                    readOnly: true
+                    type: string
+                similarityPercent:
+                    description:
+                        Estimated text similarity of this asset to the cluster's top asset, as a percentage from 0 to 100. Null when the asset is the top asset or has no indexed signature yet.
+                    format: double
+                    readOnly: true
+                    type: number
+                title:
+                    readOnly: true
+                    type: string
+                topAsset:
+                    description:
+                        Whether this asset is the cluster's representative (top) asset that the others are compared against.
+                    readOnly: true
+                    type: boolean
+        SimilarityClusterResult:
+            description:
+                Near-duplicate clusters for the selected space and similarity dimension. Feeds the Content Governance Dashboard's Duplication and Similarity widgets - totalCount backs the card, items back the modal.
+            properties:
+                similarityClusters:
+                    items:
+                        $ref: "#/components/schemas/SimilarityCluster"
+                    readOnly: true
+                    type: array
+                totalCount:
+                    description:
+                        The total number of clustered assets that match the search, independent of the requested page. Backs both the card's count and the listing's entry count.
+                    format: int64
+                    readOnly: true
+                    type: integer
 info:
     license:
         name: Apache 2.0
@@ -154,3 +226,44 @@ paths:
                                     $ref: "#/components/schemas/AssetUsage"
                                 type: array
             tags: ["AssetUsage"]
+    "/similarity-clusters":
+        get:
+            description:
+                List near-duplicate clusters of CMS content in a space for a similarity dimension (currently TEXT - overlap in main text fields). Backs the Duplication and Similarity widgets. Content is compared within one language: the clusters are the ones detected in the request's language, so a translation is only ever compared against the same translation of other content. Clustering always spans the whole space, so cluster names and sizes never depend on the search or the page. Results can be searched by asset title, sorted by title or dateModified, and paginated by asset. Omit assetLibraryId to span all accessible spaces.
+            operationId: getSimilarityCluster
+            parameters:
+                -   in: query
+                    name: assetLibraryId
+                    schema:
+                        format: int64
+                        type: integer
+                -   in: query
+                    name: dimension
+                    schema:
+                        type: string
+                -   in: query
+                    name: page
+                    schema:
+                        type: integer
+                -   in: query
+                    name: pageSize
+                    schema:
+                        type: integer
+                -   in: query
+                    name: search
+                    schema:
+                        type: string
+                -   in: query
+                    name: sort
+                    schema:
+                        type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SimilarityClusterResult"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/SimilarityClusterResult"
+            tags: ["SimilarityClusterResult"]
