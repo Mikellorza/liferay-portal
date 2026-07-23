@@ -46,7 +46,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.Inject;
-import com.liferay.site.cms.site.initializer.test.util.CMSTestUtil;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -396,7 +395,8 @@ public class KeywordResourceTest extends BaseKeywordResourceTestCase {
 		Group originalIrrelevantGroup = irrelevantGroup;
 		Group originalTestGroup = testGroup;
 
-		testGroup = CMSTestUtil.getOrAddGroup(KeywordResourceTest.class);
+		testGroup = _groupLocalService.getGroup(
+			TestPropsValues.getCompanyId(), GroupConstants.CMS);
 
 		irrelevantGroup = GroupTestUtil.addGroup(
 			testDepotEntryGroup.getCompanyId(), TestPropsValues.getUserId(),
@@ -436,7 +436,8 @@ public class KeywordResourceTest extends BaseKeywordResourceTestCase {
 	public void testPatchSiteKeyword() throws Exception {
 		Group originalTestGroup = testGroup;
 
-		testGroup = CMSTestUtil.getOrAddGroup(KeywordResourceTest.class);
+		testGroup = _groupLocalService.getGroup(
+			TestPropsValues.getCompanyId(), GroupConstants.CMS);
 
 		Keyword keyword = _postKeywordWithAssetLibraries(
 			_randomSpaceAssetLibrary());
@@ -470,7 +471,8 @@ public class KeywordResourceTest extends BaseKeywordResourceTestCase {
 
 		Group originalTestGroup = testGroup;
 
-		testGroup = CMSTestUtil.getOrAddGroup(KeywordResourceTest.class);
+		testGroup = _groupLocalService.getGroup(
+			TestPropsValues.getCompanyId(), GroupConstants.CMS);
 
 		_cmsAdministratorUser = UserTestUtil.addCompanyUser(
 			testCompany, RoleConstants.CMS_ADMINISTRATOR);
@@ -516,7 +518,8 @@ public class KeywordResourceTest extends BaseKeywordResourceTestCase {
 	public void testPostSiteKeywordAsSpaceContentReviewer() throws Exception {
 		Group originalTestGroup = testGroup;
 
-		testGroup = CMSTestUtil.getOrAddGroup(KeywordResourceTest.class);
+		testGroup = _groupLocalService.getGroup(
+			TestPropsValues.getCompanyId(), GroupConstants.CMS);
 
 		DepotEntry space = _depotEntryLocalService.addDepotEntry(
 			RandomTestUtil.randomLocaleStringMap(), null,
@@ -602,7 +605,8 @@ public class KeywordResourceTest extends BaseKeywordResourceTestCase {
 	public void testPutKeyword() throws Exception {
 		Group originalTestGroup = testGroup;
 
-		testGroup = CMSTestUtil.getOrAddGroup(KeywordResourceTest.class);
+		testGroup = _groupLocalService.getGroup(
+			TestPropsValues.getCompanyId(), GroupConstants.CMS);
 
 		super.testPutKeyword();
 
@@ -627,7 +631,8 @@ public class KeywordResourceTest extends BaseKeywordResourceTestCase {
 	public void testPutKeywordMerge() throws Exception {
 		Group originalTestGroup = testGroup;
 
-		testGroup = CMSTestUtil.getOrAddGroup(KeywordResourceTest.class);
+		testGroup = _groupLocalService.getGroup(
+			TestPropsValues.getCompanyId(), GroupConstants.CMS);
 
 		Keyword keyword1 = _postKeywordWithAssetLibraries(
 			_randomSpaceAssetLibrary());
@@ -815,7 +820,8 @@ public class KeywordResourceTest extends BaseKeywordResourceTestCase {
 
 		Group originalTestGroup = testGroup;
 
-		testGroup = CMSTestUtil.getOrAddGroup(KeywordResourceTest.class);
+		testGroup = _groupLocalService.getGroup(
+			TestPropsValues.getCompanyId(), GroupConstants.CMS);
 
 		DepotEntry depotEntry = _depotEntryLocalService.addDepotEntry(
 			RandomTestUtil.randomLocaleStringMap(), null,
