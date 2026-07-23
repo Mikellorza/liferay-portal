@@ -22,9 +22,6 @@ const test = mergeTests(
 	categorizationPagesTest,
 	cmsPagesTest,
 	dataApiHelpersTest,
-	featureFlagsTest({
-		'LPD-17564': {enabled: true},
-	}),
 	loginTest()
 );
 
@@ -49,7 +46,6 @@ const projectVocabularyTest = mergeTests(
 	cmsPagesTest,
 	dataApiHelpersTest,
 	featureFlagsTest({
-		'LPD-17564': {enabled: true},
 		'LPD-86291': {enabled: true},
 	}),
 	loginTest()
@@ -60,7 +56,6 @@ const systemVocabularyTest = mergeTests(
 	cmsPagesTest,
 	dataApiHelpersTest,
 	featureFlagsTest({
-		'LPD-17564': {enabled: true},
 		'LPD-86291': {enabled: true},
 	}),
 	loginTest()

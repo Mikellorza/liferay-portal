@@ -1451,7 +1451,6 @@ public class ObjectEntryLocalServiceTest {
 			assetEntry.getCategoryIds());
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testAddObjectEntryWithAssetTag() throws Exception {
 		CMSTestUtil.getOrAddGroup(ObjectEntryLocalServiceTest.class);
@@ -1555,7 +1554,6 @@ public class ObjectEntryLocalServiceTest {
 		Assert.assertEquals(assigneeMap, values.get("assignee"));
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testAddObjectEntryWithAttachmentObjectField() throws Exception {
 		FileEntry tempFileEntry = _addTempFileEntry(StringUtil.randomString());
@@ -1992,7 +1990,6 @@ public class ObjectEntryLocalServiceTest {
 			Collections.emptyMap());
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testAddObjectEntryWithDraftWorkflowDefinition()
 		throws Exception {
@@ -3155,7 +3152,6 @@ public class ObjectEntryLocalServiceTest {
 				new ServiceContext()));
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testAddObjectEntryWithObjectEntryScheduleEnabled()
 		throws Exception {
@@ -4691,7 +4687,6 @@ public class ObjectEntryLocalServiceTest {
 		}
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	@TestInfo("LPD-83642")
 	public void testCopyObjectEntry() throws Exception {
@@ -6194,7 +6189,6 @@ public class ObjectEntryLocalServiceTest {
 		GroupTestUtil.deleteGroup(irrelevantGroup);
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testMoveObjectEntryToTrashWithComments() throws Exception {
 		Group group = GroupTestUtil.addGroup();
@@ -6214,7 +6208,6 @@ public class ObjectEntryLocalServiceTest {
 		_assertCommentsCount(0, _siteObjectDefinition, objectEntry);
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testMoveObjectEntryToTrashWithObjectAction() throws Exception {
 		_addObjectAction(
@@ -6236,7 +6229,6 @@ public class ObjectEntryLocalServiceTest {
 		_assertCount(1);
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testMoveObjectEntryToTrashWithObjectDefinitionTree()
 		throws Exception {
@@ -6299,7 +6291,6 @@ public class ObjectEntryLocalServiceTest {
 			_objectEntryLocalService, _objectRelationshipLocalService);
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testMoveObjectEntryToTrashWithObjectEntryFolder()
 		throws Exception {
@@ -6331,7 +6322,6 @@ public class ObjectEntryLocalServiceTest {
 				trashEntry.getTypeSettingsProperty("objectEntryFolderId")));
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testMoveObjectEntryToTrashWithOngoingWorkflowInstances()
 		throws Exception {
@@ -6762,7 +6752,6 @@ public class ObjectEntryLocalServiceTest {
 			() -> _dlAppLocalService.getFileEntry(persistedFileEntryId));
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testRestoreObjectEntryFromTrashWithComments() throws Exception {
 		Group group = GroupTestUtil.addGroup();
@@ -6783,7 +6772,6 @@ public class ObjectEntryLocalServiceTest {
 		_assertCommentsCount(1, _siteObjectDefinition, objectEntry);
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testRestoreObjectEntryFromTrashWithObjectAction()
 		throws Exception {
@@ -6818,7 +6806,6 @@ public class ObjectEntryLocalServiceTest {
 		_assertCount(2);
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testRestoreObjectEntryFromTrashWithObjectEntryFolder()
 		throws Exception {
@@ -6864,7 +6851,6 @@ public class ObjectEntryLocalServiceTest {
 				objectEntry.getObjectEntryId()));
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testRestoreObjectEntryFromTrashWithOngoingWorkflowInstances()
 		throws Exception {
@@ -7167,7 +7153,6 @@ public class ObjectEntryLocalServiceTest {
 		Assert.assertEquals(0, baseModelSearchResult.getLength());
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testUpdateAsset() throws Exception {
 		_objectDefinition = _updateEnableObjectEntryDraft(_objectDefinition);
@@ -7701,7 +7686,6 @@ public class ObjectEntryLocalServiceTest {
 		_testUpdateObjectEntryWithObjectRelationship();
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testUpdateObjectEntryWithAttachmentObjectField()
 		throws Exception {
@@ -7758,7 +7742,6 @@ public class ObjectEntryLocalServiceTest {
 			cmsBasicDocumentDLFileEntry.getClassPK());
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Test
 	public void testUpdateObjectEntryWithAttachmentObjectFieldAndEnableObjectEntryVersioning()
 		throws Exception {

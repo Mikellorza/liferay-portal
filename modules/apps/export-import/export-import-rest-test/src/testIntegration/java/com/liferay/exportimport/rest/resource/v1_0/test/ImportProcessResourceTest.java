@@ -64,7 +64,6 @@ import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.test.log.LogCapture;
 import com.liferay.portal.test.log.LoggerTestUtil;
-import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.staging.StagingGroupHelper;
 
@@ -131,7 +130,6 @@ public class ImportProcessResourceTest
 		_userLocalService.deleteUser(_user);
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testPostAssetLibraryImportProcess() throws Exception {
@@ -192,7 +190,6 @@ public class ImportProcessResourceTest
 					importProcessRequest));
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testPostAssetLibraryPortletImportProcess() throws Exception {
@@ -281,7 +278,6 @@ public class ImportProcessResourceTest
 			importProcessResource::postImportProcessHttpResponse);
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testPostSiteImportProcess() throws Exception {
@@ -342,7 +338,6 @@ public class ImportProcessResourceTest
 				testGroup.getExternalReferenceCode(), importProcessRequest));
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testPostSitePortletImportProcess() throws Exception {

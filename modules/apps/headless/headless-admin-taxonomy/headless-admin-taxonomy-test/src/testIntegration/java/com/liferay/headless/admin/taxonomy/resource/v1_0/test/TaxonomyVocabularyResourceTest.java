@@ -268,7 +268,6 @@ public class TaxonomyVocabularyResourceTest
 		}
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testGetSiteTaxonomyVocabulariesPage() throws Exception {
@@ -368,7 +367,6 @@ public class TaxonomyVocabularyResourceTest
 		_testPutSiteTaxonomyVocabularyByExternalReferenceCodeWithNonexistentAssetLibrary();
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testPutTaxonomyVocabulary() throws Exception {
@@ -459,11 +457,7 @@ public class TaxonomyVocabularyResourceTest
 
 	private void _addCMSGroup() throws Exception {
 
-		// These tests require the instance to be created with the feature
-		// flag LPD-17564 enabled. On CI, feature flags are enabled on
-		// demand for each test, but not during instance initialization.
-		// Until the feature flag LPD-17564 is removed, we need an explicit CMS
-		// group creation.
+		// These tests require an explicit CMS group creation.
 
 		Role role = _roleLocalService.fetchRole(
 			testDepotEntryGroup.getCompanyId(), RoleConstants.SITE_MEMBER);

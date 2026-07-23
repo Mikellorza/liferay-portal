@@ -148,7 +148,6 @@ public class TaxonomyCategoryResourceTest
 		_testDeleteTaxonomyCategorySystem();
 	}
 
-	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	@TestInfo({"LPD-83791", "LPD-95641"})
@@ -506,7 +505,6 @@ public class TaxonomyCategoryResourceTest
 		_testPostAssetLibraryTaxonomyCategoryWithExternalReferenceCode();
 	}
 
-	@FeatureFlag("LPD-17564")
 	@LazyReferencing
 	@Override
 	@Test
@@ -934,11 +932,7 @@ public class TaxonomyCategoryResourceTest
 
 	private void _addCMSGroup() throws Exception {
 
-		// These tests require the instance to be created with the feature
-		// flag LPD-17564 enabled. On CI, feature flags are enabled on
-		// demand for each test, but not during instance initialization.
-		// Until the feature flag LPD-17564 is removed, we need an explicit CMS
-		// group creation.
+		// These tests require an explicit CMS group creation.
 
 		Role role = _roleLocalService.fetchRole(
 			testDepotEntryGroup.getCompanyId(), RoleConstants.SITE_MEMBER);

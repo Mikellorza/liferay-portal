@@ -63,11 +63,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 /**
  * @author Stefano Motta
  */
-@FeatureFlags(
-	featureFlags = {
-		@FeatureFlag(value = "LPD-17564"), @FeatureFlag(value = "LPD-66359")
-	}
-)
+@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-66359"))
 @RunWith(Arquillian.class)
 public class CMSFileDLPortletToolbarContributorContextTest {
 
