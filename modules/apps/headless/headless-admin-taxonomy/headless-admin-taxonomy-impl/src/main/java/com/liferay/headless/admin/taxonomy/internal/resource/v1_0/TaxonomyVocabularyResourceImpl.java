@@ -526,10 +526,7 @@ public class TaxonomyVocabularyResourceImpl
 
 		Group group = _groupLocalService.getGroup(siteId);
 
-		if (FeatureFlagManagerUtil.isEnabled(
-				group.getCompanyId(), "LPD-17564") &&
-			group.isCMS()) {
-
+		if (group.isCMS()) {
 			if (ArrayUtil.isNotEmpty(taxonomyVocabulary.getProjects())) {
 				_assetVocabularyGroupRelLocalService.
 					setAssetVocabularyGroupRels(
@@ -1003,10 +1000,7 @@ public class TaxonomyVocabularyResourceImpl
 
 				Group group = _groupLocalService.getGroup(groupId);
 
-				if (FeatureFlagManagerUtil.isEnabled(
-						group.getCompanyId(), "LPD-17564") &&
-					group.isCMS()) {
-
+				if (group.isCMS()) {
 					BooleanFilter booleanFilter = new BooleanFilter();
 
 					booleanFilter.addRequiredTerm(
@@ -1177,9 +1171,7 @@ public class TaxonomyVocabularyResourceImpl
 
 		Group group = _groupLocalService.getGroup(assetVocabulary.getGroupId());
 
-		if (FeatureFlagManagerUtil.isEnabled(companyId, "LPD-17564") &&
-			group.isCMS()) {
-
+		if (group.isCMS()) {
 			if (taxonomyVocabulary.getProjects() != null) {
 				_assetVocabularyGroupRelLocalService.
 					setAssetVocabularyGroupRels(
