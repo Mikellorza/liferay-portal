@@ -21,7 +21,6 @@ import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectEntryService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
@@ -95,12 +94,6 @@ public class SimilarityClusterResultResourceImpl
 			Long assetLibraryId, String dimension, String search,
 			Pagination pagination, Sort[] sorts)
 		throws Exception {
-
-		if (!FeatureFlagManagerUtil.isEnabled(
-				contextCompany.getCompanyId(), "LPD-17564")) {
-
-			throw new UnsupportedOperationException();
-		}
 
 		SimilarityDimension similarityDimension = SimilarityDimension.get(
 			dimension);
