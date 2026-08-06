@@ -139,7 +139,7 @@ public class CMSContentTextSimilarityModelDocumentContributor
 				objectFieldBag.getIndexedObjectFields()) {
 
 			if (!objectField.isLocalized() ||
-				!_isTextObjectField(objectField)) {
+				!_isSignatureObjectField(objectDefinition, objectField)) {
 
 				continue;
 			}
@@ -176,7 +176,7 @@ public class CMSContentTextSimilarityModelDocumentContributor
 		for (ObjectField objectField :
 				objectFieldBag.getIndexedObjectFields()) {
 
-			if (!_isTextObjectField(objectField)) {
+			if (!_isSignatureObjectField(objectDefinition, objectField)) {
 				continue;
 			}
 
@@ -248,6 +248,23 @@ public class CMSContentTextSimilarityModelDocumentContributor
 		}
 
 		return false;
+	}
+
+	private boolean _isSignatureObjectField(
+		ObjectDefinition objectDefinition, ObjectField objectField) {
+
+		// The title carries its own dimension and needs a signature built from
+		// character n-grams, because a word shingle over a title of a few words
+		// degenerates into exact matching. Folding it into the text would let a
+		// content with a short or empty body group on its title alone
+
+		if (objectField.getObjectFieldId() ==
+				objectDefinition.getTitleObjectFieldId()) {
+
+			return false;
+		}
+
+		return _isTextObjectField(objectField);
 	}
 
 	private boolean _isTextObjectField(ObjectField objectField) {
