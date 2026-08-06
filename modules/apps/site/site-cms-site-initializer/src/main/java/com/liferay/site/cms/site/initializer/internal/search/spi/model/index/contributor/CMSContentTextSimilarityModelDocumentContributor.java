@@ -109,7 +109,7 @@ public class CMSContentTextSimilarityModelDocumentContributor
 				objectFieldBag.getIndexedObjectFields()) {
 
 			if (!objectField.isLocalized() ||
-				!_isTextObjectField(objectField)) {
+				!_isSignatureObjectField(objectDefinition, objectField)) {
 
 				continue;
 			}
@@ -146,7 +146,7 @@ public class CMSContentTextSimilarityModelDocumentContributor
 		for (ObjectField objectField :
 				objectFieldBag.getIndexedObjectFields()) {
 
-			if (!_isTextObjectField(objectField)) {
+			if (!_isSignatureObjectField(objectDefinition, objectField)) {
 				continue;
 			}
 
@@ -213,6 +213,17 @@ public class CMSContentTextSimilarityModelDocumentContributor
 		}
 
 		return false;
+	}
+
+	private boolean _isSignatureObjectField(
+		ObjectDefinition objectDefinition, ObjectField objectField) {
+		if (objectField.getObjectFieldId() ==
+				objectDefinition.getTitleObjectFieldId()) {
+
+			return false;
+		}
+
+		return _isTextObjectField(objectField);
 	}
 
 	private boolean _isTextObjectField(ObjectField objectField) {
