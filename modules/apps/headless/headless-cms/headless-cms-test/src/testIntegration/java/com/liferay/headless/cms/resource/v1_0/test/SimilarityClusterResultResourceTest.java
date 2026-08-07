@@ -13,6 +13,7 @@ import com.liferay.headless.cms.client.dto.v1_0.SimilarityCluster;
 import com.liferay.headless.cms.client.dto.v1_0.SimilarityClusterAsset;
 import com.liferay.headless.cms.client.dto.v1_0.SimilarityClusterResult;
 import com.liferay.headless.cms.client.pagination.Pagination;
+import com.liferay.headless.cms.client.problem.Problem;
 import com.liferay.headless.cms.client.resource.v1_0.SimilarityClusterResultResource;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
@@ -179,19 +180,34 @@ public class SimilarityClusterResultResourceTest
 			objectEntryIds.contains(
 				nearDuplicateObjectEntry2.getObjectEntryId()));
 
-		// A dimension whose signatures are not indexed yields nothing
+		// A dimension that names nothing is rejected, so that a client typo is
+		// not indistinguishable from "no duplicates"
 
-		similarityClusterResult =
+		try {
 			similarityClusterResultResource.getSimilarityCluster(
 				groupId, "TITLE", null, null, null);
 
-		Assert.assertEquals(
-			0, GetterUtil.getLong(similarityClusterResult.getTotalCount()));
+			Assert.fail();
+		}
+		catch (Problem.ProblemException problemException) {
+			Problem problem = problemException.getProblem();
 
-		similarityClusters = similarityClusterResult.getSimilarityClusters();
+			Assert.assertEquals("BAD_REQUEST", problem.getStatus());
+		}
 
-		Assert.assertEquals(
-			Arrays.toString(similarityClusters), 0, similarityClusters.length);
+		// The dimension is matched exactly
+
+		try {
+			similarityClusterResultResource.getSimilarityCluster(
+				groupId, "text", null, null, null);
+
+			Assert.fail();
+		}
+		catch (Problem.ProblemException problemException) {
+			Problem problem = problemException.getProblem();
+
+			Assert.assertEquals("BAD_REQUEST", problem.getStatus());
+		}
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 
