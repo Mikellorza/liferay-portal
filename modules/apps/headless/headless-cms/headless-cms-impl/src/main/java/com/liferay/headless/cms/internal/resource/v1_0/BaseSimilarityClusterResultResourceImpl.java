@@ -59,6 +59,7 @@ public abstract class BaseSimilarityClusterResultResourceImpl
 				name = "assetLibraryId"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
+				description = "The dimension along which content is compared. Defaults to TEXT when omitted. Any other value is rejected.",
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "dimension"
 			),
@@ -561,4 +562,4 @@ public abstract class BaseSimilarityClusterResultResourceImpl
 		LogFactoryUtil.getLog(BaseSimilarityClusterResultResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1005425954
+// LIFERAY-REST-BUILDER-HASH:-1551952149
