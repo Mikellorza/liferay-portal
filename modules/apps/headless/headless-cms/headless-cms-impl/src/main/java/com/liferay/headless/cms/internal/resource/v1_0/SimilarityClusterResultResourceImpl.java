@@ -95,18 +95,16 @@ public class SimilarityClusterResultResourceImpl
 			Pagination pagination, Sort[] sorts)
 		throws Exception {
 
-		SimilarityDimension similarityDimension = SimilarityDimension.get(
-			dimension);
-
 		List<ObjectDefinition> objectDefinitions = _getCMSObjectDefinitions();
 
 		Long[] groupIds = _getGroupIds(assetLibraryId);
 
-		if ((similarityDimension == null) || ArrayUtil.isEmpty(groupIds) ||
-			objectDefinitions.isEmpty()) {
-
+		if (ArrayUtil.isEmpty(groupIds) || objectDefinitions.isEmpty()) {
 			return _toSimilarityClusterResult(new ArrayList<>(), 0);
 		}
+
+		SimilarityDimension similarityDimension = SimilarityDimension.get(
+			dimension);
 
 		String languageId = contextAcceptLanguage.getPreferredLanguageId();
 

@@ -5,6 +5,11 @@
 
 package com.liferay.headless.cms.internal.similarity;
 
+import com.liferay.petra.string.StringBundler;
+
+import jakarta.ws.rs.BadRequestException;
+
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,6 +35,14 @@ public enum SimilarityDimension {
 
 	};
 
+	/**
+	 * Returns the dimension the given value names, defaulting to {@link #TEXT}
+	 * when no value is given.
+	 *
+	 * @throws BadRequestException if the value names no dimension, so that a
+	 *         client typo is answered with an error instead of an empty result
+	 *         indistinguishable from "no duplicates"
+	 */
 	public static SimilarityDimension get(String dimension) {
 		if (dimension == null) {
 			return TEXT;
@@ -41,7 +54,10 @@ public enum SimilarityDimension {
 			}
 		}
 
-		return null;
+		throw new BadRequestException(
+			StringBundler.concat(
+				"Unknown similarity dimension \"", dimension, "\". Valid ",
+				"values are ", Arrays.toString(values())));
 	}
 
 	public String getBandField() {
