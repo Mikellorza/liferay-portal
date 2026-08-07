@@ -66,7 +66,7 @@ components:
                 -   $ref: "#/components/schemas/AssetPermissionAction"
         SimilarityCluster:
             description:
-                A group of CMS content assets detected as near-duplicates of one another for a given similarity dimension.
+                A group of CMS content assets detected as near duplicates of one another for a given similarity dimension.
             properties:
                 similarityClusterAssets:
                     description:
@@ -123,7 +123,7 @@ components:
                     type: boolean
         SimilarityClusterResult:
             description:
-                Near-duplicate clusters for the selected space and similarity dimension. Feeds the Content Governance Dashboard's Duplication and Similarity widgets - totalCount backs the card, items back the modal.
+                Near duplicate clusters for the selected space and similarity dimension. Feeds the Content Governance Dashboard's Duplication and Similarity widgets - totalCount backs the card, items back the modal.
             properties:
                 similarityClusters:
                     items:
@@ -229,7 +229,7 @@ paths:
     "/similarity-clusters":
         get:
             description:
-                List near-duplicate clusters of CMS content in a space for a similarity dimension (currently TEXT - overlap in main text fields). Backs the Duplication and Similarity widgets. Content is compared within one language: the clusters are the ones detected in the request's language, so a translation is only ever compared against the same translation of other content. Clustering always spans the whole space, so cluster names and sizes never depend on the search or the page. Results can be searched by asset title, sorted by title or dateModified, and paginated by asset. Omit assetLibraryId to span all accessible spaces.
+                List near duplicate clusters of CMS content in a space for a similarity dimension (currently TEXT - overlap in main text fields). Backs the Duplication and Similarity widgets. Content is compared within one language: the clusters are the ones detected in the request's language, so a translation is only ever compared against the same translation of other content. Clustering always spans the whole space, so cluster names and sizes never depend on the search or the page. Results can be searched by asset title, sorted by title or dateModified, and paginated by asset. Omit assetLibraryId to span all accessible spaces.
             operationId: getSimilarityCluster
             parameters:
                 -   in: query
@@ -238,8 +238,11 @@ paths:
                         format: int64
                         type: integer
                 -   in: query
+                    description:
+                        The dimension along which content is compared. Defaults to TEXT when omitted. Any other value is rejected.
                     name: dimension
                     schema:
+                        enum: [TEXT]
                         type: string
                 -   in: query
                     name: page
