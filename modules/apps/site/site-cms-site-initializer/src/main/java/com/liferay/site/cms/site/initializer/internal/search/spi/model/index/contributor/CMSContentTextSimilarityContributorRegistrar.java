@@ -6,10 +6,13 @@
 package com.liferay.site.cms.site.initializer.internal.search.spi.model.index.contributor;
 
 import com.liferay.object.constants.ObjectDefinitionConstants;
+import com.liferay.object.model.ObjectEntry;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
+import com.liferay.portal.kernel.util.HtmlParser;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
+import com.liferay.site.cms.site.initializer.internal.search.similarity.CMSContentTextSimilarityTextExtractor;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -18,6 +21,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -32,6 +36,18 @@ public class CMSContentTextSimilarityContributorRegistrar {
 		throws InvalidSyntaxException {
 
 		_bundleContext = bundleContext;
+
+		_modelDocumentContributor =
+			new CMSContentTextSimilarityModelDocumentContributor(
+				new CMSContentTextSimilarityTextExtractor(_htmlParser));
+
+		_serviceRegistration = bundleContext.registerService(
+			(Class<ModelDocumentContributor<?>>)
+				(Class<?>)ModelDocumentContributor.class,
+			_modelDocumentContributor,
+			HashMapDictionaryBuilder.<String, Object>put(
+				"indexer.class.name", ObjectEntry.class.getName()
+			).build());
 
 		_serviceTracker = new ServiceTracker<>(
 			bundleContext,
@@ -52,12 +68,21 @@ public class CMSContentTextSimilarityContributorRegistrar {
 		if (_serviceTracker != null) {
 			_serviceTracker.close();
 		}
+
+		if (_serviceRegistration != null) {
+			_serviceRegistration.unregister();
+		}
 	}
 
 	private BundleContext _bundleContext;
-	private final CMSContentTextSimilarityModelDocumentContributor
-		_modelDocumentContributor =
-			new CMSContentTextSimilarityModelDocumentContributor();
+
+	@Reference
+	private HtmlParser _htmlParser;
+
+	private CMSContentTextSimilarityModelDocumentContributor
+		_modelDocumentContributor;
+	private ServiceRegistration<ModelDocumentContributor<?>>
+		_serviceRegistration;
 	private ServiceTracker
 		<Indexer<?>, ServiceRegistration<ModelDocumentContributor<?>>>
 			_serviceTracker;
