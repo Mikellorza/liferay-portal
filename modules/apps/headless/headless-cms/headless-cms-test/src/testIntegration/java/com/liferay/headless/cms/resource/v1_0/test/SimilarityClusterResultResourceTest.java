@@ -36,6 +36,8 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -181,9 +183,15 @@ public class SimilarityClusterResultResourceTest
 				nearDuplicateObjectEntry2.getObjectEntryId()));
 
 		// A dimension that names nothing is rejected, so that a client typo is
-		// not indistinguishable from "no duplicates"
+		// not indistinguishable from "no duplicates". The exception mapper logs
+		// every web application exception at error level, 4xx included, so the
+		// log has to be captured for the log assertion test rule to pass.
 
-		try {
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.portal.vulcan.internal.jaxrs.exception.mapper." +
+					"WebApplicationExceptionMapper",
+				LoggerTestUtil.ERROR)) {
+
 			similarityClusterResultResource.getSimilarityCluster(
 				groupId, "TITLE", null, null, null);
 
@@ -197,7 +205,11 @@ public class SimilarityClusterResultResourceTest
 
 		// The dimension is matched exactly
 
-		try {
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.portal.vulcan.internal.jaxrs.exception.mapper." +
+					"WebApplicationExceptionMapper",
+				LoggerTestUtil.ERROR)) {
+
 			similarityClusterResultResource.getSimilarityCluster(
 				groupId, "text", null, null, null);
 
