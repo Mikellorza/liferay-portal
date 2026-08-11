@@ -23,6 +23,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
@@ -68,6 +69,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -542,6 +544,24 @@ public class SimilarityClusterResultResourceImpl
 		return pageSimilarityClusters;
 	}
 
+	private Consumer<SearchContext> _getSearchContextConsumer(Long[] groupIds) {
+		long[] scopedGroupIds = _toPrimitiveArray(groupIds);
+
+		return searchContext -> {
+			searchContext.setAttribute(
+				Field.STATUS, WorkflowConstants.STATUS_APPROVED);
+			searchContext.setGroupIds(scopedGroupIds);
+
+			// The permission filter is only added when the search context
+			// carries a user, and a search context built from a search request
+			// starts without one. Every search here has to set it, the band
+			// aggregation included, or a cluster counts and carries members
+			// the caller cannot view.
+
+			searchContext.setUserId(contextUser.getUserId());
+		};
+	}
+
 	private Map<Long, long[]> _getSignatures(
 		List<List<Long>> clusters, String[] entryClassNames, Long[] groupIds,
 		String languageId, String signatureField) {
@@ -567,8 +587,6 @@ public class SimilarityClusterResultResourceImpl
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder();
 
-		long[] scopedGroupIds = _toPrimitiveArray(groupIds);
-
 		searchRequestBuilder.addComplexQueryPart(
 			_complexQueryPartBuilderFactory.builder(
 			).occur(
@@ -587,11 +605,7 @@ public class SimilarityClusterResultResourceImpl
 		).size(
 			objectEntryIds.size()
 		).withSearchContext(
-			searchContext -> {
-				searchContext.setAttribute(
-					Field.STATUS, WorkflowConstants.STATUS_APPROVED);
-				searchContext.setGroupIds(scopedGroupIds);
-			}
+			_getSearchContextConsumer(groupIds)
 		);
 
 		SearchResponse searchResponse = _searcher.search(
@@ -989,8 +1003,6 @@ public class SimilarityClusterResultResourceImpl
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder();
 
-		long[] scopedGroupIds = _toPrimitiveArray(groupIds);
-
 		searchRequestBuilder.addComplexQueryPart(
 			_complexQueryPartBuilderFactory.builder(
 			).occur(
@@ -1009,11 +1021,7 @@ public class SimilarityClusterResultResourceImpl
 		).size(
 			_MAX_CLUSTERED_ASSETS
 		).withSearchContext(
-			searchContext -> {
-				searchContext.setAttribute(
-					Field.STATUS, WorkflowConstants.STATUS_APPROVED);
-				searchContext.setGroupIds(scopedGroupIds);
-			}
+			_getSearchContextConsumer(groupIds)
 		);
 
 		SearchResponse searchResponse = _searcher.search(
@@ -1056,8 +1064,6 @@ public class SimilarityClusterResultResourceImpl
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder();
 
-		long[] scopedGroupIds = _toPrimitiveArray(groupIds);
-
 		searchRequestBuilder.addAggregation(
 			termsAggregation
 		).companyId(
@@ -1069,11 +1075,7 @@ public class SimilarityClusterResultResourceImpl
 		).size(
 			0
 		).withSearchContext(
-			searchContext -> {
-				searchContext.setAttribute(
-					Field.STATUS, WorkflowConstants.STATUS_APPROVED);
-				searchContext.setGroupIds(scopedGroupIds);
-			}
+			_getSearchContextConsumer(groupIds)
 		);
 
 		SearchResponse searchResponse = _searcher.search(
