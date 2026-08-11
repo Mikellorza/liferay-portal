@@ -17,20 +17,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Derives the display name of a similarity cluster from the titles of its
- * assets, so that the listing can head each group with something recognizable
- * instead of an opaque identifier.
+ * Names a similarity cluster after the titles of its assets: the longest phrase
+ * they share, falling back to the words they all have in common and finally to
+ * the representative asset's own title, so a cluster is never left unnamed.
  *
  * <p>
- * Only titles are used. What two near-duplicates share in their body text is
- * usually boilerplate, and the indexed MinHash signatures are not invertible, so
- * neither is a usable source for a name.
- * </p>
- *
- * <p>
- * The name is the longest contiguous phrase the titles share, falling back to
- * the words they all have in common and finally to the representative asset's
- * own title, so that a cluster is never left unnamed.
+ * Only titles are used, because what two near duplicates share in their body is
+ * usually boilerplate and the indexed signatures are not invertible.
  * </p>
  *
  * @author Mikel Lorza
@@ -38,10 +31,8 @@ import java.util.Set;
 public class SimilarityClusterTitleUtil {
 
 	/**
-	 * Returns the name for a cluster whose assets have the given titles, where
-	 * <code>topTitle</code> is the title of the cluster's representative asset,
-	 * which sets the word order of the name. Blank titles carry no signal and
-	 * are ignored.
+	 * The representative asset's <code>topTitle</code> sets the word order of
+	 * the name. Blank titles carry no signal and are ignored.
 	 */
 	public static String getTitle(List<String> titles, String topTitle) {
 		String representativeTitle = _getRepresentativeTitle(titles, topTitle);

@@ -5,6 +5,7 @@
 
 package com.liferay.headless.cms.internal.similarity;
 
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.document.Document;
@@ -17,18 +18,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Groups near-duplicate assets from what the index holds, and answers the
- * signature questions a group raises: which of its members is the most
- * representative, and how close each of the others is to it.
+ * Groups near duplicate assets from what the index holds, and answers the
+ * signature questions a group raises: which member is the most representative,
+ * and how close each of the others is to it.
  *
  * @author Mikel Lorza
  */
 public class SimilarityClusterUtil {
 
 	/**
-	 * Returns the assets that share at least one band, grouped so that two
-	 * assets are in the same group when a chain of shared bands connects them,
-	 * dropping any group of a single asset.
+	 * Groups the assets a chain of shared bands connects, dropping any group of
+	 * a single asset.
 	 */
 	public static List<List<Long>> getClusters(
 		List<Document> documents, String bandField, Set<String> sharedBands) {
@@ -68,15 +68,15 @@ public class SimilarityClusterUtil {
 			cluster.add(objectEntryId);
 		}
 
-		List<List<Long>> similarityClusters = new ArrayList<>();
+		return TransformUtil.transform(
+			clusters.values(),
+			cluster -> {
+				if (cluster.size() < 2) {
+					return null;
+				}
 
-		for (List<Long> cluster : clusters.values()) {
-			if (cluster.size() >= 2) {
-				similarityClusters.add(cluster);
-			}
-		}
-
-		return similarityClusters;
+				return cluster;
+			});
 	}
 
 	public static Long getMinObjectEntryId(List<Long> cluster) {
@@ -94,10 +94,8 @@ public class SimilarityClusterUtil {
 	}
 
 	/**
-	 * Returns the signature the given tokens hold for the given language, or
-	 * <code>null</code> when they do not hold a whole one, so that an asset
-	 * whose signature cannot be read is left without a similarity rather than
-	 * given a wrong one.
+	 * Returns <code>null</code> unless the tokens hold a whole signature, so an
+	 * asset is left without a similarity rather than given a wrong one.
 	 */
 	public static long[] getSignature(List<String> tokens, String languageId) {
 		if (tokens == null) {
@@ -150,8 +148,7 @@ public class SimilarityClusterUtil {
 	}
 
 	/**
-	 * Returns the estimated fraction of text the two signatures share, which is
-	 * how often they agree position by position.
+	 * Returns the estimated fraction of text the two signatures share.
 	 */
 	public static double getSimilarity(long[] signature1, long[] signature2) {
 		int matches = 0;
@@ -170,9 +167,8 @@ public class SimilarityClusterUtil {
 	}
 
 	/**
-	 * Returns the member of the cluster closest to all the others, which is the
-	 * one the cluster is presented and measured against. Returns
-	 * <code>null</code> when no member has a readable signature.
+	 * Returns the member closest to all the others, or <code>null</code> when
+	 * none has a readable signature.
 	 */
 	public static Long getTopObjectEntryId(
 		List<Long> cluster, Map<Long, long[]> signaturesMap) {
