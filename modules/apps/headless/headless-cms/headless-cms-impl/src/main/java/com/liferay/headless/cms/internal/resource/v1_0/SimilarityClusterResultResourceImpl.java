@@ -11,6 +11,7 @@ import com.liferay.depot.service.DepotEntryService;
 import com.liferay.headless.cms.dto.v1_0.SimilarityCluster;
 import com.liferay.headless.cms.dto.v1_0.SimilarityClusterAsset;
 import com.liferay.headless.cms.dto.v1_0.SimilarityClusterResult;
+import com.liferay.headless.cms.internal.similarity.SimilarityClusterUtil;
 import com.liferay.headless.cms.internal.similarity.SimilarityDimension;
 import com.liferay.headless.cms.resource.v1_0.SimilarityClusterResultResource;
 import com.liferay.object.constants.ObjectFolderConstants;
@@ -20,7 +21,6 @@ import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectEntryService;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
@@ -64,11 +64,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.osgi.service.component.annotations.Component;
@@ -123,7 +121,7 @@ public class SimilarityClusterResultResourceImpl
 		List<String> sharedBands = _searchSharedBands(
 			bandField, entryClassNames, groupIds, languageId);
 
-		List<List<Long>> clusters = _getClusters(
+		List<List<Long>> clusters = SimilarityClusterUtil.getClusters(
 			_searchClusteredDocuments(
 				bandField, sharedBands, entryClassNames, groupIds),
 			bandField, new HashSet<>(sharedBands));
@@ -212,69 +210,6 @@ public class SimilarityClusterResultResourceImpl
 		return filteredSimilarityClusters;
 	}
 
-	private Long _find(Map<Long, Long> parents, Long objectEntryId) {
-		Long parent = parents.get(objectEntryId);
-
-		while (!parent.equals(objectEntryId)) {
-			objectEntryId = parent;
-
-			parent = parents.get(objectEntryId);
-		}
-
-		return objectEntryId;
-	}
-
-	private List<List<Long>> _getClusters(
-		List<Document> documents, String bandField, Set<String> sharedBands) {
-
-		Map<Long, Long> parents = new LinkedHashMap<>();
-		Map<String, Long> objectEntryIdsByBand = new HashMap<>();
-
-		for (Document document : documents) {
-			Long objectEntryId = document.getLong("objectEntryId");
-
-			if (objectEntryId == null) {
-				continue;
-			}
-
-			parents.putIfAbsent(objectEntryId, objectEntryId);
-
-			for (String band : document.getStrings(bandField)) {
-				if (!sharedBands.contains(band)) {
-					continue;
-				}
-
-				Long otherObjectEntryId = objectEntryIdsByBand.putIfAbsent(
-					band, objectEntryId);
-
-				if (otherObjectEntryId != null) {
-					_union(parents, otherObjectEntryId, objectEntryId);
-				}
-			}
-		}
-
-		Map<Long, List<Long>> clusters = new LinkedHashMap<>();
-
-		for (Long objectEntryId : parents.keySet()) {
-			Long root = _find(parents, objectEntryId);
-
-			List<Long> cluster = clusters.computeIfAbsent(
-				root, key -> new ArrayList<>());
-
-			cluster.add(objectEntryId);
-		}
-
-		List<List<Long>> similarityClusters = new ArrayList<>();
-
-		for (List<Long> cluster : clusters.values()) {
-			if (cluster.size() >= 2) {
-				similarityClusters.add(cluster);
-			}
-		}
-
-		return similarityClusters;
-	}
-
 	private List<ObjectDefinition> _getCMSObjectDefinitions() throws Exception {
 		return _objectDefinitionService.getCMSObjectDefinitions(
 			contextCompany.getCompanyId(),
@@ -308,7 +243,7 @@ public class SimilarityClusterResultResourceImpl
 				(List<Long> cluster) -> cluster.size()
 			).reversed(
 			).thenComparing(
-				this::_getMinObjectEntryId
+				SimilarityClusterUtil::getMinObjectEntryId
 			));
 
 		int endPosition = -1;
@@ -475,20 +410,6 @@ public class SimilarityClusterResultResourceImpl
 		return minId;
 	}
 
-	private Long _getMinObjectEntryId(List<Long> cluster) {
-		Long minObjectEntryId = null;
-
-		for (Long objectEntryId : cluster) {
-			if ((minObjectEntryId == null) ||
-				(objectEntryId < minObjectEntryId)) {
-
-				minObjectEntryId = objectEntryId;
-			}
-		}
-
-		return minObjectEntryId;
-	}
-
 	private List<SimilarityCluster> _getPage(
 		List<SimilarityCluster> similarityClusters, Pagination pagination) {
 
@@ -622,7 +543,7 @@ public class SimilarityClusterResultResourceImpl
 				continue;
 			}
 
-			long[] signature = _parseSignature(
+			long[] signature = SimilarityClusterUtil.getSignature(
 				document.getStrings(signatureField), languageId);
 
 			if (signature != null) {
@@ -631,18 +552,6 @@ public class SimilarityClusterResultResourceImpl
 		}
 
 		return signaturesMap;
-	}
-
-	private double _getSimilarity(long[] signature1, long[] signature2) {
-		int matches = 0;
-
-		for (int i = 0; i < _SIGNATURE_SIZE; i++) {
-			if (signature1[i] == signature2[i]) {
-				matches++;
-			}
-		}
-
-		return (double)matches / _SIGNATURE_SIZE;
 	}
 
 	private Comparator<SimilarityClusterAsset>
@@ -766,7 +675,7 @@ public class SimilarityClusterResultResourceImpl
 		List<SimilarityCluster> similarityClusters = new ArrayList<>();
 
 		for (List<Long> cluster : clusters) {
-			Long topObjectEntryId = _getTopObjectEntryId(
+			Long topObjectEntryId = SimilarityClusterUtil.getTopObjectEntryId(
 				cluster, signaturesMap);
 
 			long[] topSignature = null;
@@ -821,8 +730,11 @@ public class SimilarityClusterResultResourceImpl
 					long[] signature = signaturesMap.get(objectEntryId);
 
 					if (signature != null) {
+						double similarity = SimilarityClusterUtil.getSimilarity(
+							signature, topSignature);
+
 						double similarityPercent = Math.round(
-							_getSimilarity(signature, topSignature) * 100.0);
+							similarity * 100.0);
 
 						similarityClusterAsset.setSimilarityPercent(
 							() -> similarityPercent);
@@ -849,57 +761,6 @@ public class SimilarityClusterResultResourceImpl
 		}
 
 		return similarityClusters;
-	}
-
-	private String _getTokenPrefix(String languageId) {
-		return languageId + StringPool.UNDERLINE;
-	}
-
-	private Long _getTopObjectEntryId(
-		List<Long> cluster, Map<Long, long[]> signaturesMap) {
-
-		Long topObjectEntryId = null;
-
-		double topMeanSimilarity = -1;
-
-		for (Long objectEntryId : cluster) {
-			long[] signature = signaturesMap.get(objectEntryId);
-
-			if (signature == null) {
-				continue;
-			}
-
-			double totalSimilarity = 0;
-			int count = 0;
-
-			for (Long otherObjectEntryId : cluster) {
-				if (otherObjectEntryId.equals(objectEntryId)) {
-					continue;
-				}
-
-				long[] otherSignature = signaturesMap.get(otherObjectEntryId);
-
-				if (otherSignature == null) {
-					continue;
-				}
-
-				totalSimilarity += _getSimilarity(signature, otherSignature);
-				count++;
-			}
-
-			double meanSimilarity = 0;
-
-			if (count > 0) {
-				meanSimilarity = totalSimilarity / count;
-			}
-
-			if (meanSimilarity > topMeanSimilarity) {
-				topMeanSimilarity = meanSimilarity;
-				topObjectEntryId = objectEntryId;
-			}
-		}
-
-		return topObjectEntryId;
 	}
 
 	private long _getTotalCount(List<SimilarityCluster> similarityClusters) {
@@ -933,57 +794,6 @@ public class SimilarityClusterResultResourceImpl
 		}
 
 		return true;
-	}
-
-	private long[] _parseSignature(List<String> tokens, String languageId) {
-		if (tokens == null) {
-			return null;
-		}
-
-		long[] signature = new long[_SIGNATURE_SIZE];
-		boolean[] filled = new boolean[_SIGNATURE_SIZE];
-		int count = 0;
-
-		String prefix = _getTokenPrefix(languageId);
-
-		for (String curToken : tokens) {
-
-			// One document carries the signatures of all its translations, so
-
-			// only the request language's tokens are read
-
-			if (!curToken.startsWith(prefix)) {
-				continue;
-			}
-
-			String token = curToken.substring(prefix.length());
-
-			int index = token.indexOf('_');
-
-			if ((index <= 1) || (token.charAt(0) != 'p')) {
-				continue;
-			}
-
-			int position = GetterUtil.getInteger(token.substring(1, index));
-
-			if ((position < 0) || (position >= _SIGNATURE_SIZE) ||
-				filled[position]) {
-
-				continue;
-			}
-
-			signature[position] = GetterUtil.getLong(
-				token.substring(index + 1));
-			filled[position] = true;
-
-			count++;
-		}
-
-		if (count != _SIGNATURE_SIZE) {
-			return null;
-		}
-
-		return signature;
 	}
 
 	private List<Document> _searchClusteredDocuments(
@@ -1057,7 +867,7 @@ public class SimilarityClusterResultResourceImpl
 
 		termsAggregation.setIncludeExcludeClause(
 			new IncludeExcludeClauseImpl(
-				_getTokenPrefix(languageId) + ".*", null));
+				SimilarityClusterUtil.getTokenPrefix(languageId) + ".*", null));
 
 		termsAggregation.setSize(_MAX_BANDS);
 
@@ -1166,17 +976,6 @@ public class SimilarityClusterResultResourceImpl
 		return similarityClusterResult;
 	}
 
-	private void _union(
-		Map<Long, Long> parents, Long objectEntryId1, Long objectEntryId2) {
-
-		Long root1 = _find(parents, objectEntryId1);
-		Long root2 = _find(parents, objectEntryId2);
-
-		if (!root1.equals(root2)) {
-			parents.put(root1, root2);
-		}
-	}
-
 	private static final String _BANDS_AGGREGATION_NAME = "bands";
 
 	private static final String _DATE_MODIFIED_FIELD_NAME = "dateModified";
@@ -1195,8 +994,6 @@ public class SimilarityClusterResultResourceImpl
 	// search has no headroom left if it ever has to paginate
 
 	private static final int _MAX_CLUSTERED_ASSETS = 10000;
-
-	private static final int _SIGNATURE_SIZE = 128;
 
 	private static final String _TITLE_FIELD_NAME = "title";
 
