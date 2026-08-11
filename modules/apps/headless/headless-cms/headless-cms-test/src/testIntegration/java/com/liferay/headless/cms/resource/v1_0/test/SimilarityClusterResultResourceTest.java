@@ -21,6 +21,9 @@ import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.User;
@@ -28,6 +31,7 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
@@ -95,18 +99,18 @@ public class SimilarityClusterResultResourceTest
 		Assert.assertEquals(
 			Arrays.toString(similarityClusters), 0, similarityClusters.length);
 
-		// Two near-duplicate assets and one distinct asset
+		// Two near duplicate assets and one distinct asset
 
 		ObjectEntry nearDuplicateObjectEntry1 = _addObjectEntry(
-			depotEntry, objectDefinition, "Reset Your Password",
+			depotEntry, objectDefinition, _NEAR_DUPLICATE_TITLE,
 			_NEAR_DUPLICATE_CONTENT);
 		ObjectEntry nearDuplicateObjectEntry2 = _addObjectEntry(
-			depotEntry, objectDefinition, "Reset Your Password",
+			depotEntry, objectDefinition, _NEAR_DUPLICATE_TITLE,
 			_NEAR_DUPLICATE_CONTENT +
 				" You can also contact support for help.");
 
 		_addObjectEntry(
-			depotEntry, objectDefinition, "Quarterly Sales Report",
+			depotEntry, objectDefinition, RandomTestUtil.randomString(),
 			_DISTINCT_CONTENT);
 
 		similarityClusterResult = _getSimilarityCluster(
@@ -123,7 +127,7 @@ public class SimilarityClusterResultResourceTest
 		SimilarityCluster similarityCluster = similarityClusters[0];
 
 		Assert.assertEquals(
-			"Reset Your Password", similarityCluster.getTitle());
+			_NEAR_DUPLICATE_TITLE, similarityCluster.getTitle());
 		Assert.assertEquals(
 			2, GetterUtil.getInteger(similarityCluster.getSize()));
 
@@ -144,7 +148,7 @@ public class SimilarityClusterResultResourceTest
 			objectEntryIds.add(similarityClusterAsset.getId());
 
 			Assert.assertEquals(
-				"Reset Your Password", similarityClusterAsset.getTitle());
+				_NEAR_DUPLICATE_TITLE, similarityClusterAsset.getTitle());
 			Assert.assertNotNull(similarityClusterAsset.getContentType());
 			Assert.assertNotNull(similarityClusterAsset.getDateModified());
 
@@ -183,10 +187,10 @@ public class SimilarityClusterResultResourceTest
 			objectEntryIds.contains(
 				nearDuplicateObjectEntry2.getObjectEntryId()));
 
-		// A dimension that names nothing is rejected, so that a client typo is
-		// not indistinguishable from "no duplicates". The exception mapper logs
+		// A dimension that names nothing is rejected, so a client typo is not
+		// indistinguishable from "no duplicates". The exception mapper logs
 		// every web application exception at error level, 4xx included, so the
-		// log has to be captured for the log assertion test rule to pass.
+		// log has to be captured
 
 		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
 				"com.liferay.portal.vulcan.internal.jaxrs.exception.mapper." +
@@ -234,6 +238,59 @@ public class SimilarityClusterResultResourceTest
 	@Override
 	@Test
 	public void testGraphQLGetSimilarityCluster() throws Exception {
+
+		// The generated body of this test is a failing stub, so there is no
+		// generated coverage to delegate to
+
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		ObjectDefinition objectDefinition =
+			_getBasicWebContentObjectDefinition();
+
+		_addObjectEntry(
+			depotEntry, objectDefinition, _NEAR_DUPLICATE_TITLE,
+			_NEAR_DUPLICATE_CONTENT);
+		_addObjectEntry(
+			depotEntry, objectDefinition, _NEAR_DUPLICATE_TITLE,
+			_NEAR_DUPLICATE_CONTENT +
+				" You can also contact support for help.");
+
+		GraphQLField graphQLField = new GraphQLField(
+			"similarityCluster",
+			HashMapBuilder.<String, Object>put(
+				"assetLibraryId", "\"" + depotEntry.getGroupId() + "\""
+			).build(),
+			new GraphQLField(
+				"similarityClusters", new GraphQLField("size"),
+				new GraphQLField("title")),
+			new GraphQLField("totalCount"));
+
+		JSONObject similarityClusterResultJSONObject =
+			JSONUtil.getValueAsJSONObject(
+				invokeGraphQLQuery(graphQLField), "JSONObject/data",
+				"JSONObject/similarityCluster");
+
+		Assert.assertEquals(
+			2, similarityClusterResultJSONObject.getLong("totalCount"));
+
+		JSONArray similarityClustersJSONArray =
+			similarityClusterResultJSONObject.getJSONArray(
+				"similarityClusters");
+
+		Assert.assertEquals(
+			similarityClustersJSONArray.toString(), 1,
+			similarityClustersJSONArray.length());
+
+		JSONObject similarityClusterJSONObject =
+			similarityClustersJSONArray.getJSONObject(0);
+
+		Assert.assertEquals(2, similarityClusterJSONObject.getInt("size"));
+		Assert.assertEquals(
+			_NEAR_DUPLICATE_TITLE,
+			similarityClusterJSONObject.getString("title"));
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
 
 	private ObjectEntry _addObjectEntry(
@@ -291,7 +348,7 @@ public class SimilarityClusterResultResourceTest
 				" Contact the press office for further details.");
 
 		_addObjectEntry(
-			depotEntry, objectDefinition, "Quarterly Sales Report",
+			depotEntry, objectDefinition, RandomTestUtil.randomString(),
 			_DISTINCT_CONTENT);
 	}
 
@@ -467,10 +524,10 @@ public class SimilarityClusterResultResourceTest
 			_getBasicWebContentObjectDefinition();
 
 		_addObjectEntry(
-			depotEntry, objectDefinition, "Reset Your Password",
+			depotEntry, objectDefinition, _NEAR_DUPLICATE_TITLE,
 			_NEAR_DUPLICATE_CONTENT);
 		_addObjectEntry(
-			depotEntry, objectDefinition, "Reset Your Password",
+			depotEntry, objectDefinition, _NEAR_DUPLICATE_TITLE,
 			_NEAR_DUPLICATE_CONTENT +
 				" You can also contact support for help.");
 
@@ -479,14 +536,16 @@ public class SimilarityClusterResultResourceTest
 		// view. A member of the Space is allowed to view both, and has to see
 		// the same cluster an administrator sees
 
-		User user = UserTestUtil.addUser(testCompany, _PASSWORD);
+		String password = RandomTestUtil.randomString();
+
+		User user = UserTestUtil.addUser(testCompany, password);
 
 		_userLocalService.addGroupUser(groupId, user.getUserId());
 
 		SimilarityClusterResultResource userSimilarityClusterResultResource =
 			SimilarityClusterResultResource.builder(
 			).authentication(
-				user.getEmailAddress(), _PASSWORD
+				user.getEmailAddress(), password
 			).endpoint(
 				testCompany.getVirtualHostname(),
 				PortalUtil.getPortalServerPort(false), "http"
@@ -508,8 +567,8 @@ public class SimilarityClusterResultResourceTest
 			Arrays.toString(similarityClusters), 1, similarityClusters.length);
 
 		_assertSimilarityCluster(
-			similarityClusters[0], "Reset Your Password", 2,
-			new String[] {"Reset Your Password", "Reset Your Password"});
+			similarityClusters[0], _NEAR_DUPLICATE_TITLE, 2,
+			new String[] {_NEAR_DUPLICATE_TITLE, _NEAR_DUPLICATE_TITLE});
 
 		_userLocalService.deleteUser(user);
 
@@ -673,11 +732,11 @@ public class SimilarityClusterResultResourceTest
 		// translation
 
 		_addTranslatedObjectEntry(
-			depotEntry, objectDefinition, "Reset Your Password",
+			depotEntry, objectDefinition, _NEAR_DUPLICATE_TITLE,
 			_NEAR_DUPLICATE_CONTENT, "Oferta de Verano Grande",
 			_SPANISH_SUMMER_SALE_CONTENT);
 		_addTranslatedObjectEntry(
-			depotEntry, objectDefinition, "Quarterly Sales Report",
+			depotEntry, objectDefinition, RandomTestUtil.randomString(),
 			_DISTINCT_CONTENT, "Oferta de Verano 2026",
 			_SPANISH_SUMMER_SALE_CONTENT + " La oferta acaba el domingo.");
 
@@ -738,7 +797,7 @@ public class SimilarityClusterResultResourceTest
 			"forgot password link enter your email address and you will " +
 				"receive an email with instructions to create a new password.";
 
-	private static final String _PASSWORD = "test";
+	private static final String _NEAR_DUPLICATE_TITLE = "Reset Your Password";
 
 	private static final String _PRODUCT_LAUNCH_CONTENT =
 		"The new generation of our platform is available today with a " +
