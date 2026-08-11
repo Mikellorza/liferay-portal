@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -224,6 +225,7 @@ public class SimilarityClusterResultResourceTest
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 
 		_testGetSimilarityClusterPage();
+		_testGetSimilarityClusterPermissions();
 		_testGetSimilarityClusterSearch();
 		_testGetSimilarityClusterSort();
 		_testGetSimilarityClusterTranslation();
@@ -455,6 +457,65 @@ public class SimilarityClusterResultResourceTest
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
 
+	private void _testGetSimilarityClusterPermissions() throws Exception {
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		long groupId = depotEntry.getGroupId();
+
+		ObjectDefinition objectDefinition =
+			_getBasicWebContentObjectDefinition();
+
+		_addObjectEntry(
+			depotEntry, objectDefinition, "Reset Your Password",
+			_NEAR_DUPLICATE_CONTENT);
+		_addObjectEntry(
+			depotEntry, objectDefinition, "Reset Your Password",
+			_NEAR_DUPLICATE_CONTENT +
+				" You can also contact support for help.");
+
+		// Every search the endpoint runs carries the caller's permissions, so
+		// that a cluster never counts or carries content the caller cannot
+		// view. A member of the Space is allowed to view both, and has to see
+		// the same cluster an administrator sees
+
+		User user = UserTestUtil.addUser(testCompany, _PASSWORD);
+
+		_userLocalService.addGroupUser(groupId, user.getUserId());
+
+		SimilarityClusterResultResource userSimilarityClusterResultResource =
+			SimilarityClusterResultResource.builder(
+			).authentication(
+				user.getEmailAddress(), _PASSWORD
+			).endpoint(
+				testCompany.getVirtualHostname(),
+				PortalUtil.getPortalServerPort(false), "http"
+			).locale(
+				LocaleUtil.getDefault()
+			).build();
+
+		SimilarityClusterResult similarityClusterResult =
+			userSimilarityClusterResultResource.getSimilarityCluster(
+				groupId, "TEXT", null, null, null);
+
+		Assert.assertEquals(
+			2, GetterUtil.getLong(similarityClusterResult.getTotalCount()));
+
+		SimilarityCluster[] similarityClusters =
+			similarityClusterResult.getSimilarityClusters();
+
+		Assert.assertEquals(
+			Arrays.toString(similarityClusters), 1, similarityClusters.length);
+
+		_assertSimilarityCluster(
+			similarityClusters[0], "Reset Your Password", 2,
+			new String[] {"Reset Your Password", "Reset Your Password"});
+
+		_userLocalService.deleteUser(user);
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
 	private void _testGetSimilarityClusterSearch() throws Exception {
 		DepotEntry depotEntry = _addSpaceDepotEntry(
 			ServiceContextTestUtil.getServiceContext());
@@ -677,6 +738,8 @@ public class SimilarityClusterResultResourceTest
 			"forgot password link enter your email address and you will " +
 				"receive an email with instructions to create a new password.";
 
+	private static final String _PASSWORD = "test";
+
 	private static final String _PRODUCT_LAUNCH_CONTENT =
 		"The new generation of our platform is available today with a " +
 			"redesigned workspace faster search and a set of integrations " +
@@ -709,5 +772,8 @@ public class SimilarityClusterResultResourceTest
 
 	@Inject
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Inject
+	private UserLocalService _userLocalService;
 
 }
