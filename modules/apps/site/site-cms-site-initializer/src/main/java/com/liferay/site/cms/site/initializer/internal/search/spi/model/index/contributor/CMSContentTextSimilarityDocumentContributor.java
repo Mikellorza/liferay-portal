@@ -5,42 +5,50 @@
 
 package com.liferay.site.cms.site.initializer.internal.search.spi.model.index.contributor;
 
-import com.liferay.object.constants.ObjectFolderConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
-import com.liferay.object.model.ObjectFolder;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.search.Document;
-import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
+import com.liferay.portal.kernel.search.DocumentContributor;
+import com.liferay.portal.kernel.util.HtmlParser;
 import com.liferay.site.cms.site.initializer.internal.constants.SimilarityConstants;
 import com.liferay.site.cms.site.initializer.internal.search.similarity.CMSContentTextSimilarityTextExtractor;
 import com.liferay.site.cms.site.initializer.internal.search.similarity.TextSimilaritySignatureUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Mikel Lorza
  */
-public class CMSContentTextSimilarityModelDocumentContributor
-	implements ModelDocumentContributor<ObjectEntry> {
-
-	public CMSContentTextSimilarityModelDocumentContributor(
-		CMSContentTextSimilarityTextExtractor
-			cmsContentTextSimilarityTextExtractor) {
-
-		_cmsContentTextSimilarityTextExtractor =
-			cmsContentTextSimilarityTextExtractor;
-	}
+@Component(service = DocumentContributor.class)
+public class CMSContentTextSimilarityDocumentContributor
+	implements DocumentContributor<ObjectEntry> {
 
 	@Override
-	public void contribute(Document document, ObjectEntry objectEntry) {
+	public void contribute(
+		Document document, BaseModel<ObjectEntry> baseModel) {
+
+		if (!(baseModel instanceof ObjectEntry)) {
+			return;
+		}
+
+		ObjectEntry objectEntry = (ObjectEntry)baseModel;
+
 		try {
-			if (!_isCMSContent(objectEntry)) {
+			ObjectDefinition objectDefinition =
+				objectEntry.getObjectDefinition();
+
+			if (!objectDefinition.isCMS()) {
 				return;
 			}
 
@@ -54,17 +62,14 @@ public class CMSContentTextSimilarityModelDocumentContributor
 				String text = _cmsContentTextSimilarityTextExtractor.getText(
 					objectEntry, languageId);
 
-				for (String bandSignature :
-						TextSimilaritySignatureUtil.getBandSignatures(text)) {
-
-					bandSignatures.add(_getToken(languageId, bandSignature));
-				}
-
-				for (String signature :
-						TextSimilaritySignatureUtil.getSignature(text)) {
-
-					signatures.add(_getToken(languageId, signature));
-				}
+				bandSignatures.addAll(
+					TransformUtil.transformToList(
+						TextSimilaritySignatureUtil.getBandSignatures(text),
+						bandSignature -> _getToken(languageId, bandSignature)));
+				signatures.addAll(
+					TransformUtil.transformToList(
+						TextSimilaritySignatureUtil.getSignature(text),
+						signature -> _getToken(languageId, signature)));
 			}
 
 			if (!bandSignatures.isEmpty()) {
@@ -89,39 +94,23 @@ public class CMSContentTextSimilarityModelDocumentContributor
 		}
 	}
 
+	@Activate
+	protected void activate() {
+		_cmsContentTextSimilarityTextExtractor =
+			new CMSContentTextSimilarityTextExtractor(_htmlParser);
+	}
+
 	private String _getToken(String languageId, String value) {
 		return StringBundler.concat(languageId, StringPool.UNDERLINE, value);
 	}
 
-	private boolean _isCMSContent(ObjectEntry objectEntry) throws Exception {
-		ObjectDefinition objectDefinition = objectEntry.getObjectDefinition();
-
-		ObjectFolder objectFolder = objectDefinition.getObjectFolder();
-
-		if (objectFolder == null) {
-			return false;
-		}
-
-		String externalReferenceCode = objectFolder.getExternalReferenceCode();
-
-		if (Objects.equals(
-				externalReferenceCode,
-				ObjectFolderConstants.
-					EXTERNAL_REFERENCE_CODE_CONTENT_STRUCTURES) ||
-			Objects.equals(
-				externalReferenceCode,
-				ObjectFolderConstants.EXTERNAL_REFERENCE_CODE_FILE_TYPES)) {
-
-			return true;
-		}
-
-		return false;
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
-		CMSContentTextSimilarityModelDocumentContributor.class);
+		CMSContentTextSimilarityDocumentContributor.class);
 
-	private final CMSContentTextSimilarityTextExtractor
+	private CMSContentTextSimilarityTextExtractor
 		_cmsContentTextSimilarityTextExtractor;
+
+	@Reference
+	private HtmlParser _htmlParser;
 
 }
