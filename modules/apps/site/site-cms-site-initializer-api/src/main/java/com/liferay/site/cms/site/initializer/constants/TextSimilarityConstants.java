@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.site.cms.site.initializer.internal.constants;
+package com.liferay.site.cms.site.initializer.constants;
 
 /**
- * The names of the fields the text similarity signature is indexed under. The
- * reader holds the same names in its own dimension enumeration, so a typo on
- * either side compiles, deploys, and returns no clusters at all. Unifying both
- * sides needs a module they can share, which is tracked as a follow-up.
+ * The names of the fields the text similarity signature of a CMS content is
+ * indexed under. They are shared rather than internal because the bundle that
+ * writes them and the bundle that aggregates them are not the same, and a name
+ * that only agrees by convention compiles, deploys, and returns no clusters at
+ * all.
  *
  * @author Mikel Lorza
  */

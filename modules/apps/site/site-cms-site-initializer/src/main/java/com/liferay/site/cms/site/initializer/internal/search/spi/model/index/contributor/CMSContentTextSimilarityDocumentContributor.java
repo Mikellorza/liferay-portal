@@ -16,7 +16,7 @@ import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.DocumentContributor;
 import com.liferay.portal.kernel.util.HtmlParser;
-import com.liferay.site.cms.site.initializer.internal.constants.TextSimilarityConstants;
+import com.liferay.site.cms.site.initializer.constants.TextSimilarityConstants;
 import com.liferay.site.cms.site.initializer.internal.search.similarity.CMSContentTextSimilarityTextExtractor;
 import com.liferay.site.cms.site.initializer.internal.search.similarity.TextSimilaritySignatureUtil;
 
