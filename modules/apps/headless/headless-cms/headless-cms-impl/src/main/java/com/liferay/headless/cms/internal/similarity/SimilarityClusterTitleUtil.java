@@ -208,6 +208,12 @@ public class SimilarityClusterTitleUtil {
 		return ArrayUtil.subset(words, start, end);
 	}
 
+	// The list is English only, in a feature whose premise is per language
+	// comparison, so an English cluster name is trimmed of its function words
+	// and every other language keeps them. The name is cosmetic, it never
+	// decides what groups with what, so the cost is a longer name rather than a
+	// wrong cluster
+
 	private static final Set<String> _stopWords = SetUtil.fromArray(
 		"a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "in",
 		"is", "it", "of", "on", "or", "the", "to", "with");

@@ -1181,7 +1181,18 @@ public class SimilarityClusterResultResourceImpl
 
 	private static final String _DATE_MODIFIED_FIELD_NAME = "dateModified";
 
+	// The budget is spent per cluster rather than per asset, about 350 clusters
+	// per request, and a terms aggregation returns the most frequent buckets
+	// first, so what a scope beyond it loses is whole small groups. Pairs are
+	// the commonest real duplicate, so they are the first thing dropped.
+	// Inverting the bias by ordering the buckets by ascending document count is
+	// discouraged by Elasticsearch on accuracy grounds and has to be measured
+	// before it is adopted
+
 	private static final int _MAX_BANDS = 10000;
+
+	// The value sits exactly on the default index.max_result_window, so this
+	// search has no headroom left if it ever has to paginate
 
 	private static final int _MAX_CLUSTERED_ASSETS = 10000;
 
