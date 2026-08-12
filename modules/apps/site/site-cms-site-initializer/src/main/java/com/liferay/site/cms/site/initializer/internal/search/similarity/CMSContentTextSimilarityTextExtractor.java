@@ -23,14 +23,9 @@ import java.util.Set;
 
 /**
  * Decides which text of a CMS content the similarity signature is computed
- * from, and in which languages.
- *
- * <p>
- * The decision is not obvious: an object definition exposes several indexed
+ * from, and in which languages. An object definition exposes several indexed
  * fields, only some of them hold prose, and one of them is the title, which
- * carries its own dimension. Keeping the decision here rather than inside the
- * document contributor is what makes it directly testable.
- * </p>
+ * carries its own dimension.
  *
  * @author Mikel Lorza
  */
@@ -41,9 +36,8 @@ public class CMSContentTextSimilarityTextExtractor {
 	}
 
 	/**
-	 * Returns the default language of the content plus every language its
-	 * signature fields are translated into, so that each translation is signed
-	 * on its own.
+	 * Returns the default language plus every language the signature fields are
+	 * translated into, so each translation is signed on its own.
 	 */
 	public Set<String> getLanguageIds(ObjectEntry objectEntry)
 		throws Exception {
@@ -82,10 +76,8 @@ public class CMSContentTextSimilarityTextExtractor {
 	}
 
 	/**
-	 * Returns the text of the content in the given language, which is every
-	 * indexed text field except the title, with rich text reduced to its raw
-	 * text. Returns a blank string when the content has no text in that
-	 * language, so that it yields no signature and stays out of clustering.
+	 * Returns blank when there is no text in that language, so the content
+	 * yields no signature and stays out of clustering.
 	 */
 	public String getText(ObjectEntry objectEntry, String languageId)
 		throws Exception {
@@ -115,7 +107,6 @@ public class CMSContentTextSimilarityTextExtractor {
 			else {
 
 				// A field that is not translated reads the same in every
-
 				// language, so it belongs to every language's text
 
 				indexedValue = indexedValues.get(objectField.getName());
@@ -152,11 +143,10 @@ public class CMSContentTextSimilarityTextExtractor {
 		for (ObjectField objectField :
 				objectFieldBag.getIndexedObjectFields()) {
 
-			// The title carries its own dimension and needs a signature built
-			// from character n-grams, because a word shingle over a title of a
-			// few words degenerates into exact matching. Folding it into the
-			// text would let a content with a short or empty body group on its
-			// title alone
+			// The title carries its own dimension, and needs character n grams
+			// rather than word shingles, which over a few words degenerate into
+			// exact matching. Folding it in here would also let a content
+			// with a short or empty body group on its title alone
 
 			if (objectField.getObjectFieldId() ==
 					objectDefinition.getTitleObjectFieldId()) {

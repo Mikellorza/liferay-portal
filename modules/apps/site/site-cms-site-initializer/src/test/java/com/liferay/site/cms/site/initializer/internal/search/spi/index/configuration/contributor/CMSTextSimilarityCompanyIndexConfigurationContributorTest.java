@@ -24,25 +24,25 @@ public class CMSTextSimilarityCompanyIndexConfigurationContributorTest {
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
 
-	/**
-	 * The mappings are a resource, so they cannot hold the field names as
-	 * constants. A name that drifts from the constant the writer and the reader
-	 * share leaves the field mapped by the catch-all dynamic template, as
-	 * analyzed text, and the aggregation silently returns no clusters.
-	 */
 	@Test
-	public void testMappingsDeclareSignatureFields() {
-		String mappings = StringUtil.read(
+	public void testContributeMappings() {
+
+		// The mappings are a resource, so they cannot hold the field names as
+		// constants. A name that drifts leaves the field mapped as analyzed
+		// text by the catch all dynamic template, and the aggregation returns
+		// no clusters
+
+		String mappingsJSON = StringUtil.read(
 			CMSTextSimilarityCompanyIndexConfigurationContributor.class,
 			"dependencies/text-similarity-type-mappings.json");
 
 		Assert.assertTrue(
-			mappings,
-			mappings.contains(
+			mappingsJSON,
+			mappingsJSON.contains(
 				"\"" + SimilarityConstants.FIELD_NAME_TEXT_BANDS + "\""));
 		Assert.assertTrue(
-			mappings,
-			mappings.contains(
+			mappingsJSON,
+			mappingsJSON.contains(
 				"\"" + SimilarityConstants.FIELD_NAME_TEXT_SIGNATURE + "\""));
 	}
 

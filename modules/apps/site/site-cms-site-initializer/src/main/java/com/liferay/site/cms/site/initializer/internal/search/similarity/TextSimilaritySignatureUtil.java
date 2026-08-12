@@ -6,28 +6,24 @@
 package com.liferay.site.cms.site.initializer.internal.search.similarity;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Computes MinHash/LSH band signatures for a text so that near-duplicate
- * content can be grouped by an aggregation over an indexed keyword field,
- * without any per-document similarity query at read time.
+ * Computes MinHash/LSH band signatures for a text, so that near duplicate
+ * content can be grouped by an aggregation over an indexed keyword field
+ * instead of a per document similarity query at read time.
  *
  * <p>
- * The text is reduced to a set of word shingles, condensed to a fixed-length
- * MinHash signature (an estimator of the Jaccard similarity between two shingle
- * sets), and split into LSH bands. Two texts that share at least one band token
- * are near-duplicate candidates; the higher their overlap, the more bands they
- * share. The {@code (bands, rows)} split controls the overlap threshold at which
- * two texts start sharing a band.
- * </p>
- *
- * <p>
- * The computation is deterministic: the same text always yields the same band
- * tokens across nodes and across reindexes, which is required for the tokens to
- * be comparable in the index.
+ * The text is reduced to a set of word shingles, condensed to a fixed length
+ * MinHash signature estimating the Jaccard similarity between two shingle sets,
+ * and split into LSH bands. Two texts sharing at least one band token are
+ * near duplicate candidates, and the {@code (bands, rows)} split is what decides
+ * the overlap at which they start sharing one. Every step is deterministic,
+ * because tokens computed on different nodes or before and after a reindex have
+ * to be comparable.
  * </p>
  *
  * @author Mikel Lorza
@@ -35,9 +31,7 @@ import java.util.Set;
 public class TextSimilaritySignatureUtil {
 
 	/**
-	 * Returns the LSH band tokens for the given text, to be indexed as a
-	 * multi-valued keyword field. Returns an empty array when the text is blank
-	 * or too short to yield any shingle.
+	 * Returns an empty array when the text is blank or too short to shingle.
 	 */
 	public static String[] getBandSignatures(String text) {
 		if (text == null) {
@@ -69,14 +63,9 @@ public class TextSimilaritySignatureUtil {
 	}
 
 	/**
-	 * Returns the raw MinHash signature for the given text as position-prefixed
-	 * keyword tokens ({@code "p" + position + "_" + value}), to be indexed as a
-	 * multi-valued keyword field. The prefix keeps each position identifiable
-	 * regardless of
-	 * the order the index returns the values in, so the fraction of matching
-	 * positions between two signatures estimates their Jaccard similarity.
-	 * Returns an empty array when the text is blank or too short to yield any
-	 * shingle.
+	 * Returns {@code "p<position>_<value>"} tokens. The position is in the token
+	 * because a multivalued field comes back in no particular order, and the
+	 * reader compares two signatures position by position.
 	 */
 	public static String[] getSignature(String text) {
 		if (text == null) {
@@ -123,9 +112,9 @@ public class TextSimilaritySignatureUtil {
 
 			for (int i = 0; i < _HASH_COUNT; i++) {
 
-				// Derive each permutation from one base hash via a distinct
-				// linear transform (a * h + b) mod prime, instead of hashing
-				// every shingle once per permutation.
+				// Each permutation is derived from one base hash by a distinct
+				// linear transform, instead of hashing every shingle once per
+				// permutation
 
 				long permuted =
 					((_PERMUTATION_A[i] * baseHash) + _PERMUTATION_B[i]) %
@@ -168,11 +157,11 @@ public class TextSimilaritySignatureUtil {
 		}
 
 		for (int i = 0; i <= (tokens.length - _SHINGLE_SIZE); i++) {
-			StringBuilder sb = new StringBuilder();
+			StringBundler sb = new StringBundler();
 
 			for (int j = 0; j < _SHINGLE_SIZE; j++) {
 				if (j > 0) {
-					sb.append(' ');
+					sb.append(StringPool.SPACE);
 				}
 
 				sb.append(tokens[i + j]);
@@ -213,9 +202,8 @@ public class TextSimilaritySignatureUtil {
 
 	static {
 
-		// Deterministically seed the permutation coefficients with a fixed
-		// linear congruential generator so the signature is stable across nodes
-		// and reindexes.
+		// The coefficients come from a fixed generator rather than a random
+		// one, so that the signature is stable across nodes and reindexes
 
 		long state = 0x9e3779b97f4a7c15L;
 

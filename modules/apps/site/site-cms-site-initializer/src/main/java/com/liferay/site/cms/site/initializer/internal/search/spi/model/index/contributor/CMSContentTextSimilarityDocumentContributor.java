@@ -28,16 +28,15 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Adds the near-duplicate band signatures of a CMS content's main text fields
- * as a keyword field per language, so the Content Governance Dashboard's Text
- * Similarity widget can group near-duplicate content through a single
- * aggregation, without a per-document similarity query at read time.
+ * Adds the band signatures of a CMS content's main text fields as a keyword
+ * field per language, so that the Text Similarity widget can group
+ * near duplicate content through a single aggregation.
  *
  * <p>
- * A document contributor carrying no <code>indexer.class.name</code> property is
- * run by every indexer on every document, which is what the per-object-definition
- * indexers an object entry is written through need. It is therefore invoked for
- * every indexed model and has to guard on the model type first.
+ * Carrying no <code>indexer.class.name</code> property is what makes every
+ * indexer run this, the per object definition ones an object entry is written
+ * through included. The cost is that it is invoked for every indexed model, so
+ * the model type is guarded first.
  * </p>
  *
  * @author Mikel Lorza
@@ -64,21 +63,12 @@ public class CMSContentTextSimilarityDocumentContributor
 				return;
 			}
 
-			// Every translation is signed, and each token carries the language
-
-			// it was computed for, so that the aggregation only ever groups
-
-			// content read in the same language. Two translations of the same
-
-			// content share no word shingles, so mixing languages in one field
-
-			// would never group them anyway.
-
-			// The language cannot be a field name suffix: the platform's own
-
-			// dynamic template claims every field ending in a language id and
-
-			// maps it to analyzed text, which cannot back an aggregation.
+			// Each token carries the language it was computed for, so the
+			// aggregation only ever groups content read in the same language.
+			// The language cannot be a field name suffix instead, because the
+			// platform's own dynamic template claims every field ending in a
+			// language ID and maps it to analyzed text, which cannot back an
+			// aggregation
 
 			List<String> bandSignatures = new ArrayList<>();
 			List<String> signatures = new ArrayList<>();
@@ -114,11 +104,10 @@ public class CMSContentTextSimilarityDocumentContributor
 		}
 		catch (Exception exception) {
 
-			// Never break indexing of the object entry because of the
-			// similarity signature. A systematic failure here produces no
-			// signatures, hence no clusters, hence a dashboard reporting no
-			// duplicates, so this log is the only signal that the feature is
-			// not working.
+			// Indexing the object entry must not break because of the
+			// signature. A systematic failure here yields no signatures, hence
+			// no clusters, hence a dashboard reporting no duplicates, so this
+			// log is the only signal that the feature is not working
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
