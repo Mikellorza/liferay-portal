@@ -60,7 +60,7 @@ public class CMSContentTextSimilarityDocumentContributor
 						objectEntry)) {
 
 				String text = _cmsContentTextSimilarityTextExtractor.getText(
-					objectEntry, languageId);
+					languageId, objectEntry);
 
 				bandSignatures.addAll(
 					TransformUtil.transformToList(

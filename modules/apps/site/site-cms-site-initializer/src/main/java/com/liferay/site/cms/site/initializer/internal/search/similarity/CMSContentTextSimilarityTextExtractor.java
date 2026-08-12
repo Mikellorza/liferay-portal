@@ -66,7 +66,7 @@ public class CMSContentTextSimilarityTextExtractor {
 		return languageIds;
 	}
 
-	public String getText(ObjectEntry objectEntry, String languageId)
+	public String getText(String languageId, ObjectEntry objectEntry)
 		throws Exception {
 
 		Map<String, Serializable> indexedValues =
