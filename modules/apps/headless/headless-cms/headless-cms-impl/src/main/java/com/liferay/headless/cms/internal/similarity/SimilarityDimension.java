@@ -14,14 +14,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The dimension along which CMS content is compared. Each dimension knows the
- * indexed fields its assets are grouped by and how a resulting cluster is
- * named, so that a new dimension is added by adding a constant here.
- *
- * <p>
- * Only {@link #TEXT} is available. The title and metadata dimensions require
- * their own indexed signature fields, which do not exist yet.
- * </p>
+ * The dimension along which CMS content is compared. Each one knows the indexed
+ * fields its assets are grouped by and how a cluster is named, so a new
+ * dimension is a new constant here. Only {@link #TEXT} is available, since the
+ * title and metadata dimensions need signature fields that are not indexed yet.
  *
  * @author Mikel Lorza
  */
@@ -39,12 +35,9 @@ public enum SimilarityDimension {
 	};
 
 	/**
-	 * Returns the dimension the given value names, defaulting to {@link #TEXT}
-	 * when no value is given.
-	 *
-	 * @throws BadRequestException if the value names no dimension, so that a
-	 *         client typo is answered with an error instead of an empty result
-	 *         indistinguishable from "no duplicates"
+	 * @throws BadRequestException if the value names no dimension, so a client
+	 *         typo is not answered with an empty result indistinguishable from
+	 *         "no duplicates"
 	 */
 	public static SimilarityDimension get(String dimension) {
 		if (dimension == null) {

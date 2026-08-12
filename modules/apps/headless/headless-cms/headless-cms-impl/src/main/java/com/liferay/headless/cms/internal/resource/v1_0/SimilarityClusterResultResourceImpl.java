@@ -233,8 +233,7 @@ public class SimilarityClusterResultResourceImpl
 			totalCount += cluster.size();
 		}
 
-		// The biggest clusters come first, which the cluster sizes already
-		// decide, so the order costs nothing to establish
+		// The biggest clusters come first, which is the order worth reviewing
 
 		List<List<Long>> orderedClusters = new ArrayList<>(clusters);
 
@@ -477,7 +476,7 @@ public class SimilarityClusterResultResourceImpl
 			// carries a user, and a search context built from a search request
 			// starts without one. Every search here has to set it, the band
 			// aggregation included, or a cluster counts and carries members
-			// the caller cannot view.
+			// the caller cannot view
 
 			searchContext.setUserId(contextUser.getUserId());
 		};
@@ -559,7 +558,7 @@ public class SimilarityClusterResultResourceImpl
 
 		Comparator<SimilarityClusterAsset> comparator = null;
 
-		if (Objects.equals(sort.getFieldName(), _DATE_MODIFIED_FIELD_NAME)) {
+		if (Objects.equals(sort.getFieldName(), _FIELD_NAME_DATE_MODIFIED)) {
 			comparator = Comparator.comparing(
 				SimilarityClusterAsset::getDateModified,
 				Comparator.nullsLast(Comparator.naturalOrder()));
@@ -612,10 +611,7 @@ public class SimilarityClusterResultResourceImpl
 
 		Comparator<SimilarityCluster> comparator = null;
 
-		if (Objects.equals(sort.getFieldName(), _DATE_MODIFIED_FIELD_NAME)) {
-
-			// A cluster is dated by its most recently modified asset
-
+		if (Objects.equals(sort.getFieldName(), _FIELD_NAME_DATE_MODIFIED)) {
 			comparator = Comparator.comparing(
 				this::_getMaxDateModified,
 				Comparator.nullsLast(Comparator.naturalOrder()));
@@ -851,10 +847,8 @@ public class SimilarityClusterResultResourceImpl
 		String languageId) {
 
 		// A flat aggregation, because a nested one creates a bucket per member
-
-		// too and blows past Elasticsearch's own bucket ceiling once a space
-
-		// holds a few thousand near-duplicates
+		// too and blows past Elasticsearch's own bucket ceiling once a Space
+		// holds a few thousand near duplicates
 
 		TermsAggregation termsAggregation = _aggregations.terms(
 			_BANDS_AGGREGATION_NAME, bandField);
@@ -862,7 +856,6 @@ public class SimilarityClusterResultResourceImpl
 		termsAggregation.setMinDocCount(2);
 
 		// Only the request language's bands form buckets, so content is never
-
 		// grouped with a different translation
 
 		termsAggregation.setIncludeExcludeClause(
@@ -978,12 +971,14 @@ public class SimilarityClusterResultResourceImpl
 
 	private static final String _BANDS_AGGREGATION_NAME = "bands";
 
-	private static final String _DATE_MODIFIED_FIELD_NAME = "dateModified";
+	private static final String _FIELD_NAME_DATE_MODIFIED = "dateModified";
+
+	private static final String _FIELD_NAME_TITLE = "title";
 
 	// The budget is spent per cluster rather than per asset, about 350 clusters
 	// per request, and a terms aggregation returns the most frequent buckets
 	// first, so what a scope beyond it loses is whole small groups. Pairs are
-	// the commonest real duplicate, so they are the first thing dropped.
+	// the commonest real duplicate, so they are the first thing dropped;
 	// Inverting the bias by ordering the buckets by ascending document count is
 	// discouraged by Elasticsearch on accuracy grounds and has to be measured
 	// before it is adopted
@@ -995,18 +990,16 @@ public class SimilarityClusterResultResourceImpl
 
 	private static final int _MAX_CLUSTERED_ASSETS = 10000;
 
-	private static final String _TITLE_FIELD_NAME = "title";
-
 	// The listing is sorted in memory, over the already resolved assets, so the
 	// sortable field names are the asset's own field names
 
 	private static final EntityModel _entityModel =
 		() -> EntityModel.toEntityFieldsMap(
 			new DateTimeEntityField(
-				_DATE_MODIFIED_FIELD_NAME, locale -> _DATE_MODIFIED_FIELD_NAME,
-				locale -> _DATE_MODIFIED_FIELD_NAME),
+				_FIELD_NAME_DATE_MODIFIED, locale -> _FIELD_NAME_DATE_MODIFIED,
+				locale -> _FIELD_NAME_DATE_MODIFIED),
 			new StringEntityField(
-				_TITLE_FIELD_NAME, locale -> _TITLE_FIELD_NAME));
+				_FIELD_NAME_TITLE, locale -> _FIELD_NAME_TITLE));
 
 	@Reference
 	private Aggregations _aggregations;
