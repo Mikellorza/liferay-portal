@@ -6,6 +6,7 @@
 package com.liferay.headless.cms.internal.similarity;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.site.cms.site.initializer.constants.SimilarityConstants;
 
 import jakarta.ws.rs.BadRequestException;
 
@@ -26,7 +27,9 @@ import java.util.List;
  */
 public enum SimilarityDimension {
 
-	TEXT("textSimilarityBands", "textSimilaritySignature") {
+	TEXT(
+		SimilarityConstants.FIELD_NAME_TEXT_BANDS,
+		SimilarityConstants.FIELD_NAME_TEXT_SIGNATURE) {
 
 		@Override
 		public String getTitle(List<String> titles, String topTitle) {
