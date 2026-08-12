@@ -39,11 +39,16 @@ public class SimilarityClusterUtilTest {
 
 	@Test
 	public void testGetClustersChainsAssetsThroughSharedBands() {
+
+		// The first and the last asset share no band at all and still land in
+		// one cluster, because each is connected to the one in the middle
+
 		List<List<Long>> clusters = SimilarityClusterUtil.getClusters(
 			Arrays.asList(
-				_mockDocument(1L, "b1"), _mockDocument(2L, "b1", "b2"),
-				_mockDocument(3L, "b2")),
-			_BAND_FIELD, _toSet("b1", "b2"));
+				_mockDocument(1L, "b1", "b2", "b3"),
+				_mockDocument(2L, "b1", "b2", "b3", "b4", "b5", "b6"),
+				_mockDocument(3L, "b4", "b5", "b6")),
+			_BAND_FIELD, _toSet("b1", "b2", "b3", "b4", "b5", "b6"));
 
 		Assert.assertEquals(clusters.toString(), 1, clusters.size());
 		Assert.assertEquals(Arrays.asList(1L, 2L, 3L), clusters.get(0));
@@ -53,9 +58,9 @@ public class SimilarityClusterUtilTest {
 	public void testGetClustersDropsAssetsSharingNoBand() {
 		List<List<Long>> clusters = SimilarityClusterUtil.getClusters(
 			Arrays.asList(
-				_mockDocument(1L, "b1"), _mockDocument(2L, "b1"),
-				_mockDocument(3L, "b3")),
-			_BAND_FIELD, _toSet("b1"));
+				_mockDocument(1L, "b1", "b2", "b3"),
+				_mockDocument(2L, "b1", "b2", "b3"), _mockDocument(3L, "b7")),
+			_BAND_FIELD, _toSet("b1", "b2", "b3"));
 
 		Assert.assertEquals(clusters.toString(), 1, clusters.size());
 		Assert.assertEquals(Arrays.asList(1L, 2L), clusters.get(0));
@@ -72,6 +77,22 @@ public class SimilarityClusterUtilTest {
 			SimilarityClusterUtil.getClusters(
 				Arrays.asList(_mockDocument(1L, "b9"), _mockDocument(2L, "b9")),
 				_BAND_FIELD, _toSet("b1")));
+	}
+
+	@Test
+	public void testGetClustersNeedsMoreThanTwoSharedBands() {
+
+		// One band is what an unrelated pair collides on, and grouping is
+		// transitive, so a single band would merge a whole space into one
+		// cluster once it holds a few hundred assets
+
+		Assert.assertEquals(
+			Collections.emptyList(),
+			SimilarityClusterUtil.getClusters(
+				Arrays.asList(
+					_mockDocument(1L, "b1", "b2"),
+					_mockDocument(2L, "b1", "b2")),
+				_BAND_FIELD, _toSet("b1", "b2")));
 	}
 
 	@Test
