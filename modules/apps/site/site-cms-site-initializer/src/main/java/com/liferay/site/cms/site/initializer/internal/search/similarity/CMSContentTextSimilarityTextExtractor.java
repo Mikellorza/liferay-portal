@@ -79,7 +79,7 @@ public class CMSContentTextSimilarityTextExtractor {
 	 * Returns blank when there is no text in that language, so the content
 	 * yields no signature and stays out of clustering.
 	 */
-	public String getText(ObjectEntry objectEntry, String languageId)
+	public String getText(String languageId, ObjectEntry objectEntry)
 		throws Exception {
 
 		Map<String, Serializable> indexedValues =
