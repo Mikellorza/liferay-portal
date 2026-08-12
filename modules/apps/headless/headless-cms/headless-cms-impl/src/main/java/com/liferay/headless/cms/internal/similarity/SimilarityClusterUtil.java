@@ -47,7 +47,7 @@ public class SimilarityClusterUtil {
 	 * </p>
 	 */
 	public static List<List<Long>> getClusters(
-		List<Document> documents, String bandField, Set<String> sharedBands) {
+		String bandField, List<Document> documents, Set<String> sharedBands) {
 
 		Map<Long, Long> parents = new LinkedHashMap<>();
 		Map<String, List<Long>> objectEntryIdsByBand = new HashMap<>();
@@ -80,7 +80,7 @@ public class SimilarityClusterUtil {
 
 		for (Long objectEntryId : parents.keySet()) {
 			List<Long> cluster = clusters.computeIfAbsent(
-				_find(parents, objectEntryId), root -> new ArrayList<>());
+				_find(objectEntryId, parents), root -> new ArrayList<>());
 
 			cluster.add(objectEntryId);
 		}
@@ -114,7 +114,7 @@ public class SimilarityClusterUtil {
 	 * Returns <code>null</code> unless the tokens hold a whole signature, so an
 	 * asset is left without a similarity rather than given a wrong one.
 	 */
-	public static long[] getSignature(List<String> tokens, String languageId) {
+	public static long[] getSignature(String languageId, List<String> tokens) {
 		if (tokens == null) {
 			return null;
 		}
@@ -234,7 +234,7 @@ public class SimilarityClusterUtil {
 		return topObjectEntryId;
 	}
 
-	private static Long _find(Map<Long, Long> parents, Long objectEntryId) {
+	private static Long _find(Long objectEntryId, Map<Long, Long> parents) {
 		Long parent = parents.get(objectEntryId);
 
 		while (!parent.equals(objectEntryId)) {
@@ -247,10 +247,10 @@ public class SimilarityClusterUtil {
 	}
 
 	private static void _union(
-		Map<Long, Long> parents, Long objectEntryId1, Long objectEntryId2) {
+		Long objectEntryId1, Long objectEntryId2, Map<Long, Long> parents) {
 
-		Long root1 = _find(parents, objectEntryId1);
-		Long root2 = _find(parents, objectEntryId2);
+		Long root1 = _find(objectEntryId1, parents);
+		Long root2 = _find(objectEntryId2, parents);
 
 		if (!root1.equals(root2)) {
 			parents.put(root1, root2);
@@ -273,8 +273,8 @@ public class SimilarityClusterUtil {
 					// assets from counting every one of its pairs again for
 					// every band they have in common
 
-					Long root1 = _find(parents, objectEntryId1);
-					Long root2 = _find(parents, objectEntryId2);
+					Long root1 = _find(objectEntryId1, parents);
+					Long root2 = _find(objectEntryId2, parents);
 
 					if (root1.equals(root2)) {
 						continue;
@@ -290,7 +290,7 @@ public class SimilarityClusterUtil {
 						Integer::sum);
 
 					if (count >= _MIN_SHARED_BANDS) {
-						_union(parents, objectEntryId1, objectEntryId2);
+						_union(objectEntryId1, objectEntryId2, parents);
 					}
 				}
 			}

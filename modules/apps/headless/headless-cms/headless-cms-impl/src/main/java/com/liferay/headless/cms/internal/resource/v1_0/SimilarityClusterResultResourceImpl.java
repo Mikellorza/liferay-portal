@@ -122,9 +122,10 @@ public class SimilarityClusterResultResourceImpl
 			bandField, entryClassNames, groupIds, languageId);
 
 		List<List<Long>> clusters = SimilarityClusterUtil.getClusters(
+			bandField,
 			_searchClusteredDocuments(
-				bandField, sharedBands, entryClassNames, groupIds),
-			bandField, new HashSet<>(sharedBands));
+				bandField, entryClassNames, groupIds, sharedBands),
+			new HashSet<>(sharedBands));
 
 		Map<Long, ObjectDefinition> objectDefinitionsMap = new HashMap<>();
 
@@ -142,29 +143,31 @@ public class SimilarityClusterResultResourceImpl
 				objectDefinitionsMap, pagination, similarityDimension);
 		}
 
+		Map<Long, ObjectEntry> objectEntriesMap = new HashMap<>();
+
 		List<SimilarityCluster> similarityClusters = _filter(
+			search,
 			_getSimilarityClusters(
-				clusters, languageId, objectDefinitionsMap,
+				clusters, languageId, objectDefinitionsMap, objectEntriesMap,
 				_getSignatures(
 					clusters, entryClassNames, groupIds, languageId,
 					similarityDimension.getSignatureField()),
-				similarityDimension),
-			search);
+				similarityDimension));
 
 		long totalCount = _getTotalCount(similarityClusters);
 
 		_sort(similarityClusters, sorts);
 
 		List<SimilarityCluster> pageSimilarityClusters = _getPage(
-			similarityClusters, pagination);
+			pagination, similarityClusters);
 
-		_setItemURLs(pageSimilarityClusters);
+		_setItemURLs(objectEntriesMap, pageSimilarityClusters);
 
 		return _toSimilarityClusterResult(pageSimilarityClusters, totalCount);
 	}
 
 	private List<SimilarityCluster> _filter(
-		List<SimilarityCluster> similarityClusters, String search) {
+		String search, List<SimilarityCluster> similarityClusters) {
 
 		if (Validator.isNull(search)) {
 			return similarityClusters;
@@ -186,7 +189,7 @@ public class SimilarityClusterResultResourceImpl
 			for (SimilarityClusterAsset similarityClusterAsset :
 					similarityCluster.getSimilarityClusterAssets()) {
 
-				if (_hasKeywords(similarityClusterAsset, keywords)) {
+				if (_hasKeywords(keywords, similarityClusterAsset)) {
 					similarityClusterAssets.add(similarityClusterAsset);
 				}
 			}
@@ -289,8 +292,10 @@ public class SimilarityClusterResultResourceImpl
 		// The signatures behind the percentage and the top asset are only read
 		// for the clusters the page shows
 
+		Map<Long, ObjectEntry> objectEntriesMap = new HashMap<>();
+
 		List<SimilarityCluster> similarityClusters = _getSimilarityClusters(
-			pageClusters, languageId, objectDefinitionsMap,
+			pageClusters, languageId, objectDefinitionsMap, objectEntriesMap,
 			_getSignatures(
 				pageClusters, entryClassNames, groupIds, languageId,
 				similarityDimension.getSignatureField()),
@@ -317,7 +322,7 @@ public class SimilarityClusterResultResourceImpl
 				() -> pageSimilarityClusterAssets);
 		}
 
-		_setItemURLs(similarityClusters);
+		_setItemURLs(objectEntriesMap, similarityClusters);
 
 		return _toSimilarityClusterResult(similarityClusters, totalCount);
 	}
@@ -410,7 +415,7 @@ public class SimilarityClusterResultResourceImpl
 	}
 
 	private List<SimilarityCluster> _getPage(
-		List<SimilarityCluster> similarityClusters, Pagination pagination) {
+		Pagination pagination, List<SimilarityCluster> similarityClusters) {
 
 		if (pagination == null) {
 			return similarityClusters;
@@ -465,7 +470,7 @@ public class SimilarityClusterResultResourceImpl
 	}
 
 	private Consumer<SearchContext> _getSearchContextConsumer(Long[] groupIds) {
-		long[] scopedGroupIds = _toPrimitiveArray(groupIds);
+		long[] scopedGroupIds = ArrayUtil.toArray(groupIds);
 
 		return searchContext -> {
 			searchContext.setAttribute(
@@ -500,7 +505,8 @@ public class SimilarityClusterResultResourceImpl
 			return signaturesMap;
 		}
 
-		TermsQuery termsQuery = QueriesUtil.terms("objectEntryId");
+		TermsQuery termsQuery = QueriesUtil.terms(
+			SimilarityClusterUtil.FIELD_NAME_OBJECT_ENTRY_ID);
 
 		termsQuery.addValues(objectEntryIds.toArray());
 
@@ -521,7 +527,9 @@ public class SimilarityClusterResultResourceImpl
 		).entryClassNames(
 			entryClassNames
 		).fetchSourceIncludes(
-			new String[] {"objectEntryId", signatureField}
+			new String[] {
+				SimilarityClusterUtil.FIELD_NAME_OBJECT_ENTRY_ID, signatureField
+			}
 		).size(
 			objectEntryIds.size()
 		).withSearchContext(
@@ -536,14 +544,15 @@ public class SimilarityClusterResultResourceImpl
 		for (SearchHit searchHit : searchHits.getSearchHits()) {
 			Document document = searchHit.getDocument();
 
-			Long objectEntryId = document.getLong("objectEntryId");
+			Long objectEntryId = document.getLong(
+				SimilarityClusterUtil.FIELD_NAME_OBJECT_ENTRY_ID);
 
 			if (objectEntryId == null) {
 				continue;
 			}
 
 			long[] signature = SimilarityClusterUtil.getSignature(
-				document.getStrings(signatureField), languageId);
+				languageId, document.getStrings(signatureField));
 
 			if (signature != null) {
 				signaturesMap.put(objectEntryId, signature);
@@ -664,6 +673,7 @@ public class SimilarityClusterResultResourceImpl
 	private List<SimilarityCluster> _getSimilarityClusters(
 			List<List<Long>> clusters, String languageId,
 			Map<Long, ObjectDefinition> objectDefinitionsMap,
+			Map<Long, ObjectEntry> objectEntriesMap,
 			Map<Long, long[]> signaturesMap,
 			SimilarityDimension similarityDimension)
 		throws Exception {
@@ -698,6 +708,8 @@ public class SimilarityClusterResultResourceImpl
 					_objectEntryLocalService.fetchObjectEntry(objectEntryId);
 
 				if (objectEntry != null) {
+					objectEntriesMap.put(objectEntryId, objectEntry);
+
 					String title = objectEntry.getTitleValue(languageId, true);
 
 					titles.add(title);
@@ -773,7 +785,7 @@ public class SimilarityClusterResultResourceImpl
 	}
 
 	private boolean _hasKeywords(
-		SimilarityClusterAsset similarityClusterAsset, String[] keywords) {
+		String[] keywords, SimilarityClusterAsset similarityClusterAsset) {
 
 		String title = similarityClusterAsset.getTitle();
 
@@ -793,8 +805,8 @@ public class SimilarityClusterResultResourceImpl
 	}
 
 	private List<Document> _searchClusteredDocuments(
-		String bandField, List<String> sharedBands, String[] entryClassNames,
-		Long[] groupIds) {
+		String bandField, String[] entryClassNames, Long[] groupIds,
+		List<String> sharedBands) {
 
 		List<Document> documents = new ArrayList<>();
 
@@ -823,7 +835,9 @@ public class SimilarityClusterResultResourceImpl
 		).entryClassNames(
 			entryClassNames
 		).fetchSourceIncludes(
-			new String[] {"objectEntryId", bandField}
+			new String[] {
+				SimilarityClusterUtil.FIELD_NAME_OBJECT_ENTRY_ID, bandField
+			}
 		).size(
 			_MAX_CLUSTERED_ASSETS
 		).withSearchContext(
@@ -901,19 +915,22 @@ public class SimilarityClusterResultResourceImpl
 		return sharedBands;
 	}
 
-	private void _setItemURLs(List<SimilarityCluster> similarityClusters)
+	private void _setItemURLs(
+			Map<Long, ObjectEntry> objectEntriesMap,
+			List<SimilarityCluster> similarityClusters)
 		throws Exception {
 
 		// The edit URL costs a permission check per asset, so it is only built
-		// for the assets the response carries, not for every clustered asset
+		// for the assets the response carries, not for every clustered asset.
+		// The asset itself comes from the pass that read its title and date,
+		// so no asset is loaded twice
 
 		for (SimilarityCluster similarityCluster : similarityClusters) {
 			for (SimilarityClusterAsset similarityClusterAsset :
 					similarityCluster.getSimilarityClusterAssets()) {
 
-				ObjectEntry objectEntry =
-					_objectEntryLocalService.fetchObjectEntry(
-						GetterUtil.getLong(similarityClusterAsset.getId()));
+				ObjectEntry objectEntry = objectEntriesMap.get(
+					GetterUtil.getLong(similarityClusterAsset.getId()));
 
 				if (objectEntry == null) {
 					continue;
@@ -941,16 +958,6 @@ public class SimilarityClusterResultResourceImpl
 		}
 
 		similarityClusters.sort(_getSimilarityClusterComparator(sorts));
-	}
-
-	private long[] _toPrimitiveArray(Long[] groupIds) {
-		long[] scopedGroupIds = new long[groupIds.length];
-
-		for (int i = 0; i < groupIds.length; i++) {
-			scopedGroupIds[i] = groupIds[i];
-		}
-
-		return scopedGroupIds;
 	}
 
 	private SimilarityClusterResult _toSimilarityClusterResult(
