@@ -44,11 +44,12 @@ public class SimilarityClusterUtilTest {
 		// one cluster, because each is connected to the one in the middle
 
 		List<List<Long>> clusters = SimilarityClusterUtil.getClusters(
+			_BAND_FIELD,
 			Arrays.asList(
 				_mockDocument(1L, "b1", "b2", "b3"),
 				_mockDocument(2L, "b1", "b2", "b3", "b4", "b5", "b6"),
 				_mockDocument(3L, "b4", "b5", "b6")),
-			_BAND_FIELD, _toSet("b1", "b2", "b3", "b4", "b5", "b6"));
+			_toSet("b1", "b2", "b3", "b4", "b5", "b6"));
 
 		Assert.assertEquals(clusters.toString(), 1, clusters.size());
 		Assert.assertEquals(Arrays.asList(1L, 2L, 3L), clusters.get(0));
@@ -57,10 +58,11 @@ public class SimilarityClusterUtilTest {
 	@Test
 	public void testGetClustersDropsAssetsSharingNoBand() {
 		List<List<Long>> clusters = SimilarityClusterUtil.getClusters(
+			_BAND_FIELD,
 			Arrays.asList(
 				_mockDocument(1L, "b1", "b2", "b3"),
 				_mockDocument(2L, "b1", "b2", "b3"), _mockDocument(3L, "b7")),
-			_BAND_FIELD, _toSet("b1", "b2", "b3"));
+			_toSet("b1", "b2", "b3"));
 
 		Assert.assertEquals(clusters.toString(), 1, clusters.size());
 		Assert.assertEquals(Arrays.asList(1L, 2L), clusters.get(0));
@@ -75,8 +77,9 @@ public class SimilarityClusterUtilTest {
 		Assert.assertEquals(
 			Collections.emptyList(),
 			SimilarityClusterUtil.getClusters(
+				_BAND_FIELD,
 				Arrays.asList(_mockDocument(1L, "b9"), _mockDocument(2L, "b9")),
-				_BAND_FIELD, _toSet("b1")));
+				_toSet("b1")));
 	}
 
 	@Test
@@ -89,10 +92,11 @@ public class SimilarityClusterUtilTest {
 		Assert.assertEquals(
 			Collections.emptyList(),
 			SimilarityClusterUtil.getClusters(
+				_BAND_FIELD,
 				Arrays.asList(
 					_mockDocument(1L, "b1", "b2"),
 					_mockDocument(2L, "b1", "b2")),
-				_BAND_FIELD, _toSet("b1", "b2")));
+				_toSet("b1", "b2")));
 	}
 
 	@Test
@@ -107,7 +111,7 @@ public class SimilarityClusterUtilTest {
 	public void testGetSignatureIgnoresAnotherLanguage() {
 		Assert.assertNull(
 			SimilarityClusterUtil.getSignature(
-				_getSignatureTokens("es_ES", 3), "en_US"));
+				"en_US", _getSignatureTokens("es_ES", 3)));
 	}
 
 	@Test
@@ -116,7 +120,7 @@ public class SimilarityClusterUtilTest {
 
 		tokens.remove(0);
 
-		Assert.assertNull(SimilarityClusterUtil.getSignature(tokens, "en_US"));
+		Assert.assertNull(SimilarityClusterUtil.getSignature("en_US", tokens));
 	}
 
 	@Test
@@ -125,7 +129,7 @@ public class SimilarityClusterUtilTest {
 
 		tokens.addAll(_getSignatureTokens("es_ES", 11));
 
-		long[] signature = SimilarityClusterUtil.getSignature(tokens, "en_US");
+		long[] signature = SimilarityClusterUtil.getSignature("en_US", tokens);
 
 		Assert.assertEquals(
 			Arrays.toString(signature), _SIGNATURE_SIZE, signature.length);

@@ -136,7 +136,7 @@ public class SimilarityClusterTitleUtil {
 		return StringUtil.split(string.trim(), ' ');
 	}
 
-	private static boolean _hasWords(String[] words, String[] candidateWords) {
+	private static boolean _hasWords(String[] candidateWords, String[] words) {
 		for (int i = 0; i <= (words.length - candidateWords.length); i++) {
 			boolean matches = true;
 
@@ -162,7 +162,7 @@ public class SimilarityClusterTitleUtil {
 		String[] words, List<String[]> wordsList) {
 
 		for (String[] curWords : wordsList) {
-			if (!_hasWords(curWords, words)) {
+			if (!_hasWords(words, curWords)) {
 				return false;
 			}
 		}

@@ -101,6 +101,7 @@ public class CMSContentTextSimilarityTextExtractorTest {
 		Assert.assertEquals(
 			"The body ACME-1234 ",
 			_cmsContentTextSimilarityTextExtractor.getText(
+				"en_US",
 				_mockObjectEntry(
 					HashMapBuilder.<String, Serializable>put(
 						"i18nContent",
@@ -109,8 +110,7 @@ public class CMSContentTextSimilarityTextExtractorTest {
 						).build()
 					).put(
 						"reference", "ACME-1234"
-					).build()),
-				"en_US"));
+					).build())));
 	}
 
 	@Test
@@ -118,6 +118,7 @@ public class CMSContentTextSimilarityTextExtractorTest {
 		Assert.assertEquals(
 			"",
 			_cmsContentTextSimilarityTextExtractor.getText(
+				"es_ES",
 				_mockObjectEntry(
 					HashMapBuilder.<String, Serializable>put(
 						"i18nContent",
@@ -129,8 +130,7 @@ public class CMSContentTextSimilarityTextExtractorTest {
 						HashMapBuilder.put(
 							"es_ES", "Solo el titulo"
 						).build()
-					).build()),
-				"es_ES"));
+					).build())));
 	}
 
 	@Test
@@ -138,6 +138,7 @@ public class CMSContentTextSimilarityTextExtractorTest {
 		Assert.assertEquals(
 			"The body of the content ",
 			_cmsContentTextSimilarityTextExtractor.getText(
+				"en_US",
 				_mockObjectEntry(
 					HashMapBuilder.<String, Serializable>put(
 						"i18nContent",
@@ -149,8 +150,7 @@ public class CMSContentTextSimilarityTextExtractorTest {
 						HashMapBuilder.put(
 							"en_US", "Zeta Quarterly Report Alpha"
 						).build()
-					).build()),
-				"en_US"));
+					).build())));
 	}
 
 	private ObjectEntry _mockObjectEntry(
