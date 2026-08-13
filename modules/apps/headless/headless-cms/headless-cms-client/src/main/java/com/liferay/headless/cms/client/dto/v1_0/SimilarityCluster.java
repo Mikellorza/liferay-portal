@@ -69,6 +69,27 @@ public class SimilarityCluster implements Cloneable, Serializable {
 
 	protected Integer size;
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setTitle(
+		UnsafeSupplier<String, Exception> titleUnsafeSupplier) {
+
+		try {
+			title = titleUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String title;
+
 	@Override
 	public SimilarityCluster clone() throws CloneNotSupportedException {
 		return (SimilarityCluster)super.clone();
@@ -101,4 +122,4 @@ public class SimilarityCluster implements Cloneable, Serializable {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1638321847
+// LIFERAY-REST-BUILDER-HASH:1332012360

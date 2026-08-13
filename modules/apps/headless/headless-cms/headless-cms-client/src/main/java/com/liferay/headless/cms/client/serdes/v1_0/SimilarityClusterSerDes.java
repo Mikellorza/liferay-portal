@@ -84,6 +84,20 @@ public class SimilarityClusterSerDes {
 			sb.append(similarityCluster.getSize());
 		}
 
+		if (similarityCluster.getTitle() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"title\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(similarityCluster.getTitle()));
+
+			sb.append("\"");
+		}
+
 		sb.append("}");
 
 		return sb.toString();
@@ -121,6 +135,13 @@ public class SimilarityClusterSerDes {
 			map.put("size", String.valueOf(similarityCluster.getSize()));
 		}
 
+		if (similarityCluster.getTitle() == null) {
+			map.put("title", null);
+		}
+		else {
+			map.put("title", String.valueOf(similarityCluster.getTitle()));
+		}
+
 		return map;
 	}
 
@@ -145,6 +166,9 @@ public class SimilarityClusterSerDes {
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "size")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "title")) {
 				return false;
 			}
 
@@ -183,6 +207,11 @@ public class SimilarityClusterSerDes {
 				if (jsonParserFieldValue != null) {
 					similarityCluster.setSize(
 						Integer.valueOf((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "title")) {
+				if (jsonParserFieldValue != null) {
+					similarityCluster.setTitle((String)jsonParserFieldValue);
 				}
 			}
 		}
@@ -266,4 +295,4 @@ public class SimilarityClusterSerDes {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1026318494
+// LIFERAY-REST-BUILDER-HASH:-513610557

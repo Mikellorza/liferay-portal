@@ -173,11 +173,15 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 
 		SimilarityCluster similarityCluster = randomSimilarityCluster();
 
+		similarityCluster.setTitle(regex);
+
 		String json = SimilarityClusterSerDes.toJSON(similarityCluster);
 
 		Assert.assertFalse(json.contains(regex));
 
 		similarityCluster = SimilarityClusterSerDes.toDTO(json);
+
+		Assert.assertEquals(regex, similarityCluster.getTitle());
 	}
 
 	@Test
@@ -421,6 +425,14 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("title", additionalAssertFieldName)) {
+				if (similarityCluster.getTitle() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
 			throw new IllegalArgumentException(
 				"Invalid additional assert field name " +
 					additionalAssertFieldName);
@@ -566,6 +578,17 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("title", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						similarityCluster1.getTitle(),
+						similarityCluster2.getTitle())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			throw new IllegalArgumentException(
 				"Invalid additional assert field name " +
 					additionalAssertFieldName);
@@ -685,6 +708,52 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 			return sb.toString();
 		}
 
+		if (entityFieldName.equals("title")) {
+			Object object = similarityCluster.getTitle();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
 		throw new IllegalArgumentException(
 			"Invalid entity field " + entityFieldName);
 	}
@@ -733,6 +802,7 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 		return new SimilarityCluster() {
 			{
 				size = RandomTestUtil.randomInt();
+				title = StringUtil.toLowerCase(RandomTestUtil.randomString());
 			}
 		};
 	}
@@ -962,4 +1032,4 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 		_similarityClusterResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-2081166843
+// LIFERAY-REST-BUILDER-HASH:-272662105
