@@ -117,6 +117,8 @@ public class SimilarityClusterResourceTest
 		SimilarityCluster similarityCluster = similarityClusters.get(0);
 
 		Assert.assertEquals(
+			_NEAR_DUPLICATE_TITLE, similarityCluster.getTitle());
+		Assert.assertEquals(
 			2, GetterUtil.getInteger(similarityCluster.getSize()));
 
 		SimilarityClusterAsset[] similarityClusterAssets =
@@ -128,6 +130,8 @@ public class SimilarityClusterResourceTest
 
 		List<Long> objectEntryIds = new ArrayList<>();
 
+		int topAssetCount = 0;
+
 		for (SimilarityClusterAsset similarityClusterAsset :
 				similarityClusterAssets) {
 
@@ -137,7 +141,30 @@ public class SimilarityClusterResourceTest
 				_NEAR_DUPLICATE_TITLE, similarityClusterAsset.getTitle());
 			Assert.assertNotNull(similarityClusterAsset.getContentType());
 			Assert.assertNotNull(similarityClusterAsset.getDateModified());
+
+			String itemURL = similarityClusterAsset.getItemURL();
+
+			Assert.assertTrue(
+				itemURL.endsWith(
+					"/cms/edit_content_item?objectEntryId=" +
+						similarityClusterAsset.getId()));
+
+			if (GetterUtil.getBoolean(similarityClusterAsset.getTopAsset())) {
+				topAssetCount++;
+
+				Assert.assertNull(
+					similarityClusterAsset.getSimilarityPercent());
+			}
+			else {
+				double similarityPercent = GetterUtil.getDouble(
+					similarityClusterAsset.getSimilarityPercent());
+
+				Assert.assertTrue(
+					(similarityPercent > 0) && (similarityPercent <= 100));
+			}
 		}
+
+		Assert.assertEquals(1, topAssetCount);
 
 		Assert.assertTrue(
 			objectEntryIds.contains(
@@ -174,7 +201,7 @@ public class SimilarityClusterResourceTest
 			similarityClusters.toString(), 1, similarityClusters.size());
 
 		_assertSimilarityCluster(
-			similarityClusters.get(0), 3,
+			similarityClusters.get(0), 3, "Summer Sale",
 			new String[] {"Big Summer Sale", "Summer Sale 2026"});
 
 		similarityClustersPage = _getSimilarityClustersPage(
@@ -189,10 +216,11 @@ public class SimilarityClusterResourceTest
 			similarityClusters.toString(), 2, similarityClusters.size());
 
 		_assertSimilarityCluster(
-			similarityClusters.get(0), 3,
+			similarityClusters.get(0), 3, "Summer Sale",
 			new String[] {"Summer Sale Highlights"});
 		_assertSimilarityCluster(
-			similarityClusters.get(1), 2, new String[] {_PRODUCT_LAUNCH_TITLE});
+			similarityClusters.get(1), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		similarityClustersPage = _getSimilarityClustersPage(
 			groupId, Pagination.of(3, 2));
@@ -206,7 +234,8 @@ public class SimilarityClusterResourceTest
 			similarityClusters.toString(), 1, similarityClusters.size());
 
 		_assertSimilarityCluster(
-			similarityClusters.get(0), 2, new String[] {_PRODUCT_LAUNCH_TITLE});
+			similarityClusters.get(0), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -232,7 +261,9 @@ public class SimilarityClusterResourceTest
 			HashMapBuilder.<String, Object>put(
 				"assetLibraryId", "\"" + depotEntry.getGroupId() + "\""
 			).build(),
-			new GraphQLField("items", new GraphQLField("size")),
+			new GraphQLField(
+				"similarityClusters", new GraphQLField("size"),
+				new GraphQLField("title")),
 			new GraphQLField("totalCount"));
 
 		JSONObject similarityClustersPageJSONObject =
@@ -254,6 +285,9 @@ public class SimilarityClusterResourceTest
 			similarityClustersJSONArray.getJSONObject(0);
 
 		Assert.assertEquals(2, similarityClusterJSONObject.getInt("size"));
+		Assert.assertEquals(
+			_NEAR_DUPLICATE_TITLE,
+			similarityClusterJSONObject.getString("title"));
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -365,8 +399,10 @@ public class SimilarityClusterResourceTest
 	}
 
 	private void _assertSimilarityCluster(
-		SimilarityCluster similarityCluster, int size, String[] titles) {
+		SimilarityCluster similarityCluster, int size, String title,
+		String[] titles) {
 
+		Assert.assertEquals(title, similarityCluster.getTitle());
 		Assert.assertEquals(
 			size, GetterUtil.getInteger(similarityCluster.getSize()));
 
@@ -457,7 +493,7 @@ public class SimilarityClusterResourceTest
 			similarityClusters.toString(), 1, similarityClusters.size());
 
 		_assertSimilarityCluster(
-			similarityClusters.get(0), 2,
+			similarityClusters.get(0), 2, _NEAR_DUPLICATE_TITLE,
 			new String[] {_NEAR_DUPLICATE_TITLE, _NEAR_DUPLICATE_TITLE});
 
 		_userLocalService.deleteUser(user);
@@ -507,7 +543,7 @@ public class SimilarityClusterResourceTest
 			similarityClusters.toString(), 1, similarityClusters.size());
 
 		_assertSimilarityCluster(
-			similarityClusters.get(0), 2,
+			similarityClusters.get(0), 2, "Oferta de Verano",
 			new String[] {"Oferta de Verano Grande", "Oferta de Verano 2026"});
 
 		similarityClustersPage = _getSimilarityClustersPage(groupId, null);
