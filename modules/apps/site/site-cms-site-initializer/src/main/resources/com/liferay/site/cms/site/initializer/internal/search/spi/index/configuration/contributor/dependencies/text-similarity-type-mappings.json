@@ -2,6 +2,9 @@
 	"properties": {
 		"textSimilarityBands": {
 			"type": "keyword"
+		},
+		"textSimilaritySignature": {
+			"type": "keyword"
 		}
 	}
 }

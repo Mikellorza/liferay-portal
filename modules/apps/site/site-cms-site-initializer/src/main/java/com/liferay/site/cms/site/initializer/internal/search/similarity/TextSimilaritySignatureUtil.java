@@ -45,6 +45,28 @@ public class TextSimilaritySignatureUtil {
 		return bands;
 	}
 
+	public static String[] getSignature(String text) {
+		if (text == null) {
+			return new String[0];
+		}
+
+		Set<String> shingles = _getShingles(text);
+
+		if (shingles.isEmpty()) {
+			return new String[0];
+		}
+
+		long[] signature = _getMinHashSignature(shingles);
+
+		String[] tokens = new String[_HASH_COUNT];
+
+		for (int i = 0; i < _HASH_COUNT; i++) {
+			tokens[i] = StringBundler.concat("p", i, "_", signature[i]);
+		}
+
+		return tokens;
+	}
+
 	private static long _fnv1a(String value) {
 		long hash = _FNV_OFFSET_BASIS;
 

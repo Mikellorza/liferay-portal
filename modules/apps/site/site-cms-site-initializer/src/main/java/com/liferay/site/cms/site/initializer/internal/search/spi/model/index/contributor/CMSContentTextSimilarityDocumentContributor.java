@@ -52,36 +52,46 @@ public class CMSContentTextSimilarityDocumentContributor
 			}
 
 			List<String> bandSignatures = new ArrayList<>();
+			List<String> signatures = new ArrayList<>();
 
 			for (String languageId :
 					_cmsContentTextSimilarityTextExtractor.getLanguageIds(
 						objectEntry)) {
 
+				String text = _cmsContentTextSimilarityTextExtractor.getText(
+					languageId, objectEntry);
+
 				bandSignatures.addAll(
 					TransformUtil.transformToList(
-						TextSimilaritySignatureUtil.getBandSignatures(
-							_cmsContentTextSimilarityTextExtractor.getText(
-								languageId, objectEntry)),
-						bandSignature -> StringBundler.concat(
-							languageId, StringPool.UNDERLINE, bandSignature)));
+						TextSimilaritySignatureUtil.getBandSignatures(text),
+						bandSignature -> _getToken(languageId, bandSignature)));
+				signatures.addAll(
+					TransformUtil.transformToList(
+						TextSimilaritySignatureUtil.getSignature(text),
+						signature -> _getToken(languageId, signature)));
 			}
 
-			if (bandSignatures.isEmpty()) {
-				return;
+			if (!bandSignatures.isEmpty()) {
+				document.addKeyword(
+					"textSimilarityBands",
+					bandSignatures.toArray(new String[0]));
 			}
 
-			document.addKeyword(
-				"textSimilarityBands", bandSignatures.toArray(new String[0]));
+			if (!signatures.isEmpty()) {
+				document.addKeyword(
+					"textSimilaritySignature",
+					signatures.toArray(new String[0]));
+			}
 		}
 		catch (Exception exception) {
 
-			// A failure here yields no bands, hence no clusters, hence a
+			// A failure here yields no tokens, hence no clusters, hence a
 			// dashboard reporting no near duplicates, so this log is the only
 			// signal that the feature is not working
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"Unable to contribute text similarity bands for object " +
+					"Unable to contribute text similarity tokens for object " +
 						"entry " + objectEntry.getObjectEntryId(),
 					exception);
 			}
@@ -92,6 +102,10 @@ public class CMSContentTextSimilarityDocumentContributor
 	protected void activate() {
 		_cmsContentTextSimilarityTextExtractor =
 			new CMSContentTextSimilarityTextExtractor(_htmlParser);
+	}
+
+	private String _getToken(String languageId, String value) {
+		return StringBundler.concat(languageId, StringPool.UNDERLINE, value);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
