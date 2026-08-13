@@ -11,6 +11,7 @@ import com.liferay.depot.service.DepotEntryService;
 import com.liferay.headless.cms.dto.v1_0.SimilarityCluster;
 import com.liferay.headless.cms.dto.v1_0.SimilarityClusterAsset;
 import com.liferay.headless.cms.dto.v1_0.SimilarityClusterResult;
+import com.liferay.headless.cms.internal.similarity.SimilarityClusterTitleUtil;
 import com.liferay.headless.cms.internal.similarity.SimilarityClusterUtil;
 import com.liferay.headless.cms.resource.v1_0.SimilarityClusterResultResource;
 import com.liferay.object.constants.ObjectFolderConstants;
@@ -18,10 +19,18 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectEntryService;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
@@ -42,6 +51,7 @@ import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.util.GroupUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,7 +126,8 @@ public class SimilarityClusterResultResourceImpl
 
 		return _toSimilarityClusterResult(
 			_getSimilarityClusters(
-				clusters, languageId, objectDefinitionsMap, pagination),
+				clusters, entryClassNames, groupIds, languageId,
+				objectDefinitionsMap, pagination),
 			totalCount);
 	}
 
@@ -151,6 +162,25 @@ public class SimilarityClusterResultResourceImpl
 		return new Long[] {groupId};
 	}
 
+	private String _getItemURL(ObjectEntry objectEntry) throws Exception {
+		ModelResourcePermission<ObjectEntry> modelResourcePermission =
+			_objectEntryService.getModelResourcePermission(
+				objectEntry.getObjectDefinitionId());
+
+		if (!modelResourcePermission.contains(
+				PermissionThreadLocal.getPermissionChecker(), objectEntry,
+				ActionKeys.UPDATE)) {
+
+			return null;
+		}
+
+		return StringBundler.concat(
+			_portal.getPortalURL(contextHttpServletRequest),
+			_portal.getPathMain(), GroupConstants.CMS_FRIENDLY_URL,
+			"/edit_content_item?objectEntryId=",
+			objectEntry.getObjectEntryId());
+	}
+
 	private Consumer<SearchContext> _getSearchContextConsumer(Long[] groupIds) {
 		long[] scopedGroupIds = ArrayUtil.toArray(groupIds);
 
@@ -167,13 +197,93 @@ public class SimilarityClusterResultResourceImpl
 		};
 	}
 
+	private Map<Long, long[]> _getSignatures(
+		List<List<Long>> clusters, String[] entryClassNames, Long[] groupIds,
+		String languageId) {
+
+		List<String> objectEntryIds = new ArrayList<>();
+
+		for (List<Long> cluster : clusters) {
+			for (Long objectEntryId : cluster) {
+				objectEntryIds.add(String.valueOf(objectEntryId));
+			}
+		}
+
+		Map<Long, long[]> signaturesMap = new HashMap<>();
+
+		if (objectEntryIds.isEmpty()) {
+			return signaturesMap;
+		}
+
+		TermsQuery termsQuery = QueriesUtil.terms(
+			SimilarityClusterUtil.FIELD_NAME_OBJECT_ENTRY_ID);
+
+		termsQuery.addValues(objectEntryIds.toArray());
+
+		SearchRequestBuilder searchRequestBuilder =
+			_searchRequestBuilderFactory.builder();
+
+		searchRequestBuilder.addComplexQueryPart(
+			_complexQueryPartBuilderFactory.builder(
+			).occur(
+				"must"
+			).query(
+				termsQuery
+			).build()
+		).companyId(
+			contextCompany.getCompanyId()
+		).emptySearchEnabled(
+			true
+		).entryClassNames(
+			entryClassNames
+		).fetchSourceIncludes(
+			new String[] {
+				SimilarityClusterUtil.FIELD_NAME_OBJECT_ENTRY_ID,
+				_FIELD_NAME_SIGNATURE
+			}
+		).size(
+			objectEntryIds.size()
+		).withSearchContext(
+			_getSearchContextConsumer(groupIds)
+		);
+
+		SearchResponse searchResponse = _searcher.search(
+			searchRequestBuilder.build());
+
+		SearchHits searchHits = searchResponse.getSearchHits();
+
+		for (SearchHit searchHit : searchHits.getSearchHits()) {
+			Document document = searchHit.getDocument();
+
+			Long objectEntryId = document.getLong(
+				SimilarityClusterUtil.FIELD_NAME_OBJECT_ENTRY_ID);
+
+			if (objectEntryId == null) {
+				continue;
+			}
+
+			long[] signature = SimilarityClusterUtil.getSignature(
+				languageId, document.getStrings(_FIELD_NAME_SIGNATURE));
+
+			if (signature != null) {
+				signaturesMap.put(objectEntryId, signature);
+			}
+		}
+
+		return signaturesMap;
+	}
+
 	private List<SimilarityCluster> _getSimilarityClusters(
-			List<List<Long>> clusters, String languageId,
+			List<List<Long>> clusters, String[] entryClassNames,
+			Long[] groupIds, String languageId,
 			Map<Long, ObjectDefinition> objectDefinitionsMap,
 			Pagination pagination)
 		throws Exception {
 
 		List<SimilarityCluster> similarityClusters = new ArrayList<>();
+
+		List<List<Long>> pageClusters = new ArrayList<>();
+		List<int[]> pageWindows = new ArrayList<>();
 
 		int endPosition = -1;
 		int startPosition = -1;
@@ -190,8 +300,6 @@ public class SimilarityClusterResultResourceImpl
 
 			position += cluster.size();
 
-			List<Long> objectEntryIds = cluster;
-
 			if ((endPosition >= 0) && (startPosition >= 0)) {
 				if (position <= startPosition) {
 					continue;
@@ -205,17 +313,36 @@ public class SimilarityClusterResultResourceImpl
 				// that fall inside it, so that the next page can repeat its
 				// heading with the remaining ones
 
-				objectEntryIds = cluster.subList(
-					Math.max(startPosition - clusterStartPosition, 0),
-					Math.min(
-						endPosition - clusterStartPosition, cluster.size()));
+				pageWindows.add(
+					new int[] {
+						Math.max(startPosition - clusterStartPosition, 0),
+						Math.min(
+							endPosition - clusterStartPosition, cluster.size())
+					});
+			}
+			else {
+				pageWindows.add(new int[] {0, cluster.size()});
 			}
 
+			pageClusters.add(cluster);
+		}
+
+		// Naming a cluster and picking the asset the others are compared
+		// against need the whole cluster, so a cluster the page touches is
+		// resolved whole, and one it does not is not resolved at all
+
+		Map<Long, ObjectEntry> objectEntriesMap = new HashMap<>();
+		Map<Long, long[]> signaturesMap = _getSignatures(
+			pageClusters, entryClassNames, groupIds, languageId);
+
+		for (int i = 0; i < pageClusters.size(); i++) {
 			similarityClusters.add(
 				_toSimilarityCluster(
-					languageId, objectDefinitionsMap, objectEntryIds,
-					cluster.size()));
+					pageClusters.get(i), languageId, objectDefinitionsMap,
+					objectEntriesMap, pageWindows.get(i), signaturesMap));
 		}
+
+		_setItemURLs(objectEntriesMap, similarityClusters);
 
 		return similarityClusters;
 	}
@@ -325,22 +452,76 @@ public class SimilarityClusterResultResourceImpl
 		return sharedBands;
 	}
 
+	private void _setItemURLs(
+			Map<Long, ObjectEntry> objectEntriesMap,
+			List<SimilarityCluster> similarityClusters)
+		throws Exception {
+
+		// The edit URL costs a permission check per asset, so it is only built
+		// for the assets the response carries
+
+		for (SimilarityCluster similarityCluster : similarityClusters) {
+			for (SimilarityClusterAsset similarityClusterAsset :
+					similarityCluster.getSimilarityClusterAssets()) {
+
+				ObjectEntry objectEntry = objectEntriesMap.get(
+					GetterUtil.getLong(similarityClusterAsset.getId()));
+
+				if (objectEntry == null) {
+					continue;
+				}
+
+				String itemURL = _getItemURL(objectEntry);
+
+				if (itemURL != null) {
+					similarityClusterAsset.setItemURL(() -> itemURL);
+				}
+			}
+		}
+	}
+
 	private SimilarityCluster _toSimilarityCluster(
-			String languageId, Map<Long, ObjectDefinition> objectDefinitionsMap,
-			List<Long> objectEntryIds, int size)
+			List<Long> cluster, String languageId,
+			Map<Long, ObjectDefinition> objectDefinitionsMap,
+			Map<Long, ObjectEntry> objectEntriesMap, int[] pageWindow,
+			Map<Long, long[]> signaturesMap)
 		throws Exception {
 
 		SimilarityCluster similarityCluster = new SimilarityCluster();
 
+		Long topObjectEntryId = SimilarityClusterUtil.getTopObjectEntryId(
+			cluster, signaturesMap);
+
+		long[] topSignature = null;
+
+		if (topObjectEntryId != null) {
+			topSignature = signaturesMap.get(topObjectEntryId);
+		}
+
 		List<SimilarityClusterAsset> similarityClusterAssets =
 			new ArrayList<>();
+		List<String> titles = new ArrayList<>();
 
-		for (Long objectEntryId : objectEntryIds) {
+		String topTitle = null;
+
+		for (Long objectEntryId : cluster) {
 			ObjectEntry objectEntry = _objectEntryLocalService.fetchObjectEntry(
 				objectEntryId);
 
 			if (objectEntry == null) {
 				continue;
+			}
+
+			objectEntriesMap.put(objectEntryId, objectEntry);
+
+			boolean topAsset = objectEntryId.equals(topObjectEntryId);
+
+			String title = objectEntry.getTitleValue(languageId, true);
+
+			titles.add(title);
+
+			if (topAsset) {
+				topTitle = title;
 			}
 
 			SimilarityClusterAsset similarityClusterAsset =
@@ -349,8 +530,8 @@ public class SimilarityClusterResultResourceImpl
 			similarityClusterAsset.setDateModified(
 				objectEntry::getModifiedDate);
 			similarityClusterAsset.setId(() -> objectEntryId);
-			similarityClusterAsset.setTitle(
-				() -> objectEntry.getTitleValue(languageId, true));
+			similarityClusterAsset.setTitle(() -> title);
+			similarityClusterAsset.setTopAsset(() -> topAsset);
 
 			ObjectDefinition objectDefinition = objectDefinitionsMap.get(
 				objectEntry.getObjectDefinitionId());
@@ -360,16 +541,37 @@ public class SimilarityClusterResultResourceImpl
 					() -> objectDefinition.getLabel(languageId, true));
 			}
 
+			long[] signature = signaturesMap.get(objectEntryId);
+
+			if (!topAsset && (signature != null) && (topSignature != null)) {
+				double similarity = SimilarityClusterUtil.getSimilarity(
+					signature, topSignature);
+
+				double similarityPercent = Math.round(similarity * 100.0);
+
+				similarityClusterAsset.setSimilarityPercent(
+					() -> similarityPercent);
+			}
+
 			similarityClusterAssets.add(similarityClusterAsset);
 		}
+
+		String title = SimilarityClusterTitleUtil.getTitle(titles, topTitle);
 
 		SimilarityClusterAsset[] similarityClusterAssetsArray =
 			similarityClusterAssets.toArray(new SimilarityClusterAsset[0]);
 
-		similarityCluster.setSimilarityClusterAssets(
-			() -> similarityClusterAssetsArray);
+		SimilarityClusterAsset[] pageSimilarityClusterAssets =
+			Arrays.copyOfRange(
+				similarityClusterAssetsArray,
+				Math.min(pageWindow[0], similarityClusterAssetsArray.length),
+				Math.min(pageWindow[1], similarityClusterAssetsArray.length));
 
-		similarityCluster.setSize(() -> size);
+		similarityCluster.setSimilarityClusterAssets(
+			() -> pageSimilarityClusterAssets);
+
+		similarityCluster.setSize(cluster::size);
+		similarityCluster.setTitle(() -> title);
 
 		return similarityCluster;
 	}
@@ -393,6 +595,9 @@ public class SimilarityClusterResultResourceImpl
 	private static final String _BANDS_AGGREGATION_NAME = "bands";
 
 	private static final String _FIELD_NAME_BANDS = "textSimilarityBands";
+
+	private static final String _FIELD_NAME_SIGNATURE =
+		"textSimilaritySignature";
 
 	// A terms aggregation returns the most frequent buckets first, so a scope
 	// beyond this budget loses whole small groups, pairs before anything else
@@ -421,6 +626,12 @@ public class SimilarityClusterResultResourceImpl
 
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
+	private ObjectEntryService _objectEntryService;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private Searcher _searcher;
