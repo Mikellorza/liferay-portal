@@ -41,6 +41,7 @@ public class SimilarityClusterUtilTest {
 	public void testGetClustersChainsAssetsThroughSharedSimilarityKeys() {
 		Map<Long, List<Long>> objectEntryIdsByClusterId =
 			SimilarityClusterUtil.getClusters(
+				_SIMILARITY_KEY_FIELD,
 				Arrays.asList(
 					_mockDocument(1L, "k1", "k2", "k3"),
 					_mockDocument(2L, "k1", "k2", "k3", "k4", "k5", "k6"),
@@ -58,6 +59,7 @@ public class SimilarityClusterUtilTest {
 	public void testGetClustersDropsAssetsSharingNoSimilarityKey() {
 		Map<Long, List<Long>> objectEntryIdsByClusterId =
 			SimilarityClusterUtil.getClusters(
+				_SIMILARITY_KEY_FIELD,
 				Arrays.asList(
 					_mockDocument(1L, "k1", "k2", "k3"),
 					_mockDocument(2L, "k1", "k2", "k3"),
@@ -76,6 +78,7 @@ public class SimilarityClusterUtilTest {
 		Assert.assertEquals(
 			Collections.emptyMap(),
 			SimilarityClusterUtil.getClusters(
+				_SIMILARITY_KEY_FIELD,
 				Arrays.asList(_mockDocument(1L, "k9"), _mockDocument(2L, "k9")),
 				_toSet("k1")));
 	}
@@ -84,6 +87,7 @@ public class SimilarityClusterUtilTest {
 	public void testGetClustersKeysClustersByLowestObjectEntryId() {
 		Map<Long, List<Long>> objectEntryIdsByClusterId =
 			SimilarityClusterUtil.getClusters(
+				_SIMILARITY_KEY_FIELD,
 				Arrays.asList(
 					_mockDocument(7L, "k1", "k2", "k3"),
 					_mockDocument(2L, "k1", "k2", "k3"),
@@ -99,6 +103,7 @@ public class SimilarityClusterUtilTest {
 		Assert.assertEquals(
 			Collections.emptyMap(),
 			SimilarityClusterUtil.getClusters(
+				_SIMILARITY_KEY_FIELD,
 				Arrays.asList(
 					_mockDocument(1L, "k1", "k2"),
 					_mockDocument(2L, "k1", "k2")),
@@ -109,6 +114,7 @@ public class SimilarityClusterUtilTest {
 	public void testGetClustersOrdersBiggestClustersFirst() {
 		Map<Long, List<Long>> objectEntryIdsByClusterId =
 			SimilarityClusterUtil.getClusters(
+				_SIMILARITY_KEY_FIELD,
 				Arrays.asList(
 					_mockDocument(1L, "k1", "k2", "k3"),
 					_mockDocument(2L, "k1", "k2", "k3"),
@@ -238,7 +244,7 @@ public class SimilarityClusterUtilTest {
 		);
 
 		Mockito.when(
-			document.getStrings("textSimilarityKeys")
+			document.getStrings(_SIMILARITY_KEY_FIELD)
 		).thenReturn(
 			ListUtil.fromArray(similarityKeys)
 		);
@@ -251,5 +257,7 @@ public class SimilarityClusterUtilTest {
 	}
 
 	private static final int _SIGNATURE_SIZE = 128;
+
+	private static final String _SIMILARITY_KEY_FIELD = "textSimilarityKeys";
 
 }

@@ -13,6 +13,7 @@ import com.liferay.headless.cms.client.dto.v1_0.SimilarityCluster;
 import com.liferay.headless.cms.client.dto.v1_0.SimilarityClusterAsset;
 import com.liferay.headless.cms.client.pagination.Page;
 import com.liferay.headless.cms.client.pagination.Pagination;
+import com.liferay.headless.cms.client.problem.Problem;
 import com.liferay.headless.cms.client.resource.v1_0.SimilarityClusterResource;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
@@ -40,6 +41,8 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -48,6 +51,7 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -82,7 +86,7 @@ public class SimilarityClusterResourceTest
 			_getBasicWebContentObjectDefinition();
 
 		Page<SimilarityCluster> similarityClustersPage =
-			_getSimilarityClustersPage(groupId, null);
+			_getSimilarityClustersPage(groupId, null, null, null);
 
 		Assert.assertEquals(0, similarityClustersPage.getTotalCount());
 
@@ -104,7 +108,8 @@ public class SimilarityClusterResourceTest
 			depotEntry, objectDefinition, RandomTestUtil.randomString(),
 			_DISTINCT_CONTENT);
 
-		similarityClustersPage = _getSimilarityClustersPage(groupId, null);
+		similarityClustersPage = _getSimilarityClustersPage(
+			groupId, null, null, null);
 
 		Assert.assertEquals(2, similarityClustersPage.getTotalCount());
 
@@ -173,9 +178,15 @@ public class SimilarityClusterResourceTest
 			objectEntryIds.contains(
 				nearDuplicateObjectEntry2.getObjectEntryId()));
 
+		_assertRejectedDimension(groupId, "TITLE");
+
+		_assertRejectedDimension(groupId, "text");
+
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 
 		_testGetSimilarityClusterPermissions();
+		_testGetSimilarityClusterSearch();
+		_testGetSimilarityClusterSort();
 		_testGetSimilarityClusterTranslation();
 	}
 
@@ -190,7 +201,8 @@ public class SimilarityClusterResourceTest
 		_addSimilarityClusters(depotEntry);
 
 		Page<SimilarityCluster> similarityClustersPage =
-			_getSimilarityClustersPage(groupId, Pagination.of(1, 2));
+			_getSimilarityClustersPage(
+				groupId, Pagination.of(1, 2), null, null);
 
 		Assert.assertEquals(5, similarityClustersPage.getTotalCount());
 
@@ -205,7 +217,7 @@ public class SimilarityClusterResourceTest
 			new String[] {"Big Summer Sale", "Summer Sale 2026"});
 
 		similarityClustersPage = _getSimilarityClustersPage(
-			groupId, Pagination.of(2, 2));
+			groupId, Pagination.of(2, 2), null, null);
 
 		Assert.assertEquals(5, similarityClustersPage.getTotalCount());
 
@@ -223,7 +235,7 @@ public class SimilarityClusterResourceTest
 			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		similarityClustersPage = _getSimilarityClustersPage(
-			groupId, Pagination.of(3, 2));
+			groupId, Pagination.of(3, 2), null, null);
 
 		Assert.assertEquals(5, similarityClustersPage.getTotalCount());
 
@@ -398,6 +410,26 @@ public class SimilarityClusterResourceTest
 			ServiceContextTestUtil.getServiceContext());
 	}
 
+	private void _assertRejectedDimension(long groupId, String dimension)
+		throws Exception {
+
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.portal.vulcan.internal.jaxrs.exception.mapper." +
+					"WebApplicationExceptionMapper",
+				LoggerTestUtil.ERROR)) {
+
+			similarityClusterResource.getSimilarityClustersPage(
+				groupId, dimension, null, null, null);
+
+			Assert.fail();
+		}
+		catch (Problem.ProblemException problemException) {
+			Problem problem = problemException.getProblem();
+
+			Assert.assertEquals("BAD_REQUEST", problem.getStatus());
+		}
+	}
+
 	private void _assertSimilarityCluster(
 		SimilarityCluster similarityCluster, int size, String title,
 		String[] titles) {
@@ -439,11 +471,12 @@ public class SimilarityClusterResourceTest
 	}
 
 	private Page<SimilarityCluster> _getSimilarityClustersPage(
-			long groupId, Pagination pagination)
+			long groupId, Pagination pagination, String search,
+			String sortString)
 		throws Exception {
 
 		return similarityClusterResource.getSimilarityClustersPage(
-			groupId, pagination);
+			groupId, "TEXT", search, pagination, sortString);
 	}
 
 	private void _testGetSimilarityClusterPermissions() throws Exception {
@@ -482,7 +515,7 @@ public class SimilarityClusterResourceTest
 
 		Page<SimilarityCluster> similarityClustersPage =
 			userSimilarityClusterResource.getSimilarityClustersPage(
-				groupId, null);
+				groupId, "TEXT", null, null, null);
 
 		Assert.assertEquals(2, similarityClustersPage.getTotalCount());
 
@@ -497,6 +530,138 @@ public class SimilarityClusterResourceTest
 			new String[] {_NEAR_DUPLICATE_TITLE, _NEAR_DUPLICATE_TITLE});
 
 		_userLocalService.deleteUser(user);
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
+	private void _testGetSimilarityClusterSearch() throws Exception {
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		long groupId = depotEntry.getGroupId();
+
+		_addSimilarityClusters(depotEntry);
+
+		Page<SimilarityCluster> similarityClustersPage =
+			_getSimilarityClustersPage(groupId, null, "press", null);
+
+		Assert.assertEquals(2, similarityClustersPage.getTotalCount());
+
+		List<SimilarityCluster> similarityClusters =
+			(List<SimilarityCluster>)similarityClustersPage.getItems();
+
+		Assert.assertEquals(
+			similarityClusters.toString(), 1, similarityClusters.size());
+
+		_assertSimilarityCluster(
+			similarityClusters.get(0), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE, _PRODUCT_LAUNCH_TITLE});
+
+		similarityClustersPage = _getSimilarityClustersPage(
+			groupId, null, "summer highlights", null);
+
+		Assert.assertEquals(1, similarityClustersPage.getTotalCount());
+
+		similarityClusters =
+			(List<SimilarityCluster>)similarityClustersPage.getItems();
+
+		Assert.assertEquals(
+			similarityClusters.toString(), 1, similarityClusters.size());
+
+		_assertSimilarityCluster(
+			similarityClusters.get(0), 3, "Summer Sale",
+			new String[] {"Summer Sale Highlights"});
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
+	private void _testGetSimilarityClusterSort() throws Exception {
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		long groupId = depotEntry.getGroupId();
+
+		_addSimilarityClusters(depotEntry);
+
+		Page<SimilarityCluster> similarityClustersPage =
+			_getSimilarityClustersPage(groupId, null, null, null);
+
+		Assert.assertEquals(5, similarityClustersPage.getTotalCount());
+
+		List<SimilarityCluster> similarityClusters =
+			(List<SimilarityCluster>)similarityClustersPage.getItems();
+
+		Assert.assertEquals(
+			similarityClusters.toString(), 2, similarityClusters.size());
+
+		_assertSimilarityCluster(
+			similarityClusters.get(0), 3, "Summer Sale",
+			new String[] {
+				"Big Summer Sale", "Summer Sale 2026", "Summer Sale Highlights"
+			});
+		_assertSimilarityCluster(
+			similarityClusters.get(1), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE, _PRODUCT_LAUNCH_TITLE});
+
+		similarityClustersPage = _getSimilarityClustersPage(
+			groupId, null, null, "title:asc");
+
+		similarityClusters =
+			(List<SimilarityCluster>)similarityClustersPage.getItems();
+
+		Assert.assertEquals(
+			similarityClusters.toString(), 2, similarityClusters.size());
+
+		_assertSimilarityCluster(
+			similarityClusters.get(0), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE, _PRODUCT_LAUNCH_TITLE});
+		_assertSimilarityCluster(
+			similarityClusters.get(1), 3, "Summer Sale",
+			new String[] {
+				"Big Summer Sale", "Summer Sale 2026", "Summer Sale Highlights"
+			});
+
+		similarityClustersPage = _getSimilarityClustersPage(
+			groupId, null, null, "title:desc");
+
+		similarityClusters =
+			(List<SimilarityCluster>)similarityClustersPage.getItems();
+
+		Assert.assertEquals(
+			similarityClusters.toString(), 2, similarityClusters.size());
+
+		_assertSimilarityCluster(
+			similarityClusters.get(0), 3, "Summer Sale",
+			new String[] {
+				"Summer Sale Highlights", "Summer Sale 2026", "Big Summer Sale"
+			});
+		_assertSimilarityCluster(
+			similarityClusters.get(1), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE, _PRODUCT_LAUNCH_TITLE});
+
+		similarityClustersPage = _getSimilarityClustersPage(
+			groupId, null, null, "dateModified:desc");
+
+		Date previousDateModified = null;
+
+		for (SimilarityCluster similarityCluster :
+				(List<SimilarityCluster>)similarityClustersPage.getItems()) {
+
+			for (SimilarityClusterAsset similarityClusterAsset :
+					similarityCluster.getSimilarityClusterAssets()) {
+
+				Date dateModified = similarityClusterAsset.getDateModified();
+
+				Assert.assertNotNull(dateModified);
+
+				if (previousDateModified != null) {
+					Assert.assertFalse(
+						dateModified.after(previousDateModified));
+				}
+
+				previousDateModified = dateModified;
+			}
+		}
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -532,7 +697,7 @@ public class SimilarityClusterResourceTest
 
 		Page<SimilarityCluster> similarityClustersPage =
 			spanishSimilarityClusterResource.getSimilarityClustersPage(
-				groupId, null);
+				groupId, "TEXT", null, null, null);
 
 		Assert.assertEquals(2, similarityClustersPage.getTotalCount());
 
@@ -544,9 +709,10 @@ public class SimilarityClusterResourceTest
 
 		_assertSimilarityCluster(
 			similarityClusters.get(0), 2, "Oferta de Verano",
-			new String[] {"Oferta de Verano Grande", "Oferta de Verano 2026"});
+			new String[] {"Oferta de Verano 2026", "Oferta de Verano Grande"});
 
-		similarityClustersPage = _getSimilarityClustersPage(groupId, null);
+		similarityClustersPage = _getSimilarityClustersPage(
+			groupId, null, null, null);
 
 		Assert.assertEquals(0, similarityClustersPage.getTotalCount());
 
