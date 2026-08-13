@@ -122,6 +122,8 @@ public class SimilarityClusterResultResourceTest
 		SimilarityCluster similarityCluster = similarityClusters[0];
 
 		Assert.assertEquals(
+			_NEAR_DUPLICATE_TITLE, similarityCluster.getTitle());
+		Assert.assertEquals(
 			2, GetterUtil.getInteger(similarityCluster.getSize()));
 
 		SimilarityClusterAsset[] similarityClusterAssets =
@@ -133,6 +135,8 @@ public class SimilarityClusterResultResourceTest
 
 		List<Long> objectEntryIds = new ArrayList<>();
 
+		int topAssetCount = 0;
+
 		for (SimilarityClusterAsset similarityClusterAsset :
 				similarityClusterAssets) {
 
@@ -142,7 +146,30 @@ public class SimilarityClusterResultResourceTest
 				_NEAR_DUPLICATE_TITLE, similarityClusterAsset.getTitle());
 			Assert.assertNotNull(similarityClusterAsset.getContentType());
 			Assert.assertNotNull(similarityClusterAsset.getDateModified());
+
+			String itemURL = similarityClusterAsset.getItemURL();
+
+			Assert.assertTrue(
+				itemURL.endsWith(
+					"/cms/edit_content_item?objectEntryId=" +
+						similarityClusterAsset.getId()));
+
+			if (GetterUtil.getBoolean(similarityClusterAsset.getTopAsset())) {
+				topAssetCount++;
+
+				Assert.assertNull(
+					similarityClusterAsset.getSimilarityPercent());
+			}
+			else {
+				double similarityPercent = GetterUtil.getDouble(
+					similarityClusterAsset.getSimilarityPercent());
+
+				Assert.assertTrue(
+					(similarityPercent > 0) && (similarityPercent <= 100));
+			}
 		}
+
+		Assert.assertEquals(1, topAssetCount);
 
 		Assert.assertTrue(
 			objectEntryIds.contains(
@@ -180,7 +207,9 @@ public class SimilarityClusterResultResourceTest
 			HashMapBuilder.<String, Object>put(
 				"assetLibraryId", "\"" + depotEntry.getGroupId() + "\""
 			).build(),
-			new GraphQLField("similarityClusters", new GraphQLField("size")),
+			new GraphQLField(
+				"similarityClusters", new GraphQLField("size"),
+				new GraphQLField("title")),
 			new GraphQLField("totalCount"));
 
 		JSONObject similarityClusterResultJSONObject =
@@ -203,6 +232,9 @@ public class SimilarityClusterResultResourceTest
 			similarityClustersJSONArray.getJSONObject(0);
 
 		Assert.assertEquals(2, similarityClusterJSONObject.getInt("size"));
+		Assert.assertEquals(
+			_NEAR_DUPLICATE_TITLE,
+			similarityClusterJSONObject.getString("title"));
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -314,8 +346,10 @@ public class SimilarityClusterResultResourceTest
 	}
 
 	private void _assertSimilarityCluster(
-		SimilarityCluster similarityCluster, int size, String[] titles) {
+		SimilarityCluster similarityCluster, int size, String title,
+		String[] titles) {
 
+		Assert.assertEquals(title, similarityCluster.getTitle());
 		Assert.assertEquals(
 			size, GetterUtil.getInteger(similarityCluster.getSize()));
 
@@ -383,7 +417,7 @@ public class SimilarityClusterResultResourceTest
 			Arrays.toString(similarityClusters), 1, similarityClusters.length);
 
 		_assertSimilarityCluster(
-			similarityClusters[0], 3,
+			similarityClusters[0], 3, "Summer Sale",
 			new String[] {"Big Summer Sale", "Summer Sale 2026"});
 
 		// A cluster split across pages is repeated in the next page with the
@@ -401,9 +435,11 @@ public class SimilarityClusterResultResourceTest
 			Arrays.toString(similarityClusters), 2, similarityClusters.length);
 
 		_assertSimilarityCluster(
-			similarityClusters[0], 3, new String[] {"Summer Sale Highlights"});
+			similarityClusters[0], 3, "Summer Sale",
+			new String[] {"Summer Sale Highlights"});
 		_assertSimilarityCluster(
-			similarityClusters[1], 2, new String[] {_PRODUCT_LAUNCH_TITLE});
+			similarityClusters[1], 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		similarityClusterResult = _getSimilarityCluster(
 			groupId, Pagination.of(3, 2));
@@ -417,7 +453,8 @@ public class SimilarityClusterResultResourceTest
 			Arrays.toString(similarityClusters), 1, similarityClusters.length);
 
 		_assertSimilarityCluster(
-			similarityClusters[0], 2, new String[] {_PRODUCT_LAUNCH_TITLE});
+			similarityClusters[0], 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -475,7 +512,7 @@ public class SimilarityClusterResultResourceTest
 			Arrays.toString(similarityClusters), 1, similarityClusters.length);
 
 		_assertSimilarityCluster(
-			similarityClusters[0], 2,
+			similarityClusters[0], 2, _NEAR_DUPLICATE_TITLE,
 			new String[] {_NEAR_DUPLICATE_TITLE, _NEAR_DUPLICATE_TITLE});
 
 		_userLocalService.deleteUser(user);
@@ -531,7 +568,7 @@ public class SimilarityClusterResultResourceTest
 			Arrays.toString(similarityClusters), 1, similarityClusters.length);
 
 		_assertSimilarityCluster(
-			similarityClusters[0], 2,
+			similarityClusters[0], 2, "Oferta de Verano",
 			new String[] {"Oferta de Verano Grande", "Oferta de Verano 2026"});
 
 		// The English reader sees no duplication, because the English texts
