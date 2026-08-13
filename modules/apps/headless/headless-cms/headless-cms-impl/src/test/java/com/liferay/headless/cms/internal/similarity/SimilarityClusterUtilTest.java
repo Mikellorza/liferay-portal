@@ -5,6 +5,8 @@
 
 package com.liferay.headless.cms.internal.similarity;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
@@ -12,6 +14,7 @@ import com.liferay.portal.test.rule.LiferayUnitTestRule;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +124,108 @@ public class SimilarityClusterUtilTest {
 			new ArrayList<>(objectEntryIdsByClusterId.keySet()));
 	}
 
+	@Test
+	public void testGetSignatureIgnoresAnotherLanguage() {
+		Assert.assertNull(
+			SimilarityClusterUtil.getSignature(
+				"en_US", _getSignatureTokens("es_ES", 3)));
+	}
+
+	@Test
+	public void testGetSignatureIsNullWhenIncomplete() {
+		List<String> tokens = _getSignatureTokens("en_US", 7);
+
+		tokens.remove(0);
+
+		Assert.assertNull(SimilarityClusterUtil.getSignature("en_US", tokens));
+	}
+
+	@Test
+	public void testGetSignatureReadsTheRequestLanguage() {
+		List<String> tokens = _getSignatureTokens("en_US", 3);
+
+		tokens.addAll(_getSignatureTokens("es_ES", 11));
+
+		long[] signature = SimilarityClusterUtil.getSignature("en_US", tokens);
+
+		Assert.assertEquals(
+			Arrays.toString(signature), _SIGNATURE_SIZE, signature.length);
+
+		for (int i = 0; i < _SIGNATURE_SIZE; i++) {
+			Assert.assertEquals(3, signature[i]);
+		}
+	}
+
+	@Test
+	public void testGetSimilarityCountsAgreeingPositions() {
+		long[] signature1 = new long[_SIGNATURE_SIZE];
+		long[] signature2 = new long[_SIGNATURE_SIZE];
+
+		for (int i = 0; i < _SIGNATURE_SIZE; i++) {
+			signature1[i] = i;
+			signature2[i] = i;
+		}
+
+		Assert.assertEquals(
+			1.0, SimilarityClusterUtil.getSimilarity(signature1, signature2),
+			0.0);
+
+		for (int i = 0; i < (_SIGNATURE_SIZE / 2); i++) {
+			signature2[i] = -1;
+		}
+
+		Assert.assertEquals(
+			0.5, SimilarityClusterUtil.getSimilarity(signature1, signature2),
+			0.0);
+	}
+
+	@Test
+	public void testGetTopObjectEntryIdIsClosestToTheOthers() {
+		Assert.assertEquals(
+			Long.valueOf(2),
+			SimilarityClusterUtil.getTopObjectEntryId(
+				Arrays.asList(1L, 2L, 3L),
+				HashMapBuilder.put(
+					1L, _getSignature(0, 0)
+				).put(
+					2L, _getSignature(0, 1)
+				).put(
+					3L, _getSignature(1, 1)
+				).build()));
+	}
+
+	@Test
+	public void testGetTopObjectEntryIdIsNullWithoutSignatures() {
+		Assert.assertNull(
+			SimilarityClusterUtil.getTopObjectEntryId(
+				Arrays.asList(1L, 2L), new HashMap<>()));
+	}
+
+	private long[] _getSignature(long firstHalfValue, long secondHalfValue) {
+		long[] signature = new long[_SIGNATURE_SIZE];
+
+		for (int i = 0; i < _SIGNATURE_SIZE; i++) {
+			if (i < (_SIGNATURE_SIZE / 2)) {
+				signature[i] = firstHalfValue;
+			}
+			else {
+				signature[i] = secondHalfValue;
+			}
+		}
+
+		return signature;
+	}
+
+	private List<String> _getSignatureTokens(String languageId, long value) {
+		List<String> tokens = new ArrayList<>();
+
+		for (int i = 0; i < _SIGNATURE_SIZE; i++) {
+			tokens.add(StringBundler.concat(languageId, "_p", i, "_", value));
+		}
+
+		return tokens;
+	}
+
 	private Document _mockDocument(
 		Long objectEntryId, String... similarityKeys) {
 
@@ -144,5 +249,7 @@ public class SimilarityClusterUtilTest {
 	private Set<String> _toSet(String... similarityKeys) {
 		return new HashSet<>(Arrays.asList(similarityKeys));
 	}
+
+	private static final int _SIGNATURE_SIZE = 128;
 
 }
