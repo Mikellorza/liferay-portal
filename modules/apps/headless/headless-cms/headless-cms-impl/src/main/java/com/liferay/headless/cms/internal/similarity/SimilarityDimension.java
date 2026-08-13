@@ -17,7 +17,7 @@ import java.util.List;
  */
 public enum SimilarityDimension {
 
-	TEXT("textSimilarityBands", "textSimilaritySignature") {
+	TEXT("textSimilarityKeys", "textSimilaritySignature") {
 
 		@Override
 		public String getTitle(List<String> titles, String topTitle) {
@@ -43,22 +43,24 @@ public enum SimilarityDimension {
 				"\". Valid values are ", Arrays.toString(values())));
 	}
 
-	public String getBandField() {
-		return _bandField;
-	}
-
 	public String getSignatureField() {
 		return _signatureField;
 	}
 
+	public String getSimilarityKeyField() {
+		return _similarityKeyField;
+	}
+
 	public abstract String getTitle(List<String> titles, String topTitle);
 
-	private SimilarityDimension(String bandField, String signatureField) {
-		_bandField = bandField;
+	private SimilarityDimension(
+		String similarityKeyField, String signatureField) {
+
+		_similarityKeyField = similarityKeyField;
 		_signatureField = signatureField;
 	}
 
-	private final String _bandField;
 	private final String _signatureField;
+	private final String _similarityKeyField;
 
 }
