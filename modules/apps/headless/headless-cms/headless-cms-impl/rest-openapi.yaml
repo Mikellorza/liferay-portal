@@ -66,7 +66,7 @@ components:
                 -   $ref: "#/components/schemas/AssetPermissionAction"
         SimilarityCluster:
             description:
-                A group of CMS content assets detected as near duplicates of one another.
+                A group of CMS content assets detected as near duplicates of one another for a given similarity dimension.
             properties:
                 similarityClusterAssets:
                     description:
@@ -214,7 +214,7 @@ paths:
     "/similarity-clusters":
         get:
             description:
-                List the clusters of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and clustering always spans the whole space, so a cluster's size never depends on the requested page. Omit assetLibraryId to span all accessible spaces.
+                List the clusters of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and clustering always spans the whole space, so a cluster's name and size never depend on the search or the requested page. Results can be searched by asset title and sorted by title or dateModified. Omit assetLibraryId to span all accessible spaces.
             operationId: getSimilarityClustersPage
             parameters:
                 -   in: query
@@ -223,6 +223,13 @@ paths:
                         format: int64
                         type: integer
                 -   in: query
+                    description:
+                        The dimension along which content is compared. Defaults to TEXT when omitted. Any other value is rejected.
+                    name: dimension
+                    schema:
+                        enum: [TEXT]
+                        type: string
+                -   in: query
                     name: page
                     schema:
                         type: integer
@@ -230,6 +237,14 @@ paths:
                     name: pageSize
                     schema:
                         type: integer
+                -   in: query
+                    name: search
+                    schema:
+                        type: string
+                -   in: query
+                    name: sort
+                    schema:
+                        type: string
             responses:
                 200:
                     content:
