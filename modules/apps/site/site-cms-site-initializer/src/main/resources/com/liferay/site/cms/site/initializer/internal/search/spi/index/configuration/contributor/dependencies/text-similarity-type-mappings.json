@@ -2,6 +2,9 @@
 	"properties": {
 		"textSimilarityKeys": {
 			"type": "keyword"
+		},
+		"textSimilaritySignature": {
+			"type": "keyword"
 		}
 	}
 }

@@ -16,6 +16,28 @@ import java.util.Set;
  */
 public class TextSimilaritySignatureUtil {
 
+	public static String[] getSignature(String text) {
+		if (text == null) {
+			return new String[0];
+		}
+
+		Set<String> shingles = _getShingles(text);
+
+		if (shingles.isEmpty()) {
+			return new String[0];
+		}
+
+		long[] signature = _getMinHashSignature(shingles);
+
+		String[] tokens = new String[_HASH_COUNT];
+
+		for (int i = 0; i < _HASH_COUNT; i++) {
+			tokens[i] = StringBundler.concat("p", i, "_", signature[i]);
+		}
+
+		return tokens;
+	}
+
 	public static String[] getSimilarityKeys(String text) {
 		if (text == null) {
 			return new String[0];

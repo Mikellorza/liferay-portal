@@ -51,32 +51,42 @@ public class CMSContentTextSimilarityDocumentContributor
 				return;
 			}
 
+			List<String> signatures = new ArrayList<>();
 			List<String> similarityKeys = new ArrayList<>();
 
 			for (String languageId :
 					_cmsContentTextSimilarityTextExtractor.getLanguageIds(
 						objectEntry)) {
 
+				String text = _cmsContentTextSimilarityTextExtractor.getText(
+					languageId, objectEntry);
+
+				signatures.addAll(
+					TransformUtil.transformToList(
+						TextSimilaritySignatureUtil.getSignature(text),
+						signature -> _getToken(languageId, signature)));
 				similarityKeys.addAll(
 					TransformUtil.transformToList(
-						TextSimilaritySignatureUtil.getSimilarityKeys(
-							_cmsContentTextSimilarityTextExtractor.getText(
-								languageId, objectEntry)),
-						similarityKey -> StringBundler.concat(
-							languageId, StringPool.UNDERLINE, similarityKey)));
+						TextSimilaritySignatureUtil.getSimilarityKeys(text),
+						similarityKey -> _getToken(languageId, similarityKey)));
 			}
 
-			if (similarityKeys.isEmpty()) {
-				return;
+			if (!signatures.isEmpty()) {
+				document.addKeyword(
+					"textSimilaritySignature",
+					signatures.toArray(new String[0]));
 			}
 
-			document.addKeyword(
-				"textSimilarityKeys", similarityKeys.toArray(new String[0]));
+			if (!similarityKeys.isEmpty()) {
+				document.addKeyword(
+					"textSimilarityKeys",
+					similarityKeys.toArray(new String[0]));
+			}
 		}
 		catch (Exception exception) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"Unable to contribute text similarity keys for object " +
+					"Unable to contribute text similarity tokens for object " +
 						"entry " + objectEntry.getObjectEntryId(),
 					exception);
 			}
@@ -87,6 +97,10 @@ public class CMSContentTextSimilarityDocumentContributor
 	protected void activate() {
 		_cmsContentTextSimilarityTextExtractor =
 			new CMSContentTextSimilarityTextExtractor(_htmlParser);
+	}
+
+	private String _getToken(String languageId, String value) {
+		return StringBundler.concat(languageId, StringPool.UNDERLINE, value);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
