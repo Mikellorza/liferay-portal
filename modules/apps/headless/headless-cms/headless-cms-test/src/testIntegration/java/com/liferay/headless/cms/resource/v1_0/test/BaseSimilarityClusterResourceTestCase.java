@@ -13,13 +13,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
-import com.liferay.headless.cms.client.dto.v1_0.BrokenLinkAsset;
+import com.liferay.headless.cms.client.dto.v1_0.SimilarityCluster;
 import com.liferay.headless.cms.client.http.HttpInvoker;
 import com.liferay.headless.cms.client.pagination.Page;
 import com.liferay.headless.cms.client.pagination.Pagination;
-import com.liferay.headless.cms.client.resource.v1_0.BrokenLinkAssetResource;
-import com.liferay.headless.cms.client.serdes.v1_0.BrokenLinkAssetSerDes;
-import com.liferay.petra.function.UnsafeTriConsumer;
+import com.liferay.headless.cms.client.resource.v1_0.SimilarityClusterResource;
+import com.liferay.headless.cms.client.serdes.v1_0.SimilarityClusterSerDes;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
@@ -39,7 +38,6 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.test.rule.Inject;
@@ -78,7 +76,7 @@ import org.junit.Test;
  * @generated
  */
 @Generated("")
-public abstract class BaseBrokenLinkAssetResourceTestCase {
+public abstract class BaseSimilarityClusterResourceTestCase {
 
 	@ClassRule
 	@Rule
@@ -101,12 +99,12 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 		testCompany = CompanyLocalServiceUtil.getCompany(
 			testGroup.getCompanyId());
 
-		_brokenLinkAssetResource.setContextCompany(testCompany);
+		_similarityClusterResource.setContextCompany(testCompany);
 
 		_testCompanyAdminUser = UserTestUtil.getAdminUser(
 			testCompany.getCompanyId());
 
-		brokenLinkAssetResource = BrokenLinkAssetResource.builder(
+		similarityClusterResource = SimilarityClusterResource.builder(
 		).authentication(
 			_testCompanyAdminUser.getEmailAddress(),
 			PropsValues.DEFAULT_ADMIN_PASSWORD
@@ -128,23 +126,24 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	public void testClientSerDesToDTO() throws Exception {
 		ObjectMapper objectMapper = getClientSerDesObjectMapper();
 
-		BrokenLinkAsset brokenLinkAsset1 = randomBrokenLinkAsset();
+		SimilarityCluster similarityCluster1 = randomSimilarityCluster();
 
-		String json = objectMapper.writeValueAsString(brokenLinkAsset1);
+		String json = objectMapper.writeValueAsString(similarityCluster1);
 
-		BrokenLinkAsset brokenLinkAsset2 = BrokenLinkAssetSerDes.toDTO(json);
+		SimilarityCluster similarityCluster2 = SimilarityClusterSerDes.toDTO(
+			json);
 
-		Assert.assertTrue(equals(brokenLinkAsset1, brokenLinkAsset2));
+		Assert.assertTrue(equals(similarityCluster1, similarityCluster2));
 	}
 
 	@Test
 	public void testClientSerDesToJSON() throws Exception {
 		ObjectMapper objectMapper = getClientSerDesObjectMapper();
 
-		BrokenLinkAsset brokenLinkAsset = randomBrokenLinkAsset();
+		SimilarityCluster similarityCluster = randomSimilarityCluster();
 
-		String json1 = objectMapper.writeValueAsString(brokenLinkAsset);
-		String json2 = BrokenLinkAssetSerDes.toJSON(brokenLinkAsset);
+		String json1 = objectMapper.writeValueAsString(similarityCluster);
+		String json2 = SimilarityClusterSerDes.toJSON(similarityCluster);
 
 		Assert.assertEquals(
 			objectMapper.readTree(json1), objectMapper.readTree(json2));
@@ -172,56 +171,45 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	public void testEscapeRegexInStringFields() throws Exception {
 		String regex = "^[0-9]+(\\.[0-9]{1,2})\"?";
 
-		BrokenLinkAsset brokenLinkAsset = randomBrokenLinkAsset();
+		SimilarityCluster similarityCluster = randomSimilarityCluster();
 
-		brokenLinkAsset.setBrokenLinkTitle(regex);
-		brokenLinkAsset.setHref(regex);
-		brokenLinkAsset.setObjectDefinitionExternalReferenceCode(regex);
-		brokenLinkAsset.setTitle(regex);
-
-		String json = BrokenLinkAssetSerDes.toJSON(brokenLinkAsset);
+		String json = SimilarityClusterSerDes.toJSON(similarityCluster);
 
 		Assert.assertFalse(json.contains(regex));
 
-		brokenLinkAsset = BrokenLinkAssetSerDes.toDTO(json);
-
-		Assert.assertEquals(regex, brokenLinkAsset.getBrokenLinkTitle());
-		Assert.assertEquals(regex, brokenLinkAsset.getHref());
-		Assert.assertEquals(
-			regex, brokenLinkAsset.getObjectDefinitionExternalReferenceCode());
-		Assert.assertEquals(regex, brokenLinkAsset.getTitle());
+		similarityCluster = SimilarityClusterSerDes.toDTO(json);
 	}
 
 	@Test
-	public void testGetBrokenLinkAssetsPage() throws Exception {
-		Page<BrokenLinkAsset> page =
-			brokenLinkAssetResource.getBrokenLinkAssetsPage(
-				null, null, Pagination.of(1, 10), null);
+	public void testGetSimilarityClustersPage() throws Exception {
+		Page<SimilarityCluster> page =
+			similarityClusterResource.getSimilarityClustersPage(
+				null, Pagination.of(1, 10));
 
 		long totalCount = page.getTotalCount();
 
-		BrokenLinkAsset brokenLinkAsset1 =
-			testGetBrokenLinkAssetsPage_addBrokenLinkAsset(
-				randomBrokenLinkAsset());
+		SimilarityCluster similarityCluster1 =
+			testGetSimilarityClustersPage_addSimilarityCluster(
+				randomSimilarityCluster());
 
-		BrokenLinkAsset brokenLinkAsset2 =
-			testGetBrokenLinkAssetsPage_addBrokenLinkAsset(
-				randomBrokenLinkAsset());
+		SimilarityCluster similarityCluster2 =
+			testGetSimilarityClustersPage_addSimilarityCluster(
+				randomSimilarityCluster());
 
-		page = brokenLinkAssetResource.getBrokenLinkAssetsPage(
-			null, null, Pagination.of(1, (int)totalCount + 2), null);
+		page = similarityClusterResource.getSimilarityClustersPage(
+			null, Pagination.of(1, (int)totalCount + 2));
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
 		assertContains(
-			brokenLinkAsset1, (List<BrokenLinkAsset>)page.getItems());
+			similarityCluster1, (List<SimilarityCluster>)page.getItems());
 		assertContains(
-			brokenLinkAsset2, (List<BrokenLinkAsset>)page.getItems());
-		assertValid(page, testGetBrokenLinkAssetsPage_getExpectedActions());
+			similarityCluster2, (List<SimilarityCluster>)page.getItems());
+		assertValid(page, testGetSimilarityClustersPage_getExpectedActions());
 	}
 
 	protected Map<String, Map<String, String>>
-			testGetBrokenLinkAssetsPage_getExpectedActions()
+			testGetSimilarityClustersPage_getExpectedActions()
 		throws Exception {
 
 		Map<String, Map<String, String>> expectedActions = new HashMap<>();
@@ -230,245 +218,102 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	}
 
 	@Test
-	public void testGetBrokenLinkAssetsPageWithPagination() throws Exception {
-		Page<BrokenLinkAsset> brokenLinkAssetsPage =
-			brokenLinkAssetResource.getBrokenLinkAssetsPage(
-				null, null, null, null);
+	public void testGetSimilarityClustersPageWithPagination() throws Exception {
+		Page<SimilarityCluster> similarityClustersPage =
+			similarityClusterResource.getSimilarityClustersPage(null, null);
 
 		int totalCount = GetterUtil.getInteger(
-			brokenLinkAssetsPage.getTotalCount());
+			similarityClustersPage.getTotalCount());
 
-		BrokenLinkAsset brokenLinkAsset1 =
-			testGetBrokenLinkAssetsPage_addBrokenLinkAsset(
-				randomBrokenLinkAsset());
+		SimilarityCluster similarityCluster1 =
+			testGetSimilarityClustersPage_addSimilarityCluster(
+				randomSimilarityCluster());
 
-		BrokenLinkAsset brokenLinkAsset2 =
-			testGetBrokenLinkAssetsPage_addBrokenLinkAsset(
-				randomBrokenLinkAsset());
+		SimilarityCluster similarityCluster2 =
+			testGetSimilarityClustersPage_addSimilarityCluster(
+				randomSimilarityCluster());
 
-		BrokenLinkAsset brokenLinkAsset3 =
-			testGetBrokenLinkAssetsPage_addBrokenLinkAsset(
-				randomBrokenLinkAsset());
+		SimilarityCluster similarityCluster3 =
+			testGetSimilarityClustersPage_addSimilarityCluster(
+				randomSimilarityCluster());
 
 		// See com.liferay.portal.vulcan.internal.configuration.HeadlessAPICompanyConfiguration#pageSizeLimit
 
 		int pageSizeLimit = 500;
 
 		if (totalCount >= (pageSizeLimit - 2)) {
-			Page<BrokenLinkAsset> page1 =
-				brokenLinkAssetResource.getBrokenLinkAssetsPage(
-					null, null,
+			Page<SimilarityCluster> page1 =
+				similarityClusterResource.getSimilarityClustersPage(
+					null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 1.0) / pageSizeLimit),
-						pageSizeLimit),
-					null);
+						pageSizeLimit));
 
 			Assert.assertEquals(totalCount + 3, page1.getTotalCount());
 
 			assertContains(
-				brokenLinkAsset1, (List<BrokenLinkAsset>)page1.getItems());
+				similarityCluster1, (List<SimilarityCluster>)page1.getItems());
 
-			Page<BrokenLinkAsset> page2 =
-				brokenLinkAssetResource.getBrokenLinkAssetsPage(
-					null, null,
+			Page<SimilarityCluster> page2 =
+				similarityClusterResource.getSimilarityClustersPage(
+					null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 2.0) / pageSizeLimit),
-						pageSizeLimit),
-					null);
+						pageSizeLimit));
 
 			assertContains(
-				brokenLinkAsset2, (List<BrokenLinkAsset>)page2.getItems());
+				similarityCluster2, (List<SimilarityCluster>)page2.getItems());
 
-			Page<BrokenLinkAsset> page3 =
-				brokenLinkAssetResource.getBrokenLinkAssetsPage(
-					null, null,
+			Page<SimilarityCluster> page3 =
+				similarityClusterResource.getSimilarityClustersPage(
+					null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 3.0) / pageSizeLimit),
-						pageSizeLimit),
-					null);
+						pageSizeLimit));
 
 			assertContains(
-				brokenLinkAsset3, (List<BrokenLinkAsset>)page3.getItems());
+				similarityCluster3, (List<SimilarityCluster>)page3.getItems());
 		}
 		else {
-			Page<BrokenLinkAsset> page1 =
-				brokenLinkAssetResource.getBrokenLinkAssetsPage(
-					null, null, Pagination.of(1, totalCount + 2), null);
+			Page<SimilarityCluster> page1 =
+				similarityClusterResource.getSimilarityClustersPage(
+					null, Pagination.of(1, totalCount + 2));
 
-			List<BrokenLinkAsset> brokenLinkAssets1 =
-				(List<BrokenLinkAsset>)page1.getItems();
+			List<SimilarityCluster> similarityClusters1 =
+				(List<SimilarityCluster>)page1.getItems();
 
 			Assert.assertEquals(
-				brokenLinkAssets1.toString(), totalCount + 2,
-				brokenLinkAssets1.size());
+				similarityClusters1.toString(), totalCount + 2,
+				similarityClusters1.size());
 
-			Page<BrokenLinkAsset> page2 =
-				brokenLinkAssetResource.getBrokenLinkAssetsPage(
-					null, null, Pagination.of(2, totalCount + 2), null);
+			Page<SimilarityCluster> page2 =
+				similarityClusterResource.getSimilarityClustersPage(
+					null, Pagination.of(2, totalCount + 2));
 
 			Assert.assertEquals(totalCount + 3, page2.getTotalCount());
 
-			List<BrokenLinkAsset> brokenLinkAssets2 =
-				(List<BrokenLinkAsset>)page2.getItems();
+			List<SimilarityCluster> similarityClusters2 =
+				(List<SimilarityCluster>)page2.getItems();
 
 			Assert.assertEquals(
-				brokenLinkAssets2.toString(), 1, brokenLinkAssets2.size());
+				similarityClusters2.toString(), 1, similarityClusters2.size());
 
-			Page<BrokenLinkAsset> page3 =
-				brokenLinkAssetResource.getBrokenLinkAssetsPage(
-					null, null, Pagination.of(1, (int)totalCount + 3), null);
+			Page<SimilarityCluster> page3 =
+				similarityClusterResource.getSimilarityClustersPage(
+					null, Pagination.of(1, (int)totalCount + 3));
 
 			assertContains(
-				brokenLinkAsset1, (List<BrokenLinkAsset>)page3.getItems());
+				similarityCluster1, (List<SimilarityCluster>)page3.getItems());
 			assertContains(
-				brokenLinkAsset2, (List<BrokenLinkAsset>)page3.getItems());
+				similarityCluster2, (List<SimilarityCluster>)page3.getItems());
 			assertContains(
-				brokenLinkAsset3, (List<BrokenLinkAsset>)page3.getItems());
+				similarityCluster3, (List<SimilarityCluster>)page3.getItems());
 		}
 	}
 
-	@Test
-	public void testGetBrokenLinkAssetsPageWithSortDateTime() throws Exception {
-		testGetBrokenLinkAssetsPageWithSort(
-			EntityField.Type.DATE_TIME,
-			(entityField, brokenLinkAsset1, brokenLinkAsset2) -> {
-				BeanTestUtil.setProperty(
-					brokenLinkAsset1, entityField.getName(),
-					new Date(System.currentTimeMillis() - (2 * Time.MINUTE)));
-			});
-	}
-
-	@Test
-	public void testGetBrokenLinkAssetsPageWithSortDouble() throws Exception {
-		testGetBrokenLinkAssetsPageWithSort(
-			EntityField.Type.DOUBLE,
-			(entityField, brokenLinkAsset1, brokenLinkAsset2) -> {
-				BeanTestUtil.setProperty(
-					brokenLinkAsset1, entityField.getName(), 0.1);
-				BeanTestUtil.setProperty(
-					brokenLinkAsset2, entityField.getName(), 0.5);
-			});
-	}
-
-	@Test
-	public void testGetBrokenLinkAssetsPageWithSortInteger() throws Exception {
-		testGetBrokenLinkAssetsPageWithSort(
-			EntityField.Type.INTEGER,
-			(entityField, brokenLinkAsset1, brokenLinkAsset2) -> {
-				BeanTestUtil.setProperty(
-					brokenLinkAsset1, entityField.getName(), 0);
-				BeanTestUtil.setProperty(
-					brokenLinkAsset2, entityField.getName(), 1);
-			});
-	}
-
-	@Test
-	public void testGetBrokenLinkAssetsPageWithSortString() throws Exception {
-		testGetBrokenLinkAssetsPageWithSort(
-			EntityField.Type.STRING,
-			(entityField, brokenLinkAsset1, brokenLinkAsset2) -> {
-				Class<?> clazz = brokenLinkAsset1.getClass();
-
-				String entityFieldName = entityField.getName();
-
-				Method method = clazz.getMethod(
-					"get" + StringUtil.upperCaseFirstLetter(entityFieldName));
-
-				Class<?> returnType = method.getReturnType();
-
-				if (returnType.isAssignableFrom(Map.class)) {
-					BeanTestUtil.setProperty(
-						brokenLinkAsset1, entityFieldName,
-						Collections.singletonMap("Aaa", "Aaa"));
-					BeanTestUtil.setProperty(
-						brokenLinkAsset2, entityFieldName,
-						Collections.singletonMap("Bbb", "Bbb"));
-				}
-				else if (entityFieldName.contains("email")) {
-					BeanTestUtil.setProperty(
-						brokenLinkAsset1, entityFieldName,
-						"aaa" +
-							StringUtil.toLowerCase(
-								RandomTestUtil.randomString()) +
-									"@liferay.com");
-					BeanTestUtil.setProperty(
-						brokenLinkAsset2, entityFieldName,
-						"bbb" +
-							StringUtil.toLowerCase(
-								RandomTestUtil.randomString()) +
-									"@liferay.com");
-				}
-				else {
-					BeanTestUtil.setProperty(
-						brokenLinkAsset1, entityFieldName,
-						"aaa" +
-							StringUtil.toLowerCase(
-								RandomTestUtil.randomString()));
-					BeanTestUtil.setProperty(
-						brokenLinkAsset2, entityFieldName,
-						"bbb" +
-							StringUtil.toLowerCase(
-								RandomTestUtil.randomString()));
-				}
-			});
-	}
-
-	protected void testGetBrokenLinkAssetsPageWithSort(
-			EntityField.Type type,
-			UnsafeTriConsumer
-				<EntityField, BrokenLinkAsset, BrokenLinkAsset, Exception>
-					unsafeTriConsumer)
-		throws Exception {
-
-		List<EntityField> entityFields = getEntityFields(type);
-
-		if (entityFields.isEmpty()) {
-			return;
-		}
-
-		BrokenLinkAsset brokenLinkAsset1 = randomBrokenLinkAsset();
-		BrokenLinkAsset brokenLinkAsset2 = randomBrokenLinkAsset();
-
-		for (EntityField entityField : entityFields) {
-			unsafeTriConsumer.accept(
-				entityField, brokenLinkAsset1, brokenLinkAsset2);
-		}
-
-		brokenLinkAsset1 = testGetBrokenLinkAssetsPage_addBrokenLinkAsset(
-			brokenLinkAsset1);
-
-		brokenLinkAsset2 = testGetBrokenLinkAssetsPage_addBrokenLinkAsset(
-			brokenLinkAsset2);
-
-		Page<BrokenLinkAsset> page =
-			brokenLinkAssetResource.getBrokenLinkAssetsPage(
-				null, null, null, null);
-
-		for (EntityField entityField : entityFields) {
-			Page<BrokenLinkAsset> ascPage =
-				brokenLinkAssetResource.getBrokenLinkAssetsPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
-					entityField.getName() + ":asc");
-
-			assertContains(
-				brokenLinkAsset1, (List<BrokenLinkAsset>)ascPage.getItems());
-			assertContains(
-				brokenLinkAsset2, (List<BrokenLinkAsset>)ascPage.getItems());
-
-			Page<BrokenLinkAsset> descPage =
-				brokenLinkAssetResource.getBrokenLinkAssetsPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
-					entityField.getName() + ":desc");
-
-			assertContains(
-				brokenLinkAsset2, (List<BrokenLinkAsset>)descPage.getItems());
-			assertContains(
-				brokenLinkAsset1, (List<BrokenLinkAsset>)descPage.getItems());
-		}
-	}
-
-	protected BrokenLinkAsset testGetBrokenLinkAssetsPage_addBrokenLinkAsset(
-			BrokenLinkAsset brokenLinkAsset)
+	protected SimilarityCluster
+			testGetSimilarityClustersPage_addSimilarityCluster(
+				SimilarityCluster similarityCluster)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -476,13 +321,13 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	}
 
 	protected void assertContains(
-		BrokenLinkAsset brokenLinkAsset,
-		List<BrokenLinkAsset> brokenLinkAssets) {
+		SimilarityCluster similarityCluster,
+		List<SimilarityCluster> similarityClusters) {
 
 		boolean contains = false;
 
-		for (BrokenLinkAsset item : brokenLinkAssets) {
-			if (equals(brokenLinkAsset, item)) {
+		for (SimilarityCluster item : similarityClusters) {
+			if (equals(similarityCluster, item)) {
 				contains = true;
 
 				break;
@@ -490,7 +335,7 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 		}
 
 		Assert.assertTrue(
-			brokenLinkAssets + " does not contain " + brokenLinkAsset,
+			similarityClusters + " does not contain " + similarityCluster,
 			contains);
 	}
 
@@ -503,38 +348,41 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	}
 
 	protected void assertEquals(
-		BrokenLinkAsset brokenLinkAsset1, BrokenLinkAsset brokenLinkAsset2) {
+		SimilarityCluster similarityCluster1,
+		SimilarityCluster similarityCluster2) {
 
 		Assert.assertTrue(
-			brokenLinkAsset1 + " does not equal " + brokenLinkAsset2,
-			equals(brokenLinkAsset1, brokenLinkAsset2));
+			similarityCluster1 + " does not equal " + similarityCluster2,
+			equals(similarityCluster1, similarityCluster2));
 	}
 
 	protected void assertEquals(
-		List<BrokenLinkAsset> brokenLinkAssets1,
-		List<BrokenLinkAsset> brokenLinkAssets2) {
+		List<SimilarityCluster> similarityClusters1,
+		List<SimilarityCluster> similarityClusters2) {
 
-		Assert.assertEquals(brokenLinkAssets1.size(), brokenLinkAssets2.size());
+		Assert.assertEquals(
+			similarityClusters1.size(), similarityClusters2.size());
 
-		for (int i = 0; i < brokenLinkAssets1.size(); i++) {
-			BrokenLinkAsset brokenLinkAsset1 = brokenLinkAssets1.get(i);
-			BrokenLinkAsset brokenLinkAsset2 = brokenLinkAssets2.get(i);
+		for (int i = 0; i < similarityClusters1.size(); i++) {
+			SimilarityCluster similarityCluster1 = similarityClusters1.get(i);
+			SimilarityCluster similarityCluster2 = similarityClusters2.get(i);
 
-			assertEquals(brokenLinkAsset1, brokenLinkAsset2);
+			assertEquals(similarityCluster1, similarityCluster2);
 		}
 	}
 
 	protected void assertEqualsIgnoringOrder(
-		List<BrokenLinkAsset> brokenLinkAssets1,
-		List<BrokenLinkAsset> brokenLinkAssets2) {
+		List<SimilarityCluster> similarityClusters1,
+		List<SimilarityCluster> similarityClusters2) {
 
-		Assert.assertEquals(brokenLinkAssets1.size(), brokenLinkAssets2.size());
+		Assert.assertEquals(
+			similarityClusters1.size(), similarityClusters2.size());
 
-		for (BrokenLinkAsset brokenLinkAsset1 : brokenLinkAssets1) {
+		for (SimilarityCluster similarityCluster1 : similarityClusters1) {
 			boolean contains = false;
 
-			for (BrokenLinkAsset brokenLinkAsset2 : brokenLinkAssets2) {
-				if (equals(brokenLinkAsset1, brokenLinkAsset2)) {
+			for (SimilarityCluster similarityCluster2 : similarityClusters2) {
+				if (equals(similarityCluster1, similarityCluster2)) {
 					contains = true;
 
 					break;
@@ -542,62 +390,31 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 			}
 
 			Assert.assertTrue(
-				brokenLinkAssets2 + " does not contain " + brokenLinkAsset1,
+				similarityClusters2 + " does not contain " + similarityCluster1,
 				contains);
 		}
 	}
 
-	protected void assertValid(BrokenLinkAsset brokenLinkAsset)
+	protected void assertValid(SimilarityCluster similarityCluster)
 		throws Exception {
 
 		boolean valid = true;
 
-		if (brokenLinkAsset.getId() == null) {
-			valid = false;
-		}
-
 		for (String additionalAssertFieldName :
 				getAdditionalAssertFieldNames()) {
 
-			if (Objects.equals("brokenLinkTitle", additionalAssertFieldName)) {
-				if (brokenLinkAsset.getBrokenLinkTitle() == null) {
-					valid = false;
-				}
-
-				continue;
-			}
-
-			if (Objects.equals("brokenLinksCount", additionalAssertFieldName)) {
-				if (brokenLinkAsset.getBrokenLinksCount() == null) {
-					valid = false;
-				}
-
-				continue;
-			}
-
-			if (Objects.equals("href", additionalAssertFieldName)) {
-				if (brokenLinkAsset.getHref() == null) {
-					valid = false;
-				}
-
-				continue;
-			}
-
 			if (Objects.equals(
-					"objectDefinitionExternalReferenceCode",
-					additionalAssertFieldName)) {
+					"similarityClusterAssets", additionalAssertFieldName)) {
 
-				if (brokenLinkAsset.
-						getObjectDefinitionExternalReferenceCode() == null) {
-
+				if (similarityCluster.getSimilarityClusterAssets() == null) {
 					valid = false;
 				}
 
 				continue;
 			}
 
-			if (Objects.equals("title", additionalAssertFieldName)) {
-				if (brokenLinkAsset.getTitle() == null) {
+			if (Objects.equals("size", additionalAssertFieldName)) {
+				if (similarityCluster.getSize() == null) {
 					valid = false;
 				}
 
@@ -612,20 +429,20 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 		Assert.assertTrue(valid);
 	}
 
-	protected void assertValid(Page<BrokenLinkAsset> page) {
+	protected void assertValid(Page<SimilarityCluster> page) {
 		assertValid(page, Collections.emptyMap());
 	}
 
 	protected void assertValid(
-		Page<BrokenLinkAsset> page,
+		Page<SimilarityCluster> page,
 		Map<String, Map<String, String>> expectedActions) {
 
 		boolean valid = false;
 
-		java.util.Collection<BrokenLinkAsset> brokenLinkAssets =
+		java.util.Collection<SimilarityCluster> similarityClusters =
 			page.getItems();
 
-		int size = brokenLinkAssets.size();
+		int size = similarityClusters.size();
 
 		if ((page.getLastPage() > 0) && (page.getPage() > 0) &&
 			(page.getPageSize() > 0) && (page.getTotalCount() > 0) &&
@@ -663,11 +480,10 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	protected List<GraphQLField> getGraphQLFields() throws Exception {
 		List<GraphQLField> graphQLFields = new ArrayList<>();
 
-		graphQLFields.add(new GraphQLField("id"));
-
 		for (java.lang.reflect.Field field :
 				getDeclaredFields(
-					com.liferay.headless.cms.dto.v1_0.BrokenLinkAsset.class)) {
+					com.liferay.headless.cms.dto.v1_0.SimilarityCluster.
+						class)) {
 
 			if (!ArrayUtil.contains(
 					getAdditionalAssertFieldNames(), field.getName())) {
@@ -716,67 +532,22 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	}
 
 	protected boolean equals(
-		BrokenLinkAsset brokenLinkAsset1, BrokenLinkAsset brokenLinkAsset2) {
+		SimilarityCluster similarityCluster1,
+		SimilarityCluster similarityCluster2) {
 
-		if (brokenLinkAsset1 == brokenLinkAsset2) {
+		if (similarityCluster1 == similarityCluster2) {
 			return true;
 		}
 
 		for (String additionalAssertFieldName :
 				getAdditionalAssertFieldNames()) {
 
-			if (Objects.equals("brokenLinkTitle", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-						brokenLinkAsset1.getBrokenLinkTitle(),
-						brokenLinkAsset2.getBrokenLinkTitle())) {
-
-					return false;
-				}
-
-				continue;
-			}
-
-			if (Objects.equals("brokenLinksCount", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-						brokenLinkAsset1.getBrokenLinksCount(),
-						brokenLinkAsset2.getBrokenLinksCount())) {
-
-					return false;
-				}
-
-				continue;
-			}
-
-			if (Objects.equals("href", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-						brokenLinkAsset1.getHref(),
-						brokenLinkAsset2.getHref())) {
-
-					return false;
-				}
-
-				continue;
-			}
-
-			if (Objects.equals("id", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-						brokenLinkAsset1.getId(), brokenLinkAsset2.getId())) {
-
-					return false;
-				}
-
-				continue;
-			}
-
 			if (Objects.equals(
-					"objectDefinitionExternalReferenceCode",
-					additionalAssertFieldName)) {
+					"similarityClusterAssets", additionalAssertFieldName)) {
 
 				if (!Objects.deepEquals(
-						brokenLinkAsset1.
-							getObjectDefinitionExternalReferenceCode(),
-						brokenLinkAsset2.
-							getObjectDefinitionExternalReferenceCode())) {
+						similarityCluster1.getSimilarityClusterAssets(),
+						similarityCluster2.getSimilarityClusterAssets())) {
 
 					return false;
 				}
@@ -784,10 +555,10 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 				continue;
 			}
 
-			if (Objects.equals("title", additionalAssertFieldName)) {
+			if (Objects.equals("size", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
-						brokenLinkAsset1.getTitle(),
-						brokenLinkAsset2.getTitle())) {
+						similarityCluster1.getSize(),
+						similarityCluster2.getSize())) {
 
 					return false;
 				}
@@ -851,13 +622,13 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	protected java.util.Collection<EntityField> getEntityFields()
 		throws Exception {
 
-		if (!(_brokenLinkAssetResource instanceof EntityModelResource)) {
+		if (!(_similarityClusterResource instanceof EntityModelResource)) {
 			throw new UnsupportedOperationException(
 				"Resource is not an instance of EntityModelResource");
 		}
 
 		EntityModelResource entityModelResource =
-			(EntityModelResource)_brokenLinkAssetResource;
+			(EntityModelResource)_similarityClusterResource;
 
 		EntityModel entityModel = entityModelResource.getEntityModel(
 			new MultivaluedHashMap());
@@ -891,7 +662,7 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 
 	protected String getFilterString(
 		EntityField entityField, String operator,
-		BrokenLinkAsset brokenLinkAsset) {
+		SimilarityCluster similarityCluster) {
 
 		StringBundler sb = new StringBundler();
 
@@ -903,197 +674,13 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 		sb.append(operator);
 		sb.append(" ");
 
-		if (entityFieldName.equals("brokenLinkTitle")) {
-			Object object = brokenLinkAsset.getBrokenLinkTitle();
-
-			String value = String.valueOf(object);
-
-			if (operator.equals("contains")) {
-				sb = new StringBundler();
-
-				sb.append("contains(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 2)) {
-					sb.append(value.substring(1, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else if (operator.equals("startswith")) {
-				sb = new StringBundler();
-
-				sb.append("startswith(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 1)) {
-					sb.append(value.substring(0, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else {
-				sb.append("'");
-				sb.append(value);
-				sb.append("'");
-			}
-
-			return sb.toString();
-		}
-
-		if (entityFieldName.equals("brokenLinksCount")) {
+		if (entityFieldName.equals("similarityClusterAssets")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
 		}
 
-		if (entityFieldName.equals("href")) {
-			Object object = brokenLinkAsset.getHref();
-
-			String value = String.valueOf(object);
-
-			if (operator.equals("contains")) {
-				sb = new StringBundler();
-
-				sb.append("contains(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 2)) {
-					sb.append(value.substring(1, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else if (operator.equals("startswith")) {
-				sb = new StringBundler();
-
-				sb.append("startswith(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 1)) {
-					sb.append(value.substring(0, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else {
-				sb.append("'");
-				sb.append(value);
-				sb.append("'");
-			}
-
-			return sb.toString();
-		}
-
-		if (entityFieldName.equals("id")) {
-			throw new IllegalArgumentException(
-				"Invalid entity field " + entityFieldName);
-		}
-
-		if (entityFieldName.equals("objectDefinitionExternalReferenceCode")) {
-			Object object =
-				brokenLinkAsset.getObjectDefinitionExternalReferenceCode();
-
-			String value = String.valueOf(object);
-
-			if (operator.equals("contains")) {
-				sb = new StringBundler();
-
-				sb.append("contains(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 2)) {
-					sb.append(value.substring(1, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else if (operator.equals("startswith")) {
-				sb = new StringBundler();
-
-				sb.append("startswith(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 1)) {
-					sb.append(value.substring(0, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else {
-				sb.append("'");
-				sb.append(value);
-				sb.append("'");
-			}
-
-			return sb.toString();
-		}
-
-		if (entityFieldName.equals("title")) {
-			Object object = brokenLinkAsset.getTitle();
-
-			String value = String.valueOf(object);
-
-			if (operator.equals("contains")) {
-				sb = new StringBundler();
-
-				sb.append("contains(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 2)) {
-					sb.append(value.substring(1, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else if (operator.equals("startswith")) {
-				sb = new StringBundler();
-
-				sb.append("startswith(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 1)) {
-					sb.append(value.substring(0, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else {
-				sb.append("'");
-				sb.append(value);
-				sb.append("'");
-			}
+		if (entityFieldName.equals("size")) {
+			sb.append(String.valueOf(similarityCluster.getSize()));
 
 			return sb.toString();
 		}
@@ -1142,35 +729,30 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 			invoke(queryGraphQLField.toString()));
 	}
 
-	protected BrokenLinkAsset randomBrokenLinkAsset() throws Exception {
-		return new BrokenLinkAsset() {
+	protected SimilarityCluster randomSimilarityCluster() throws Exception {
+		return new SimilarityCluster() {
 			{
-				brokenLinkTitle = StringUtil.toLowerCase(
-					RandomTestUtil.randomString());
-				brokenLinksCount = RandomTestUtil.randomLong();
-				href = StringUtil.toLowerCase(RandomTestUtil.randomString());
-				id = RandomTestUtil.randomLong();
-				objectDefinitionExternalReferenceCode = StringUtil.toLowerCase(
-					RandomTestUtil.randomString());
-				title = StringUtil.toLowerCase(RandomTestUtil.randomString());
+				size = RandomTestUtil.randomInt();
 			}
 		};
 	}
 
-	protected BrokenLinkAsset randomIrrelevantBrokenLinkAsset()
+	protected SimilarityCluster randomIrrelevantSimilarityCluster()
 		throws Exception {
 
-		BrokenLinkAsset randomIrrelevantBrokenLinkAsset =
-			randomBrokenLinkAsset();
+		SimilarityCluster randomIrrelevantSimilarityCluster =
+			randomSimilarityCluster();
 
-		return randomIrrelevantBrokenLinkAsset;
+		return randomIrrelevantSimilarityCluster;
 	}
 
-	protected BrokenLinkAsset randomPatchBrokenLinkAsset() throws Exception {
-		return randomBrokenLinkAsset();
+	protected SimilarityCluster randomPatchSimilarityCluster()
+		throws Exception {
+
+		return randomSimilarityCluster();
 	}
 
-	protected BrokenLinkAssetResource brokenLinkAssetResource;
+	protected SimilarityClusterResource similarityClusterResource;
 	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
 	protected com.liferay.portal.kernel.model.Company testCompany;
 	protected com.liferay.portal.kernel.model.Group testGroup;
@@ -1369,15 +951,15 @@ public abstract class BaseBrokenLinkAssetResourceTestCase {
 	}
 
 	private static final com.liferay.portal.kernel.log.Log _log =
-		LogFactoryUtil.getLog(BaseBrokenLinkAssetResourceTestCase.class);
+		LogFactoryUtil.getLog(BaseSimilarityClusterResourceTestCase.class);
 
 	private static Format _format;
 
 	private com.liferay.portal.kernel.model.User _testCompanyAdminUser;
 
 	@Inject
-	private com.liferay.headless.cms.resource.v1_0.BrokenLinkAssetResource
-		_brokenLinkAssetResource;
+	private com.liferay.headless.cms.resource.v1_0.SimilarityClusterResource
+		_similarityClusterResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:735118085
+// LIFERAY-REST-BUILDER-HASH:2033917045
