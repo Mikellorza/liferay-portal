@@ -7,7 +7,9 @@ package com.liferay.site.cms.site.initializer.internal.search.similarity;
 
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -24,6 +26,16 @@ public class TextSimilaritySignatureUtilTest {
 	@Rule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
+
+	@Test
+	public void testBlankTextYieldsNoSignature() {
+		Assert.assertEquals(
+			0, TextSimilaritySignatureUtil.getSignature(null).length);
+		Assert.assertEquals(
+			0, TextSimilaritySignatureUtil.getSignature("").length);
+		Assert.assertEquals(
+			0, TextSimilaritySignatureUtil.getSignature("   ").length);
+	}
 
 	@Test
 	public void testBlankTextYieldsNoSimilarityKeys() {
@@ -57,6 +69,54 @@ public class TextSimilaritySignatureUtilTest {
 	@Test
 	public void testNearDuplicateSharesMostSimilarityKeys() {
 		Assert.assertTrue(_sharedSimilarityKeyCount(_A, _A + " 2") >= 20);
+	}
+
+	@Test
+	public void testSignatureDeterministic() {
+		Assert.assertArrayEquals(
+			TextSimilaritySignatureUtil.getSignature(_A),
+			TextSimilaritySignatureUtil.getSignature(_A));
+	}
+
+	@Test
+	public void testSignatureHasFixedSize() {
+		Assert.assertEquals(
+			128, TextSimilaritySignatureUtil.getSignature(_A).length);
+	}
+
+	@Test
+	public void testSignatureNearDuplicateMatchesMorePositionsThanDistinct() {
+		Assert.assertTrue(
+			_matchingPositionCount(_A, _A + " 2") > _matchingPositionCount(
+				_A, _DISTINCT));
+	}
+
+	private int _matchingPositionCount(String text1, String text2) {
+		Map<String, String> valuesByPosition = new HashMap<>();
+
+		for (String token : TextSimilaritySignatureUtil.getSignature(text1)) {
+			int index = token.indexOf('_');
+
+			valuesByPosition.put(
+				token.substring(0, index), token.substring(index + 1));
+		}
+
+		int count = 0;
+
+		for (String token : TextSimilaritySignatureUtil.getSignature(text2)) {
+			int index = token.indexOf('_');
+
+			String signatureValue = valuesByPosition.get(
+				token.substring(0, index));
+
+			if ((signatureValue != null) &&
+				signatureValue.equals(token.substring(index + 1))) {
+
+				count++;
+			}
+		}
+
+		return count;
 	}
 
 	private int _sharedSimilarityKeyCount(String text1, String text2) {
