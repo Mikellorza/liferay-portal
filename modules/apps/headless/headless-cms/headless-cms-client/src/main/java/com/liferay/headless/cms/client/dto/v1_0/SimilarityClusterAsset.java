@@ -87,6 +87,48 @@ public class SimilarityClusterAsset implements Cloneable, Serializable {
 
 	protected Long id;
 
+	public String getItemURL() {
+		return itemURL;
+	}
+
+	public void setItemURL(String itemURL) {
+		this.itemURL = itemURL;
+	}
+
+	public void setItemURL(
+		UnsafeSupplier<String, Exception> itemURLUnsafeSupplier) {
+
+		try {
+			itemURL = itemURLUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String itemURL;
+
+	public Double getSimilarityPercent() {
+		return similarityPercent;
+	}
+
+	public void setSimilarityPercent(Double similarityPercent) {
+		this.similarityPercent = similarityPercent;
+	}
+
+	public void setSimilarityPercent(
+		UnsafeSupplier<Double, Exception> similarityPercentUnsafeSupplier) {
+
+		try {
+			similarityPercent = similarityPercentUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Double similarityPercent;
+
 	public String getTitle() {
 		return title;
 	}
@@ -107,6 +149,27 @@ public class SimilarityClusterAsset implements Cloneable, Serializable {
 	}
 
 	protected String title;
+
+	public Boolean getTopAsset() {
+		return topAsset;
+	}
+
+	public void setTopAsset(Boolean topAsset) {
+		this.topAsset = topAsset;
+	}
+
+	public void setTopAsset(
+		UnsafeSupplier<Boolean, Exception> topAssetUnsafeSupplier) {
+
+		try {
+			topAsset = topAssetUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Boolean topAsset;
 
 	@Override
 	public SimilarityClusterAsset clone() throws CloneNotSupportedException {
@@ -141,4 +204,4 @@ public class SimilarityClusterAsset implements Cloneable, Serializable {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-942605612
+// LIFERAY-REST-BUILDER-HASH:-1896341102

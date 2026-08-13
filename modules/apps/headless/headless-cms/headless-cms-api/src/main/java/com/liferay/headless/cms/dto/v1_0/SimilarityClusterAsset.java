@@ -182,6 +182,96 @@ public class SimilarityClusterAsset implements Serializable {
 	@JsonIgnore
 	private Supplier<Long> _idSupplier;
 
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "The URL of the asset's edit form. Absent when the user cannot update the asset."
+	)
+	public String getItemURL() {
+		if (_itemURLSupplier != null) {
+			itemURL = _itemURLSupplier.get();
+
+			_itemURLSupplier = null;
+		}
+
+		return itemURL;
+	}
+
+	public void setItemURL(String itemURL) {
+		this.itemURL = itemURL;
+
+		_itemURLSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setItemURL(
+		UnsafeSupplier<String, Exception> itemURLUnsafeSupplier) {
+
+		_itemURLSupplier = () -> {
+			try {
+				return itemURLUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "The URL of the asset's edit form. Absent when the user cannot update the asset."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected String itemURL;
+
+	@JsonIgnore
+	private Supplier<String> _itemURLSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "The estimated text similarity of the asset to the cluster's top asset, as a percentage from 0 to 100. Null for the top asset and for an asset with no indexed signature."
+	)
+	public Double getSimilarityPercent() {
+		if (_similarityPercentSupplier != null) {
+			similarityPercent = _similarityPercentSupplier.get();
+
+			_similarityPercentSupplier = null;
+		}
+
+		return similarityPercent;
+	}
+
+	public void setSimilarityPercent(Double similarityPercent) {
+		this.similarityPercent = similarityPercent;
+
+		_similarityPercentSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setSimilarityPercent(
+		UnsafeSupplier<Double, Exception> similarityPercentUnsafeSupplier) {
+
+		_similarityPercentSupplier = () -> {
+			try {
+				return similarityPercentUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "The estimated text similarity of the asset to the cluster's top asset, as a percentage from 0 to 100. Null for the top asset and for an asset with no indexed signature."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected Double similarityPercent;
+
+	@JsonIgnore
+	private Supplier<Double> _similarityPercentSupplier;
+
 	@io.swagger.v3.oas.annotations.media.Schema
 	public String getTitle() {
 		if (_titleSupplier != null) {
@@ -222,6 +312,51 @@ public class SimilarityClusterAsset implements Serializable {
 
 	@JsonIgnore
 	private Supplier<String> _titleSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "Whether the asset is the one the rest of the cluster is compared against."
+	)
+	public Boolean getTopAsset() {
+		if (_topAssetSupplier != null) {
+			topAsset = _topAssetSupplier.get();
+
+			_topAssetSupplier = null;
+		}
+
+		return topAsset;
+	}
+
+	public void setTopAsset(Boolean topAsset) {
+		this.topAsset = topAsset;
+
+		_topAssetSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setTopAsset(
+		UnsafeSupplier<Boolean, Exception> topAssetUnsafeSupplier) {
+
+		_topAssetSupplier = () -> {
+			try {
+				return topAssetUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "Whether the asset is the one the rest of the cluster is compared against."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected Boolean topAsset;
+
+	@JsonIgnore
+	private Supplier<Boolean> _topAssetSupplier;
 
 	@Override
 	public boolean equals(Object object) {
@@ -298,6 +433,34 @@ public class SimilarityClusterAsset implements Serializable {
 			sb.append(id);
 		}
 
+		String itemURL = getItemURL();
+
+		if (itemURL != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"itemURL\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(itemURL));
+
+			sb.append("\"");
+		}
+
+		Double similarityPercent = getSimilarityPercent();
+
+		if (similarityPercent != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"similarityPercent\": ");
+
+			sb.append(similarityPercent);
+		}
+
 		String title = getTitle();
 
 		if (title != null) {
@@ -312,6 +475,18 @@ public class SimilarityClusterAsset implements Serializable {
 			sb.append(_escape(title));
 
 			sb.append("\"");
+		}
+
+		Boolean topAsset = getTopAsset();
+
+		if (topAsset != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"topAsset\": ");
+
+			sb.append(topAsset);
 		}
 
 		sb.append("}");
@@ -415,4 +590,4 @@ public class SimilarityClusterAsset implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-342421532
+// LIFERAY-REST-BUILDER-HASH:-1041280043

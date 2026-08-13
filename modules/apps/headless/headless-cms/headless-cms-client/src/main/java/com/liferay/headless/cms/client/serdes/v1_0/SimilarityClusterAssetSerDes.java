@@ -92,6 +92,30 @@ public class SimilarityClusterAssetSerDes {
 			sb.append(similarityClusterAsset.getId());
 		}
 
+		if (similarityClusterAsset.getItemURL() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"itemURL\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(similarityClusterAsset.getItemURL()));
+
+			sb.append("\"");
+		}
+
+		if (similarityClusterAsset.getSimilarityPercent() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"similarityPercent\": ");
+
+			sb.append(similarityClusterAsset.getSimilarityPercent());
+		}
+
 		if (similarityClusterAsset.getTitle() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -104,6 +128,16 @@ public class SimilarityClusterAssetSerDes {
 			sb.append(_escape(similarityClusterAsset.getTitle()));
 
 			sb.append("\"");
+		}
+
+		if (similarityClusterAsset.getTopAsset() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"topAsset\": ");
+
+			sb.append(similarityClusterAsset.getTopAsset());
 		}
 
 		sb.append("}");
@@ -156,11 +190,37 @@ public class SimilarityClusterAssetSerDes {
 			map.put("id", String.valueOf(similarityClusterAsset.getId()));
 		}
 
+		if (similarityClusterAsset.getItemURL() == null) {
+			map.put("itemURL", null);
+		}
+		else {
+			map.put(
+				"itemURL", String.valueOf(similarityClusterAsset.getItemURL()));
+		}
+
+		if (similarityClusterAsset.getSimilarityPercent() == null) {
+			map.put("similarityPercent", null);
+		}
+		else {
+			map.put(
+				"similarityPercent",
+				String.valueOf(similarityClusterAsset.getSimilarityPercent()));
+		}
+
 		if (similarityClusterAsset.getTitle() == null) {
 			map.put("title", null);
 		}
 		else {
 			map.put("title", String.valueOf(similarityClusterAsset.getTitle()));
+		}
+
+		if (similarityClusterAsset.getTopAsset() == null) {
+			map.put("topAsset", null);
+		}
+		else {
+			map.put(
+				"topAsset",
+				String.valueOf(similarityClusterAsset.getTopAsset()));
 		}
 
 		return map;
@@ -190,7 +250,16 @@ public class SimilarityClusterAssetSerDes {
 			else if (Objects.equals(jsonParserFieldName, "id")) {
 				return false;
 			}
+			else if (Objects.equals(jsonParserFieldName, "itemURL")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "similarityPercent")) {
+				return false;
+			}
 			else if (Objects.equals(jsonParserFieldName, "title")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "topAsset")) {
 				return false;
 			}
 
@@ -220,10 +289,28 @@ public class SimilarityClusterAssetSerDes {
 						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
+			else if (Objects.equals(jsonParserFieldName, "itemURL")) {
+				if (jsonParserFieldValue != null) {
+					similarityClusterAsset.setItemURL(
+						(String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "similarityPercent")) {
+				if (jsonParserFieldValue != null) {
+					similarityClusterAsset.setSimilarityPercent(
+						Double.valueOf((String)jsonParserFieldValue));
+				}
+			}
 			else if (Objects.equals(jsonParserFieldName, "title")) {
 				if (jsonParserFieldValue != null) {
 					similarityClusterAsset.setTitle(
 						(String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "topAsset")) {
+				if (jsonParserFieldValue != null) {
+					similarityClusterAsset.setTopAsset(
+						(Boolean)jsonParserFieldValue);
 				}
 			}
 		}
@@ -307,4 +394,4 @@ public class SimilarityClusterAssetSerDes {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-719273329
+// LIFERAY-REST-BUILDER-HASH:-656064115
