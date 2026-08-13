@@ -19,6 +19,7 @@ import com.liferay.headless.cms.client.pagination.Page;
 import com.liferay.headless.cms.client.pagination.Pagination;
 import com.liferay.headless.cms.client.resource.v1_0.SimilarityClusterResource;
 import com.liferay.headless.cms.client.serdes.v1_0.SimilarityClusterSerDes;
+import com.liferay.petra.function.UnsafeTriConsumer;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
@@ -38,6 +39,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.test.rule.Inject;
@@ -188,7 +190,8 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 	public void testGetSimilarityClustersPage() throws Exception {
 		Page<SimilarityCluster> page =
 			similarityClusterResource.getSimilarityClustersPage(
-				null, Pagination.of(1, 10));
+				null, RandomTestUtil.randomString(), null, Pagination.of(1, 10),
+				null);
 
 		long totalCount = page.getTotalCount();
 
@@ -201,7 +204,7 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 				randomSimilarityCluster());
 
 		page = similarityClusterResource.getSimilarityClustersPage(
-			null, Pagination.of(1, (int)totalCount + 2));
+			null, null, null, Pagination.of(1, (int)totalCount + 2), null);
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
@@ -224,7 +227,8 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 	@Test
 	public void testGetSimilarityClustersPageWithPagination() throws Exception {
 		Page<SimilarityCluster> similarityClustersPage =
-			similarityClusterResource.getSimilarityClustersPage(null, null);
+			similarityClusterResource.getSimilarityClustersPage(
+				null, null, null, null, null);
 
 		int totalCount = GetterUtil.getInteger(
 			similarityClustersPage.getTotalCount());
@@ -248,10 +252,11 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 		if (totalCount >= (pageSizeLimit - 2)) {
 			Page<SimilarityCluster> page1 =
 				similarityClusterResource.getSimilarityClustersPage(
-					null,
+					null, null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 1.0) / pageSizeLimit),
-						pageSizeLimit));
+						pageSizeLimit),
+					null);
 
 			Assert.assertEquals(totalCount + 3, page1.getTotalCount());
 
@@ -260,20 +265,22 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 
 			Page<SimilarityCluster> page2 =
 				similarityClusterResource.getSimilarityClustersPage(
-					null,
+					null, null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 2.0) / pageSizeLimit),
-						pageSizeLimit));
+						pageSizeLimit),
+					null);
 
 			assertContains(
 				similarityCluster2, (List<SimilarityCluster>)page2.getItems());
 
 			Page<SimilarityCluster> page3 =
 				similarityClusterResource.getSimilarityClustersPage(
-					null,
+					null, null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 3.0) / pageSizeLimit),
-						pageSizeLimit));
+						pageSizeLimit),
+					null);
 
 			assertContains(
 				similarityCluster3, (List<SimilarityCluster>)page3.getItems());
@@ -281,7 +288,7 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 		else {
 			Page<SimilarityCluster> page1 =
 				similarityClusterResource.getSimilarityClustersPage(
-					null, Pagination.of(1, totalCount + 2));
+					null, null, null, Pagination.of(1, totalCount + 2), null);
 
 			List<SimilarityCluster> similarityClusters1 =
 				(List<SimilarityCluster>)page1.getItems();
@@ -292,7 +299,7 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 
 			Page<SimilarityCluster> page2 =
 				similarityClusterResource.getSimilarityClustersPage(
-					null, Pagination.of(2, totalCount + 2));
+					null, null, null, Pagination.of(2, totalCount + 2), null);
 
 			Assert.assertEquals(totalCount + 3, page2.getTotalCount());
 
@@ -304,7 +311,8 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 
 			Page<SimilarityCluster> page3 =
 				similarityClusterResource.getSimilarityClustersPage(
-					null, Pagination.of(1, (int)totalCount + 3));
+					null, null, null, Pagination.of(1, (int)totalCount + 3),
+					null);
 
 			assertContains(
 				similarityCluster1, (List<SimilarityCluster>)page3.getItems());
@@ -312,6 +320,156 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 				similarityCluster2, (List<SimilarityCluster>)page3.getItems());
 			assertContains(
 				similarityCluster3, (List<SimilarityCluster>)page3.getItems());
+		}
+	}
+
+	@Test
+	public void testGetSimilarityClustersPageWithSortDateTime()
+		throws Exception {
+
+		testGetSimilarityClustersPageWithSort(
+			EntityField.Type.DATE_TIME,
+			(entityField, similarityCluster1, similarityCluster2) -> {
+				BeanTestUtil.setProperty(
+					similarityCluster1, entityField.getName(),
+					new Date(System.currentTimeMillis() - (2 * Time.MINUTE)));
+			});
+	}
+
+	@Test
+	public void testGetSimilarityClustersPageWithSortDouble() throws Exception {
+		testGetSimilarityClustersPageWithSort(
+			EntityField.Type.DOUBLE,
+			(entityField, similarityCluster1, similarityCluster2) -> {
+				BeanTestUtil.setProperty(
+					similarityCluster1, entityField.getName(), 0.1);
+				BeanTestUtil.setProperty(
+					similarityCluster2, entityField.getName(), 0.5);
+			});
+	}
+
+	@Test
+	public void testGetSimilarityClustersPageWithSortInteger()
+		throws Exception {
+
+		testGetSimilarityClustersPageWithSort(
+			EntityField.Type.INTEGER,
+			(entityField, similarityCluster1, similarityCluster2) -> {
+				BeanTestUtil.setProperty(
+					similarityCluster1, entityField.getName(), 0);
+				BeanTestUtil.setProperty(
+					similarityCluster2, entityField.getName(), 1);
+			});
+	}
+
+	@Test
+	public void testGetSimilarityClustersPageWithSortString() throws Exception {
+		testGetSimilarityClustersPageWithSort(
+			EntityField.Type.STRING,
+			(entityField, similarityCluster1, similarityCluster2) -> {
+				Class<?> clazz = similarityCluster1.getClass();
+
+				String entityFieldName = entityField.getName();
+
+				Method method = clazz.getMethod(
+					"get" + StringUtil.upperCaseFirstLetter(entityFieldName));
+
+				Class<?> returnType = method.getReturnType();
+
+				if (returnType.isAssignableFrom(Map.class)) {
+					BeanTestUtil.setProperty(
+						similarityCluster1, entityFieldName,
+						Collections.singletonMap("Aaa", "Aaa"));
+					BeanTestUtil.setProperty(
+						similarityCluster2, entityFieldName,
+						Collections.singletonMap("Bbb", "Bbb"));
+				}
+				else if (entityFieldName.contains("email")) {
+					BeanTestUtil.setProperty(
+						similarityCluster1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+					BeanTestUtil.setProperty(
+						similarityCluster2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+				}
+				else {
+					BeanTestUtil.setProperty(
+						similarityCluster1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+					BeanTestUtil.setProperty(
+						similarityCluster2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+				}
+			});
+	}
+
+	protected void testGetSimilarityClustersPageWithSort(
+			EntityField.Type type,
+			UnsafeTriConsumer
+				<EntityField, SimilarityCluster, SimilarityCluster, Exception>
+					unsafeTriConsumer)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		SimilarityCluster similarityCluster1 = randomSimilarityCluster();
+		SimilarityCluster similarityCluster2 = randomSimilarityCluster();
+
+		for (EntityField entityField : entityFields) {
+			unsafeTriConsumer.accept(
+				entityField, similarityCluster1, similarityCluster2);
+		}
+
+		similarityCluster1 = testGetSimilarityClustersPage_addSimilarityCluster(
+			similarityCluster1);
+
+		similarityCluster2 = testGetSimilarityClustersPage_addSimilarityCluster(
+			similarityCluster2);
+
+		Page<SimilarityCluster> page =
+			similarityClusterResource.getSimilarityClustersPage(
+				null, null, null, null, null);
+
+		for (EntityField entityField : entityFields) {
+			Page<SimilarityCluster> ascPage =
+				similarityClusterResource.getSimilarityClustersPage(
+					null, null, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":asc");
+
+			assertContains(
+				similarityCluster1,
+				(List<SimilarityCluster>)ascPage.getItems());
+			assertContains(
+				similarityCluster2,
+				(List<SimilarityCluster>)ascPage.getItems());
+
+			Page<SimilarityCluster> descPage =
+				similarityClusterResource.getSimilarityClustersPage(
+					null, null, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":desc");
+
+			assertContains(
+				similarityCluster2,
+				(List<SimilarityCluster>)descPage.getItems());
+			assertContains(
+				similarityCluster1,
+				(List<SimilarityCluster>)descPage.getItems());
 		}
 	}
 
@@ -1032,4 +1190,4 @@ public abstract class BaseSimilarityClusterResourceTestCase {
 		_similarityClusterResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-272662105
+// LIFERAY-REST-BUILDER-HASH:1801557047

@@ -46,7 +46,9 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface SimilarityClusterResource {
 
 	public Page<SimilarityCluster> getSimilarityClustersPage(
-			Long assetLibraryId, Pagination pagination)
+			Long assetLibraryId, String dimension, String search,
+			Pagination pagination,
+			com.liferay.portal.kernel.search.Sort[] sorts)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
@@ -137,4 +139,4 @@ public interface SimilarityClusterResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:358965771
+// LIFERAY-REST-BUILDER-HASH:-1578172762

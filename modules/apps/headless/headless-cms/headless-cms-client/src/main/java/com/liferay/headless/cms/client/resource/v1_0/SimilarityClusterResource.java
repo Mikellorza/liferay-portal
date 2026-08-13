@@ -35,11 +35,13 @@ public interface SimilarityClusterResource {
 	}
 
 	public Page<SimilarityCluster> getSimilarityClustersPage(
-			Long assetLibraryId, Pagination pagination)
+			Long assetLibraryId, String dimension, String search,
+			Pagination pagination, String sortString)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse getSimilarityClustersPageHttpResponse(
-			Long assetLibraryId, Pagination pagination)
+			Long assetLibraryId, String dimension, String search,
+			Pagination pagination, String sortString)
 		throws Exception;
 
 	public static class Builder {
@@ -152,12 +154,13 @@ public interface SimilarityClusterResource {
 		implements SimilarityClusterResource {
 
 		public Page<SimilarityCluster> getSimilarityClustersPage(
-				Long assetLibraryId, Pagination pagination)
+				Long assetLibraryId, String dimension, String search,
+				Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				getSimilarityClustersPageHttpResponse(
-					assetLibraryId, pagination);
+					assetLibraryId, dimension, search, pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -219,7 +222,8 @@ public interface SimilarityClusterResource {
 		}
 
 		public HttpInvoker.HttpResponse getSimilarityClustersPageHttpResponse(
-				Long assetLibraryId, Pagination pagination)
+				Long assetLibraryId, String dimension, String search,
+				Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -248,11 +252,23 @@ public interface SimilarityClusterResource {
 					"assetLibraryId", String.valueOf(assetLibraryId));
 			}
 
+			if (dimension != null) {
+				httpInvoker.parameter("dimension", String.valueOf(dimension));
+			}
+
+			if (search != null) {
+				httpInvoker.parameter("search", String.valueOf(search));
+			}
+
 			if (pagination != null) {
 				httpInvoker.parameter(
 					"page", String.valueOf(pagination.getPage()));
 				httpInvoker.parameter(
 					"pageSize", String.valueOf(pagination.getPageSize()));
+			}
+
+			if (sortString != null) {
+				httpInvoker.parameter("sort", sortString);
 			}
 
 			httpInvoker.path(
@@ -280,4 +296,4 @@ public interface SimilarityClusterResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:1621237669
+// LIFERAY-REST-BUILDER-HASH:-177947173
