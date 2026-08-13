@@ -15,11 +15,13 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.odata.filter.ExpressionConvert;
 import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.ActionUtil;
 import com.liferay.portal.vulcan.util.UriInfoUtil;
 
@@ -28,6 +30,7 @@ import jakarta.annotation.Generated;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.util.Collection;
@@ -41,7 +44,7 @@ import java.util.Map;
 @Generated("")
 @jakarta.ws.rs.Path("/v1.0")
 public abstract class BaseSimilarityClusterResultResourceImpl
-	implements SimilarityClusterResultResource {
+	implements EntityModelResource, SimilarityClusterResultResource {
 
 	/**
 	 * Invoke this method with the command line:
@@ -49,7 +52,7 @@ public abstract class BaseSimilarityClusterResultResourceImpl
 	 * curl -X 'GET' 'http://localhost:8080/o/headless-cms/v1.0/similarity-clusters'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "List the clusters of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and clustering always spans the whole space, so a cluster's size never depends on the requested page. Omit assetLibraryId to span all accessible spaces."
+		description = "List the clusters of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and clustering always spans the whole space, so a cluster's name and size never depend on the search or the requested page. Results can be searched by asset title and sorted by title or dateModified. Omit assetLibraryId to span all accessible spaces."
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -58,12 +61,25 @@ public abstract class BaseSimilarityClusterResultResourceImpl
 				name = "assetLibraryId"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
+				description = "The dimension along which content is compared. Defaults to TEXT when omitted. Any other value is rejected.",
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "dimension"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "page"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "pageSize"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "search"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "sort"
 			)
 		}
 	)
@@ -82,10 +98,25 @@ public abstract class BaseSimilarityClusterResultResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.ws.rs.QueryParam("assetLibraryId")
 			Long assetLibraryId,
-			@jakarta.ws.rs.core.Context Pagination pagination)
+			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
+			@jakarta.ws.rs.QueryParam("dimension")
+			String dimension,
+			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
+			@jakarta.ws.rs.QueryParam("search")
+			String search,
+			@jakarta.ws.rs.core.Context Pagination pagination,
+			@jakarta.ws.rs.core.Context com.liferay.portal.kernel.search.Sort[]
+				sorts)
 		throws Exception {
 
 		return new SimilarityClusterResult();
+	}
+
+	@Override
+	public EntityModel getEntityModel(MultivaluedMap multivaluedMap)
+		throws Exception {
+
+		return null;
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {
@@ -533,4 +564,4 @@ public abstract class BaseSimilarityClusterResultResourceImpl
 		LogFactoryUtil.getLog(BaseSimilarityClusterResultResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:1531224140
+// LIFERAY-REST-BUILDER-HASH:-2134239807

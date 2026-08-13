@@ -113,15 +113,18 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {similarityCluster(assetLibraryId: ___, page: ___, pageSize: ___){similarityClusters, totalCount}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {similarityCluster(assetLibraryId: ___, dimension: ___, page: ___, pageSize: ___, search: ___, sorts: ___){similarityClusters, totalCount}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(
-		description = "List the clusters of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and clustering always spans the whole space, so a cluster's size never depends on the requested page. Omit assetLibraryId to span all accessible spaces."
+		description = "List the clusters of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and clustering always spans the whole space, so a cluster's name and size never depend on the search or the requested page. Results can be searched by asset title and sorted by title or dateModified. Omit assetLibraryId to span all accessible spaces."
 	)
 	public SimilarityClusterResult similarityCluster(
 			@GraphQLName("assetLibraryId") @NotEmpty String assetLibraryId,
+			@GraphQLName("dimension") String dimension,
+			@GraphQLName("search") String search,
 			@GraphQLName("pageSize") int pageSize,
-			@GraphQLName("page") int page)
+			@GraphQLName("page") int page,
+			@GraphQLName("sort") String sortsString)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
@@ -129,8 +132,10 @@ public class Query {
 			this::_populateResourceContext,
 			similarityClusterResultResource ->
 				similarityClusterResultResource.getSimilarityCluster(
-					Long.valueOf(assetLibraryId),
-					Pagination.of(page, pageSize)));
+					Long.valueOf(assetLibraryId), dimension, search,
+					Pagination.of(page, pageSize),
+					_sortsBiFunction.apply(
+						similarityClusterResultResource, sortsString)));
 	}
 
 	@GraphQLName("AssetStatisticsPage")
@@ -334,4 +339,4 @@ public class Query {
 	private com.liferay.portal.kernel.model.User _user;
 
 }
-// LIFERAY-REST-BUILDER-HASH:1562894836
+// LIFERAY-REST-BUILDER-HASH:138237499

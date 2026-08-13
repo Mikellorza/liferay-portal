@@ -99,7 +99,7 @@ public class SimilarityClusterResult implements Serializable {
 	private Supplier<SimilarityCluster[]> _similarityClustersSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The total number of clustered assets, independent of the requested page."
+		description = "The total number of clustered assets that match the search, independent of the requested page."
 	)
 	public Long getTotalCount() {
 		if (_totalCountSupplier != null) {
@@ -135,7 +135,7 @@ public class SimilarityClusterResult implements Serializable {
 	}
 
 	@GraphQLField(
-		description = "The total number of clustered assets, independent of the requested page."
+		description = "The total number of clustered assets that match the search, independent of the requested page."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	protected Long totalCount;
@@ -306,4 +306,4 @@ public class SimilarityClusterResult implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:994249262
+// LIFERAY-REST-BUILDER-HASH:-1172252284
