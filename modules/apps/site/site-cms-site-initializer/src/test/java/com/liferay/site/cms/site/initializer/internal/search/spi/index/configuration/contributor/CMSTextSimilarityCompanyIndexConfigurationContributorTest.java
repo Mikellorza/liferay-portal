@@ -30,6 +30,7 @@ public class CMSTextSimilarityCompanyIndexConfigurationContributorTest {
 			"dependencies/text-similarity-type-mappings.json");
 
 		Assert.assertTrue(mappingsJSON.contains("\"textSimilarityBands\""));
+		Assert.assertTrue(mappingsJSON.contains("\"textSimilaritySignature\""));
 		Assert.assertTrue(mappingsJSON.contains("\"keyword\""));
 	}
 
