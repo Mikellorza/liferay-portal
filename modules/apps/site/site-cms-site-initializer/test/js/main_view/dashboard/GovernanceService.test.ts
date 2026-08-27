@@ -67,7 +67,7 @@ describe('GovernanceService.getAssetStatistics', () => {
 		);
 	});
 
-	it('counts the assets in similarity clusters as the duplicated count', async () => {
+	it('counts the assets in similar asset sets as the duplicated count', async () => {
 		jest.spyOn(ApiHelper, 'get').mockImplementation(((url: string) => {
 			if (url.includes('similarity-clusters')) {
 				return Promise.resolve({data: {totalCount: 5}, error: null});
