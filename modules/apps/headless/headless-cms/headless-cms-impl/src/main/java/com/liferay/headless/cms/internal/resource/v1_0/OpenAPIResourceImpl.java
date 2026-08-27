@@ -93,9 +93,11 @@ public class OpenAPIResourceImpl {
 
 			add(BrokenLinkAssetResourceImpl.class);
 
+			add(SimilarAssetSetResourceImpl.class);
+
 			add(OpenAPIResourceImpl.class);
 		}
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:-529876021
+// LIFERAY-REST-BUILDER-HASH:-1311847398
