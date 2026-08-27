@@ -11,10 +11,12 @@ import com.liferay.headless.cms.internal.resource.v1_0.AssetPermissionActionReso
 import com.liferay.headless.cms.internal.resource.v1_0.AssetStatisticsResourceImpl;
 import com.liferay.headless.cms.internal.resource.v1_0.AssetUsageResourceImpl;
 import com.liferay.headless.cms.internal.resource.v1_0.BrokenLinkAssetResourceImpl;
+import com.liferay.headless.cms.internal.resource.v1_0.SimilarAssetGroupResourceImpl;
 import com.liferay.headless.cms.resource.v1_0.AssetPermissionActionResource;
 import com.liferay.headless.cms.resource.v1_0.AssetStatisticsResource;
 import com.liferay.headless.cms.resource.v1_0.AssetUsageResource;
 import com.liferay.headless.cms.resource.v1_0.BrokenLinkAssetResource;
+import com.liferay.headless.cms.resource.v1_0.SimilarAssetGroupResource;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.vulcan.graphql.servlet.ServletData;
 
@@ -49,6 +51,8 @@ public class ServletDataImpl implements ServletData {
 			_assetUsageResourceComponentServiceObjects);
 		Query.setBrokenLinkAssetResourceComponentServiceObjects(
 			_brokenLinkAssetResourceComponentServiceObjects);
+		Query.setSimilarAssetGroupResourceComponentServiceObjects(
+			_similarAssetGroupResourceComponentServiceObjects);
 	}
 
 	public String getApplicationName() {
@@ -106,6 +110,11 @@ public class ServletDataImpl implements ServletData {
 						new ObjectValuePair<>(
 							BrokenLinkAssetResourceImpl.class,
 							"getBrokenLinkAssetsPage"));
+					put(
+						"query#similarAssetGroups",
+						new ObjectValuePair<>(
+							SimilarAssetGroupResourceImpl.class,
+							"getSimilarAssetGroupsPage"));
 				}
 			};
 
@@ -125,5 +134,9 @@ public class ServletDataImpl implements ServletData {
 	private ComponentServiceObjects<BrokenLinkAssetResource>
 		_brokenLinkAssetResourceComponentServiceObjects;
 
+	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+	private ComponentServiceObjects<SimilarAssetGroupResource>
+		_similarAssetGroupResourceComponentServiceObjects;
+
 }
-// LIFERAY-REST-BUILDER-HASH:1309969940
+// LIFERAY-REST-BUILDER-HASH:-1292353404
