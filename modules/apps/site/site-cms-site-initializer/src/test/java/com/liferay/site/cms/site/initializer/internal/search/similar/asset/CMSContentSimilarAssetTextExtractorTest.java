@@ -13,13 +13,17 @@ import com.liferay.object.model.bag.ObjectFieldBag;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlParser;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.io.Serializable;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,42 +62,45 @@ public class CMSContentSimilarAssetTextExtractorTest {
 	}
 
 	@Test
-	public void testGetLanguageIds() throws Exception {
+	public void testGetElementsCutsTheTextIntoKeywordSequences()
+		throws Exception {
+
 		Assert.assertEquals(
-			Arrays.asList("en_US", "es_ES"),
-			ListUtil.fromCollection(
-				_cmsContentSimilarAssetTextExtractor.getLanguageIds(
-					_mockObjectEntry(
-						HashMapBuilder.<String, Serializable>put(
-							"i18nContent",
-							HashMapBuilder.put(
-								"en_US", "<p>Body</p>"
-							).put(
-								"es_ES", "<p>Cuerpo</p>"
-							).build()
-						).build()))));
+			new HashSet<>(
+				Arrays.asList(
+					"reset your password", "your password now",
+					"password now please")),
+			_cmsContentSimilarAssetTextExtractor.getElements(
+				_mockObjectEntry(
+					HashMapBuilder.<String, Serializable>put(
+						"i18nContent",
+						HashMapBuilder.put(
+							"en_US", "<p>Reset your password now, please.</p>"
+						).build()
+					).build()),
+				"en_US"));
 	}
 
 	@Test
-	public void testGetLanguageIdsWithTitleOnlyTranslation() throws Exception {
-		Assert.assertEquals(
-			Arrays.asList("en_US"),
-			ListUtil.fromCollection(
-				_cmsContentSimilarAssetTextExtractor.getLanguageIds(
-					_mockObjectEntry(
-						HashMapBuilder.<String, Serializable>put(
-							"i18nContent",
-							HashMapBuilder.put(
-								"en_US", "<p>Body</p>"
-							).build()
-						).put(
-							"i18nTitle",
-							HashMapBuilder.put(
-								"en_US", "Title"
-							).put(
-								"ja_JP", "タイトル"
-							).build()
-						).build()))));
+	public void testGetElementsIsDeterministicAcrossDefaultLocales()
+		throws Exception {
+
+		Locale defaultLocale = LocaleUtil.getDefault();
+
+		try {
+			LocaleUtil.setDefault("en", "US", null);
+
+			Set<String> elements = _getTurkishElements();
+
+			LocaleUtil.setDefault("tr", "TR", null);
+
+			Assert.assertEquals(elements, _getTurkishElements());
+		}
+		finally {
+			LocaleUtil.setDefault(
+				defaultLocale.getLanguage(), defaultLocale.getCountry(),
+				defaultLocale.getVariant());
+		}
 	}
 
 	@Test
@@ -151,6 +158,59 @@ public class CMSContentSimilarAssetTextExtractorTest {
 							"en_US", "Zeta Quarterly Report Alpha"
 						).build()
 					).build())));
+	}
+
+	@Test
+	public void testGetTokenLanguageIds() throws Exception {
+		Assert.assertEquals(
+			Arrays.asList("en_US", "es_ES"),
+			ListUtil.fromCollection(
+				_cmsContentSimilarAssetTextExtractor.getTokenLanguageIds(
+					_mockObjectEntry(
+						HashMapBuilder.<String, Serializable>put(
+							"i18nContent",
+							HashMapBuilder.put(
+								"en_US", "<p>Body</p>"
+							).put(
+								"es_ES", "<p>Cuerpo</p>"
+							).build()
+						).build()))));
+	}
+
+	@Test
+	public void testGetTokenLanguageIdsWithTitleOnlyTranslation()
+		throws Exception {
+
+		Assert.assertEquals(
+			Arrays.asList("en_US"),
+			ListUtil.fromCollection(
+				_cmsContentSimilarAssetTextExtractor.getTokenLanguageIds(
+					_mockObjectEntry(
+						HashMapBuilder.<String, Serializable>put(
+							"i18nContent",
+							HashMapBuilder.put(
+								"en_US", "<p>Body</p>"
+							).build()
+						).put(
+							"i18nTitle",
+							HashMapBuilder.put(
+								"en_US", "Title"
+							).put(
+								"ja_JP", "タイトル"
+							).build()
+						).build()))));
+	}
+
+	private Set<String> _getTurkishElements() throws Exception {
+		return _cmsContentSimilarAssetTextExtractor.getElements(
+			_mockObjectEntry(
+				HashMapBuilder.<String, Serializable>put(
+					"i18nContent",
+					HashMapBuilder.put(
+						"en_US", "<p>TITLE III instructions</p>"
+					).build()
+				).build()),
+			"en_US");
 	}
 
 	private ObjectEntry _mockObjectEntry(

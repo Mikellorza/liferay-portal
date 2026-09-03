@@ -1,6 +1,12 @@
 {
 	"properties": {
-		"similarAssets": {
+		"metadataSimilarAssets": {
+			"type": "keyword"
+		},
+		"textSimilarAssets": {
+			"type": "keyword"
+		},
+		"titleSimilarAssets": {
 			"type": "keyword"
 		}
 	}

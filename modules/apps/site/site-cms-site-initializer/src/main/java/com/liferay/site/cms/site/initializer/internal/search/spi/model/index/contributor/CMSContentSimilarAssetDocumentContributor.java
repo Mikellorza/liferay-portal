@@ -5,6 +5,8 @@
 
 package com.liferay.site.cms.site.initializer.internal.search.spi.model.index.contributor;
 
+import com.liferay.asset.kernel.service.AssetCategoryLocalService;
+import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.petra.function.transform.TransformUtil;
@@ -17,7 +19,10 @@ import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.DocumentContributor;
 import com.liferay.portal.kernel.util.HtmlParser;
+import com.liferay.site.cms.site.initializer.internal.search.similar.asset.CMSContentSimilarAssetExtractor;
+import com.liferay.site.cms.site.initializer.internal.search.similar.asset.CMSContentSimilarAssetMetadataExtractor;
 import com.liferay.site.cms.site.initializer.internal.search.similar.asset.CMSContentSimilarAssetTextExtractor;
+import com.liferay.site.cms.site.initializer.internal.search.similar.asset.CMSContentSimilarAssetTitleExtractor;
 import com.liferay.site.cms.site.initializer.internal.search.similar.asset.SimilarAssetUtil;
 
 import java.util.ArrayList;
@@ -58,27 +63,13 @@ public class CMSContentSimilarAssetDocumentContributor
 				return;
 			}
 
-			List<String> similarAssets = new ArrayList<>();
+			for (CMSContentSimilarAssetExtractor
+					cmsContentSimilarAssetExtractor :
+						_cmsContentSimilarAssetExtractors) {
 
-			for (String languageId :
-					_cmsContentSimilarAssetTextExtractor.getLanguageIds(
-						objectEntry)) {
-
-				similarAssets.addAll(
-					TransformUtil.transformToList(
-						SimilarAssetUtil.getSimilarAssets(
-							_cmsContentSimilarAssetTextExtractor.getText(
-								languageId, objectEntry)),
-						similarAsset -> StringBundler.concat(
-							languageId, StringPool.UNDERLINE, similarAsset)));
+				_contribute(
+					cmsContentSimilarAssetExtractor, document, objectEntry);
 			}
-
-			if (similarAssets.isEmpty()) {
-				return;
-			}
-
-			document.addKeyword(
-				"similarAssets", similarAssets.toArray(new String[0]));
 		}
 		catch (Exception exception) {
 			if (_log.isWarnEnabled()) {
@@ -92,15 +83,55 @@ public class CMSContentSimilarAssetDocumentContributor
 
 	@Activate
 	protected void activate() {
-		_cmsContentSimilarAssetTextExtractor =
-			new CMSContentSimilarAssetTextExtractor(_htmlParser);
+		_cmsContentSimilarAssetExtractors.add(
+			new CMSContentSimilarAssetMetadataExtractor(
+				_assetCategoryLocalService, _assetTagLocalService));
+		_cmsContentSimilarAssetExtractors.add(
+			new CMSContentSimilarAssetTextExtractor(_htmlParser));
+		_cmsContentSimilarAssetExtractors.add(
+			new CMSContentSimilarAssetTitleExtractor());
+	}
+
+	private void _contribute(
+			CMSContentSimilarAssetExtractor cmsContentSimilarAssetExtractor,
+			Document document, ObjectEntry objectEntry)
+		throws Exception {
+
+		List<String> similarAssets = new ArrayList<>();
+
+		for (String tokenLanguageId :
+				cmsContentSimilarAssetExtractor.getTokenLanguageIds(
+					objectEntry)) {
+
+			similarAssets.addAll(
+				TransformUtil.transformToList(
+					SimilarAssetUtil.getSimilarAssets(
+						cmsContentSimilarAssetExtractor.getElements(
+							objectEntry, tokenLanguageId)),
+					similarAsset -> StringBundler.concat(
+						tokenLanguageId, StringPool.UNDERLINE, similarAsset)));
+		}
+
+		if (similarAssets.isEmpty()) {
+			return;
+		}
+
+		document.addKeyword(
+			cmsContentSimilarAssetExtractor.getFieldName(),
+			similarAssets.toArray(new String[0]));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CMSContentSimilarAssetDocumentContributor.class);
 
-	private CMSContentSimilarAssetTextExtractor
-		_cmsContentSimilarAssetTextExtractor;
+	@Reference
+	private AssetCategoryLocalService _assetCategoryLocalService;
+
+	@Reference
+	private AssetTagLocalService _assetTagLocalService;
+
+	private final List<CMSContentSimilarAssetExtractor>
+		_cmsContentSimilarAssetExtractors = new ArrayList<>();
 
 	@Reference
 	private HtmlParser _htmlParser;
