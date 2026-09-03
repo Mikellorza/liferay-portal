@@ -189,7 +189,8 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 	public void testGetSimilarAssetSetsPage() throws Exception {
 		Page<SimilarAssetSet> page =
 			similarAssetSetResource.getSimilarAssetSetsPage(
-				null, null, Pagination.of(1, 10), null);
+				null, RandomTestUtil.randomString(), null, Pagination.of(1, 10),
+				null);
 
 		long totalCount = page.getTotalCount();
 
@@ -202,7 +203,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 				randomSimilarAssetSet());
 
 		page = similarAssetSetResource.getSimilarAssetSetsPage(
-			null, null, Pagination.of(1, (int)totalCount + 2), null);
+			null, null, null, Pagination.of(1, (int)totalCount + 2), null);
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
@@ -226,7 +227,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 	public void testGetSimilarAssetSetsPageWithPagination() throws Exception {
 		Page<SimilarAssetSet> similarAssetSetsPage =
 			similarAssetSetResource.getSimilarAssetSetsPage(
-				null, null, null, null);
+				null, null, null, null, null);
 
 		int totalCount = GetterUtil.getInteger(
 			similarAssetSetsPage.getTotalCount());
@@ -250,7 +251,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 		if (totalCount >= (pageSizeLimit - 2)) {
 			Page<SimilarAssetSet> page1 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, null,
+					null, null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 1.0) / pageSizeLimit),
 						pageSizeLimit),
@@ -263,7 +264,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 			Page<SimilarAssetSet> page2 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, null,
+					null, null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 2.0) / pageSizeLimit),
 						pageSizeLimit),
@@ -274,7 +275,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 			Page<SimilarAssetSet> page3 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, null,
+					null, null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 3.0) / pageSizeLimit),
 						pageSizeLimit),
@@ -286,7 +287,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 		else {
 			Page<SimilarAssetSet> page1 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, null, Pagination.of(1, totalCount + 2), null);
+					null, null, null, Pagination.of(1, totalCount + 2), null);
 
 			List<SimilarAssetSet> similarAssetSets1 =
 				(List<SimilarAssetSet>)page1.getItems();
@@ -297,7 +298,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 			Page<SimilarAssetSet> page2 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, null, Pagination.of(2, totalCount + 2), null);
+					null, null, null, Pagination.of(2, totalCount + 2), null);
 
 			Assert.assertEquals(totalCount + 3, page2.getTotalCount());
 
@@ -309,7 +310,8 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 			Page<SimilarAssetSet> page3 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, null, Pagination.of(1, (int)totalCount + 3), null);
+					null, null, null, Pagination.of(1, (int)totalCount + 3),
+					null);
 
 			assertContains(
 				similarAssetSet1, (List<SimilarAssetSet>)page3.getItems());
@@ -435,12 +437,13 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 		Page<SimilarAssetSet> page =
 			similarAssetSetResource.getSimilarAssetSetsPage(
-				null, null, null, null);
+				null, null, null, null, null);
 
 		for (EntityField entityField : entityFields) {
 			Page<SimilarAssetSet> ascPage =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
 					entityField.getName() + ":asc");
 
 			assertContains(
@@ -450,7 +453,8 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 			Page<SimilarAssetSet> descPage =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
 					entityField.getName() + ":desc");
 
 			assertContains(
@@ -1165,4 +1169,4 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 		_similarAssetSetResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1435908792
+// LIFERAY-REST-BUILDER-HASH:-1295419269

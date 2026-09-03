@@ -147,13 +147,14 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {similarAssetSets(assetLibraryId: ___, page: ___, pageSize: ___, search: ___, sorts: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {similarAssetSets(assetLibraryId: ___, dimension: ___, page: ___, pageSize: ___, search: ___, sorts: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(
-		description = "List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so neither its size nor its name ever depends on the requested page, on the search or on the sort. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size."
+		description = "List the sets of CMS content that are near duplicates of one another along the requested dimension, paginated by asset. TEXT and TITLE compare content within one language, so a translation is only ever compared against the same translation of other content, while METADATA compares the whole space at once, since a category is the same category in every translation. A set always spans the whole space, so neither its size nor its name ever depends on the requested page, on the search or on the sort. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size."
 	)
 	public SimilarAssetSetPage similarAssetSets(
 			@GraphQLName("assetLibraryId") @NotEmpty String assetLibraryId,
+			@GraphQLName("dimension") String dimension,
 			@GraphQLName("search") String search,
 			@GraphQLName("pageSize") int pageSize,
 			@GraphQLName("page") int page,
@@ -165,7 +166,7 @@ public class Query {
 			this::_populateResourceContext,
 			similarAssetSetResource -> new SimilarAssetSetPage(
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					Long.valueOf(assetLibraryId), search,
+					Long.valueOf(assetLibraryId), dimension, search,
 					Pagination.of(page, pageSize),
 					_sortsBiFunction.apply(
 						similarAssetSetResource, sortsString))));
@@ -425,4 +426,4 @@ public class Query {
 	private com.liferay.portal.kernel.model.User _user;
 
 }
-// LIFERAY-REST-BUILDER-HASH:1486693275
+// LIFERAY-REST-BUILDER-HASH:1657187623

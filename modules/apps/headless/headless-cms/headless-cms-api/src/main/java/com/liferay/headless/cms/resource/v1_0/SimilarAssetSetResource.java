@@ -46,7 +46,8 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface SimilarAssetSetResource {
 
 	public Page<SimilarAssetSet> getSimilarAssetSetsPage(
-			Long assetLibraryId, String search, Pagination pagination,
+			Long assetLibraryId, String dimension, String search,
+			Pagination pagination,
 			com.liferay.portal.kernel.search.Sort[] sorts)
 		throws Exception;
 
@@ -138,4 +139,4 @@ public interface SimilarAssetSetResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1350410839
+// LIFERAY-REST-BUILDER-HASH:-1028392352
