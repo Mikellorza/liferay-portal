@@ -10,6 +10,7 @@ import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.depot.service.DepotEntryService;
 import com.liferay.headless.cms.dto.v1_0.SimilarAsset;
 import com.liferay.headless.cms.dto.v1_0.SimilarAssetSet;
+import com.liferay.headless.cms.internal.util.SimilarAssetDimension;
 import com.liferay.headless.cms.internal.util.SimilarAssetSetTitleUtil;
 import com.liferay.headless.cms.resource.v1_0.SimilarAssetSetResource;
 import com.liferay.object.constants.ObjectFolderConstants;
@@ -91,8 +92,8 @@ public class SimilarAssetSetResourceImpl
 
 	@Override
 	public Page<SimilarAssetSet> getSimilarAssetSetsPage(
-			Long assetLibraryId, String search, Pagination pagination,
-			Sort[] sorts)
+			Long assetLibraryId, String dimension, String search,
+			Pagination pagination, Sort[] sorts)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled(
@@ -108,16 +109,20 @@ public class SimilarAssetSetResourceImpl
 			return Page.of(new ArrayList<>(), pagination, 0);
 		}
 
+		SimilarAssetDimension similarAssetDimension = SimilarAssetDimension.get(
+			dimension);
+
 		String[] entryClassNames = ArrayUtil.toStringArray(
 			ListUtil.toList(objectDefinitions, ObjectDefinition::getClassName));
 
 		List<String> sharedSimilarAssets = _searchSharedSimilarAssets(
-			entryClassNames, groupIds);
+			entryClassNames, groupIds, similarAssetDimension);
 
 		Map<Long, List<Long>> objectEntryIdsMap = _getObjectEntryIdsMap(
 			_searchSharedSimilarAssetDocuments(
-				entryClassNames, groupIds, sharedSimilarAssets),
-			new HashSet<>(sharedSimilarAssets));
+				entryClassNames, groupIds, sharedSimilarAssets,
+				similarAssetDimension),
+			new HashSet<>(sharedSimilarAssets), similarAssetDimension);
 
 		Map<Long, ObjectDefinition> objectDefinitionsMap = new HashMap<>();
 
@@ -285,7 +290,8 @@ public class SimilarAssetSetResourceImpl
 	}
 
 	private Map<Long, List<Long>> _getObjectEntryIdsMap(
-		List<Document> documents, Set<String> sharedSimilarAssets) {
+		List<Document> documents, Set<String> sharedSimilarAssets,
+		SimilarAssetDimension similarAssetDimension) {
 
 		Map<Long, Long> parentObjectEntryIds = new LinkedHashMap<>();
 		Map<String, List<Long>> objectEntryIdsMap = new HashMap<>();
@@ -299,7 +305,9 @@ public class SimilarAssetSetResourceImpl
 
 			parentObjectEntryIds.putIfAbsent(objectEntryId, objectEntryId);
 
-			for (String similarAsset : document.getStrings("similarAssets")) {
+			for (String similarAsset :
+					document.getStrings(similarAssetDimension.getFieldName())) {
+
 				if (!sharedSimilarAssets.contains(similarAsset)) {
 					continue;
 				}
@@ -312,7 +320,8 @@ public class SimilarAssetSetResourceImpl
 			}
 		}
 
-		_mergeSimilarObjectEntryIds(objectEntryIdsMap, parentObjectEntryIds);
+		_mergeSimilarObjectEntryIds(
+			objectEntryIdsMap, parentObjectEntryIds, similarAssetDimension);
 
 		return _getGroupedObjectEntryIdsMap(parentObjectEntryIds);
 	}
@@ -550,7 +559,11 @@ public class SimilarAssetSetResourceImpl
 
 	private void _mergeObjectEntryIds(
 		Map<Long, List<String>> similarAssetsMap,
-		Map<Long, Long> parentObjectEntryIds) {
+		Map<Long, Long> parentObjectEntryIds,
+		SimilarAssetDimension similarAssetDimension) {
+
+		int minSharedSimilarAssets =
+			similarAssetDimension.getMinSharedSimilarAssets();
 
 		Map<String, Long> objectEntryIdsMap = new HashMap<>();
 
@@ -559,7 +572,7 @@ public class SimilarAssetSetResourceImpl
 
 			List<String> similarAssets = entry.getValue();
 
-			if (similarAssets.size() < _MIN_SHARED_SIMILAR_ASSETS) {
+			if (similarAssets.size() < minSharedSimilarAssets) {
 				continue;
 			}
 
@@ -575,7 +588,11 @@ public class SimilarAssetSetResourceImpl
 
 	private void _mergeSimilarObjectEntryIds(
 		Map<String, List<Long>> objectEntryIdsMap,
-		Map<Long, Long> parentObjectEntryIds) {
+		Map<Long, Long> parentObjectEntryIds,
+		SimilarAssetDimension similarAssetDimension) {
+
+		int minSharedSimilarAssets =
+			similarAssetDimension.getMinSharedSimilarAssets();
 
 		Map<Long, List<String>> similarAssetsMap = new LinkedHashMap<>();
 		Map<Long, Map<Long, Integer>> sharedSimilarAssetCounts =
@@ -621,7 +638,7 @@ public class SimilarAssetSetResourceImpl
 						Math.max(objectEntryId1, objectEntryId2), 1,
 						Integer::sum);
 
-					if (count >= _MIN_SHARED_SIMILAR_ASSETS) {
+					if (count >= minSharedSimilarAssets) {
 						_mergeObjectEntryIds(
 							objectEntryId1, objectEntryId2,
 							parentObjectEntryIds);
@@ -630,12 +647,14 @@ public class SimilarAssetSetResourceImpl
 			}
 		}
 
-		_mergeObjectEntryIds(similarAssetsMap, parentObjectEntryIds);
+		_mergeObjectEntryIds(
+			similarAssetsMap, parentObjectEntryIds, similarAssetDimension);
 	}
 
 	private List<Document> _searchSharedSimilarAssetDocuments(
 		String[] entryClassNames, Long[] groupIds,
-		List<String> sharedSimilarAssets) {
+		List<String> sharedSimilarAssets,
+		SimilarAssetDimension similarAssetDimension) {
 
 		List<Document> documents = new ArrayList<>();
 
@@ -643,7 +662,8 @@ public class SimilarAssetSetResourceImpl
 			return documents;
 		}
 
-		TermsQuery termsQuery = QueriesUtil.terms("similarAssets");
+		TermsQuery termsQuery = QueriesUtil.terms(
+			similarAssetDimension.getFieldName());
 
 		termsQuery.addValues(sharedSimilarAssets.toArray());
 
@@ -663,7 +683,9 @@ public class SimilarAssetSetResourceImpl
 			).entryClassNames(
 				entryClassNames
 			).fetchSourceIncludes(
-				new String[] {"objectEntryId", "similarAssets"}
+				new String[] {
+					"objectEntryId", similarAssetDimension.getFieldName()
+				}
 			).size(
 				_MAX_DOCUMENTS
 			).withSearchContext(
@@ -680,17 +702,21 @@ public class SimilarAssetSetResourceImpl
 	}
 
 	private List<String> _searchSharedSimilarAssets(
-		String[] entryClassNames, Long[] groupIds) {
+		String[] entryClassNames, Long[] groupIds,
+		SimilarAssetDimension similarAssetDimension) {
 
 		List<String> sharedSimilarAssets = new ArrayList<>();
 
 		TermsAggregation termsAggregation = _aggregations.terms(
-			_SIMILAR_ASSETS_AGGREGATION_NAME, "similarAssets");
+			_SIMILAR_ASSETS_AGGREGATION_NAME,
+			similarAssetDimension.getFieldName());
+
+		String tokenLanguageId = similarAssetDimension.getTokenLanguageId(
+			contextAcceptLanguage.getPreferredLanguageId());
 
 		termsAggregation.setMinDocCount(2);
 		termsAggregation.setIncludeExcludeClause(
-			new IncludeExcludeClauseImpl(
-				contextAcceptLanguage.getPreferredLanguageId() + "_.*", null));
+			new IncludeExcludeClauseImpl(tokenLanguageId + "_.*", null));
 		termsAggregation.setSize(_MAX_SIMILAR_ASSETS);
 
 		SearchResponse searchResponse = _searcher.search(
@@ -789,8 +815,6 @@ public class SimilarAssetSetResourceImpl
 	private static final int _MAX_DOCUMENTS = 10000;
 
 	private static final int _MAX_SIMILAR_ASSETS = 10000;
-
-	private static final int _MIN_SHARED_SIMILAR_ASSETS = 3;
 
 	private static final String _SIMILAR_ASSETS_AGGREGATION_NAME =
 		"similarAssets";
