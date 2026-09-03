@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
@@ -30,7 +31,11 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.odata.entity.DateTimeEntityField;
+import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.portal.odata.entity.StringEntityField;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.IncludeExcludeClause;
@@ -49,14 +54,19 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.util.GroupUtil;
 
+import jakarta.ws.rs.core.MultivaluedMap;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -75,8 +85,14 @@ public class SimilarAssetSetResourceImpl
 	extends BaseSimilarAssetSetResourceImpl {
 
 	@Override
+	public EntityModel getEntityModel(MultivaluedMap multivaluedMap) {
+		return _entityModel;
+	}
+
+	@Override
 	public Page<SimilarAssetSet> getSimilarAssetSetsPage(
-			Long assetLibraryId, Pagination pagination)
+			Long assetLibraryId, String search, Pagination pagination,
+			Sort[] sorts)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled(
@@ -103,12 +119,6 @@ public class SimilarAssetSetResourceImpl
 				entryClassNames, groupIds, sharedSimilarAssets),
 			new HashSet<>(sharedSimilarAssets));
 
-		long totalCount = 0;
-
-		for (List<Long> objectEntryIds : objectEntryIdsMap.values()) {
-			totalCount += objectEntryIds.size();
-		}
-
 		Map<Long, ObjectDefinition> objectDefinitionsMap = new HashMap<>();
 
 		for (ObjectDefinition objectDefinition : objectDefinitions) {
@@ -116,10 +126,64 @@ public class SimilarAssetSetResourceImpl
 				objectDefinition.getObjectDefinitionId(), objectDefinition);
 		}
 
-		return Page.of(
+		if (Validator.isNull(search) && ArrayUtil.isEmpty(sorts)) {
+			long totalCount = 0;
+
+			for (List<Long> objectEntryIds : objectEntryIdsMap.values()) {
+				totalCount += objectEntryIds.size();
+			}
+
+			return Page.of(
+				_getSimilarAssetSets(
+					objectDefinitionsMap, objectEntryIdsMap, pagination),
+				pagination, totalCount);
+		}
+
+		List<SimilarAssetSet> similarAssetSets = _filter(
+			search,
 			_getSimilarAssetSets(
-				objectDefinitionsMap, objectEntryIdsMap, pagination),
-			pagination, totalCount);
+				objectDefinitionsMap, objectEntryIdsMap, null));
+
+		if (ArrayUtil.isNotEmpty(sorts)) {
+			similarAssetSets.sort(_getSimilarAssetSetComparator(sorts));
+		}
+
+		return Page.of(
+			_getPage(pagination, similarAssetSets), pagination,
+			_getTotalCount(similarAssetSets));
+	}
+
+	private List<SimilarAssetSet> _filter(
+		String search, List<SimilarAssetSet> similarAssetSets) {
+
+		if (Validator.isNull(search)) {
+			return similarAssetSets;
+		}
+
+		String[] keywords = StringUtil.split(
+			StringUtil.toLowerCase(search), ' ');
+
+		if (ArrayUtil.isEmpty(keywords)) {
+			return similarAssetSets;
+		}
+
+		List<SimilarAssetSet> filteredSimilarAssetSets = new ArrayList<>();
+
+		for (SimilarAssetSet similarAssetSet : similarAssetSets) {
+			SimilarAsset[] similarAssets = ArrayUtil.filter(
+				similarAssetSet.getSimilarAssets(),
+				similarAsset -> _hasKeywords(keywords, similarAsset));
+
+			if (ArrayUtil.isEmpty(similarAssets)) {
+				continue;
+			}
+
+			similarAssetSet.setSimilarAssets(() -> similarAssets);
+
+			filteredSimilarAssetSets.add(similarAssetSet);
+		}
+
+		return filteredSimilarAssetSets;
 	}
 
 	private List<ObjectDefinition> _getCMSObjectDefinitions() throws Exception {
@@ -200,6 +264,26 @@ public class SimilarAssetSetResourceImpl
 			objectEntry.getObjectEntryId());
 	}
 
+	private Date _getMaxDateModified(SimilarAssetSet similarAssetSet) {
+		Date maxDateModified = null;
+
+		for (SimilarAsset similarAsset : similarAssetSet.getSimilarAssets()) {
+			Date dateModified = similarAsset.getDateModified();
+
+			if (dateModified == null) {
+				continue;
+			}
+
+			if ((maxDateModified == null) ||
+				dateModified.after(maxDateModified)) {
+
+				maxDateModified = dateModified;
+			}
+		}
+
+		return maxDateModified;
+	}
+
 	private Map<Long, List<Long>> _getObjectEntryIdsMap(
 		List<Document> documents, Set<String> sharedSimilarAssets) {
 
@@ -233,6 +317,51 @@ public class SimilarAssetSetResourceImpl
 		return _getGroupedObjectEntryIdsMap(parentObjectEntryIds);
 	}
 
+	private List<SimilarAssetSet> _getPage(
+		Pagination pagination, List<SimilarAssetSet> similarAssetSets) {
+
+		if (pagination == null) {
+			return similarAssetSets;
+		}
+
+		int endPosition = pagination.getEndPosition();
+		int startPosition = pagination.getStartPosition();
+
+		if ((endPosition < 0) || (startPosition < 0)) {
+			return similarAssetSets;
+		}
+
+		List<SimilarAssetSet> pageSimilarAssetSets = new ArrayList<>();
+
+		int position = 0;
+
+		for (SimilarAssetSet similarAssetSet : similarAssetSets) {
+			SimilarAsset[] similarAssets = similarAssetSet.getSimilarAssets();
+
+			int setStartPosition = position;
+
+			position += similarAssets.length;
+
+			if (position <= startPosition) {
+				continue;
+			}
+
+			if (setStartPosition >= endPosition) {
+				break;
+			}
+
+			SimilarAsset[] pageSimilarAssets = Arrays.copyOfRange(
+				similarAssets, Math.max(startPosition - setStartPosition, 0),
+				Math.min(endPosition - setStartPosition, similarAssets.length));
+
+			similarAssetSet.setSimilarAssets(() -> pageSimilarAssets);
+
+			pageSimilarAssetSets.add(similarAssetSet);
+		}
+
+		return pageSimilarAssetSets;
+	}
+
 	private Long _getRootObjectEntryId(
 		Long objectEntryId, Map<Long, Long> parentObjectEntryIds) {
 
@@ -264,6 +393,39 @@ public class SimilarAssetSetResourceImpl
 
 			searchContext.setUserId(contextUser.getUserId());
 		};
+	}
+
+	private Comparator<SimilarAssetSet> _getSimilarAssetSetComparator(
+		Sort[] sorts) {
+
+		Comparator<SimilarAssetSet> comparator = null;
+
+		for (Sort sort : sorts) {
+			Comparator<SimilarAssetSet> sortComparator = Comparator.comparing(
+				SimilarAssetSet::getTitle,
+				Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+
+			if (Objects.equals(
+					sort.getFieldName(), _ENTITY_FIELD_NAME_DATE_MODIFIED)) {
+
+				sortComparator = Comparator.comparing(
+					this::_getMaxDateModified,
+					Comparator.nullsLast(Comparator.naturalOrder()));
+			}
+
+			if (sort.isReverse()) {
+				sortComparator = sortComparator.reversed();
+			}
+
+			if (comparator == null) {
+				comparator = sortComparator;
+			}
+			else {
+				comparator = comparator.thenComparing(sortComparator);
+			}
+		}
+
+		return comparator;
 	}
 
 	private List<SimilarAssetSet> _getSimilarAssetSets(
@@ -342,6 +504,34 @@ public class SimilarAssetSetResourceImpl
 		}
 
 		return sortedObjectEntryIdsMap;
+	}
+
+	private long _getTotalCount(List<SimilarAssetSet> similarAssetSets) {
+		long totalCount = 0;
+
+		for (SimilarAssetSet similarAssetSet : similarAssetSets) {
+			SimilarAsset[] similarAssets = similarAssetSet.getSimilarAssets();
+
+			totalCount += similarAssets.length;
+		}
+
+		return totalCount;
+	}
+
+	private boolean _hasKeywords(String[] keywords, SimilarAsset similarAsset) {
+		String title = StringUtil.toLowerCase(similarAsset.getTitle());
+
+		if (title == null) {
+			return false;
+		}
+
+		for (String keyword : keywords) {
+			if (!title.contains(keyword)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private void _mergeObjectEntryIds(
@@ -589,6 +779,11 @@ public class SimilarAssetSetResourceImpl
 		return similarAssetSet;
 	}
 
+	private static final String _ENTITY_FIELD_NAME_DATE_MODIFIED =
+		"dateModified";
+
+	private static final String _ENTITY_FIELD_NAME_TITLE = "title";
+
 	private static final int _MAX_ASSETS_PER_SIMILAR_ASSET = 500;
 
 	private static final int _MAX_DOCUMENTS = 10000;
@@ -599,6 +794,15 @@ public class SimilarAssetSetResourceImpl
 
 	private static final String _SIMILAR_ASSETS_AGGREGATION_NAME =
 		"similarAssets";
+
+	private static final EntityModel _entityModel =
+		() -> EntityModel.toEntityFieldsMap(
+			new DateTimeEntityField(
+				_ENTITY_FIELD_NAME_DATE_MODIFIED,
+				locale -> _ENTITY_FIELD_NAME_DATE_MODIFIED,
+				locale -> _ENTITY_FIELD_NAME_DATE_MODIFIED),
+			new StringEntityField(
+				_ENTITY_FIELD_NAME_TITLE, locale -> _ENTITY_FIELD_NAME_TITLE));
 
 	@Reference
 	private Aggregations _aggregations;
