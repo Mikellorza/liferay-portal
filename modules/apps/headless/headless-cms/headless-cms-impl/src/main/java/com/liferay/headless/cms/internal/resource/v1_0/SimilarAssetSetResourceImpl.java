@@ -10,17 +10,25 @@ import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.depot.service.DepotEntryService;
 import com.liferay.headless.cms.dto.v1_0.SimilarAsset;
 import com.liferay.headless.cms.dto.v1_0.SimilarAssetSet;
+import com.liferay.headless.cms.internal.util.SimilarAssetSetTitleUtil;
 import com.liferay.headless.cms.resource.v1_0.SimilarAssetSetResource;
 import com.liferay.object.constants.ObjectFolderConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectEntryService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.aggregation.Aggregations;
@@ -173,6 +181,25 @@ public class SimilarAssetSetResourceImpl
 		return new Long[] {groupId};
 	}
 
+	private String _getItemURL(ObjectEntry objectEntry) throws Exception {
+		ModelResourcePermission<ObjectEntry> modelResourcePermission =
+			_objectEntryService.getModelResourcePermission(
+				objectEntry.getObjectDefinitionId());
+
+		if (!modelResourcePermission.contains(
+				PermissionThreadLocal.getPermissionChecker(), objectEntry,
+				ActionKeys.UPDATE)) {
+
+			return null;
+		}
+
+		return StringBundler.concat(
+			_portal.getPortalURL(contextHttpServletRequest),
+			_portal.getPathMain(), GroupConstants.CMS_FRIENDLY_URL,
+			"/edit_content_item?objectEntryId=",
+			objectEntry.getObjectEntryId());
+	}
+
 	private Map<Long, List<Long>> _getObjectEntryIdsMap(
 		List<Document> documents, Set<String> sharedSimilarAssets) {
 
@@ -257,32 +284,31 @@ public class SimilarAssetSetResourceImpl
 		int position = 0;
 
 		for (List<Long> objectEntryIds : objectEntryIdsMap.values()) {
-			int groupStartPosition = position;
+			int setStartPosition = position;
 
 			position += objectEntryIds.size();
 
-			List<Long> pageObjectEntryIds = objectEntryIds;
+			int pageEndIndex = objectEntryIds.size();
+			int pageStartIndex = 0;
 
 			if ((endPosition >= 0) && (startPosition >= 0)) {
 				if (position <= startPosition) {
 					continue;
 				}
 
-				if (groupStartPosition >= endPosition) {
+				if (setStartPosition >= endPosition) {
 					break;
 				}
 
-				pageObjectEntryIds = objectEntryIds.subList(
-					Math.max(startPosition - groupStartPosition, 0),
-					Math.min(
-						endPosition - groupStartPosition,
-						objectEntryIds.size()));
+				pageEndIndex = Math.min(
+					endPosition - setStartPosition, objectEntryIds.size());
+				pageStartIndex = Math.max(startPosition - setStartPosition, 0);
 			}
 
 			similarAssetSets.add(
 				_toSimilarAssetSet(
-					objectDefinitionsMap, pageObjectEntryIds,
-					objectEntryIds.size()));
+					objectDefinitionsMap, objectEntryIds, pageEndIndex,
+					pageStartIndex));
 		}
 
 		return similarAssetSets;
@@ -510,46 +536,55 @@ public class SimilarAssetSetResourceImpl
 
 	private SimilarAssetSet _toSimilarAssetSet(
 			Map<Long, ObjectDefinition> objectDefinitionsMap,
-			List<Long> objectEntryIds, int size)
+			List<Long> objectEntryIds, int pageEndIndex, int pageStartIndex)
 		throws Exception {
+
+		List<SimilarAsset> similarAssets = new ArrayList<>();
+		List<String> titles = new ArrayList<>();
+
+		for (Long objectEntryId : objectEntryIds) {
+			ObjectEntry objectEntry = _objectEntryLocalService.fetchObjectEntry(
+				objectEntryId);
+
+			if (objectEntry == null) {
+				continue;
+			}
+
+			String title = objectEntry.getTitleValue(
+				contextAcceptLanguage.getPreferredLanguageId(), true);
+
+			titles.add(title);
+
+			SimilarAsset similarAsset = new SimilarAsset();
+
+			similarAsset.setDateModified(objectEntry::getModifiedDate);
+			similarAsset.setId(() -> objectEntryId);
+			similarAsset.setItemURL(() -> _getItemURL(objectEntry));
+			similarAsset.setTitle(() -> title);
+
+			ObjectDefinition objectDefinition = objectDefinitionsMap.get(
+				objectEntry.getObjectDefinitionId());
+
+			if (objectDefinition != null) {
+				similarAsset.setContentType(
+					() -> objectDefinition.getLabel(
+						contextAcceptLanguage.getPreferredLanguageId(), true));
+			}
+
+			similarAssets.add(similarAsset);
+		}
 
 		SimilarAssetSet similarAssetSet = new SimilarAssetSet();
 
-		SimilarAsset[] similarAssets = transformToArray(
-			objectEntryIds,
-			objectEntryId -> {
-				ObjectEntry objectEntry =
-					_objectEntryLocalService.fetchObjectEntry(objectEntryId);
+		List<SimilarAsset> pageSimilarAssets = ListUtil.subList(
+			similarAssets, pageStartIndex, pageEndIndex);
 
-				if (objectEntry == null) {
-					return null;
-				}
+		similarAssetSet.setSimilarAssets(
+			() -> pageSimilarAssets.toArray(new SimilarAsset[0]));
 
-				SimilarAsset similarAsset = new SimilarAsset();
-
-				similarAsset.setDateModified(objectEntry::getModifiedDate);
-				similarAsset.setId(() -> objectEntryId);
-				similarAsset.setTitle(
-					() -> objectEntry.getTitleValue(
-						contextAcceptLanguage.getPreferredLanguageId(), true));
-
-				ObjectDefinition objectDefinition = objectDefinitionsMap.get(
-					objectEntry.getObjectDefinitionId());
-
-				if (objectDefinition != null) {
-					similarAsset.setContentType(
-						() -> objectDefinition.getLabel(
-							contextAcceptLanguage.getPreferredLanguageId(),
-							true));
-				}
-
-				return similarAsset;
-			},
-			SimilarAsset.class);
-
-		similarAssetSet.setSimilarAssets(() -> similarAssets);
-
-		similarAssetSet.setSize(() -> size);
+		similarAssetSet.setSize(objectEntryIds::size);
+		similarAssetSet.setTitle(
+			() -> SimilarAssetSetTitleUtil.getTitle(titles));
 
 		return similarAssetSet;
 	}
@@ -582,6 +617,12 @@ public class SimilarAssetSetResourceImpl
 
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
+	private ObjectEntryService _objectEntryService;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private Searcher _searcher;
