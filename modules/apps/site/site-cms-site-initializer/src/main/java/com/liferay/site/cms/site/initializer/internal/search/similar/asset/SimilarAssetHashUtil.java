@@ -21,11 +21,23 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Reduces a CMS content to the hashes two near duplicates literally share, so
+ * that an index which only matches equal values can answer which contents are
+ * similar.
+ *
+ * <p>
+ * The text is cut into sequences of three consecutive keywords, each hashed,
+ * and the set is condensed into one fixed length fingerprint estimating how
+ * much two sets overlap. The fingerprint is then split into 32 hashes: two
+ * contents that share one are candidates, and how many they share is what
+ * decides whether they are grouped.
+ * </p>
+ *
  * @author Mikel Lorza
  */
-public class SimilarAssetUtil {
+public class SimilarAssetHashUtil {
 
-	public static String[] getSimilarAssets(String text) {
+	public static String[] getHashes(String text) {
 		if (text == null) {
 			return new String[0];
 		}
@@ -42,26 +54,25 @@ public class SimilarAssetUtil {
 				keywordSequences, _hasher64::hashCharsToLong)
 		);
 
-		String[] similarAssets = new String[_SIMILAR_ASSETS];
+		String[] hashes = new String[_HASHES];
 
-		for (int i = 0; i < _SIMILAR_ASSETS; i++) {
-			StringBundler sb = new StringBundler(
-				(_SAMPLES_PER_SIMILAR_ASSET * 2) + 2);
+		for (int i = 0; i < _HASHES; i++) {
+			StringBundler sb = new StringBundler((_SAMPLES_PER_HASH * 2) + 2);
 
 			sb.append("b");
 			sb.append(i);
 
-			for (int j = 0; j < _SAMPLES_PER_SIMILAR_ASSET; j++) {
+			for (int j = 0; j < _SAMPLES_PER_HASH; j++) {
 				sb.append(StringPool.UNDERLINE);
 				sb.append(
 					_similarityHashPolicy.getComponent(
-						similarityHash, (i * _SAMPLES_PER_SIMILAR_ASSET) + j));
+						similarityHash, (i * _SAMPLES_PER_HASH) + j));
 			}
 
-			similarAssets[i] = sb.toString();
+			hashes[i] = sb.toString();
 		}
 
-		return similarAssets;
+		return hashes;
 	}
 
 	private static Set<String> _getKeywordSequences(String text) {
@@ -107,16 +118,16 @@ public class SimilarAssetUtil {
 
 	private static final int _BITS_PER_SAMPLE = 8;
 
+	private static final int _HASHES = 32;
+
 	private static final int _KEYWORD_SEQUENCE_SIZE = 3;
 
-	private static final int _SAMPLES_PER_SIMILAR_ASSET = 4;
-
-	private static final int _SIMILAR_ASSETS = 32;
+	private static final int _SAMPLES_PER_HASH = 4;
 
 	private static final Hasher64 _hasher64 = Hashing.murmur3_128();
 	private static final SimilarityHashPolicy _similarityHashPolicy =
 		SimilarityHashing.superMinHash(
-			_SIMILAR_ASSETS * _SAMPLES_PER_SIMILAR_ASSET, _BITS_PER_SAMPLE,
+			_HASHES * _SAMPLES_PER_HASH, _BITS_PER_SAMPLE,
 			SuperMinHashVersion.V1);
 
 }

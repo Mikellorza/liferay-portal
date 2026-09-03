@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.DocumentContributor;
 import com.liferay.portal.kernel.util.HtmlParser;
 import com.liferay.site.cms.site.initializer.internal.search.similar.asset.CMSContentSimilarAssetTextExtractor;
-import com.liferay.site.cms.site.initializer.internal.search.similar.asset.SimilarAssetUtil;
+import com.liferay.site.cms.site.initializer.internal.search.similar.asset.SimilarAssetHashUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,32 +58,35 @@ public class CMSContentSimilarAssetDocumentContributor
 				return;
 			}
 
-			List<String> similarAssets = new ArrayList<>();
+			List<String> similarAssetHashes = new ArrayList<>();
 
 			for (String languageId :
 					_cmsContentSimilarAssetTextExtractor.getLanguageIds(
 						objectEntry)) {
 
-				similarAssets.addAll(
+				similarAssetHashes.addAll(
 					TransformUtil.transformToList(
-						SimilarAssetUtil.getSimilarAssets(
+						SimilarAssetHashUtil.getHashes(
 							_cmsContentSimilarAssetTextExtractor.getText(
 								languageId, objectEntry)),
-						similarAsset -> StringBundler.concat(
-							languageId, StringPool.UNDERLINE, similarAsset)));
+						similarAssetHash -> StringBundler.concat(
+							languageId, StringPool.UNDERLINE,
+							similarAssetHash)));
 			}
 
-			if (similarAssets.isEmpty()) {
+			if (similarAssetHashes.isEmpty()) {
 				return;
 			}
 
 			document.addKeyword(
-				"similarAssets", similarAssets.toArray(new String[0]));
+				"similarAssetHashes",
+				similarAssetHashes.toArray(new String[0]));
 		}
 		catch (Exception exception) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"Unable to contribute similar assets for object entry " +
+					"Unable to contribute similar asset hashes for object " +
+						"entry " +
 						objectEntry.getObjectEntryId(),
 					exception);
 			}

@@ -87,13 +87,13 @@ public class SimilarAssetSetResourceImpl
 		String[] entryClassNames = ArrayUtil.toStringArray(
 			ListUtil.toList(objectDefinitions, ObjectDefinition::getClassName));
 
-		List<String> sharedSimilarAssets = _searchSharedSimilarAssets(
+		List<String> sharedSimilarAssetHashes = _searchSharedSimilarAssetHashes(
 			entryClassNames, groupIds);
 
 		Map<Long, List<Long>> objectEntryIdsMap = _getObjectEntryIdsMap(
-			_searchSharedSimilarAssetDocuments(
-				entryClassNames, groupIds, sharedSimilarAssets),
-			new HashSet<>(sharedSimilarAssets));
+			_searchSharedSimilarAssetHashDocuments(
+				entryClassNames, groupIds, sharedSimilarAssetHashes),
+			new HashSet<>(sharedSimilarAssetHashes));
 
 		long totalCount = 0;
 
@@ -174,7 +174,7 @@ public class SimilarAssetSetResourceImpl
 	}
 
 	private Map<Long, List<Long>> _getObjectEntryIdsMap(
-		List<Document> documents, Set<String> sharedSimilarAssets) {
+		List<Document> documents, Set<String> sharedSimilarAssetHashes) {
 
 		Map<Long, Long> parentObjectEntryIds = new LinkedHashMap<>();
 		Map<String, List<Long>> objectEntryIdsMap = new HashMap<>();
@@ -188,16 +188,18 @@ public class SimilarAssetSetResourceImpl
 
 			parentObjectEntryIds.putIfAbsent(objectEntryId, objectEntryId);
 
-			for (String similarAsset : document.getStrings("similarAssets")) {
-				if (!sharedSimilarAssets.contains(similarAsset)) {
+			for (String similarAssetHash :
+					document.getStrings("similarAssetHashes")) {
+
+				if (!sharedSimilarAssetHashes.contains(similarAssetHash)) {
 					continue;
 				}
 
-				List<Long> similarAssetObjectEntryIds =
+				List<Long> similarAssetHashObjectEntryIds =
 					objectEntryIdsMap.computeIfAbsent(
-						similarAsset, key -> new ArrayList<>());
+						similarAssetHash, key -> new ArrayList<>());
 
-				similarAssetObjectEntryIds.add(objectEntryId);
+				similarAssetHashObjectEntryIds.add(objectEntryId);
 			}
 		}
 
@@ -333,22 +335,22 @@ public class SimilarAssetSetResourceImpl
 	}
 
 	private void _mergeObjectEntryIds(
-		Map<Long, List<String>> similarAssetsMap,
+		Map<Long, List<String>> similarAssetHashesMap,
 		Map<Long, Long> parentObjectEntryIds) {
 
 		Map<String, Long> objectEntryIdsMap = new HashMap<>();
 
 		for (Map.Entry<Long, List<String>> entry :
-				similarAssetsMap.entrySet()) {
+				similarAssetHashesMap.entrySet()) {
 
-			List<String> similarAssets = entry.getValue();
+			List<String> similarAssetHashes = entry.getValue();
 
-			if (similarAssets.size() < _MIN_SHARED_SIMILAR_ASSETS) {
+			if (similarAssetHashes.size() < _MIN_SHARED_SIMILAR_ASSET_HASHES) {
 				continue;
 			}
 
 			Long objectEntryId = objectEntryIdsMap.putIfAbsent(
-				StringUtil.merge(similarAssets), entry.getKey());
+				StringUtil.merge(similarAssetHashes), entry.getKey());
 
 			if (objectEntryId != null) {
 				_mergeObjectEntryIds(
@@ -361,8 +363,8 @@ public class SimilarAssetSetResourceImpl
 		Map<String, List<Long>> objectEntryIdsMap,
 		Map<Long, Long> parentObjectEntryIds) {
 
-		Map<Long, List<String>> similarAssetsMap = new LinkedHashMap<>();
-		Map<Long, Map<Long, Integer>> sharedSimilarAssetCounts =
+		Map<Long, List<String>> similarAssetHashesMap = new LinkedHashMap<>();
+		Map<Long, Map<Long, Integer>> sharedSimilarAssetHashCounts =
 			new HashMap<>();
 
 		for (Map.Entry<String, List<Long>> entry :
@@ -370,13 +372,13 @@ public class SimilarAssetSetResourceImpl
 
 			List<Long> objectEntryIds = entry.getValue();
 
-			if (objectEntryIds.size() > _MAX_ASSETS_PER_SIMILAR_ASSET) {
+			if (objectEntryIds.size() > _MAX_ASSETS_PER_SIMILAR_ASSET_HASH) {
 				for (Long objectEntryId : objectEntryIds) {
-					List<String> similarAssets =
-						similarAssetsMap.computeIfAbsent(
+					List<String> similarAssetHashes =
+						similarAssetHashesMap.computeIfAbsent(
 							objectEntryId, key -> new ArrayList<>());
 
-					similarAssets.add(entry.getKey());
+					similarAssetHashes.add(entry.getKey());
 				}
 
 				continue;
@@ -397,7 +399,7 @@ public class SimilarAssetSetResourceImpl
 					}
 
 					Map<Long, Integer> counts =
-						sharedSimilarAssetCounts.computeIfAbsent(
+						sharedSimilarAssetHashCounts.computeIfAbsent(
 							Math.min(objectEntryId1, objectEntryId2),
 							objectEntryId -> new HashMap<>());
 
@@ -405,7 +407,7 @@ public class SimilarAssetSetResourceImpl
 						Math.max(objectEntryId1, objectEntryId2), 1,
 						Integer::sum);
 
-					if (count >= _MIN_SHARED_SIMILAR_ASSETS) {
+					if (count >= _MIN_SHARED_SIMILAR_ASSET_HASHES) {
 						_mergeObjectEntryIds(
 							objectEntryId1, objectEntryId2,
 							parentObjectEntryIds);
@@ -414,22 +416,22 @@ public class SimilarAssetSetResourceImpl
 			}
 		}
 
-		_mergeObjectEntryIds(similarAssetsMap, parentObjectEntryIds);
+		_mergeObjectEntryIds(similarAssetHashesMap, parentObjectEntryIds);
 	}
 
-	private List<Document> _searchSharedSimilarAssetDocuments(
+	private List<Document> _searchSharedSimilarAssetHashDocuments(
 		String[] entryClassNames, Long[] groupIds,
-		List<String> sharedSimilarAssets) {
+		List<String> sharedSimilarAssetHashes) {
 
 		List<Document> documents = new ArrayList<>();
 
-		if (sharedSimilarAssets.isEmpty()) {
+		if (sharedSimilarAssetHashes.isEmpty()) {
 			return documents;
 		}
 
-		TermsQuery termsQuery = QueriesUtil.terms("similarAssets");
+		TermsQuery termsQuery = QueriesUtil.terms("similarAssetHashes");
 
-		termsQuery.addValues(sharedSimilarAssets.toArray());
+		termsQuery.addValues(sharedSimilarAssetHashes.toArray());
 
 		SearchResponse searchResponse = _searcher.search(
 			_searchRequestBuilderFactory.builder(
@@ -447,7 +449,7 @@ public class SimilarAssetSetResourceImpl
 			).entryClassNames(
 				entryClassNames
 			).fetchSourceIncludes(
-				new String[] {"objectEntryId", "similarAssets"}
+				new String[] {"objectEntryId", "similarAssetHashes"}
 			).size(
 				_MAX_DOCUMENTS
 			).withSearchContext(
@@ -463,19 +465,19 @@ public class SimilarAssetSetResourceImpl
 		return documents;
 	}
 
-	private List<String> _searchSharedSimilarAssets(
+	private List<String> _searchSharedSimilarAssetHashes(
 		String[] entryClassNames, Long[] groupIds) {
 
-		List<String> sharedSimilarAssets = new ArrayList<>();
+		List<String> sharedSimilarAssetHashes = new ArrayList<>();
 
 		TermsAggregation termsAggregation = _aggregations.terms(
-			_SIMILAR_ASSETS_AGGREGATION_NAME, "similarAssets");
+			_SIMILAR_ASSET_HASHES_AGGREGATION_NAME, "similarAssetHashes");
 
 		termsAggregation.setMinDocCount(2);
 		termsAggregation.setIncludeExcludeClause(
 			new IncludeExcludeClauseImpl(
 				contextAcceptLanguage.getPreferredLanguageId() + "_.*", null));
-		termsAggregation.setSize(_MAX_SIMILAR_ASSETS);
+		termsAggregation.setSize(_MAX_SIMILAR_ASSET_HASHES);
 
 		SearchResponse searchResponse = _searcher.search(
 			_searchRequestBuilderFactory.builder(
@@ -495,17 +497,17 @@ public class SimilarAssetSetResourceImpl
 
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)searchResponse.getAggregationResult(
-				_SIMILAR_ASSETS_AGGREGATION_NAME);
+				_SIMILAR_ASSET_HASHES_AGGREGATION_NAME);
 
 		if (termsAggregationResult == null) {
-			return sharedSimilarAssets;
+			return sharedSimilarAssetHashes;
 		}
 
 		for (Bucket bucket : termsAggregationResult.getBuckets()) {
-			sharedSimilarAssets.add(bucket.getKey());
+			sharedSimilarAssetHashes.add(bucket.getKey());
 		}
 
-		return sharedSimilarAssets;
+		return sharedSimilarAssetHashes;
 	}
 
 	private SimilarAssetSet _toSimilarAssetSet(
@@ -554,16 +556,16 @@ public class SimilarAssetSetResourceImpl
 		return similarAssetSet;
 	}
 
-	private static final int _MAX_ASSETS_PER_SIMILAR_ASSET = 500;
+	private static final int _MAX_ASSETS_PER_SIMILAR_ASSET_HASH = 500;
 
 	private static final int _MAX_DOCUMENTS = 10000;
 
-	private static final int _MAX_SIMILAR_ASSETS = 10000;
+	private static final int _MAX_SIMILAR_ASSET_HASHES = 10000;
 
-	private static final int _MIN_SHARED_SIMILAR_ASSETS = 3;
+	private static final int _MIN_SHARED_SIMILAR_ASSET_HASHES = 3;
 
-	private static final String _SIMILAR_ASSETS_AGGREGATION_NAME =
-		"similarAssets";
+	private static final String _SIMILAR_ASSET_HASHES_AGGREGATION_NAME =
+		"similarAssetHashes";
 
 	@Reference
 	private Aggregations _aggregations;

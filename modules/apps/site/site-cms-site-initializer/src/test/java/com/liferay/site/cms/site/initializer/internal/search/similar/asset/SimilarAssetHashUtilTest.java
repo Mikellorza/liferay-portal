@@ -20,7 +20,7 @@ import org.junit.Test;
 /**
  * @author Mikel Lorza
  */
-public class SimilarAssetUtilTest {
+public class SimilarAssetHashUtilTest {
 
 	@ClassRule
 	@Rule
@@ -28,33 +28,25 @@ public class SimilarAssetUtilTest {
 		LiferayUnitTestRule.INSTANCE;
 
 	@Test
-	public void testBlankTextYieldsNoSimilarAssets() {
-		Assert.assertEquals(0, SimilarAssetUtil.getSimilarAssets(null).length);
-		Assert.assertEquals(0, SimilarAssetUtil.getSimilarAssets("").length);
-		Assert.assertEquals(0, SimilarAssetUtil.getSimilarAssets("   ").length);
-	}
-
-	@Test
-	public void testDeterministic() {
+	public void testGetHashesIsDeterministic() {
 		Assert.assertArrayEquals(
-			SimilarAssetUtil.getSimilarAssets(_A),
-			SimilarAssetUtil.getSimilarAssets(_A));
+			SimilarAssetHashUtil.getHashes(_A),
+			SimilarAssetHashUtil.getHashes(_A));
 	}
 
 	@Test
-	public void testDeterministicAcrossDefaultLocales() {
+	public void testGetHashesIsDeterministicAcrossDefaultLocales() {
 		Locale defaultLocale = LocaleUtil.getDefault();
 
 		try {
 			LocaleUtil.setDefault("en", "US", null);
 
-			String[] similarAssets = SimilarAssetUtil.getSimilarAssets(
-				_TURKISH);
+			String[] hashes = SimilarAssetHashUtil.getHashes(_TURKISH);
 
 			LocaleUtil.setDefault("tr", "TR", null);
 
 			Assert.assertArrayEquals(
-				similarAssets, SimilarAssetUtil.getSimilarAssets(_TURKISH));
+				hashes, SimilarAssetHashUtil.getHashes(_TURKISH));
 		}
 		finally {
 			LocaleUtil.setDefault(
@@ -64,33 +56,40 @@ public class SimilarAssetUtilTest {
 	}
 
 	@Test
-	public void testDistinctTextSharesNoSimilarAssets() {
-		Assert.assertEquals(0, _getSharedSimilarAssetCount(_A, _DISTINCT));
+	public void testGetHashesIsEmptyForBlankText() {
+		Assert.assertEquals(0, SimilarAssetHashUtil.getHashes(null).length);
+		Assert.assertEquals(0, SimilarAssetHashUtil.getHashes("").length);
+		Assert.assertEquals(0, SimilarAssetHashUtil.getHashes("   ").length);
 	}
 
 	@Test
-	public void testSimilarTextSharesMoreThanDistinct() {
+	public void testGetHashesSharesMoreForSimilarThanForDistinctText() {
 		Assert.assertTrue(
-			_getSharedSimilarAssetCount(_A, _A + " 2") >
-				_getSharedSimilarAssetCount(_A, _DISTINCT));
+			_getSharedHashCount(_A, _A + " 2") > _getSharedHashCount(
+				_A, _DISTINCT));
 	}
 
 	@Test
-	public void testSimilarTextSharesMostSimilarAssets() {
-		Assert.assertTrue(_getSharedSimilarAssetCount(_A, _A + " 2") >= 20);
+	public void testGetHashesSharesMostForNearDuplicateText() {
+		Assert.assertTrue(_getSharedHashCount(_A, _A + " 2") >= 20);
 	}
 
-	private int _getSharedSimilarAssetCount(String text1, String text2) {
-		Set<String> similarAssets = new HashSet<>();
+	@Test
+	public void testGetHashesSharesNothingBetweenDistinctText() {
+		Assert.assertEquals(0, _getSharedHashCount(_A, _DISTINCT));
+	}
 
-		for (String similarAsset : SimilarAssetUtil.getSimilarAssets(text1)) {
-			similarAssets.add(similarAsset);
+	private int _getSharedHashCount(String text1, String text2) {
+		Set<String> hashes = new HashSet<>();
+
+		for (String hash : SimilarAssetHashUtil.getHashes(text1)) {
+			hashes.add(hash);
 		}
 
 		int count = 0;
 
-		for (String similarAsset : SimilarAssetUtil.getSimilarAssets(text2)) {
-			if (similarAssets.contains(similarAsset)) {
+		for (String hash : SimilarAssetHashUtil.getHashes(text2)) {
+			if (hashes.contains(hash)) {
 				count++;
 			}
 		}

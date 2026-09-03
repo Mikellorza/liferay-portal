@@ -50,7 +50,8 @@ public class CMSSimilarAssetCompanyIndexConfigurationContributorTest {
 		);
 
 		Assert.assertEquals(
-			"{\"properties\": {\"similarAssets\": {\"type\": \"keyword\"}}}",
+			"{\"properties\": {\"similarAssetHashes\": {\"type\": " +
+				"\"keyword\"}}}",
 			StringUtil.removeChars(
 				argumentCaptor.getValue(), CharPool.NEW_LINE, CharPool.RETURN,
 				CharPool.TAB));
