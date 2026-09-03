@@ -14,6 +14,7 @@ import com.liferay.headless.cms.client.dto.v1_0.SimilarAsset;
 import com.liferay.headless.cms.client.dto.v1_0.SimilarAssetSet;
 import com.liferay.headless.cms.client.pagination.Page;
 import com.liferay.headless.cms.client.pagination.Pagination;
+import com.liferay.headless.cms.client.problem.Problem;
 import com.liferay.headless.cms.client.resource.v1_0.SimilarAssetSetResource;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
@@ -46,6 +47,8 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -91,7 +94,7 @@ public class SimilarAssetSetResourceTest
 			_getBasicWebContentObjectDefinition();
 
 		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, null, null, null);
+			groupId, null, null, null, null);
 
 		Assert.assertEquals(0, similarAssetSetsPage.getTotalCount());
 
@@ -112,7 +115,7 @@ public class SimilarAssetSetResourceTest
 			_DISTINCT_CONTENT);
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, null, null, null);
+			groupId, null, null, null, null);
 
 		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
 
@@ -161,8 +164,11 @@ public class SimilarAssetSetResourceTest
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 
 		_testGetSimilarAssetSetsPageGraphQL();
+		_testGetSimilarAssetSetsPageMetadata();
 		_testGetSimilarAssetSetsPagePermissions();
+		_testGetSimilarAssetSetsPageRejectedDimension();
 		_testGetSimilarAssetSetsPageSearch();
+		_testGetSimilarAssetSetsPageTitle();
 		_testGetSimilarAssetSetsPageTranslation();
 	}
 
@@ -177,7 +183,7 @@ public class SimilarAssetSetResourceTest
 		_addObjectEntries(depotEntry);
 
 		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, Pagination.of(1, 2), null, null);
+			groupId, null, Pagination.of(1, 2), null, null);
 
 		Assert.assertEquals(5, similarAssetSetsPage.getTotalCount());
 
@@ -192,7 +198,7 @@ public class SimilarAssetSetResourceTest
 			new String[] {"Big Summer Sale", "Summer Sale 2026"});
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, Pagination.of(2, 2), null, null);
+			groupId, null, Pagination.of(2, 2), null, null);
 
 		Assert.assertEquals(5, similarAssetSetsPage.getTotalCount());
 
@@ -210,7 +216,7 @@ public class SimilarAssetSetResourceTest
 			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, Pagination.of(3, 2), null, null);
+			groupId, null, Pagination.of(3, 2), null, null);
 
 		Assert.assertEquals(5, similarAssetSetsPage.getTotalCount());
 
@@ -240,7 +246,7 @@ public class SimilarAssetSetResourceTest
 
 			Page<SimilarAssetSet> similarAssetSetsPage =
 				_getSimilarAssetSetsPage(
-					depotEntry.getGroupId(), null, null, sortString);
+					depotEntry.getGroupId(), null, null, null, sortString);
 
 			List<SimilarAssetSet> similarAssetSets =
 				(List<SimilarAssetSet>)similarAssetSetsPage.getItems();
@@ -268,14 +274,14 @@ public class SimilarAssetSetResourceTest
 		// The largest set comes first when no sort is requested
 
 		_assertSimilarAssetSetTitles(
-			_getSimilarAssetSetsPage(groupId, null, null, null), "Summer Sale",
-			_PRODUCT_LAUNCH_TITLE);
+			_getSimilarAssetSetsPage(groupId, null, null, null, null),
+			"Summer Sale", _PRODUCT_LAUNCH_TITLE);
 
 		_assertSimilarAssetSetTitles(
-			_getSimilarAssetSetsPage(groupId, null, null, "title:asc"),
+			_getSimilarAssetSetsPage(groupId, null, null, null, "title:asc"),
 			_PRODUCT_LAUNCH_TITLE, "Summer Sale");
 		_assertSimilarAssetSetTitles(
-			_getSimilarAssetSetsPage(groupId, null, null, "title:desc"),
+			_getSimilarAssetSetsPage(groupId, null, null, null, "title:desc"),
 			"Summer Sale", _PRODUCT_LAUNCH_TITLE);
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
@@ -491,13 +497,24 @@ public class SimilarAssetSetResourceTest
 		return maxDateModified;
 	}
 
+	private ServiceContext _getServiceContext(String... assetTagNames)
+		throws Exception {
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext();
+
+		serviceContext.setAssetTagNames(assetTagNames);
+
+		return serviceContext;
+	}
+
 	private Page<SimilarAssetSet> _getSimilarAssetSetsPage(
-			long groupId, Pagination pagination, String search,
-			String sortString)
+			long groupId, String dimension, Pagination pagination,
+			String search, String sortString)
 		throws Exception {
 
 		return similarAssetSetResource.getSimilarAssetSetsPage(
-			groupId, search, pagination, sortString);
+			groupId, dimension, search, pagination, sortString);
 	}
 
 	private void _testGetSimilarAssetSetsPageGraphQL() throws Exception {
@@ -547,6 +564,82 @@ public class SimilarAssetSetResourceTest
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
 
+	private void _testGetSimilarAssetSetsPageMetadata() throws Exception {
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		long groupId = depotEntry.getGroupId();
+
+		ObjectDefinition objectDefinition =
+			_getBasicWebContentObjectDefinition();
+
+		// Two contents that share their tags and nothing else, plus one tagged
+		// differently
+
+		String[] assetTagNames = {
+			RandomTestUtil.randomString(), RandomTestUtil.randomString()
+		};
+
+		_addObjectEntry(
+			depotEntry, objectDefinition, RandomTestUtil.randomString(),
+			_SIMILAR_CONTENT, _getServiceContext(assetTagNames));
+		_addObjectEntry(
+			depotEntry, objectDefinition, RandomTestUtil.randomString(),
+			_DISTINCT_CONTENT, _getServiceContext(assetTagNames));
+
+		_addObjectEntry(
+			depotEntry, objectDefinition, RandomTestUtil.randomString(),
+			_PRODUCT_LAUNCH_CONTENT,
+			_getServiceContext(RandomTestUtil.randomString()));
+
+		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
+			groupId, "METADATA", null, null, null);
+
+		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
+
+		List<SimilarAssetSet> similarAssetSets =
+			(List<SimilarAssetSet>)similarAssetSetsPage.getItems();
+
+		Assert.assertEquals(
+			similarAssetSets.toString(), 1, similarAssetSets.size());
+
+		SimilarAssetSet similarAssetSet = similarAssetSets.get(0);
+
+		Assert.assertEquals(
+			2, GetterUtil.getInteger(similarAssetSet.getSize()));
+
+		// The texts differ, so the same content is no duplication at all along
+		// the text dimension
+
+		similarAssetSetsPage = _getSimilarAssetSetsPage(
+			groupId, null, null, null, null);
+
+		Assert.assertEquals(0, similarAssetSetsPage.getTotalCount());
+
+		// A category is the same category in every translation, so the Spanish
+		// reader sees the same set even though none of the content has a
+		// Spanish translation. Indexed per language it would see nothing
+
+		SimilarAssetSetResource spanishSimilarAssetSetResource =
+			SimilarAssetSetResource.builder(
+			).authentication(
+				_getAdminUserEmailAddress(), PropsValues.DEFAULT_ADMIN_PASSWORD
+			).endpoint(
+				testCompany.getVirtualHostname(),
+				PortalUtil.getPortalServerPort(false), "http"
+			).locale(
+				LocaleUtil.SPAIN
+			).build();
+
+		similarAssetSetsPage =
+			spanishSimilarAssetSetResource.getSimilarAssetSetsPage(
+				groupId, "METADATA", null, null, null);
+
+		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
 	private void _testGetSimilarAssetSetsPagePermissions() throws Exception {
 		DepotEntry depotEntry = _addSpaceDepotEntry(
 			ServiceContextTestUtil.getServiceContext());
@@ -564,7 +657,7 @@ public class SimilarAssetSetResourceTest
 			_SIMILAR_CONTENT + " You can also contact support for help.");
 
 		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, null, null, null);
+			groupId, null, null, null, null);
 
 		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
 
@@ -612,7 +705,7 @@ public class SimilarAssetSetResourceTest
 
 		similarAssetSetsPage =
 			userSimilarAssetSetResource.getSimilarAssetSetsPage(
-				groupId, null, null, null);
+				groupId, null, null, null, null);
 
 		Assert.assertEquals(0, similarAssetSetsPage.getTotalCount());
 
@@ -627,6 +720,33 @@ public class SimilarAssetSetResourceTest
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
 
+	private void _testGetSimilarAssetSetsPageRejectedDimension()
+		throws Exception {
+
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		for (String dimension : new String[] {"AUTHOR", "text"}) {
+			try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+					"com.liferay.portal.vulcan.internal.jaxrs.exception." +
+						"mapper.WebApplicationExceptionMapper",
+					LoggerTestUtil.ERROR)) {
+
+				_getSimilarAssetSetsPage(
+					depotEntry.getGroupId(), dimension, null, null, null);
+
+				Assert.fail(dimension);
+			}
+			catch (Problem.ProblemException problemException) {
+				Problem problem = problemException.getProblem();
+
+				Assert.assertEquals("BAD_REQUEST", problem.getStatus());
+			}
+		}
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
 	private void _testGetSimilarAssetSetsPageSearch() throws Exception {
 		DepotEntry depotEntry = _addSpaceDepotEntry(
 			ServiceContextTestUtil.getServiceContext());
@@ -636,7 +756,7 @@ public class SimilarAssetSetResourceTest
 		_addObjectEntries(depotEntry);
 
 		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, null, "press", null);
+			groupId, null, null, "press", null);
 
 		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
 
@@ -653,7 +773,7 @@ public class SimilarAssetSetResourceTest
 		// A set narrowed down to one asset keeps its full size and its name
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, null, "summer highlights", null);
+			groupId, null, null, "summer highlights", null);
 
 		Assert.assertEquals(1, similarAssetSetsPage.getTotalCount());
 
@@ -666,6 +786,53 @@ public class SimilarAssetSetResourceTest
 		_assertSimilarAssetSet(
 			similarAssetSets.get(0), 3, "Summer Sale",
 			new String[] {"Summer Sale Highlights"});
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
+	private void _testGetSimilarAssetSetsPageTitle() throws Exception {
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		long groupId = depotEntry.getGroupId();
+
+		ObjectDefinition objectDefinition =
+			_getBasicWebContentObjectDefinition();
+
+		// Two contents whose titles differ by one letter, over unrelated texts
+
+		_addObjectEntry(
+			depotEntry, objectDefinition, _SIMILAR_TITLE, _SIMILAR_CONTENT);
+		_addObjectEntry(
+			depotEntry, objectDefinition, "Reset Your Passwrod",
+			_DISTINCT_CONTENT);
+
+		_addObjectEntry(
+			depotEntry, objectDefinition, _PRODUCT_LAUNCH_TITLE,
+			_PRODUCT_LAUNCH_CONTENT);
+
+		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
+			groupId, "TITLE", null, null, null);
+
+		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
+
+		List<SimilarAssetSet> similarAssetSets =
+			(List<SimilarAssetSet>)similarAssetSetsPage.getItems();
+
+		Assert.assertEquals(
+			similarAssetSets.toString(), 1, similarAssetSets.size());
+
+		SimilarAssetSet similarAssetSet = similarAssetSets.get(0);
+
+		Assert.assertEquals(
+			2, GetterUtil.getInteger(similarAssetSet.getSize()));
+
+		// A typo is invisible to the text dimension, whose texts are unrelated
+
+		similarAssetSetsPage = _getSimilarAssetSetsPage(
+			groupId, null, null, null, null);
+
+		Assert.assertEquals(0, similarAssetSetsPage.getTotalCount());
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -700,7 +867,7 @@ public class SimilarAssetSetResourceTest
 
 		Page<SimilarAssetSet> similarAssetSetsPage =
 			spanishSimilarAssetSetResource.getSimilarAssetSetsPage(
-				groupId, null, null, null);
+				groupId, null, null, null, null);
 
 		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
 
@@ -715,7 +882,7 @@ public class SimilarAssetSetResourceTest
 			new String[] {"Oferta de Verano Grande", "Oferta de Verano 2026"});
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, null, null, null);
+			groupId, null, null, null, null);
 
 		Assert.assertEquals(0, similarAssetSetsPage.getTotalCount());
 

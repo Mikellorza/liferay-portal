@@ -5,11 +5,12 @@
 
 package com.liferay.site.cms.site.initializer.internal.search.similar.asset;
 
-import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -28,68 +29,88 @@ public class SimilarAssetUtilTest {
 		LiferayUnitTestRule.INSTANCE;
 
 	@Test
-	public void testBlankTextYieldsNoSimilarAssets() {
-		Assert.assertEquals(0, SimilarAssetUtil.getSimilarAssets(null).length);
-		Assert.assertEquals(0, SimilarAssetUtil.getSimilarAssets("").length);
-		Assert.assertEquals(0, SimilarAssetUtil.getSimilarAssets("   ").length);
-	}
+	public void testGetSimilarAssetsIgnoresElementOrder() {
+		Set<String> elements = _getElements(0, 200);
 
-	@Test
-	public void testDeterministic() {
+		Set<String> reversedElements = new LinkedHashSet<>();
+
+		for (int i = 199; i >= 0; i--) {
+			reversedElements.add("e" + i);
+		}
+
 		Assert.assertArrayEquals(
-			SimilarAssetUtil.getSimilarAssets(_A),
-			SimilarAssetUtil.getSimilarAssets(_A));
+			SimilarAssetUtil.getSimilarAssets(elements),
+			SimilarAssetUtil.getSimilarAssets(reversedElements));
 	}
 
 	@Test
-	public void testDeterministicAcrossDefaultLocales() {
-		Locale defaultLocale = LocaleUtil.getDefault();
+	public void testGetSimilarAssetsIsDeterministic() {
+		Set<String> elements = _getElements(0, 200);
 
-		try {
-			LocaleUtil.setDefault("en", "US", null);
-
-			String[] similarAssets = SimilarAssetUtil.getSimilarAssets(
-				_TURKISH);
-
-			LocaleUtil.setDefault("tr", "TR", null);
-
-			Assert.assertArrayEquals(
-				similarAssets, SimilarAssetUtil.getSimilarAssets(_TURKISH));
-		}
-		finally {
-			LocaleUtil.setDefault(
-				defaultLocale.getLanguage(), defaultLocale.getCountry(),
-				defaultLocale.getVariant());
-		}
+		Assert.assertArrayEquals(
+			SimilarAssetUtil.getSimilarAssets(elements),
+			SimilarAssetUtil.getSimilarAssets(elements));
 	}
 
 	@Test
-	public void testDistinctTextSharesNoSimilarAssets() {
-		Assert.assertEquals(0, _getSharedSimilarAssetCount(_A, _DISTINCT));
+	public void testGetSimilarAssetsIsEmptyWithoutElements() {
+		Assert.assertEquals(0, SimilarAssetUtil.getSimilarAssets(null).length);
+		Assert.assertEquals(
+			0,
+			SimilarAssetUtil.getSimilarAssets(Collections.emptySet()).length);
 	}
 
 	@Test
-	public void testSimilarTextSharesMoreThanDistinct() {
+	public void testGetSimilarAssetsSharesMoreTheMoreTheSetsOverlap() {
+		int wideOverlapCount = _getSharedSimilarAssetCount(
+			_getElements(0, 200), _getElements(20, 220));
+		int narrowOverlapCount = _getSharedSimilarAssetCount(
+			_getElements(0, 200), _getElements(100, 300));
+
 		Assert.assertTrue(
-			_getSharedSimilarAssetCount(_A, _A + " 2") >
-				_getSharedSimilarAssetCount(_A, _DISTINCT));
+			wideOverlapCount + " vs " + narrowOverlapCount,
+			wideOverlapCount > narrowOverlapCount);
 	}
 
 	@Test
-	public void testSimilarTextSharesMostSimilarAssets() {
-		Assert.assertTrue(_getSharedSimilarAssetCount(_A, _A + " 2") >= 20);
+	public void testGetSimilarAssetsSharesNothingBetweenDistinctSets() {
+		Assert.assertEquals(
+			0,
+			_getSharedSimilarAssetCount(
+				_getElements(0, 200), _getElements(1000, 1200)));
 	}
 
-	private int _getSharedSimilarAssetCount(String text1, String text2) {
+	@Test
+	public void testGetSimilarAssetsYieldsOneTokenPerBand() {
+		Assert.assertEquals(
+			32,
+			SimilarAssetUtil.getSimilarAssets(
+				Collections.singleton(RandomTestUtil.randomString())).length);
+	}
+
+	private Set<String> _getElements(int start, int end) {
+		Set<String> elements = new LinkedHashSet<>();
+
+		for (int i = start; i < end; i++) {
+			elements.add("e" + i);
+		}
+
+		return elements;
+	}
+
+	private int _getSharedSimilarAssetCount(
+		Set<String> elements1, Set<String> elements2) {
+
 		Set<String> similarAssets = new HashSet<>();
 
-		for (String similarAsset : SimilarAssetUtil.getSimilarAssets(text1)) {
-			similarAssets.add(similarAsset);
-		}
+		Collections.addAll(
+			similarAssets, SimilarAssetUtil.getSimilarAssets(elements1));
 
 		int count = 0;
 
-		for (String similarAsset : SimilarAssetUtil.getSimilarAssets(text2)) {
+		for (String similarAsset :
+				SimilarAssetUtil.getSimilarAssets(elements2)) {
+
 			if (similarAssets.contains(similarAsset)) {
 				count++;
 			}
@@ -97,20 +118,5 @@ public class SimilarAssetUtilTest {
 
 		return count;
 	}
-
-	private static final String _A =
-		"If you forgot your password, go to the login page and click the " +
-			"forgot password link. Enter your email address and you will " +
-				"receive an email with instructions to create a new password.";
-
-	private static final String _DISTINCT =
-		"The quarterly sales report shows strong revenue growth across the " +
-			"European market. Product categories in retail and wholesale " +
-				"increased during the last fiscal period.";
-
-	private static final String _TURKISH =
-		"KULLANICI ADINIZI VE \u0130NTERNET \u015E\u0130FREN\u0130Z\u0130 " +
-			"G\u0130R\u0130N VE OTURUM A\u00c7MAK \u0130\u00c7\u0130N " +
-				"\u0130LER\u0130 D\u00dc\u011eMES\u0130NE BASIN";
 
 }

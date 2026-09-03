@@ -6,6 +6,7 @@
 package com.liferay.site.cms.site.initializer.internal.search.spi.index.configuration.contributor;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
@@ -50,7 +51,11 @@ public class CMSSimilarAssetCompanyIndexConfigurationContributorTest {
 		);
 
 		Assert.assertEquals(
-			"{\"properties\": {\"similarAssets\": {\"type\": \"keyword\"}}}",
+			StringBundler.concat(
+				"{\"properties\": {\"metadataSimilarAssets\": {\"type\": ",
+				"\"keyword\"},\"textSimilarAssets\": {\"type\": ",
+				"\"keyword\"},\"titleSimilarAssets\": {\"type\": ",
+				"\"keyword\"}}}"),
 			StringUtil.removeChars(
 				argumentCaptor.getValue(), CharPool.NEW_LINE, CharPool.RETURN,
 				CharPool.TAB));
