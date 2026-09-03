@@ -87,6 +87,27 @@ public class SimilarAsset implements Cloneable, Serializable {
 
 	protected Long id;
 
+	public String getItemURL() {
+		return itemURL;
+	}
+
+	public void setItemURL(String itemURL) {
+		this.itemURL = itemURL;
+	}
+
+	public void setItemURL(
+		UnsafeSupplier<String, Exception> itemURLUnsafeSupplier) {
+
+		try {
+			itemURL = itemURLUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String itemURL;
+
 	public String getTitle() {
 		return title;
 	}
@@ -140,4 +161,4 @@ public class SimilarAsset implements Cloneable, Serializable {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-522998368
+// LIFERAY-REST-BUILDER-HASH:1534178113

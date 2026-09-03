@@ -51,7 +51,7 @@ public abstract class BaseSimilarAssetSetResourceImpl
 	 * curl -X 'GET' 'http://localhost:8080/o/headless-cms/v1.0/similar-asset-sets'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so its size never depends on the requested page. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size."
+		description = "List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so neither its size nor its name ever depends on the requested page. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size."
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -533,4 +533,4 @@ public abstract class BaseSimilarAssetSetResourceImpl
 		LogFactoryUtil.getLog(BaseSimilarAssetSetResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1273675676
+// LIFERAY-REST-BUILDER-HASH:-21878863

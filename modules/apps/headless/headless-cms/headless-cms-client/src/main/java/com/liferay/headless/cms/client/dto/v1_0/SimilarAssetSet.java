@@ -65,6 +65,27 @@ public class SimilarAssetSet implements Cloneable, Serializable {
 
 	protected Integer size;
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setTitle(
+		UnsafeSupplier<String, Exception> titleUnsafeSupplier) {
+
+		try {
+			title = titleUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String title;
+
 	@Override
 	public SimilarAssetSet clone() throws CloneNotSupportedException {
 		return (SimilarAssetSet)super.clone();
@@ -97,4 +118,4 @@ public class SimilarAssetSet implements Cloneable, Serializable {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-697577447
+// LIFERAY-REST-BUILDER-HASH:1356868600
