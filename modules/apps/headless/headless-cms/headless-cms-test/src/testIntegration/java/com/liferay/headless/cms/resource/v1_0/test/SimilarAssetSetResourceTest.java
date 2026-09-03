@@ -55,6 +55,7 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -90,7 +91,7 @@ public class SimilarAssetSetResourceTest
 			_getBasicWebContentObjectDefinition();
 
 		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, null);
+			groupId, null, null, null);
 
 		Assert.assertEquals(0, similarAssetSetsPage.getTotalCount());
 
@@ -110,7 +111,8 @@ public class SimilarAssetSetResourceTest
 			depotEntry, objectDefinition, RandomTestUtil.randomString(),
 			_DISTINCT_CONTENT);
 
-		similarAssetSetsPage = _getSimilarAssetSetsPage(groupId, null);
+		similarAssetSetsPage = _getSimilarAssetSetsPage(
+			groupId, null, null, null);
 
 		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
 
@@ -160,6 +162,7 @@ public class SimilarAssetSetResourceTest
 
 		_testGetSimilarAssetSetsPageGraphQL();
 		_testGetSimilarAssetSetsPagePermissions();
+		_testGetSimilarAssetSetsPageSearch();
 		_testGetSimilarAssetSetsPageTranslation();
 	}
 
@@ -174,7 +177,7 @@ public class SimilarAssetSetResourceTest
 		_addObjectEntries(depotEntry);
 
 		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, Pagination.of(1, 2));
+			groupId, Pagination.of(1, 2), null, null);
 
 		Assert.assertEquals(5, similarAssetSetsPage.getTotalCount());
 
@@ -189,7 +192,7 @@ public class SimilarAssetSetResourceTest
 			new String[] {"Big Summer Sale", "Summer Sale 2026"});
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, Pagination.of(2, 2));
+			groupId, Pagination.of(2, 2), null, null);
 
 		Assert.assertEquals(5, similarAssetSetsPage.getTotalCount());
 
@@ -207,7 +210,7 @@ public class SimilarAssetSetResourceTest
 			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, Pagination.of(3, 2));
+			groupId, Pagination.of(3, 2), null, null);
 
 		Assert.assertEquals(5, similarAssetSetsPage.getTotalCount());
 
@@ -220,6 +223,60 @@ public class SimilarAssetSetResourceTest
 		_assertSimilarAssetSet(
 			similarAssetSets.get(0), 2, _PRODUCT_LAUNCH_TITLE,
 			new String[] {_PRODUCT_LAUNCH_TITLE});
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
+	@Override
+	@Test
+	public void testGetSimilarAssetSetsPageWithSortDateTime() throws Exception {
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		_addObjectEntries(depotEntry);
+
+		for (String sortString :
+				new String[] {"dateModified:asc", "dateModified:desc"}) {
+
+			Page<SimilarAssetSet> similarAssetSetsPage =
+				_getSimilarAssetSetsPage(
+					depotEntry.getGroupId(), null, null, sortString);
+
+			List<SimilarAssetSet> similarAssetSets =
+				(List<SimilarAssetSet>)similarAssetSetsPage.getItems();
+
+			Assert.assertEquals(
+				similarAssetSets.toString(), 2, similarAssetSets.size());
+
+			_assertSortedByDateModified(
+				similarAssetSets, sortString.endsWith(":asc"));
+		}
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
+	@Override
+	@Test
+	public void testGetSimilarAssetSetsPageWithSortString() throws Exception {
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		long groupId = depotEntry.getGroupId();
+
+		_addObjectEntries(depotEntry);
+
+		// The largest set comes first when no sort is requested
+
+		_assertSimilarAssetSetTitles(
+			_getSimilarAssetSetsPage(groupId, null, null, null), "Summer Sale",
+			_PRODUCT_LAUNCH_TITLE);
+
+		_assertSimilarAssetSetTitles(
+			_getSimilarAssetSetsPage(groupId, null, null, "title:asc"),
+			_PRODUCT_LAUNCH_TITLE, "Summer Sale");
+		_assertSimilarAssetSetTitles(
+			_getSimilarAssetSetsPage(groupId, null, null, "title:desc"),
+			"Summer Sale", _PRODUCT_LAUNCH_TITLE);
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -359,6 +416,48 @@ public class SimilarAssetSetResourceTest
 		}
 	}
 
+	private void _assertSimilarAssetSetTitles(
+		Page<SimilarAssetSet> similarAssetSetsPage, String... titles) {
+
+		List<SimilarAssetSet> similarAssetSets =
+			(List<SimilarAssetSet>)similarAssetSetsPage.getItems();
+
+		Assert.assertEquals(
+			similarAssetSets.toString(), titles.length,
+			similarAssetSets.size());
+
+		for (int i = 0; i < titles.length; i++) {
+			SimilarAssetSet similarAssetSet = similarAssetSets.get(i);
+
+			Assert.assertEquals(titles[i], similarAssetSet.getTitle());
+		}
+	}
+
+	private void _assertSortedByDateModified(
+		List<SimilarAssetSet> similarAssetSets, boolean ascending) {
+
+		Date previousDateModified = null;
+
+		for (SimilarAssetSet similarAssetSet : similarAssetSets) {
+			Date dateModified = _getMaxDateModified(similarAssetSet);
+
+			Assert.assertNotNull(dateModified);
+
+			if (previousDateModified != null) {
+				if (ascending) {
+					Assert.assertFalse(
+						dateModified.before(previousDateModified));
+				}
+				else {
+					Assert.assertFalse(
+						dateModified.after(previousDateModified));
+				}
+			}
+
+			previousDateModified = dateModified;
+		}
+	}
+
 	private String _getAdminUserEmailAddress() throws Exception {
 		User user = UserTestUtil.getAdminUser(testCompany.getCompanyId());
 
@@ -376,12 +475,29 @@ public class SimilarAssetSetResourceTest
 				"L_CMS_BASIC_WEB_CONTENT", cmsGroup.getCompanyId());
 	}
 
+	private Date _getMaxDateModified(SimilarAssetSet similarAssetSet) {
+		Date maxDateModified = null;
+
+		for (SimilarAsset similarAsset : similarAssetSet.getSimilarAssets()) {
+			Date dateModified = similarAsset.getDateModified();
+
+			if ((maxDateModified == null) ||
+				dateModified.after(maxDateModified)) {
+
+				maxDateModified = dateModified;
+			}
+		}
+
+		return maxDateModified;
+	}
+
 	private Page<SimilarAssetSet> _getSimilarAssetSetsPage(
-			long groupId, Pagination pagination)
+			long groupId, Pagination pagination, String search,
+			String sortString)
 		throws Exception {
 
 		return similarAssetSetResource.getSimilarAssetSetsPage(
-			groupId, pagination);
+			groupId, search, pagination, sortString);
 	}
 
 	private void _testGetSimilarAssetSetsPageGraphQL() throws Exception {
@@ -448,7 +564,7 @@ public class SimilarAssetSetResourceTest
 			_SIMILAR_CONTENT + " You can also contact support for help.");
 
 		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
-			groupId, null);
+			groupId, null, null, null);
 
 		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
 
@@ -495,7 +611,8 @@ public class SimilarAssetSetResourceTest
 			).build();
 
 		similarAssetSetsPage =
-			userSimilarAssetSetResource.getSimilarAssetSetsPage(groupId, null);
+			userSimilarAssetSetResource.getSimilarAssetSetsPage(
+				groupId, null, null, null);
 
 		Assert.assertEquals(0, similarAssetSetsPage.getTotalCount());
 
@@ -506,6 +623,49 @@ public class SimilarAssetSetResourceTest
 			similarAssetSets.toString(), 0, similarAssetSets.size());
 
 		_userLocalService.deleteUser(user);
+
+		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
+	}
+
+	private void _testGetSimilarAssetSetsPageSearch() throws Exception {
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		long groupId = depotEntry.getGroupId();
+
+		_addObjectEntries(depotEntry);
+
+		Page<SimilarAssetSet> similarAssetSetsPage = _getSimilarAssetSetsPage(
+			groupId, null, "press", null);
+
+		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
+
+		List<SimilarAssetSet> similarAssetSets =
+			(List<SimilarAssetSet>)similarAssetSetsPage.getItems();
+
+		Assert.assertEquals(
+			similarAssetSets.toString(), 1, similarAssetSets.size());
+
+		_assertSimilarAssetSet(
+			similarAssetSets.get(0), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE, _PRODUCT_LAUNCH_TITLE});
+
+		// A set narrowed down to one asset keeps its full size and its name
+
+		similarAssetSetsPage = _getSimilarAssetSetsPage(
+			groupId, null, "summer highlights", null);
+
+		Assert.assertEquals(1, similarAssetSetsPage.getTotalCount());
+
+		similarAssetSets =
+			(List<SimilarAssetSet>)similarAssetSetsPage.getItems();
+
+		Assert.assertEquals(
+			similarAssetSets.toString(), 1, similarAssetSets.size());
+
+		_assertSimilarAssetSet(
+			similarAssetSets.get(0), 3, "Summer Sale",
+			new String[] {"Summer Sale Highlights"});
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -540,7 +700,7 @@ public class SimilarAssetSetResourceTest
 
 		Page<SimilarAssetSet> similarAssetSetsPage =
 			spanishSimilarAssetSetResource.getSimilarAssetSetsPage(
-				groupId, null);
+				groupId, null, null, null);
 
 		Assert.assertEquals(2, similarAssetSetsPage.getTotalCount());
 
@@ -554,7 +714,8 @@ public class SimilarAssetSetResourceTest
 			similarAssetSets.get(0), 2, "Oferta de Verano",
 			new String[] {"Oferta de Verano Grande", "Oferta de Verano 2026"});
 
-		similarAssetSetsPage = _getSimilarAssetSetsPage(groupId, null);
+		similarAssetSetsPage = _getSimilarAssetSetsPage(
+			groupId, null, null, null);
 
 		Assert.assertEquals(0, similarAssetSetsPage.getTotalCount());
 

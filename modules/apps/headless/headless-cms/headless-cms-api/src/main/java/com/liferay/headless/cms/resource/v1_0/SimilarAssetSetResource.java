@@ -46,7 +46,8 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface SimilarAssetSetResource {
 
 	public Page<SimilarAssetSet> getSimilarAssetSetsPage(
-			Long assetLibraryId, Pagination pagination)
+			Long assetLibraryId, String search, Pagination pagination,
+			com.liferay.portal.kernel.search.Sort[] sorts)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
@@ -137,4 +138,4 @@ public interface SimilarAssetSetResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:1088551045
+// LIFERAY-REST-BUILDER-HASH:-1350410839

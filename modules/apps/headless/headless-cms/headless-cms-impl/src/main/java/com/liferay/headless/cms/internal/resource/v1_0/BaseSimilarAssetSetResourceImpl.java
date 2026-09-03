@@ -15,12 +15,14 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.odata.filter.ExpressionConvert;
 import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.ActionUtil;
 import com.liferay.portal.vulcan.util.UriInfoUtil;
 
@@ -29,6 +31,7 @@ import jakarta.annotation.Generated;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.util.Collection;
@@ -43,7 +46,7 @@ import java.util.Map;
 @Generated("")
 @jakarta.ws.rs.Path("/v1.0")
 public abstract class BaseSimilarAssetSetResourceImpl
-	implements SimilarAssetSetResource {
+	implements EntityModelResource, SimilarAssetSetResource {
 
 	/**
 	 * Invoke this method with the command line:
@@ -51,7 +54,7 @@ public abstract class BaseSimilarAssetSetResourceImpl
 	 * curl -X 'GET' 'http://localhost:8080/o/headless-cms/v1.0/similar-asset-sets'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so neither its size nor its name ever depends on the requested page. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size."
+		description = "List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so neither its size nor its name ever depends on the requested page, on the search or on the sort. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size."
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -66,6 +69,16 @@ public abstract class BaseSimilarAssetSetResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "pageSize"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				description = "Keep only the assets whose title holds every keyword, and only the sets that still hold an asset. A set keeps its full size, so its size can exceed the number of assets it shows.",
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "search"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				description = "Order the sets by title or by dateModified, which reads the most recently modified asset of each set. Sets are ordered by size, largest first, when omitted.",
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "sort"
 			)
 		}
 	)
@@ -82,10 +95,22 @@ public abstract class BaseSimilarAssetSetResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.ws.rs.QueryParam("assetLibraryId")
 			Long assetLibraryId,
-			@jakarta.ws.rs.core.Context Pagination pagination)
+			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
+			@jakarta.ws.rs.QueryParam("search")
+			String search,
+			@jakarta.ws.rs.core.Context Pagination pagination,
+			@jakarta.ws.rs.core.Context com.liferay.portal.kernel.search.Sort[]
+				sorts)
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
+	}
+
+	@Override
+	public EntityModel getEntityModel(MultivaluedMap multivaluedMap)
+		throws Exception {
+
+		return null;
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {
@@ -533,4 +558,4 @@ public abstract class BaseSimilarAssetSetResourceImpl
 		LogFactoryUtil.getLog(BaseSimilarAssetSetResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:-21878863
+// LIFERAY-REST-BUILDER-HASH:-765199693
