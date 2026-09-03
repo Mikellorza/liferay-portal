@@ -275,7 +275,7 @@ paths:
     "/similar-asset-sets":
         get:
             description:
-                List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so neither its size nor its name ever depends on the requested page. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size.
+                List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so neither its size nor its name ever depends on the requested page, on the search or on the sort. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size.
             operationId: getSimilarAssetSetsPage
             parameters:
                 -   in: query
@@ -291,6 +291,18 @@ paths:
                     name: pageSize
                     schema:
                         type: integer
+                -   in: query
+                    description:
+                        Keep only the assets whose title holds every keyword, and only the sets that still hold an asset. A set keeps its full size, so its size can exceed the number of assets it shows.
+                    name: search
+                    schema:
+                        type: string
+                -   in: query
+                    description:
+                        Order the sets by title or by dateModified, which reads the most recently modified asset of each set. Sets are ordered by size, largest first, when omitted.
+                    name: sort
+                    schema:
+                        type: string
             responses:
                 200:
                     content:
