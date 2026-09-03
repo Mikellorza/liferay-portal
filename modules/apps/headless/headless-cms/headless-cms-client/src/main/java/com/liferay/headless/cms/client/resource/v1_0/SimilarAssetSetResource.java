@@ -35,11 +35,13 @@ public interface SimilarAssetSetResource {
 	}
 
 	public Page<SimilarAssetSet> getSimilarAssetSetsPage(
-			Long assetLibraryId, Pagination pagination)
+			Long assetLibraryId, String search, Pagination pagination,
+			String sortString)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse getSimilarAssetSetsPageHttpResponse(
-			Long assetLibraryId, Pagination pagination)
+			Long assetLibraryId, String search, Pagination pagination,
+			String sortString)
 		throws Exception;
 
 	public static class Builder {
@@ -152,11 +154,13 @@ public interface SimilarAssetSetResource {
 		implements SimilarAssetSetResource {
 
 		public Page<SimilarAssetSet> getSimilarAssetSetsPage(
-				Long assetLibraryId, Pagination pagination)
+				Long assetLibraryId, String search, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				getSimilarAssetSetsPageHttpResponse(assetLibraryId, pagination);
+				getSimilarAssetSetsPageHttpResponse(
+					assetLibraryId, search, pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -218,7 +222,8 @@ public interface SimilarAssetSetResource {
 		}
 
 		public HttpInvoker.HttpResponse getSimilarAssetSetsPageHttpResponse(
-				Long assetLibraryId, Pagination pagination)
+				Long assetLibraryId, String search, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -247,11 +252,19 @@ public interface SimilarAssetSetResource {
 					"assetLibraryId", String.valueOf(assetLibraryId));
 			}
 
+			if (search != null) {
+				httpInvoker.parameter("search", String.valueOf(search));
+			}
+
 			if (pagination != null) {
 				httpInvoker.parameter(
 					"page", String.valueOf(pagination.getPage()));
 				httpInvoker.parameter(
 					"pageSize", String.valueOf(pagination.getPageSize()));
+			}
+
+			if (sortString != null) {
+				httpInvoker.parameter("sort", sortString);
 			}
 
 			httpInvoker.path(
@@ -279,4 +292,4 @@ public interface SimilarAssetSetResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1724568166
+// LIFERAY-REST-BUILDER-HASH:-947162973

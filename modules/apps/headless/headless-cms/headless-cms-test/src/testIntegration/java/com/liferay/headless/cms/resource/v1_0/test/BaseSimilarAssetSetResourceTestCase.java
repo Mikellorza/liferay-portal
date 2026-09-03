@@ -19,6 +19,7 @@ import com.liferay.headless.cms.client.pagination.Page;
 import com.liferay.headless.cms.client.pagination.Pagination;
 import com.liferay.headless.cms.client.resource.v1_0.SimilarAssetSetResource;
 import com.liferay.headless.cms.client.serdes.v1_0.SimilarAssetSetSerDes;
+import com.liferay.petra.function.UnsafeTriConsumer;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
@@ -38,6 +39,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.test.rule.Inject;
@@ -187,7 +189,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 	public void testGetSimilarAssetSetsPage() throws Exception {
 		Page<SimilarAssetSet> page =
 			similarAssetSetResource.getSimilarAssetSetsPage(
-				null, Pagination.of(1, 10));
+				null, null, Pagination.of(1, 10), null);
 
 		long totalCount = page.getTotalCount();
 
@@ -200,7 +202,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 				randomSimilarAssetSet());
 
 		page = similarAssetSetResource.getSimilarAssetSetsPage(
-			null, Pagination.of(1, (int)totalCount + 2));
+			null, null, Pagination.of(1, (int)totalCount + 2), null);
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
@@ -223,7 +225,8 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 	@Test
 	public void testGetSimilarAssetSetsPageWithPagination() throws Exception {
 		Page<SimilarAssetSet> similarAssetSetsPage =
-			similarAssetSetResource.getSimilarAssetSetsPage(null, null);
+			similarAssetSetResource.getSimilarAssetSetsPage(
+				null, null, null, null);
 
 		int totalCount = GetterUtil.getInteger(
 			similarAssetSetsPage.getTotalCount());
@@ -247,10 +250,11 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 		if (totalCount >= (pageSizeLimit - 2)) {
 			Page<SimilarAssetSet> page1 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null,
+					null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 1.0) / pageSizeLimit),
-						pageSizeLimit));
+						pageSizeLimit),
+					null);
 
 			Assert.assertEquals(totalCount + 3, page1.getTotalCount());
 
@@ -259,20 +263,22 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 			Page<SimilarAssetSet> page2 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null,
+					null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 2.0) / pageSizeLimit),
-						pageSizeLimit));
+						pageSizeLimit),
+					null);
 
 			assertContains(
 				similarAssetSet2, (List<SimilarAssetSet>)page2.getItems());
 
 			Page<SimilarAssetSet> page3 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null,
+					null, null,
 					Pagination.of(
 						(int)Math.ceil((totalCount + 3.0) / pageSizeLimit),
-						pageSizeLimit));
+						pageSizeLimit),
+					null);
 
 			assertContains(
 				similarAssetSet3, (List<SimilarAssetSet>)page3.getItems());
@@ -280,7 +286,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 		else {
 			Page<SimilarAssetSet> page1 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, Pagination.of(1, totalCount + 2));
+					null, null, Pagination.of(1, totalCount + 2), null);
 
 			List<SimilarAssetSet> similarAssetSets1 =
 				(List<SimilarAssetSet>)page1.getItems();
@@ -291,7 +297,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 			Page<SimilarAssetSet> page2 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, Pagination.of(2, totalCount + 2));
+					null, null, Pagination.of(2, totalCount + 2), null);
 
 			Assert.assertEquals(totalCount + 3, page2.getTotalCount());
 
@@ -303,7 +309,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 			Page<SimilarAssetSet> page3 =
 				similarAssetSetResource.getSimilarAssetSetsPage(
-					null, Pagination.of(1, (int)totalCount + 3));
+					null, null, Pagination.of(1, (int)totalCount + 3), null);
 
 			assertContains(
 				similarAssetSet1, (List<SimilarAssetSet>)page3.getItems());
@@ -311,6 +317,146 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 				similarAssetSet2, (List<SimilarAssetSet>)page3.getItems());
 			assertContains(
 				similarAssetSet3, (List<SimilarAssetSet>)page3.getItems());
+		}
+	}
+
+	@Test
+	public void testGetSimilarAssetSetsPageWithSortDateTime() throws Exception {
+		testGetSimilarAssetSetsPageWithSort(
+			EntityField.Type.DATE_TIME,
+			(entityField, similarAssetSet1, similarAssetSet2) -> {
+				BeanTestUtil.setProperty(
+					similarAssetSet1, entityField.getName(),
+					new Date(System.currentTimeMillis() - (2 * Time.MINUTE)));
+			});
+	}
+
+	@Test
+	public void testGetSimilarAssetSetsPageWithSortDouble() throws Exception {
+		testGetSimilarAssetSetsPageWithSort(
+			EntityField.Type.DOUBLE,
+			(entityField, similarAssetSet1, similarAssetSet2) -> {
+				BeanTestUtil.setProperty(
+					similarAssetSet1, entityField.getName(), 0.1);
+				BeanTestUtil.setProperty(
+					similarAssetSet2, entityField.getName(), 0.5);
+			});
+	}
+
+	@Test
+	public void testGetSimilarAssetSetsPageWithSortInteger() throws Exception {
+		testGetSimilarAssetSetsPageWithSort(
+			EntityField.Type.INTEGER,
+			(entityField, similarAssetSet1, similarAssetSet2) -> {
+				BeanTestUtil.setProperty(
+					similarAssetSet1, entityField.getName(), 0);
+				BeanTestUtil.setProperty(
+					similarAssetSet2, entityField.getName(), 1);
+			});
+	}
+
+	@Test
+	public void testGetSimilarAssetSetsPageWithSortString() throws Exception {
+		testGetSimilarAssetSetsPageWithSort(
+			EntityField.Type.STRING,
+			(entityField, similarAssetSet1, similarAssetSet2) -> {
+				Class<?> clazz = similarAssetSet1.getClass();
+
+				String entityFieldName = entityField.getName();
+
+				Method method = clazz.getMethod(
+					"get" + StringUtil.upperCaseFirstLetter(entityFieldName));
+
+				Class<?> returnType = method.getReturnType();
+
+				if (returnType.isAssignableFrom(Map.class)) {
+					BeanTestUtil.setProperty(
+						similarAssetSet1, entityFieldName,
+						Collections.singletonMap("Aaa", "Aaa"));
+					BeanTestUtil.setProperty(
+						similarAssetSet2, entityFieldName,
+						Collections.singletonMap("Bbb", "Bbb"));
+				}
+				else if (entityFieldName.contains("email")) {
+					BeanTestUtil.setProperty(
+						similarAssetSet1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+					BeanTestUtil.setProperty(
+						similarAssetSet2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+				}
+				else {
+					BeanTestUtil.setProperty(
+						similarAssetSet1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+					BeanTestUtil.setProperty(
+						similarAssetSet2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+				}
+			});
+	}
+
+	protected void testGetSimilarAssetSetsPageWithSort(
+			EntityField.Type type,
+			UnsafeTriConsumer
+				<EntityField, SimilarAssetSet, SimilarAssetSet, Exception>
+					unsafeTriConsumer)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		SimilarAssetSet similarAssetSet1 = randomSimilarAssetSet();
+		SimilarAssetSet similarAssetSet2 = randomSimilarAssetSet();
+
+		for (EntityField entityField : entityFields) {
+			unsafeTriConsumer.accept(
+				entityField, similarAssetSet1, similarAssetSet2);
+		}
+
+		similarAssetSet1 = testGetSimilarAssetSetsPage_addSimilarAssetSet(
+			similarAssetSet1);
+
+		similarAssetSet2 = testGetSimilarAssetSetsPage_addSimilarAssetSet(
+			similarAssetSet2);
+
+		Page<SimilarAssetSet> page =
+			similarAssetSetResource.getSimilarAssetSetsPage(
+				null, null, null, null);
+
+		for (EntityField entityField : entityFields) {
+			Page<SimilarAssetSet> ascPage =
+				similarAssetSetResource.getSimilarAssetSetsPage(
+					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":asc");
+
+			assertContains(
+				similarAssetSet1, (List<SimilarAssetSet>)ascPage.getItems());
+			assertContains(
+				similarAssetSet2, (List<SimilarAssetSet>)ascPage.getItems());
+
+			Page<SimilarAssetSet> descPage =
+				similarAssetSetResource.getSimilarAssetSetsPage(
+					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":desc");
+
+			assertContains(
+				similarAssetSet2, (List<SimilarAssetSet>)descPage.getItems());
+			assertContains(
+				similarAssetSet1, (List<SimilarAssetSet>)descPage.getItems());
 		}
 	}
 
@@ -1019,4 +1165,4 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 		_similarAssetSetResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1886156349
+// LIFERAY-REST-BUILDER-HASH:-1435908792
