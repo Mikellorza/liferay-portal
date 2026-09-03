@@ -12,56 +12,45 @@ import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.bag.ObjectFieldBag;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.HtmlParser;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.site.cms.site.initializer.constants.SimilarAssetConstants;
 
 import java.io.Serializable;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 /**
+ * Compares CMS content by the prose of its indexed text fields, cut into
+ * sequences of three consecutive keywords. The title is left out on purpose,
+ * since it is a dimension of its own.
+ *
  * @author Mikel Lorza
  */
-public class CMSContentSimilarAssetTextExtractor {
+public class CMSContentSimilarAssetTextExtractor
+	implements CMSContentSimilarAssetExtractor {
 
 	public CMSContentSimilarAssetTextExtractor(HtmlParser htmlParser) {
 		_htmlParser = htmlParser;
 	}
 
-	public Set<String> getLanguageIds(ObjectEntry objectEntry)
+	@Override
+	public Set<String> getElements(
+			ObjectEntry objectEntry, String tokenLanguageId)
 		throws Exception {
 
-		Set<String> languageIds = new LinkedHashSet<>();
+		return _getKeywordSequences(getText(tokenLanguageId, objectEntry));
+	}
 
-		languageIds.add(objectEntry.getDefaultLanguageId());
-
-		Map<String, Serializable> indexedValues =
-			objectEntry.getIndexedValues();
-
-		ObjectDefinition objectDefinition = objectEntry.getObjectDefinition();
-
-		for (ObjectField objectField : _getObjectFields(objectDefinition)) {
-			if (!objectField.isLocalized()) {
-				continue;
-			}
-
-			Object localizedValues = indexedValues.get(
-				objectField.getI18nObjectFieldName());
-
-			if (!(localizedValues instanceof Map)) {
-				continue;
-			}
-
-			Map<?, ?> localizedValuesMap = (Map<?, ?>)localizedValues;
-
-			for (Object languageId : localizedValuesMap.keySet()) {
-				languageIds.add(String.valueOf(languageId));
-			}
-		}
-
-		return languageIds;
+	@Override
+	public String getFieldName() {
+		return SimilarAssetConstants.FIELD_NAME_TEXT;
 	}
 
 	public String getText(String languageId, ObjectEntry objectEntry)
@@ -112,6 +101,86 @@ public class CMSContentSimilarAssetTextExtractor {
 		return sb.toString();
 	}
 
+	@Override
+	public Set<String> getTokenLanguageIds(ObjectEntry objectEntry)
+		throws Exception {
+
+		Set<String> languageIds = new LinkedHashSet<>();
+
+		languageIds.add(objectEntry.getDefaultLanguageId());
+
+		Map<String, Serializable> indexedValues =
+			objectEntry.getIndexedValues();
+
+		ObjectDefinition objectDefinition = objectEntry.getObjectDefinition();
+
+		for (ObjectField objectField : _getObjectFields(objectDefinition)) {
+			if (!objectField.isLocalized()) {
+				continue;
+			}
+
+			Object localizedValues = indexedValues.get(
+				objectField.getI18nObjectFieldName());
+
+			if (!(localizedValues instanceof Map)) {
+				continue;
+			}
+
+			Map<?, ?> localizedValuesMap = (Map<?, ?>)localizedValues;
+
+			for (Object languageId : localizedValuesMap.keySet()) {
+				languageIds.add(String.valueOf(languageId));
+			}
+		}
+
+		return languageIds;
+	}
+
+	private Set<String> _getKeywordSequences(String text) {
+		Set<String> keywordSequences = new HashSet<>();
+
+		if (text == null) {
+			return keywordSequences;
+		}
+
+		String[] words = StringUtil.toLowerCase(
+			text, LocaleUtil.ENGLISH
+		).replaceAll(
+			"[^\\p{L}\\p{Nd}]+", " "
+		).trim(
+		).split(
+			"\\s+"
+		);
+
+		if ((words.length == 1) && words[0].isEmpty()) {
+			return keywordSequences;
+		}
+
+		if (words.length < _KEYWORD_SEQUENCE_SIZE) {
+			for (String word : words) {
+				keywordSequences.add(word);
+			}
+
+			return keywordSequences;
+		}
+
+		for (int i = 0; i <= (words.length - _KEYWORD_SEQUENCE_SIZE); i++) {
+			StringBundler sb = new StringBundler();
+
+			for (int j = 0; j < _KEYWORD_SEQUENCE_SIZE; j++) {
+				if (j > 0) {
+					sb.append(StringPool.SPACE);
+				}
+
+				sb.append(words[i + j]);
+			}
+
+			keywordSequences.add(sb.toString());
+		}
+
+		return keywordSequences;
+	}
+
 	private Iterable<ObjectField> _getObjectFields(
 		ObjectDefinition objectDefinition) {
 
@@ -158,6 +227,8 @@ public class CMSContentSimilarAssetTextExtractor {
 
 		return false;
 	}
+
+	private static final int _KEYWORD_SEQUENCE_SIZE = 3;
 
 	private final HtmlParser _htmlParser;
 

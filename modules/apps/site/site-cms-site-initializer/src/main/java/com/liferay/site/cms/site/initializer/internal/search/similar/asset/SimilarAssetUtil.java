@@ -14,32 +14,38 @@ import com.dynatrace.hash4j.similarity.SuperMinHashVersion;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Reduces the set of elements a dimension compares content by to the tokens
+ * two near duplicates literally share, so that an index that only matches
+ * equal values can answer which contents are similar.
+ *
+ * <p>
+ * What the elements are is the caller's decision, and it is the one thing that
+ * differs per dimension: sequences of keywords for prose, character n grams
+ * for titles, categories and tags for metadata.
+ * </p>
+ *
  * @author Mikel Lorza
  */
 public class SimilarAssetUtil {
 
-	public static String[] getSimilarAssets(String text) {
-		if (text == null) {
-			return new String[0];
-		}
-
-		Set<String> keywordSequences = _getKeywordSequences(text);
-
-		if (keywordSequences.isEmpty()) {
+	/**
+	 * Returns an empty array for an empty set, so content that yields no
+	 * element stays out of grouping rather than grouping with everything else
+	 * that also yields none.
+	 */
+	public static String[] getSimilarAssets(Set<String> elements) {
+		if ((elements == null) || elements.isEmpty()) {
 			return new String[0];
 		}
 
 		byte[] similarityHash = _similarityHashPolicy.createHasher(
 		).compute(
 			ElementHashProvider.ofCollection(
-				keywordSequences, _hasher64::hashCharsToLong)
+				elements, _hasher64::hashCharsToLong)
 		);
 
 		String[] similarAssets = new String[_SIMILAR_ASSETS];
@@ -64,50 +70,7 @@ public class SimilarAssetUtil {
 		return similarAssets;
 	}
 
-	private static Set<String> _getKeywordSequences(String text) {
-		Set<String> keywordSequences = new HashSet<>();
-
-		String[] words = StringUtil.toLowerCase(
-			text, LocaleUtil.ENGLISH
-		).replaceAll(
-			"[^\\p{L}\\p{Nd}]+", " "
-		).trim(
-		).split(
-			"\\s+"
-		);
-
-		if ((words.length == 1) && words[0].isEmpty()) {
-			return keywordSequences;
-		}
-
-		if (words.length < _KEYWORD_SEQUENCE_SIZE) {
-			for (String word : words) {
-				keywordSequences.add(word);
-			}
-
-			return keywordSequences;
-		}
-
-		for (int i = 0; i <= (words.length - _KEYWORD_SEQUENCE_SIZE); i++) {
-			StringBundler sb = new StringBundler();
-
-			for (int j = 0; j < _KEYWORD_SEQUENCE_SIZE; j++) {
-				if (j > 0) {
-					sb.append(StringPool.SPACE);
-				}
-
-				sb.append(words[i + j]);
-			}
-
-			keywordSequences.add(sb.toString());
-		}
-
-		return keywordSequences;
-	}
-
 	private static final int _BITS_PER_SAMPLE = 8;
-
-	private static final int _KEYWORD_SEQUENCE_SIZE = 3;
 
 	private static final int _SAMPLES_PER_SIMILAR_ASSET = 4;
 
