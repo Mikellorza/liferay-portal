@@ -172,11 +172,15 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 
 		SimilarAssetSet similarAssetSet = randomSimilarAssetSet();
 
+		similarAssetSet.setTitle(regex);
+
 		String json = SimilarAssetSetSerDes.toJSON(similarAssetSet);
 
 		Assert.assertFalse(json.contains(regex));
 
 		similarAssetSet = SimilarAssetSetSerDes.toDTO(json);
+
+		Assert.assertEquals(regex, similarAssetSet.getTitle());
 	}
 
 	@Test
@@ -414,6 +418,14 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("title", additionalAssertFieldName)) {
+				if (similarAssetSet.getTitle() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
 			throw new IllegalArgumentException(
 				"Invalid additional assert field name " +
 					additionalAssertFieldName);
@@ -555,6 +567,17 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("title", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						similarAssetSet1.getTitle(),
+						similarAssetSet2.getTitle())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			throw new IllegalArgumentException(
 				"Invalid additional assert field name " +
 					additionalAssertFieldName);
@@ -674,6 +697,52 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 			return sb.toString();
 		}
 
+		if (entityFieldName.equals("title")) {
+			Object object = similarAssetSet.getTitle();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
 		throw new IllegalArgumentException(
 			"Invalid entity field " + entityFieldName);
 	}
@@ -722,6 +791,7 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 		return new SimilarAssetSet() {
 			{
 				size = RandomTestUtil.randomInt();
+				title = StringUtil.toLowerCase(RandomTestUtil.randomString());
 			}
 		};
 	}
@@ -949,4 +1019,4 @@ public abstract class BaseSimilarAssetSetResourceTestCase {
 		_similarAssetSetResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:1318741929
+// LIFERAY-REST-BUILDER-HASH:-1886156349

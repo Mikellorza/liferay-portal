@@ -122,6 +122,7 @@ public class SimilarAssetSetResourceTest
 
 		SimilarAssetSet similarAssetSet = similarAssetSets.get(0);
 
+		Assert.assertEquals(_SIMILAR_TITLE, similarAssetSet.getTitle());
 		Assert.assertEquals(
 			2, GetterUtil.getInteger(similarAssetSet.getSize()));
 
@@ -139,6 +140,15 @@ public class SimilarAssetSetResourceTest
 				_SIMILAR_TITLE, similarAssetSetAsset.getTitle());
 			Assert.assertNotNull(similarAssetSetAsset.getContentType());
 			Assert.assertNotNull(similarAssetSetAsset.getDateModified());
+
+			String itemURL = similarAssetSetAsset.getItemURL();
+
+			Assert.assertTrue(
+				itemURL,
+				StringUtil.endsWith(
+					itemURL,
+					"/cms/edit_content_item?objectEntryId=" +
+						similarAssetSetAsset.getId()));
 		}
 
 		Assert.assertTrue(
@@ -175,7 +185,7 @@ public class SimilarAssetSetResourceTest
 			similarAssetSets.toString(), 1, similarAssetSets.size());
 
 		_assertSimilarAssetSet(
-			similarAssetSets.get(0), 3,
+			similarAssetSets.get(0), 3, "Summer Sale",
 			new String[] {"Big Summer Sale", "Summer Sale 2026"});
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
@@ -190,10 +200,11 @@ public class SimilarAssetSetResourceTest
 			similarAssetSets.toString(), 2, similarAssetSets.size());
 
 		_assertSimilarAssetSet(
-			similarAssetSets.get(0), 3,
+			similarAssetSets.get(0), 3, "Summer Sale",
 			new String[] {"Summer Sale Highlights"});
 		_assertSimilarAssetSet(
-			similarAssetSets.get(1), 2, new String[] {_PRODUCT_LAUNCH_TITLE});
+			similarAssetSets.get(1), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(
 			groupId, Pagination.of(3, 2));
@@ -207,7 +218,8 @@ public class SimilarAssetSetResourceTest
 			similarAssetSets.toString(), 1, similarAssetSets.size());
 
 		_assertSimilarAssetSet(
-			similarAssetSets.get(0), 2, new String[] {_PRODUCT_LAUNCH_TITLE});
+			similarAssetSets.get(0), 2, _PRODUCT_LAUNCH_TITLE,
+			new String[] {_PRODUCT_LAUNCH_TITLE});
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -327,8 +339,10 @@ public class SimilarAssetSetResourceTest
 	}
 
 	private void _assertSimilarAssetSet(
-		SimilarAssetSet similarAssetSet, int size, String[] titles) {
+		SimilarAssetSet similarAssetSet, int size, String title,
+		String[] titles) {
 
+		Assert.assertEquals(title, similarAssetSet.getTitle());
 		Assert.assertEquals(
 			size, GetterUtil.getInteger(similarAssetSet.getSize()));
 
@@ -388,7 +402,8 @@ public class SimilarAssetSetResourceTest
 			HashMapBuilder.<String, Object>put(
 				"assetLibraryId", "\"" + depotEntry.getGroupId() + "\""
 			).build(),
-			new GraphQLField("items", new GraphQLField("size")),
+			new GraphQLField(
+				"items", new GraphQLField("size"), new GraphQLField("title")),
 			new GraphQLField("totalCount"));
 
 		JSONObject similarAssetSetsPageJSONObject =
@@ -410,6 +425,8 @@ public class SimilarAssetSetResourceTest
 			similarAssetSetsJSONArray.getJSONObject(0);
 
 		Assert.assertEquals(2, similarAssetSetJSONObject.getInt("size"));
+		Assert.assertEquals(
+			_SIMILAR_TITLE, similarAssetSetJSONObject.getString("title"));
 
 		_depotEntryLocalService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -439,7 +456,7 @@ public class SimilarAssetSetResourceTest
 			(List<SimilarAssetSet>)similarAssetSetsPage.getItems();
 
 		_assertSimilarAssetSet(
-			similarAssetSets.get(0), 2,
+			similarAssetSets.get(0), 2, _SIMILAR_TITLE,
 			new String[] {_SIMILAR_TITLE, _SIMILAR_TITLE});
 
 		// The CMS grants VIEW on every content to the user role and to the
@@ -534,7 +551,7 @@ public class SimilarAssetSetResourceTest
 			similarAssetSets.toString(), 1, similarAssetSets.size());
 
 		_assertSimilarAssetSet(
-			similarAssetSets.get(0), 2,
+			similarAssetSets.get(0), 2, "Oferta de Verano",
 			new String[] {"Oferta de Verano Grande", "Oferta de Verano 2026"});
 
 		similarAssetSetsPage = _getSimilarAssetSetsPage(groupId, null);

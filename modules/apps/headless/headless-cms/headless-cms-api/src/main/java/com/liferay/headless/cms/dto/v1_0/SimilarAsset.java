@@ -181,6 +181,51 @@ public class SimilarAsset implements Serializable {
 	@JsonIgnore
 	private Supplier<Long> _idSupplier;
 
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "The URL of the asset's edit form. Absent when the user cannot update the asset."
+	)
+	public String getItemURL() {
+		if (_itemURLSupplier != null) {
+			itemURL = _itemURLSupplier.get();
+
+			_itemURLSupplier = null;
+		}
+
+		return itemURL;
+	}
+
+	public void setItemURL(String itemURL) {
+		this.itemURL = itemURL;
+
+		_itemURLSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setItemURL(
+		UnsafeSupplier<String, Exception> itemURLUnsafeSupplier) {
+
+		_itemURLSupplier = () -> {
+			try {
+				return itemURLUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "The URL of the asset's edit form. Absent when the user cannot update the asset."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected String itemURL;
+
+	@JsonIgnore
+	private Supplier<String> _itemURLSupplier;
+
 	@io.swagger.v3.oas.annotations.media.Schema
 	public String getTitle() {
 		if (_titleSupplier != null) {
@@ -294,6 +339,22 @@ public class SimilarAsset implements Serializable {
 			sb.append("\"id\": ");
 
 			sb.append(id);
+		}
+
+		String itemURL = getItemURL();
+
+		if (itemURL != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"itemURL\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(itemURL));
+
+			sb.append("\"");
 		}
 
 		String title = getTitle();
@@ -413,4 +474,4 @@ public class SimilarAsset implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1011653456
+// LIFERAY-REST-BUILDER-HASH:1575961003

@@ -150,7 +150,7 @@ public class Query {
 	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {similarAssetSets(assetLibraryId: ___, page: ___, pageSize: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(
-		description = "List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so its size never depends on the requested page. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size."
+		description = "List the sets of CMS content whose main text overlaps significantly, paginated by asset. Content is compared within one language, so a translation is only ever compared against the same translation of other content, and a set always spans the whole space, so neither its size nor its name ever depends on the requested page. Omit assetLibraryId to span all accessible spaces. Note that totalCount counts the assets that belong to a set while the items are the sets that hold them, so it is the number of assets that have a similar asset rather than a page count, and a set that straddles a page boundary is returned on both pages with its full size."
 	)
 	public SimilarAssetSetPage similarAssetSets(
 			@GraphQLName("assetLibraryId") @NotEmpty String assetLibraryId,
@@ -421,4 +421,4 @@ public class Query {
 	private com.liferay.portal.kernel.model.User _user;
 
 }
-// LIFERAY-REST-BUILDER-HASH:205050445
+// LIFERAY-REST-BUILDER-HASH:-1303667110

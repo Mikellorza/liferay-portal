@@ -143,6 +143,51 @@ public class SimilarAssetSet implements Serializable {
 	@JsonIgnore
 	private Supplier<Integer> _sizeSupplier;
 
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "A name for the set, derived from what the titles of its assets have in common."
+	)
+	public String getTitle() {
+		if (_titleSupplier != null) {
+			title = _titleSupplier.get();
+
+			_titleSupplier = null;
+		}
+
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+
+		_titleSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setTitle(
+		UnsafeSupplier<String, Exception> titleUnsafeSupplier) {
+
+		_titleSupplier = () -> {
+			try {
+				return titleUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "A name for the set, derived from what the titles of its assets have in common."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected String title;
+
+	@JsonIgnore
+	private Supplier<String> _titleSupplier;
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -202,6 +247,22 @@ public class SimilarAssetSet implements Serializable {
 			sb.append("\"size\": ");
 
 			sb.append(size);
+		}
+
+		String title = getTitle();
+
+		if (title != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"title\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(title));
+
+			sb.append("\"");
 		}
 
 		sb.append("}");
@@ -305,4 +366,4 @@ public class SimilarAssetSet implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:1029558369
+// LIFERAY-REST-BUILDER-HASH:868833846
