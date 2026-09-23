@@ -16,17 +16,23 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Release;
+import com.liferay.portal.kernel.model.Team;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserNotificationEvent;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.service.TeamLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.UserNotificationEventLocalService;
+import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
+import com.liferay.portal.kernel.service.permission.UserGroupRolePermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
@@ -269,10 +275,31 @@ public class InviteMembersPortlet extends MVCPortlet {
 			return;
 		}
 
+		PermissionChecker permissionChecker =
+			themeDisplay.getPermissionChecker();
+
+		long invitedRoleId = ParamUtil.getLong(actionRequest, "invitedRoleId");
+
+		if (invitedRoleId > 0) {
+			UserGroupRolePermissionUtil.check(
+				permissionChecker, groupId, invitedRoleId);
+		}
+
 		long invitedTeamId = ParamUtil.getLong(actionRequest, "invitedTeamId");
+
+		if (invitedTeamId > 0) {
+			Team team = _teamLocalService.getTeam(invitedTeamId);
+
+			if (groupId != team.getGroupId()) {
+				throw new PrincipalException();
+			}
+
+			GroupPermissionUtil.check(
+				permissionChecker, groupId, ActionKeys.MANAGE_TEAMS);
+		}
+
 		long[] receiverUserIds = _getLongArray(
 			actionRequest, "receiverUserIds");
-		long invitedRoleId = ParamUtil.getLong(actionRequest, "invitedRoleId");
 		String[] receiverEmailAddresses = _getStringArray(
 			actionRequest, "receiverEmailAddresses");
 
@@ -344,6 +371,9 @@ public class InviteMembersPortlet extends MVCPortlet {
 		target = "(&(release.bundle.symbolic.name=com.liferay.invitation.invite.members.service)(&(release.schema.version>=2.0.0)(!(release.schema.version>=3.0.0))))"
 	)
 	private Release _release;
+
+	@Reference
+	private TeamLocalService _teamLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;
