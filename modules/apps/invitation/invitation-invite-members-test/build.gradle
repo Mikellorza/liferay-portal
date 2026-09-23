@@ -1,4 +1,5 @@
 dependencies {
 	testIntegrationImplementation project(":apps:invitation:invitation-invite-members-api")
+	testIntegrationImplementation project(":apps:layout:layout-test-util")
 	testIntegrationImplementation project(":test:arquillian-extension-junit-bridge")
 }
