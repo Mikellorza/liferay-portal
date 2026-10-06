@@ -30,6 +30,7 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
 import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectEntryVersionLocalService;
 import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
@@ -98,6 +99,8 @@ public class BrokenLinkAssetResourceTest
 		_testGetBrokenLinkAssetsPage(
 			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			RandomTestUtil.randomString());
+		_testGetBrokenLinkAssetsPageWithDraftOverApprovedAsset();
+		_testGetBrokenLinkAssetsPageWithDraftOverExpiredAsset();
 		_testGetBrokenLinkAssetsPageWithDuplicateTitles();
 		_testGetBrokenLinkAssetsPageWithExpiredAssetInAnotherSpace();
 		_testGetBrokenLinkAssetsPageWithExpiredAssetInHiddenSpace();
@@ -376,6 +379,24 @@ public class BrokenLinkAssetResourceTest
 		).build();
 	}
 
+	private void _saveDraft(ObjectEntry objectEntry) throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext();
+
+		serviceContext.setWorkflowAction(WorkflowConstants.ACTION_SAVE_DRAFT);
+
+		_objectEntryLocalService.updateObjectEntry(
+			TestPropsValues.getUserId(), objectEntry.getObjectEntryId(),
+			objectEntry.getObjectEntryFolderId(),
+			HashMapBuilder.<String, Serializable>put(
+				"title_i18n",
+				HashMapBuilder.put(
+					"en_US", RandomTestUtil.randomString()
+				).build()
+			).build(),
+			serviceContext);
+	}
+
 	private void _testGetBrokenLinkAssetsPage(String... targetTitles)
 		throws Exception {
 
@@ -423,6 +444,71 @@ public class BrokenLinkAssetResourceTest
 			Assert.assertEquals(
 				targetTitles[0], brokenLinkAsset.getBrokenLinkTitle());
 		}
+	}
+
+	private void _testGetBrokenLinkAssetsPageWithDraftOverApprovedAsset()
+		throws Exception {
+
+		DepotEntry depotEntry = _addSpaceDepotEntry(
+			ServiceContextTestUtil.getServiceContext());
+
+		ObjectDefinition objectDefinition =
+			_getBasicWebContentObjectDefinition();
+
+		ObjectEntry targetObjectEntry = _addObjectEntry(
+			RandomTestUtil.randomString(), depotEntry, objectDefinition,
+			RandomTestUtil.randomString());
+
+		_saveDraft(targetObjectEntry);
+
+		_addObjectEntry(
+			CMSOutboundLinkTestUtil.getImageHTML(
+				targetObjectEntry.getExternalReferenceCode()),
+			depotEntry, objectDefinition, RandomTestUtil.randomString());
+
+		Page<BrokenLinkAsset> brokenLinkAssetsPage =
+			brokenLinkAssetResource.getBrokenLinkAssetsPage(
+				depotEntry.getDepotEntryId(), null, null, null);
+
+		Assert.assertEquals(0, brokenLinkAssetsPage.getTotalCount());
+	}
+
+	private void _testGetBrokenLinkAssetsPageWithDraftOverExpiredAsset()
+		throws Exception {
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext();
+
+		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
+
+		ObjectDefinition objectDefinition =
+			_getBasicWebContentObjectDefinition();
+
+		ObjectEntry targetObjectEntry = _addObjectEntry(
+			RandomTestUtil.randomString(), depotEntry, objectDefinition,
+			RandomTestUtil.randomString());
+
+		_saveDraft(targetObjectEntry);
+
+		_objectEntryVersionLocalService.expireObjectEntryVersions(
+			TestPropsValues.getUserId(),
+			_objectEntryLocalService.getObjectEntry(
+				targetObjectEntry.getObjectEntryId()),
+			serviceContext);
+
+		String referencingTitle = RandomTestUtil.randomString();
+
+		_addObjectEntry(
+			CMSOutboundLinkTestUtil.getImageHTML(
+				targetObjectEntry.getExternalReferenceCode()),
+			depotEntry, objectDefinition, referencingTitle);
+
+		BrokenLinkAsset brokenLinkAsset = _getSingleBrokenLinkAsset(
+			brokenLinkAssetResource, depotEntry);
+
+		Assert.assertEquals(
+			1, GetterUtil.getInteger(brokenLinkAsset.getBrokenLinksCount()));
+		Assert.assertEquals(referencingTitle, brokenLinkAsset.getTitle());
 	}
 
 	private void _testGetBrokenLinkAssetsPageWithDuplicateTitles()
@@ -625,6 +711,9 @@ public class BrokenLinkAssetResourceTest
 
 	@Inject
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Inject
+	private ObjectEntryVersionLocalService _objectEntryVersionLocalService;
 
 	@Inject
 	private ObjectFolderLocalService _objectFolderLocalService;
