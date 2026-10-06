@@ -6,8 +6,10 @@
 package com.liferay.headless.cms.internal.links;
 
 import com.liferay.object.model.ObjectEntryTable;
+import com.liferay.object.model.ObjectEntryVersionTable;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -124,6 +126,20 @@ public class BrokenLinkAssetSearcher {
 		return _searcher.search(searchRequestBuilder.build());
 	}
 
+	private DSLQuery _getObjectEntryIdsDSLQuery(long companyId, int status) {
+		return DSLQueryFactoryUtil.select(
+			ObjectEntryVersionTable.INSTANCE.objectEntryId
+		).from(
+			ObjectEntryVersionTable.INSTANCE
+		).where(
+			ObjectEntryVersionTable.INSTANCE.companyId.eq(
+				companyId
+			).and(
+				ObjectEntryVersionTable.INSTANCE.status.eq(status)
+			)
+		);
+	}
+
 	private List<Object[]> _getObjectEntryObjectsList(
 		long companyId, Long[] objectDefinitionIds, Long[] spaceGroupIds) {
 
@@ -143,7 +159,22 @@ public class BrokenLinkAssetSearcher {
 						objectDefinitionIds)
 				).and(
 					ObjectEntryTable.INSTANCE.status.eq(
-						WorkflowConstants.STATUS_EXPIRED)
+						WorkflowConstants.STATUS_EXPIRED
+					).or(
+						ObjectEntryTable.INSTANCE.status.eq(
+							WorkflowConstants.STATUS_DRAFT
+						).and(
+							ObjectEntryTable.INSTANCE.objectEntryId.in(
+								_getObjectEntryIdsDSLQuery(
+									companyId,
+									WorkflowConstants.STATUS_EXPIRED))
+						).and(
+							ObjectEntryTable.INSTANCE.objectEntryId.notIn(
+								_getObjectEntryIdsDSLQuery(
+									companyId,
+									WorkflowConstants.STATUS_APPROVED))
+						)
+					).withParentheses()
 				)
 			));
 	}
