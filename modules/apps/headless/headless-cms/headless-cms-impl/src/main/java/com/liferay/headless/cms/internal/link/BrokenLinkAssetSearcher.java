@@ -78,6 +78,8 @@ public class BrokenLinkAssetSearcher {
 		SearchResponse searchResponse = _searcher.search(
 			_getSearchRequestBuilder(
 				companyId, groupIds, outboundLinkTokens
+			).size(
+				0
 			).build());
 
 		return searchResponse.getCount();
