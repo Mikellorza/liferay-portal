@@ -126,14 +126,14 @@ public class BrokenLinkAssetSearcher {
 		return _searcher.search(searchRequestBuilder.build());
 	}
 
-	private DSLQuery _getObjectEntryIdsDSLQuery(long companyId, int status) {
+	private DSLQuery _getObjectEntryIdsDSLQuery(int status) {
 		return DSLQueryFactoryUtil.select(
 			ObjectEntryVersionTable.INSTANCE.objectEntryId
 		).from(
 			ObjectEntryVersionTable.INSTANCE
 		).where(
-			ObjectEntryVersionTable.INSTANCE.companyId.eq(
-				companyId
+			ObjectEntryVersionTable.INSTANCE.objectEntryId.eq(
+				ObjectEntryTable.INSTANCE.objectEntryId
 			).and(
 				ObjectEntryVersionTable.INSTANCE.status.eq(status)
 			)
@@ -166,12 +166,10 @@ public class BrokenLinkAssetSearcher {
 						).and(
 							ObjectEntryTable.INSTANCE.objectEntryId.in(
 								_getObjectEntryIdsDSLQuery(
-									companyId,
 									WorkflowConstants.STATUS_EXPIRED))
 						).and(
 							ObjectEntryTable.INSTANCE.objectEntryId.notIn(
 								_getObjectEntryIdsDSLQuery(
-									companyId,
 									WorkflowConstants.STATUS_APPROVED))
 						)
 					).withParentheses()
