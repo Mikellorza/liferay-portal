@@ -124,7 +124,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry expiredObjectEntry = _addExpiredObjectEntry(
 			depotEntry, objectDefinition, serviceContext);
@@ -186,7 +186,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry expiredObjectEntry = _addExpiredObjectEntry(
 			depotEntry, objectDefinition, serviceContext);
@@ -398,7 +398,7 @@ public class BrokenLinkAssetResourceTest
 		).build();
 	}
 
-	private ObjectDefinition _getBasicWebContentObjectDefinition()
+	private ObjectDefinition _getCMSBasicWebContentObjectDefinition()
 		throws Exception {
 
 		return _objectDefinitionLocalService.
@@ -456,7 +456,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 		StringBundler sb = new StringBundler(targetTitles.length);
 
 		for (String targetTitle : targetTitles) {
@@ -510,7 +510,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry hiddenDepotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry hiddenObjectEntry = _addObjectEntry(
 			RandomTestUtil.randomString(), hiddenDepotEntry, objectDefinition,
@@ -538,7 +538,7 @@ public class BrokenLinkAssetResourceTest
 			ServiceContextTestUtil.getServiceContext());
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry deletedObjectEntry = _addObjectEntry(
 			RandomTestUtil.randomString(), depotEntry, objectDefinition,
@@ -566,7 +566,7 @@ public class BrokenLinkAssetResourceTest
 			ServiceContextTestUtil.getServiceContext());
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry draftObjectEntry = _addDraftObjectEntry(
 			depotEntry, objectDefinition);
@@ -592,7 +592,7 @@ public class BrokenLinkAssetResourceTest
 			ServiceContextTestUtil.getServiceContext());
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry targetObjectEntry = _addObjectEntry(
 			RandomTestUtil.randomString(), depotEntry, objectDefinition,
@@ -618,7 +618,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry targetObjectEntry = _addObjectEntry(
 			RandomTestUtil.randomString(), depotEntry, objectDefinition,
@@ -666,7 +666,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry otherDepotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry expiredObjectEntry = _addExpiredObjectEntry(
 			otherDepotEntry, objectDefinition, serviceContext);
@@ -696,7 +696,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry hiddenDepotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry expiredObjectEntry = _addExpiredObjectEntry(
 			depotEntry, objectDefinition, serviceContext);
@@ -744,7 +744,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry expiredObjectEntry = _addExpiredObjectEntry(
 			depotEntry, objectDefinition, serviceContext);
@@ -785,7 +785,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry deletedObjectEntry = _addObjectEntry(
 			RandomTestUtil.randomString(), depotEntry, objectDefinition,
@@ -831,7 +831,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry expiredObjectEntry = _addExpiredObjectEntry(
 			depotEntry, objectDefinition, serviceContext);
@@ -874,7 +874,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry trashedObjectEntry = _addObjectEntry(
 			RandomTestUtil.randomString(), depotEntry, objectDefinition,
@@ -910,7 +910,7 @@ public class BrokenLinkAssetResourceTest
 		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
 
 		ObjectDefinition objectDefinition =
-			_getBasicWebContentObjectDefinition();
+			_getCMSBasicWebContentObjectDefinition();
 
 		ObjectEntry expiredObjectEntry = _addExpiredObjectEntry(
 			depotEntry, objectDefinition, serviceContext);
