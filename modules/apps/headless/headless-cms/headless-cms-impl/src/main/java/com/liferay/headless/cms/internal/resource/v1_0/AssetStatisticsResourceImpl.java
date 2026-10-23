@@ -7,6 +7,7 @@ package com.liferay.headless.cms.internal.resource.v1_0;
 
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.asset.link.service.AssetLinkLocalService;
 import com.liferay.asset.list.asset.entry.provider.AssetListAssetEntryProvider;
 import com.liferay.asset.list.service.AssetListEntryAssetEntryRelLocalService;
 import com.liferay.asset.list.service.AssetListEntryLocalService;
@@ -408,9 +409,10 @@ public class AssetStatisticsResourceImpl
 					_searchRequestBuilderFactory);
 			UnlinkedAssetSearcher unlinkedAssetSearcher =
 				new UnlinkedAssetSearcher(
-					_aggregations, _objectDefinitionLocalService,
-					_objectEntryLocalService, _objectRelationshipLocalService,
-					_searcher, _searchRequestBuilderFactory,
+					_aggregations, _assetLinkLocalService,
+					_objectDefinitionLocalService, _objectEntryLocalService,
+					_objectRelationshipLocalService, _searcher,
+					_searchRequestBuilderFactory,
 					_siteNavigationMenuItemLocalService);
 
 			return unlinkedAssetSearcher.getCount(
@@ -493,6 +495,9 @@ public class AssetStatisticsResourceImpl
 
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
+
+	@Reference
+	private AssetLinkLocalService _assetLinkLocalService;
 
 	@Reference
 	private AssetListAssetEntryProvider _assetListAssetEntryProvider;
