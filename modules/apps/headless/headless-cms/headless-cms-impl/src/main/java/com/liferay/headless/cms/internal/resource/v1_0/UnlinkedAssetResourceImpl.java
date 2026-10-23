@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -117,7 +118,8 @@ public class UnlinkedAssetResourceImpl extends BaseUnlinkedAssetResourceImpl {
 				_layoutPageTemplateStructureLocalService,
 				_objectDefinitionLocalService, _objectEntryLocalService,
 				_objectFieldLocalService, _objectRelationshipLocalService,
-				_portal, _searcher, _searchRequestBuilderFactory);
+				_portal, _portletPreferencesLocalService, _searcher,
+				_searchRequestBuilderFactory);
 		UnlinkedAssetSearcher unlinkedAssetSearcher = new UnlinkedAssetSearcher(
 			_aggregations, _objectEntryLocalService, _searcher,
 			_searchRequestBuilderFactory, _siteNavigationMenuItemLocalService);
@@ -273,6 +275,9 @@ public class UnlinkedAssetResourceImpl extends BaseUnlinkedAssetResourceImpl {
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private PortletPreferencesLocalService _portletPreferencesLocalService;
 
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
