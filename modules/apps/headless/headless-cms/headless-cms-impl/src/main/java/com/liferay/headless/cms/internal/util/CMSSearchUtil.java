@@ -25,10 +25,14 @@ import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.site.cms.site.initializer.constants.CMSWorkflowConstants;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author Mikel Lorza
@@ -71,6 +75,69 @@ public class CMSSearchUtil {
 
 			excludedNextCharacters.addAll(nextCharacters);
 		}
+	}
+
+	public static Set<String> getEntryClassPKs(
+		Aggregations aggregations, Searcher searcher,
+		Supplier<SearchRequestBuilder> supplier) {
+
+		Set<String> entryClassPKs = new HashSet<>();
+
+		SearchRequestBuilder searchRequestBuilder = supplier.get();
+
+		SearchResponse searchResponse = searcher.search(
+			searchRequestBuilder.size(
+				0
+			).build());
+
+		int partitionsCount = (int)Math.max(
+			1,
+			Math.ceil(
+				(double)searchResponse.getCount() /
+					_MAX_ENTRY_CLASS_PKS_PER_PARTITION));
+
+		List<StringBundler> suffixes = new ArrayList<>();
+
+		for (int i = 0; i < partitionsCount; i++) {
+			suffixes.add(new StringBundler());
+		}
+
+		int suffixLength = 1;
+
+		while (Math.pow(10, suffixLength) < partitionsCount) {
+			suffixLength++;
+		}
+
+		for (int i = 0; i < Math.pow(10, suffixLength); i++) {
+			StringBundler sb = suffixes.get(i % partitionsCount);
+
+			if (sb.index() > 0) {
+				sb.append(StringPool.PIPE);
+			}
+
+			sb.append(String.format("%0" + suffixLength + "d", i));
+		}
+
+		for (StringBundler sb : suffixes) {
+			TermsAggregationResult termsAggregationResult =
+				getTermsAggregationResult(
+					aggregations, Field.ENTRY_CLASS_PK,
+					_getIncludeExcludeClause(
+						null,
+						StringBundler.concat(
+							".*(", sb, StringPool.CLOSE_PARENTHESIS)),
+					searcher, supplier.get(), 65000);
+
+			if (termsAggregationResult == null) {
+				continue;
+			}
+
+			entryClassPKs.addAll(
+				TransformUtil.transform(
+					termsAggregationResult.getBuckets(), Bucket::getKey));
+		}
+
+		return entryClassPKs;
 	}
 
 	public static BooleanQuery getReferrersBooleanQuery() {
@@ -197,5 +264,7 @@ public class CMSSearchUtil {
 
 		return nextCharacters;
 	}
+
+	private static final int _MAX_ENTRY_CLASS_PKS_PER_PARTITION = 40000;
 
 }
