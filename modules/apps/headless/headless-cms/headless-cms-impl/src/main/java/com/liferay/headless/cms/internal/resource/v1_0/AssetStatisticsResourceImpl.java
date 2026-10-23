@@ -5,20 +5,31 @@
 
 package com.liferay.headless.cms.internal.resource.v1_0;
 
+import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.asset.list.asset.entry.provider.AssetListAssetEntryProvider;
+import com.liferay.asset.list.service.AssetListEntryAssetEntryRelLocalService;
+import com.liferay.asset.list.service.AssetListEntryLocalService;
+import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalService;
+import com.liferay.asset.list.service.AssetListEntryUsageLocalService;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.depot.service.DepotEntryService;
 import com.liferay.headless.cms.dto.v1_0.AssetStatistics;
 import com.liferay.headless.cms.internal.field.MissingRequiredFieldsAssetSearcher;
 import com.liferay.headless.cms.internal.link.BrokenLinkAssetSearcher;
 import com.liferay.headless.cms.internal.link.BrokenLinkTarget;
+import com.liferay.headless.cms.internal.usage.CollectionUsageResolver;
 import com.liferay.headless.cms.internal.usage.UnlinkedAssetSearcher;
 import com.liferay.headless.cms.internal.util.CMSGroupUtil;
 import com.liferay.headless.cms.resource.v1_0.AssetStatisticsResource;
+import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
+import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
 import com.liferay.object.constants.ObjectFolderConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntryTable;
+import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -26,7 +37,9 @@ import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.license.util.LicenseManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.aggregation.AggregationResult;
@@ -374,6 +387,17 @@ public class AssetStatisticsResourceImpl
 		}
 
 		try {
+			CollectionUsageResolver collectionUsageResolver =
+				new CollectionUsageResolver(
+					_assetEntryLocalService, _assetListAssetEntryProvider,
+					_assetListEntryAssetEntryRelLocalService,
+					_assetListEntryLocalService,
+					_assetListEntrySegmentsEntryRelLocalService,
+					_assetListEntryUsageLocalService, _depotEntryLocalService,
+					_layoutLocalService, _layoutPageTemplateEntryLocalService,
+					_layoutPageTemplateStructureLocalService,
+					_objectDefinitionLocalService, _objectEntryLocalService,
+					_objectFieldLocalService, _portal);
 			UnlinkedAssetSearcher unlinkedAssetSearcher =
 				new UnlinkedAssetSearcher(
 					_aggregations, _objectEntryLocalService, _searcher,
@@ -381,6 +405,8 @@ public class AssetStatisticsResourceImpl
 					_siteNavigationMenuItemLocalService);
 
 			return unlinkedAssetSearcher.getCount(
+				collectionUsageResolver.getCollectionUsages(
+					contextCompany.getCompanyId()),
 				contextCompany.getCompanyId(), groupIds);
 		}
 		catch (Exception exception) {
@@ -454,6 +480,26 @@ public class AssetStatisticsResourceImpl
 	private Aggregations _aggregations;
 
 	@Reference
+	private AssetEntryLocalService _assetEntryLocalService;
+
+	@Reference
+	private AssetListAssetEntryProvider _assetListAssetEntryProvider;
+
+	@Reference
+	private AssetListEntryAssetEntryRelLocalService
+		_assetListEntryAssetEntryRelLocalService;
+
+	@Reference
+	private AssetListEntryLocalService _assetListEntryLocalService;
+
+	@Reference
+	private AssetListEntrySegmentsEntryRelLocalService
+		_assetListEntrySegmentsEntryRelLocalService;
+
+	@Reference
+	private AssetListEntryUsageLocalService _assetListEntryUsageLocalService;
+
+	@Reference
 	private DepotEntryLocalService _depotEntryLocalService;
 
 	@Reference
@@ -467,10 +513,30 @@ public class AssetStatisticsResourceImpl
 		_kaleoTaskInstanceTokenLocalService;
 
 	@Reference
+	private LayoutLocalService _layoutLocalService;
+
+	@Reference
+	private LayoutPageTemplateEntryLocalService
+		_layoutPageTemplateEntryLocalService;
+
+	@Reference
+	private LayoutPageTemplateStructureLocalService
+		_layoutPageTemplateStructureLocalService;
+
+	@Reference
+	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
 	private ObjectDefinitionService _objectDefinitionService;
 
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
+	private ObjectFieldLocalService _objectFieldLocalService;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;
