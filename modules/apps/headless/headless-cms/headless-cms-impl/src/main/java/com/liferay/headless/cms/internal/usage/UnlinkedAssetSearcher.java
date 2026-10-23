@@ -5,6 +5,9 @@
 
 package com.liferay.headless.cms.internal.usage;
 
+import com.liferay.asset.kernel.model.AssetEntryTable;
+import com.liferay.asset.link.model.AssetLinkTable;
+import com.liferay.asset.link.service.AssetLinkLocalService;
 import com.liferay.headless.cms.internal.util.CMSSearchUtil;
 import com.liferay.layout.model.LayoutClassedModelUsageTable;
 import com.liferay.object.constants.ObjectDefinitionConstants;
@@ -63,7 +66,7 @@ import java.util.Set;
 public class UnlinkedAssetSearcher {
 
 	public UnlinkedAssetSearcher(
-		Aggregations aggregations,
+		Aggregations aggregations, AssetLinkLocalService assetLinkLocalService,
 		ObjectDefinitionLocalService objectDefinitionLocalService,
 		ObjectEntryLocalService objectEntryLocalService,
 		ObjectRelationshipLocalService objectRelationshipLocalService,
@@ -72,6 +75,7 @@ public class UnlinkedAssetSearcher {
 		SiteNavigationMenuItemLocalService siteNavigationMenuItemLocalService) {
 
 		_aggregations = aggregations;
+		_assetLinkLocalService = assetLinkLocalService;
 		_objectDefinitionLocalService = objectDefinitionLocalService;
 		_objectEntryLocalService = objectEntryLocalService;
 		_objectRelationshipLocalService = objectRelationshipLocalService;
@@ -120,6 +124,55 @@ public class UnlinkedAssetSearcher {
 		}
 
 		return _searcher.search(searchRequestBuilder.build());
+	}
+
+	private void _addAssetLinkObjectEntryIds(
+		long companyId, Set<String> objectEntryIds) {
+
+		List<Long> classPKs = _assetLinkLocalService.dslQuery(
+			DSLQueryFactoryUtil.selectDistinct(
+				AssetEntryTable.INSTANCE.classPK
+			).from(
+				AssetEntryTable.INSTANCE
+			).where(
+				AssetEntryTable.INSTANCE.companyId.eq(
+					companyId
+				).and(
+					AssetEntryTable.INSTANCE.classNameId.in(
+						DSLQueryFactoryUtil.select(
+							ClassNameTable.INSTANCE.classNameId
+						).from(
+							ClassNameTable.INSTANCE
+						).where(
+							ClassNameTable.INSTANCE.value.like(
+								ObjectDefinitionConstants.
+									CLASS_NAME_PREFIX_CUSTOM_OBJECT_DEFINITION +
+										StringPool.PERCENT)
+						))
+				).and(
+					AssetEntryTable.INSTANCE.entryId.in(
+						DSLQueryFactoryUtil.select(
+							AssetLinkTable.INSTANCE.entryId1
+						).from(
+							AssetLinkTable.INSTANCE
+						).where(
+							AssetLinkTable.INSTANCE.companyId.eq(companyId)
+						)
+					).or(
+						AssetEntryTable.INSTANCE.entryId.in(
+							DSLQueryFactoryUtil.select(
+								AssetLinkTable.INSTANCE.entryId2
+							).from(
+								AssetLinkTable.INSTANCE
+							).where(
+								AssetLinkTable.INSTANCE.companyId.eq(companyId)
+							))
+					).withParentheses()
+				)
+			));
+
+		objectEntryIds.addAll(
+			TransformUtil.transform(classPKs, String::valueOf));
 	}
 
 	private void _addLayoutObjectEntryIds(
@@ -404,6 +457,7 @@ public class UnlinkedAssetSearcher {
 		Set<String> objectEntryIds = new HashSet<>(
 			collectionUsages.getObjectEntryIds());
 
+		_addAssetLinkObjectEntryIds(companyId, objectEntryIds);
 		_addLayoutObjectEntryIds(companyId, objectEntryIds);
 
 		try {
@@ -522,6 +576,7 @@ public class UnlinkedAssetSearcher {
 		UnlinkedAssetSearcher.class);
 
 	private final Aggregations _aggregations;
+	private final AssetLinkLocalService _assetLinkLocalService;
 	private final ObjectDefinitionLocalService _objectDefinitionLocalService;
 	private final ObjectEntryLocalService _objectEntryLocalService;
 	private final ObjectRelationshipLocalService
