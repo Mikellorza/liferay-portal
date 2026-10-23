@@ -452,6 +452,21 @@ public class AssetHelperImpl implements AssetHelper {
 	}
 
 	@Override
+	public BooleanQuery getBooleanQuery(
+			SearchContext searchContext, AssetEntryQuery assetEntryQuery)
+		throws Exception {
+
+		_prepareSearchContext(
+			searchContext, assetEntryQuery, assetEntryQuery.getStart(),
+			assetEntryQuery.getEnd());
+
+		BaseSearcher baseSearcher = _assetSearcherFactory.createBaseSearcher(
+			assetEntryQuery);
+
+		return baseSearcher.getFullQuery(searchContext);
+	}
+
+	@Override
 	public boolean isValidWord(String word) {
 		if (Validator.isBlank(word)) {
 			return false;
