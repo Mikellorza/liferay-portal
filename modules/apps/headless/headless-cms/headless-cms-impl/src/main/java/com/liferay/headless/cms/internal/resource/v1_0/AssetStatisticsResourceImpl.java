@@ -30,6 +30,7 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
+import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -402,8 +403,9 @@ public class AssetStatisticsResourceImpl
 					_portletPreferencesLocalService);
 			UnlinkedAssetSearcher unlinkedAssetSearcher =
 				new UnlinkedAssetSearcher(
-					_aggregations, _objectEntryLocalService, _searcher,
-					_searchRequestBuilderFactory,
+					_aggregations, _objectDefinitionLocalService,
+					_objectEntryLocalService, _objectRelationshipLocalService,
+					_searcher, _searchRequestBuilderFactory,
 					_siteNavigationMenuItemLocalService);
 
 			return unlinkedAssetSearcher.getCount(
@@ -536,6 +538,9 @@ public class AssetStatisticsResourceImpl
 
 	@Reference
 	private ObjectFieldLocalService _objectFieldLocalService;
+
+	@Reference
+	private ObjectRelationshipLocalService _objectRelationshipLocalService;
 
 	@Reference
 	private Portal _portal;
