@@ -408,8 +408,9 @@ public class AssetStatisticsResourceImpl
 					_searchRequestBuilderFactory);
 			UnlinkedAssetSearcher unlinkedAssetSearcher =
 				new UnlinkedAssetSearcher(
-					_aggregations, _objectEntryLocalService, _searcher,
-					_searchRequestBuilderFactory,
+					_aggregations, _objectDefinitionLocalService,
+					_objectEntryLocalService, _objectRelationshipLocalService,
+					_searcher, _searchRequestBuilderFactory,
 					_siteNavigationMenuItemLocalService);
 
 			return unlinkedAssetSearcher.getCount(

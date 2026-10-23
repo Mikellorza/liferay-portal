@@ -121,8 +121,10 @@ public class UnlinkedAssetResourceImpl extends BaseUnlinkedAssetResourceImpl {
 				_portal, _portletPreferencesLocalService, _searcher,
 				_searchRequestBuilderFactory);
 		UnlinkedAssetSearcher unlinkedAssetSearcher = new UnlinkedAssetSearcher(
-			_aggregations, _objectEntryLocalService, _searcher,
-			_searchRequestBuilderFactory, _siteNavigationMenuItemLocalService);
+			_aggregations, _objectDefinitionLocalService,
+			_objectEntryLocalService, _objectRelationshipLocalService,
+			_searcher, _searchRequestBuilderFactory,
+			_siteNavigationMenuItemLocalService);
 
 		SearchResponse searchResponse = unlinkedAssetSearcher.search(
 			collectionUsageResolver.getCollectionUsages(
